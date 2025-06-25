@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Links no Linux - Hard Links e Soft Links</title>
+    <title>Apostila Virtual - Fundamentos de Sistemas Operacionais</title>
     <style>
         * {
             margin: 0;
@@ -14,83 +14,223 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
             color: #333;
-            overflow-x: hidden;
         }
 
-        .presentation {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
         }
 
-        .slide {
-            min-height: 100vh;
-            padding: 60px 40px;
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            position: relative;
-            background: white;
-            margin: 20px;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-        }
-
-        .slide.active {
-            display: flex;
-        }
-
-        .slide h1 {
-            font-size: 3.5em;
-            color: #4a5568;
+        /* Cabeçalho principal */
+        .main-header {
             text-align: center;
-            margin-bottom: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 25px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .main-header h1 {
+            font-size: 3em;
+            color: #4a5568;
+            margin-bottom: 20px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
         }
 
-        .slide h2 {
-            font-size: 2.8em;
+        .main-header .subtitle {
+            font-size: 1.3em;
+            color: #667eea;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .author-info {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+            border-left: 5px solid #20b2aa;
+        }
+
+        /* Navegação principal */
+        .main-nav {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .bimester-1 {
+            border-left: 6px solid #667eea;
+        }
+
+        .bimester-2 {
+            border-left: 6px solid #f093fb;
+        }
+
+        .nav-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        /* Cards placeholder para futuras aulas */
+        .placeholder-card {
+            background: linear-gradient(135deg, #f093fb20 0%, #f5576c20 100%);
+            border: 2px dashed #f093fb;
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.6;
+            transition: opacity 0.3s ease;
+        }
+
+        .placeholder-card:hover {
+            opacity: 0.8;
+        }
+
+        .bimester-1 .nav-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .bimester-2 .nav-btn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .nav-btn {
+            padding: 20px;
+            color: white;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .bimester-1 .nav-btn:hover {
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .bimester-2 .nav-btn:hover {
+            box-shadow: 0 10px 25px rgba(240, 147, 251, 0.4);
+        }
+
+        .nav-btn .icon {
+            font-size: 1.8em;
+        }
+
+        .nav-btn .text {
+            flex: 1;
+        }
+
+        .nav-btn .title {
+            font-size: 1.2em;
+            margin-bottom: 5px;
+        }
+
+        .nav-btn .desc {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        /* Seções do conteúdo */
+        .content-section {
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            min-height: 80vh;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .content-section h2 {
             color: #2d3748;
+            font-size: 2.5em;
             margin-bottom: 30px;
             border-bottom: 4px solid #667eea;
             padding-bottom: 15px;
         }
 
-        .slide h3 {
-            font-size: 2.2em;
+        .content-section h3 {
             color: #4a5568;
+            font-size: 2em;
             margin: 25px 0 15px 0;
         }
 
-        .content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
+        /* Slides dentro das seções */
+        .slide {
+            min-height: 70vh;
+            padding: 30px 0;
+            display: none;
         }
 
+        .slide.active {
+            display: block;
+        }
+
+        .slide h1 {
+            font-size: 3em;
+            color: #4a5568;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .slide h2 {
+            font-size: 2.3em;
+            color: #2d3748;
+            margin-bottom: 25px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        /* Layout de duas colunas */
         .two-column {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 40px;
+            gap: 30px;
             align-items: start;
         }
 
+        /* Bullet points */
         .bullet-point {
             display: flex;
             align-items: flex-start;
-            margin: 15px 0;
-            font-size: 1.3em;
+            margin: 12px 0;
+            font-size: 1.2em;
             line-height: 1.5;
         }
 
         .bullet-point::before {
             content: "🔸";
-            margin-right: 15px;
-            font-size: 1.2em;
+            margin-right: 12px;
+            font-size: 1.1em;
         }
 
+        /* Caixas de destaque */
         .highlight-box {
             background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
             padding: 25px;
@@ -108,72 +248,17 @@
         }
 
         .warning-box {
-            background: linear-gradient(135deg, #ffeaa7 0%, #fab1a0 100%);
+            background: linear-gradient(135deg, #fed7d7 0%, #feb2b2 100%);
+            border-left: 5px solid #f56565;
             padding: 25px;
             border-radius: 15px;
             margin: 20px 0;
-            border-left: 5px solid #e17055;
         }
 
-        .navigation {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 15px;
-            z-index: 1000;
-        }
-
-        .nav-btn {
-            padding: 15px 25px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 1.1em;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
-        }
-
-        .nav-btn:hover {
-            background: #5a6fd8;
-            transform: translateY(-2px);
-            box-shadow: 0 7px 20px rgba(102, 126, 234, 0.4);
-        }
-
-        .nav-btn:disabled {
-            background: #a0a0a0;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .slide-counter {
-            position: fixed;
-            top: 30px;
-            right: 30px;
-            background: rgba(255,255,255,0.9);
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-weight: bold;
-            color: #4a5568;
-            z-index: 1000;
-        }
-
-        .center-text {
-            text-align: center;
-        }
-
-        .large-text {
-            font-size: 1.4em;
-            line-height: 1.6;
-        }
-
-        .terminal {
-            background: #1a1a1a;
-            color: #00ff00;
+        /* Terminal */
+        .terminal-demo {
+            background: #2d3748;
+            color: #e2e8f0;
             padding: 20px;
             border-radius: 10px;
             font-family: 'Courier New', monospace;
@@ -182,95 +267,49 @@
             overflow-x: auto;
         }
 
-        .terminal .command {
-            color: #00ff00;
-        }
-
-        .terminal .output {
-            color: #ffffff;
-            margin: 10px 0;
-        }
-
-        .terminal .comment {
-            color: #888;
-        }
-
-        .link-diagram {
+        /* Comandos */
+        .command-card {
             background: #f8f9fa;
-            border: 2px solid #667eea;
-            border-radius: 15px;
-            padding: 30px;
-            margin: 20px 0;
-            text-align: center;
-            font-size: 1.2em;
-        }
-
-        .link-comparison {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin: 20px 0;
-        }
-
-        .link-card {
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
             border: 2px solid #e2e8f0;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 15px 0;
             transition: all 0.3s ease;
         }
 
-        .link-card:hover {
+        .command-card:hover {
             border-color: #667eea;
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
 
-        .link-card.hard-link {
-            border-color: #48bb78;
-            background: linear-gradient(135deg, #f0fff4 0%, #c6f6d5 100%);
-        }
-
-        .link-card.soft-link {
-            border-color: #ed8936;
-            background: linear-gradient(135deg, #fffaf0 0%, #feebc8 100%);
-        }
-
-        .link-header {
+        .command-header {
             display: flex;
             align-items: center;
             margin-bottom: 15px;
         }
 
-        .link-emoji {
+        .command-emoji {
             font-size: 1.5em;
             margin-right: 10px;
         }
 
-        .link-title {
+        .command-name {
             font-size: 1.3em;
             font-weight: bold;
             color: #2d3748;
         }
 
-        .syntax-box {
+        .command-syntax {
             background: #e2e8f0;
-            padding: 15px;
-            border-radius: 10px;
+            padding: 10px;
+            border-radius: 5px;
             font-family: monospace;
-            font-size: 1.1em;
             margin: 10px 0;
-            border-left: 4px solid #667eea;
+            font-size: 1.1em;
         }
 
-        .practical-demo {
-            background: linear-gradient(135deg, #e6fffa 0%, #b2f5ea 100%);
-            padding: 25px;
-            border-radius: 15px;
-            margin: 20px 0;
-            border-left: 5px solid #38b2ac;
-        }
-
+        /* Quiz */
         .quiz-container {
             max-width: 100%;
             margin: 20px 0;
@@ -317,12 +356,6 @@
             border-color: #667eea;
             background: #f0f4ff;
             transform: translateX(5px);
-        }
-
-        .quiz-option.selected {
-            border-color: #667eea;
-            background: #667eea;
-            color: white;
         }
 
         .quiz-option.correct {
@@ -381,11 +414,6 @@
             display: block;
         }
 
-        .quiz-navigation {
-            text-align: center;
-            margin-top: 30px;
-        }
-
         .quiz-result {
             text-align: center;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -402,13 +430,170 @@
             margin: 20px 0;
         }
 
-        .result-box p {
-            font-size: 1.4em;
-            margin: 10px 0;
+        /* Grids e cartões */
+        .commands-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
         }
 
+        .distro-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .distro-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .distro-card:hover {
+            border-color: #667eea;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        /* Tabelas */
+        .octal-table {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .octal-table table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 1.2em;
+        }
+
+        .octal-table th,
+        .octal-table td {
+            padding: 15px;
+            text-align: center;
+            border: 2px solid #667eea;
+        }
+
+        .octal-table th {
+            background: #667eea;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* Navegação entre slides */
+        .slide-navigation {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+            padding: 20px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 15px;
+        }
+
+        .slide-nav-btn {
+            padding: 12px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .slide-nav-btn:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+
+        .slide-nav-btn:disabled {
+            background: #a0a0a0;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Botão voltar */
+        .back-to-menu {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .back-to-menu:hover {
+            background: #5a6fd8;
+            transform: scale(1.05);
+        }
+
+        /* Indicador de progresso */
+        .progress-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.9);
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #4a5568;
+            z-index: 1000;
+        }
+
+        /* Utilitários */
+        .center-text {
+            text-align: center;
+        }
+
+        .large-text {
+            font-size: 1.3em;
+            line-height: 1.6;
+        }
+
+        /* Estilo especial para shell script */
+        .code-block {
+            background: #1a1a1a;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            border-left: 4px solid #00ff00;
+        }
+
+        .vim-tip {
+            background: linear-gradient(135deg, #e6f3ff 0%, #b3d9ff 100%);
+            border-left: 5px solid #0066cc;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+
+        .step-card {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border: 2px solid #0ea5e9;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        /* Responsivo */
         @media (max-width: 768px) {
-            .slide h1 {
+            .main-header h1 {
                 font-size: 2.5em;
             }
             
@@ -416,1217 +601,1925 @@
                 grid-template-columns: 1fr;
             }
             
-            .link-comparison {
+            .commands-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-buttons {
                 grid-template-columns: 1fr;
             }
             
             .container {
-                padding: 20px 15px;
+                padding: 10px;
             }
+
+            .back-to-menu,
+            .progress-indicator {
+                position: static;
+                margin: 10px 0;
+            }
+
+            .highlight-box div[style*="grid-template-columns"] {
+                grid-template-columns: 1fr !important;
+            }
+
+            .placeholder-card {
+                padding: 15px;
+            }
+
+            .placeholder-card div {
+                font-size: 0.9em;
+            }
+        }
+
+        /* Animações */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
-    <div class="presentation">
-        <div class="slide-counter">
-            <span id="current-slide">1</span> / <span id="total-slides">15</span>
+    <div class="container">
+        <!-- Botão voltar (oculto por padrão) -->
+        <button class="back-to-menu" id="backBtn" onclick="showMainMenu()" style="display: none;">
+            🏠 Menu Principal
+        </button>
+
+        <!-- Indicador de progresso (oculto por padrão) -->
+        <div class="progress-indicator" id="progressIndicator" style="display: none;">
+            <span id="currentSlide">1</span> / <span id="totalSlides">1</span>
         </div>
 
-        <!-- Slide 1: Título -->
-        <div class="slide active">
-            <div class="content center-text">
-                <h1>🔗 Links no Linux</h1>
-                <h2 style="border: none; color: #667eea;">Hard Links e Soft Links (Simbólicos)</h2>
-                <div class="highlight-box large-text">
-                    <strong>Aula sobre Links Linux</strong><br>
-                    Criando referências e atalhos para arquivos<br>
-                    Teoria, prática e casos de uso reais
+        <!-- Menu Principal -->
+        <div id="mainMenu" class="fade-in">
+            <div class="main-header">
+                <h1>🖥️ Apostila Virtual</h1>
+                <p class="subtitle">Fundamentos de Sistemas Operacionais e Sistemas Operacionais de Rede</p>
+                
+                <div class="highlight-box">
+                    <h3>📚 Curso Completo de Linux - Organizado por Bimestres</h3>
+                    <p>Do básico à automação avançada de sistemas Linux</p>
+                </div>
+
+                <div class="author-info">
+                    <h3>👨‍🏫 Professor</h3>
+                    <p><strong>César Azevedo</strong><br>
+                    📧 cesar.augusto@ifrn.edu.br<br>
+                    🏫 Instituto Federal do Rio Grande do Norte</p>
+                </div>
+            </div>
+
+            <div class="main-nav bimester-1">
+                <h2 style="text-align: center; margin-bottom: 25px; color: #2d3748;">📋 1º Bimestre - Fundamentos do Linux</h2>
+                <div class="nav-buttons">
+                    <button class="nav-btn" onclick="showSection('linux-intro')">
+                        <div class="icon">🐧</div>
+                        <div class="text">
+                            <div class="title">Sistema Operacional Linux</div>
+                            <div class="desc">História, características e distribuições</div>
+                        </div>
+                    </button>
+
+                    <button class="nav-btn" onclick="showSection('linux-commands')">
+                        <div class="icon">💻</div>
+                        <div class="text">
+                            <div class="title">Comandos Básicos do Linux</div>
+                            <div class="desc">Terminal e linha de comando essenciais</div>
+                        </div>
+                    </button>
+
+                    <button class="nav-btn" onclick="showSection('user-management')">
+                        <div class="icon">👥</div>
+                        <div class="text">
+                            <div class="title">Gerenciamento de Usuários</div>
+                            <div class="desc">Adduser, grupos e monitoramento</div>
+                        </div>
+                    </button>
+
+                    <button class="nav-btn" onclick="showSection('permissions')">
+                        <div class="icon">🔐</div>
+                        <div class="text">
+                            <div class="title">Permissões no Linux</div>
+                            <div class="desc">Chmod, segurança e controle de acesso</div>
+                        </div>
+                    </button>
+
+                    <button class="nav-btn" onclick="showSection('links')">
+                        <div class="icon">🔗</div>
+                        <div class="text">
+                            <div class="title">Links no Linux</div>
+                            <div class="desc">Hard Links e Soft Links explicados</div>
+                        </div>
+                    </button>
                 </div>
                 
-                <div class="example-box" style="margin-top: 40px;">
-                    <h3>👨‍🏫 Professor</h3>
-                    <p style="font-size: 1.3em; margin: 10px 0;">
-                        <strong>César Azevedo</strong><br>
-                        📧 cesar.augusto@ifrn.edu.br<br>
-                        🏫 Instituto Federal do Rio Grande do Norte
+                <div class="highlight-box center-text" style="margin: 30px 0 20px 0;">
+                    <h3>✅ 1º Bimestre Completo!</h3>
+                    <p><strong>5 capítulos</strong> - Fundamentos sólidos de Linux<br>
+                    Sistema, comandos, usuários, permissões e links</p>
+                </div>
+            </div>
+
+            <div class="main-nav bimester-2">
+                <h2 style="text-align: center; margin-bottom: 25px; color: #2d3748;">📋 2º Bimestre - Automatização com Scripts</h2>
+                <div class="nav-buttons">
+                    <button class="nav-btn" onclick="showSection('shell-script')">
+                        <div class="icon">📜</div>
+                        <div class="text">
+                            <div class="title">Shell Script - Primeiros Passos</div>
+                            <div class="desc">Automatização e seus primeiros scripts</div>
+                        </div>
+                    </button>
+                    
+                    <!-- Cards placeholder para manter o layout uniforme -->
+                    <div class="placeholder-card">
+                        <div style="text-align: center; color: #f093fb;">
+                            <div style="font-size: 2em; margin-bottom: 10px;">🚀</div>
+                            <div style="font-weight: bold;">Próximos Conteúdos</div>
+                            <div style="font-size: 0.9em; opacity: 0.8;">Em desenvolvimento</div>
+                        </div>
+                    </div>
+                    
+                    <div class="placeholder-card">
+                        <div style="text-align: center; color: #f093fb;">
+                            <div style="font-size: 2em; margin-bottom: 10px;">⚙️</div>
+                            <div style="font-weight: bold;">Scripts Avançados</div>
+                            <div style="font-size: 0.9em; opacity: 0.8;">Em breve</div>
+                        </div>
+                    </div>
+                    
+                    <div class="placeholder-card">
+                        <div style="text-align: center; color: #f093fb;">
+                            <div style="font-size: 2em; margin-bottom: 10px;">🤖</div>
+                            <div style="font-weight: bold;">Automação Total</div>
+                            <div style="font-size: 0.9em; opacity: 0.8;">Futuras aulas</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="example-box center-text" style="margin-top: 20px;">
+                    <h3>🚀 2º Bimestre - Base da Automação</h3>
+                    <p><strong>1 capítulo fundamental</strong> - Fundamentos para automação<br>
+                    Criação de scripts e automatização de tarefas no Linux</p>
+                </div>
+            </div>
+            
+            <div class="main-nav">
+                <div class="highlight-box center-text">
+                    <h3>🎉 Apostila Virtual Completa!</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px;">
+                        <div style="background: rgba(102, 126, 234, 0.1); padding: 15px; border-radius: 10px; border-left: 4px solid #667eea;">
+                            <h4 style="color: #667eea; margin-bottom: 10px;">📚 1º Bimestre</h4>
+                            <p><strong>5 capítulos</strong><br>Fundamentos sólidos do Linux</p>
+                        </div>
+                        <div style="background: rgba(240, 147, 251, 0.1); padding: 15px; border-radius: 10px; border-left: 4px solid #f093fb;">
+                            <h4 style="color: #f093fb; margin-bottom: 10px;">🚀 2º Bimestre</h4>
+                            <p><strong>1 capítulo ativo</strong><br>Shell Script + expansões futuras</p>
+                        </div>
+                    </div>
+                    <p style="margin-top: 15px; font-size: 1.1em;">
+                        <strong>Total:</strong> 6 capítulos ativos • 50+ slides interativos • 6 quizzes<br>
+                        <em style="opacity: 0.8;">Com espaços preparados para futuras expansões</em>
                     </p>
                 </div>
             </div>
         </div>
 
-        <!-- Slide 2: Objetivos -->
-        <div class="slide">
-            <div class="content">
-                <h2>🎯 Objetivos da Aula</h2>
+        <!-- Seção 1: Introdução ao Linux -->
+        <div id="linux-intro" class="content-section">
+            <!-- Slide 1: Título -->
+            <div class="slide active">
+                <h1>🐧 Sistema Operacional Linux</h1>
+                <div class="center-text">
+                    <div class="highlight-box large-text">
+                        <strong>Aula sobre Linux</strong><br>
+                        Do kernel aos sistemas completos<br>
+                        História, características e distribuições
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 2: O que é SO -->
+            <div class="slide">
+                <h2>🤔 O que é um Sistema Operacional?</h2>
                 
+                <div class="highlight-box">
+                    <h3>📚 Definição</h3>
+                    <p style="font-size: 1.3em; line-height: 1.6;">
+                        É o conjunto de programas que gerenciam recursos, processadores, 
+                        armazenamento, dispositivos de entrada e saída e dados da máquina. 
+                        O sistema que faz comunicação entre o hardware e os demais softwares.
+                    </p>
+                </div>
+
                 <div class="two-column">
                     <div>
-                        <h3>📚 Conceitos Fundamentais</h3>
-                        <div class="bullet-point">Entender o que são links</div>
-                        <div class="bullet-point">Diferenças entre Hard e Soft Links</div>
-                        <div class="bullet-point">Como os links funcionam internamente</div>
-                        <div class="bullet-point">Vantagens e limitações de cada tipo</div>
-                        
-                        <h3>⚙️ Habilidades Práticas</h3>
-                        <div class="bullet-point">Criar hard links com comando ln</div>
-                        <div class="bullet-point">Criar soft links com ln -s</div>
-                        <div class="bullet-point">Gerenciar e remover links</div>
-                        <div class="bullet-point">Identificar links quebrados</div>
+                        <h3>⚙️ Principais Funções</h3>
+                        <div class="bullet-point">Gerenciar recursos do sistema</div>
+                        <div class="bullet-point">Controlar dispositivos (teclado, mouse, etc.)</div>
+                        <div class="bullet-point">Organizar arquivos no disco</div>
+                        <div class="bullet-point">Executar programas</div>
                     </div>
                     <div>
-                        <h3>🎯 Aplicações Práticas</h3>
-                        <div class="bullet-point">Organização de arquivos</div>
-                        <div class="bullet-point">Backup e versionamento</div>
-                        <div class="bullet-point">Configurações de sistema</div>
-                        <div class="bullet-point">Estruturas de projeto</div>
-                        
-                        <h3>🔍 Análise e Diagnóstico</h3>
-                        <div class="bullet-point">Identificar tipos de links</div>
-                        <div class="bullet-point">Verificar integridade</div>
-                        <div class="bullet-point">Resolver problemas comuns</div>
-                        <div class="bullet-point">Monitorar uso de inodes</div>
+                        <h3>🎯 Como uma Ponte</h3>
+                        <div class="bullet-point">Traduz comandos do usuário</div>
+                        <div class="bullet-point">Gerencia a memória RAM</div>
+                        <div class="bullet-point">Coordena o processador</div>
+                        <div class="bullet-point">Facilita o uso do computador</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 3: História do Linux -->
+            <div class="slide">
+                <h2>📚 História do Linux</h2>
+                
+                <div class="center-text" style="font-size: 3em; margin: 20px 0;">🐧</div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📅 Linha do Tempo</h3>
+                        <div class="example-box">
+                            <strong>1969:</strong> UNIX nasce<br>
+                            <strong>1983:</strong> Projeto GNU<br>
+                            <strong>1987:</strong> MINIX<br>
+                            <strong>1991:</strong> Linux nasce<br>
+                            <strong>1993:</strong> Primeira distribuição (Debian)
+                        </div>
+                    </div>
+                    <div>
+                        <h3>👨‍💻 Linus Torvalds</h3>
+                        <div class="bullet-point">Estudante finlandês de 21 anos</div>
+                        <div class="bullet-point">Criou como projeto pessoal</div>
+                        <div class="bullet-point">Inspirado pelo MINIX</div>
+                        <div class="bullet-point">Nome: Linux = Linus + UNIX</div>
                     </div>
                 </div>
 
                 <div class="highlight-box center-text">
-                    <h3>🎯 Meta da Aula</h3>
-                    <p>Dominar completamente o sistema de links do Linux<br>
-                    para organizar arquivos de forma eficiente e inteligente</p>
+                    <h3>💡 Email Histórico (1991)</h3>
+                    <p style="font-style: italic;">
+                        "Estou fazendo um sistema operacional (gratuito) 
+                        (apenas um hobby, não será grande e profissional como o gnu)..."
+                    </p>
+                </div>
+            </div>
+
+            <!-- Slide 4: GNU/Linux -->
+            <div class="slide">
+                <h2>🔧 GNU/Linux - A União Perfeita</h2>
+                
+                <div class="highlight-box">
+                    <h3>🤔 Por que GNU/Linux?</h3>
+                    <p style="font-size: 1.3em;">
+                        Linux é apenas o <strong>kernel</strong> (núcleo). Para ter um sistema 
+                        operacional completo, precisa de ferramentas, utilitários e programas.
+                    </p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🛠️ Projeto GNU</h3>
+                        <div class="bullet-point"><strong>GNU =</strong> "GNU is Not Unix"</div>
+                        <div class="bullet-point">Iniciado por Richard Stallman (1983)</div>
+                        <div class="bullet-point">Objetivo: criar um UNIX livre</div>
+                        <div class="bullet-point">Faltava apenas o kernel</div>
+                    </div>
+                    <div>
+                        <h3>🔗 A Combinação</h3>
+                        <div class="bullet-point">GNU: ferramentas e utilitários</div>
+                        <div class="bullet-point">Linux: o kernel</div>
+                        <div class="bullet-point">Resultado: sistema completo</div>
+                        <div class="bullet-point">Ambos são código aberto</div>
+                    </div>
                 </div>
 
                 <div class="example-box center-text">
-                    <h3>🧠 + Quiz Interativo</h3>
-                    <p>Teste seus conhecimentos com 4 questões práticas!</p>
+                    Sistema Operacional Completo = GNU (ferramentas) + Linux (kernel)
                 </div>
             </div>
-        </div>
 
-        <!-- Slide 3: Analogia dos Links -->
-        <div class="slide">
-            <div class="content">
-                <h2>🏠 Entendendo Links: Uma Analogia</h2>
+            <!-- Slide 5: Características -->
+            <div class="slide">
+                <h2>⭐ Características do Linux</h2>
                 
+                <div class="two-column">
+                    <div>
+                        <h3>💰 Econômicas</h3>
+                        <div class="bullet-point">Gratuito para usar</div>
+                        <div class="bullet-point">Não precisa pagar licenças</div>
+                        <div class="bullet-point">Suporte da comunidade</div>
+                        <div class="bullet-point">Baixo custo de manutenção</div>
+                        
+                        <h3>🛡️ Segurança</h3>
+                        <div class="bullet-point">Sistema de permissões robusto</div>
+                        <div class="bullet-point">Menos vulnerável a vírus</div>
+                        <div class="bullet-point">Código aberto = mais olhos</div>
+                        <div class="bullet-point">Atualizações frequentes</div>
+                    </div>
+                    <div>
+                        <h3>⚡ Performance</h3>
+                        <div class="bullet-point">Estável e eficiente</div>
+                        <div class="bullet-point">Roda em hardware antigo</div>
+                        <div class="bullet-point">Multitarefa real</div>
+                        <div class="bullet-point">Raramente precisa reiniciar</div>
+                        
+                        <h3>🔧 Flexibilidade</h3>
+                        <div class="bullet-point">Código fonte aberto</div>
+                        <div class="bullet-point">Totalmente personalizável</div>
+                        <div class="bullet-point">Múltiplas interfaces gráficas</div>
+                        <div class="bullet-point">Suporte a várias arquiteturas</div>
+                    </div>
+                </div>
+
                 <div class="highlight-box center-text">
-                    <h3>🔑 Pense numa Casa com Múltiplas Portas</h3>
+                    <h3>🎯 Linux é como...</h3>
+                    <p>Um canivete suíço digital: versátil, confiável e sempre útil!</p>
                 </div>
+            </div>
 
+            <!-- Slide 6: Quiz Linux -->
+            <div class="slide">
+                <h2>🧠 Quiz - Sistema Linux</h2>
+                
+                <div class="quiz-container" id="linux-quiz">
+                    <div class="quiz-question" id="linux-q1">
+                        <h3>📝 Questão 1</h3>
+                        <p><strong>Quem criou o kernel Linux e em que ano?</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" onclick="selectQuizOption('linux', 1, 'a', false)">
+                                <span class="option-letter">A)</span> Richard Stallman em 1983
+                            </div>
+                            <div class="quiz-option" onclick="selectQuizOption('linux', 1, 'b', true)">
+                                <span class="option-letter">B)</span> Linus Torvalds em 1991
+                            </div>
+                            <div class="quiz-option" onclick="selectQuizOption('linux', 1, 'c', false)">
+                                <span class="option-letter">C)</span> Andrew Tanenbaum em 1987
+                            </div>
+                            <div class="quiz-option" onclick="selectQuizOption('linux', 1, 'd', false)">
+                                <span class="option-letter">D)</span> Dennis Ritchie em 1969
+                            </div>
+                        </div>
+                        <div class="quiz-feedback" id="linux-feedback1"></div>
+                    </div>
+
+                    <div class="quiz-question" id="linux-q2" style="display: none;">
+                        <h3>📝 Questão 2</h3>
+                        <p><strong>O que significa GNU no projeto GNU/Linux?</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" onclick="selectQuizOption('linux', 2, 'a', false)">
+                                <span class="option-letter">A)</span> General Network Unix
+                            </div>
+                            <div class="quiz-option" onclick="selectQuizOption('linux', 2, 'b', true)">
+                                <span class="option-letter">B)</span> GNU is Not Unix
+                            </div>
+                            <div class="quiz-option" onclick="selectQuizOption('linux', 2, 'c', false)">
+                                <span class="option-letter">C)</span> Global Network Utility
+                            </div>
+                            <div class="quiz-option" onclick="selectQuizOption('linux', 2, 'd', false)">
+                                <span class="option-letter">D)</span> Great New Unix
+                            </div>
+                        </div>
+                        <div class="quiz-feedback" id="linux-feedback2"></div>
+                    </div>
+
+                    <div class="quiz-result" id="linux-result" style="display: none;">
+                        <h3>🎉 Parabéns! Quiz Concluído!</h3>
+                        <div class="result-box">
+                            <p><strong>Sua pontuação: <span id="linux-score">0</span>/2</strong></p>
+                            <p id="linux-message"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção 2: Comandos Linux -->
+        <div id="linux-commands" class="content-section">
+            <!-- Slide 1: Título -->
+            <div class="slide active">
+                <h1>💻 Comandos Básicos do Linux</h1>
+                <div class="center-text">
+                    <div class="highlight-box large-text">
+                        <strong>Aula Prática</strong><br>
+                        Dominando os comandos essenciais<br>
+                        Para navegar e gerenciar o sistema
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 2: Por que usar o terminal -->
+            <div class="slide">
+                <h2>🤔 Por que usar o Terminal?</h2>
+                
                 <div class="two-column">
                     <div>
-                        <h3>🏠 Hard Link = Porta Adicional</h3>
-                        <div class="bullet-point">É uma <strong>porta real</strong> para a mesma casa</div>
-                        <div class="bullet-point">Dá acesso <strong>direto</strong> ao interior</div>
-                        <div class="bullet-point">Se quebrar uma porta, <strong>outras funcionam</strong></div>
-                        <div class="bullet-point">Casa só é demolida quando <strong>todas as portas</strong> são removidas</div>
-                        <div class="bullet-point">Todas as portas ficam na <strong>mesma propriedade</strong></div>
-                        
+                        <h3>⚡ Vantagens</h3>
+                        <div class="bullet-point">Mais rápido que interface gráfica</div>
+                        <div class="bullet-point">Maior controle sobre o sistema</div>
+                        <div class="bullet-point">Automação com scripts</div>
+                        <div class="bullet-point">Menos recursos de sistema</div>
+                        <div class="bullet-point">Acesso remoto eficiente</div>
+                    </div>
+                    <div>
+                        <h3>💭 Analogia</h3>
                         <div class="example-box">
-                            <h4>🔑 No Sistema de Arquivos:</h4>
-                            <div class="bullet-point">Aponta <strong>diretamente</strong> para os dados</div>
-                            <div class="bullet-point">Arquivo persiste enquanto houver hard links</div>
-                            <div class="bullet-point">Só funciona na <strong>mesma partição</strong></div>
-                        </div>
-                    </div>
-                    <div>
-                        <h3>🔗 Soft Link = Placa Indicativa</h3>
-                        <div class="bullet-point">É uma <strong>placa</strong> com endereço da casa</div>
-                        <div class="bullet-point">Você precisa <strong>seguir o endereço</strong></div>
-                        <div class="bullet-point">Se a casa for demolida, <strong>placa fica sem sentido</strong></div>
-                        <div class="bullet-point">Placa pode estar em <strong>qualquer lugar</strong></div>
-                        <div class="bullet-point">Pode apontar para <strong>outras cidades</strong> (partições)</div>
-                        
-                        <div class="example-box">
-                            <h4>🗺️ No Sistema de Arquivos:</h4>
-                            <div class="bullet-point">Contém <strong>caminho</strong> para o arquivo</div>
-                            <div class="bullet-point">Se arquivo original for deletado, link quebra</div>
-                            <div class="bullet-point">Funciona entre <strong>partições diferentes</strong></div>
+                            <p style="font-size: 1.3em; line-height: 1.6;">
+                                O terminal é como <strong>conversar diretamente</strong> 
+                                com o computador em sua "língua nativa", ao invés de 
+                                usar gestos e apontamentos (interface gráfica).
+                            </p>
                         </div>
                     </div>
                 </div>
 
-                <div class="link-diagram">
-                    <div style="font-size: 1.4em; margin-bottom: 20px;">
-                        📁 <strong>Arquivo Original</strong> 📁
-                    </div>
-                    <div style="display: flex; justify-content: space-around; align-items: center;">
-                        <div style="text-align: center;">
-                            🚪<br>
-                            <strong>Hard Link</strong><br>
-                            (Porta Direta)
-                        </div>
-                        <div style="font-size: 2em;">⟷</div>
-                        <div style="text-align: center;">
-                            🗺️<br>
-                            <strong>Soft Link</strong><br>
-                            (Placa com Endereço)
-                        </div>
-                    </div>
+                <div class="highlight-box center-text">
+                    <h3>🚀 Depois de aprender...</h3>
+                    <p>Você se sentirá como um "mago" do computador!<br>
+                    Capaz de fazer em segundos o que levaria minutos na interface gráfica</p>
                 </div>
             </div>
-        </div>
 
-        <!-- Slide 4: Hard Links Detalhado -->
-        <div class="slide">
-            <div class="content">
-                <h2>🔗 Hard Links - Referência Direta</h2>
+            <!-- Slide 3: Navegação -->
+            <div class="slide">
+                <h2>🧭 Comandos de Navegação</h2>
                 
-                <div class="link-card hard-link">
-                    <div class="link-header">
-                        <span class="link-emoji">🔗</span>
-                        <span class="link-title">Hard Link - Características</span>
-                    </div>
-                    <div class="bullet-point">Acessa os dados do arquivo original <strong>diretamente</strong></div>
-                    <div class="bullet-point">Funciona como uma <strong>cópia espelhada</strong></div>
-                    <div class="bullet-point">Se arquivo original for excluído, <strong>dados permanecem</strong></div>
-                    <div class="bullet-point">Compartilha o mesmo <strong>inode</strong> do arquivo original</div>
-                </div>
-
-                <div class="two-column">
-                    <div>
-                        <h3>✅ Vantagens</h3>
-                        <div class="bullet-point">Segurança: dados não se perdem</div>
-                        <div class="bullet-point">Performance: acesso direto</div>
-                        <div class="bullet-point">Backup automático</div>
-                        <div class="bullet-point">Não ocupa espaço adicional</div>
-                        
-                        <h3>📋 Sintaxe</h3>
-                        <div class="syntax-box">
-                            # Criar hard link<br>
-                            ln arquivo_original nome_link<br>
-                            <br>
-                            # Remover hard link<br>
-                            rm nome_link<br>
-                            # ou<br>
-                            unlink nome_link
+                <div class="commands-grid">
+                    <div class="command-card">
+                        <div class="command-header">
+                            <span class="command-emoji">📂</span>
+                            <span class="command-name">ls - Listar arquivos e diretórios</span>
                         </div>
-                    </div>
-                    <div>
-                        <h3>❌ Limitações</h3>
-                        <div class="bullet-point">Não funciona com diretórios</div>
-                        <div class="bullet-point">Só na mesma partição/filesystem</div>
-                        <div class="bullet-point">Somente usuário root pode criar alguns</div>
-                        <div class="bullet-point">Difícil identificar visualmente</div>
-                        
-                        <h3>🔍 Como Identificar</h3>
-                        <div class="terminal">
-                            $ ls -li arquivo*<br>
-                            <div class="output">123456 -rw-r--r-- 2 user user  1024 Jun 21 10:30 arquivo</div>
-                            <div class="output">123456 -rw-r--r-- 2 user user  1024 Jun 21 10:30 link_hard</div>
-                            <div class="comment"># Mesmo inode (123456) e link count = 2</div>
+                        <div class="command-syntax">ls [opções] [caminho]</div>
+                        <div style="margin-top: 10px;">
+                            <div class="terminal-demo">$ ls<br>$ ls -l<br>$ ls -a</div>
                         </div>
-                    </div>
-                </div>
-
-                <div class="practical-demo">
-                    <h3>💻 Exemplo Prático</h3>
-                    <div class="terminal">
-                        <div class="comment"># Criar arquivo e hard link</div>
-                        $ echo "Dados importantes" > documento.txt<br>
-                        $ ln documento.txt backup_hard.txt<br>
-                        <br>
-                        <div class="comment"># Verificar que são o mesmo arquivo</div>
-                        $ ls -li documento.txt backup_hard.txt<br>
-                        <div class="output">987654 -rw-r--r-- 2 user user 17 Jun 21 10:30 documento.txt</div>
-                        <div class="output">987654 -rw-r--r-- 2 user user 17 Jun 21 10:30 backup_hard.txt</div>
-                        <br>
-                        <div class="comment"># Deletar arquivo original</div>
-                        $ rm documento.txt<br>
-                        <br>
-                        <div class="comment"># Hard link ainda funciona!</div>
-                        $ cat backup_hard.txt<br>
-                        <div class="output">Dados importantes</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Slide 5: Soft Links Detalhado -->
-        <div class="slide">
-            <div class="content">
-                <h2>🗺️ Soft Links - Atalhos Inteligentes</h2>
-                
-                <div class="link-card soft-link">
-                    <div class="link-header">
-                        <span class="link-emoji">🗺️</span>
-                        <span class="link-title">Soft Link (Simbólico) - Características</span>
-                    </div>
-                    <div class="bullet-point">Atua como um <strong>ponteiro</strong> para o nome do arquivo</div>
-                    <div class="bullet-point">Não acessa os dados diretamente</div>
-                    <div class="bullet-point">Se arquivo original for excluído, <strong>link quebra</strong></div>
-                    <div class="bullet-point">Pode ser criado por <strong>qualquer usuário</strong></div>
-                </div>
-
-                <div class="two-column">
-                    <div>
-                        <h3>✅ Vantagens</h3>
-                        <div class="bullet-point">Funciona entre partições diferentes</div>
-                        <div class="bullet-point">Pode apontar para diretórios</div>
-                        <div class="bullet-point">Fácil identificação visual</div>
-                        <div class="bullet-point">Flexibilidade total</div>
-                        <div class="bullet-point">Usuário comum pode criar</div>
-                        
-                        <h3>📋 Sintaxe</h3>
-                        <div class="syntax-box">
-                            # Criar soft link<br>
-                            ln -s arquivo_original nome_link<br>
-                            <br>
-                            # Remover soft link<br>
-                            rm nome_link<br>
-                            # ou<br>
-                            unlink nome_link
-                        </div>
-                    </div>
-                    <div>
-                        <h3>❌ Limitações</h3>
-                        <div class="bullet-point">Dependente do arquivo original</div>
-                        <div class="bullet-point">Ligeiramente mais lento (redirecionamento)</div>
-                        <div class="bullet-point">Pode quebrar se arquivo for movido</div>
-                        <div class="bullet-point">Ocupa um inode próprio</div>
-                        
-                        <h3>🔍 Como Identificar</h3>
-                        <div class="terminal">
-                            $ ls -li arquivo*<br>
-                            <div class="output">123456 -rw-r--r-- 1 user user  1024 Jun 21 10:30 arquivo</div>
-                            <div class="output">789012 lrwxrwxrwx 1 user user     7 Jun 21 10:31 link_soft -> arquivo</div>
-                            <div class="comment"># 'l' no início e seta '->' mostrando destino</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="practical-demo">
-                    <h3>💻 Exemplo Prático</h3>
-                    <div class="terminal">
-                        <div class="comment"># Criar arquivo e soft link</div>
-                        $ echo "Configuração do sistema" > config.conf<br>
-                        $ ln -s config.conf atalho_config<br>
-                        <br>
-                        <div class="comment"># Verificar que são diferentes</div>
-                        $ ls -li config.conf atalho_config<br>
-                        <div class="output">111222 -rw-r--r-- 1 user user 22 Jun 21 10:30 config.conf</div>
-                        <div class="output">333444 lrwxrwxrwx 1 user user 11 Jun 21 10:31 atalho_config -> config.conf</div>
-                        <br>
-                        <div class="comment"># Deletar arquivo original</div>
-                        $ rm config.conf<br>
-                        <br>
-                        <div class="comment"># Soft link quebra!</div>
-                        $ cat atalho_config<br>
-                        <div class="output">cat: atalho_config: No such file or directory</div>
-                        <br>
-                        <div class="comment"># Link aparece em vermelho/piscando</div>
-                        $ ls -l atalho_config<br>
-                        <div class="output">lrwxrwxrwx 1 user user 11 Jun 21 10:31 atalho_config -> config.conf</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Slide 6: Comparação Prática -->
-        <div class="slide">
-            <div class="content">
-                <h2>⚖️ Comparação Side-by-Side</h2>
-                
-                <div class="link-comparison">
-                    <div class="link-card hard-link">
-                        <div class="link-header">
-                            <span class="link-emoji">🔗</span>
-                            <span class="link-title">Hard Link</span>
-                        </div>
-                        <h4>📋 Características:</h4>
-                        <div class="bullet-point">Mesmo inode do original</div>
-                        <div class="bullet-point">Acesso direto aos dados</div>
-                        <div class="bullet-point">Sobrevive à exclusão do original</div>
-                        <div class="bullet-point">Só na mesma partição</div>
-                        <div class="bullet-point">Não funciona com diretórios</div>
-                        
-                        <h4>🎯 Melhor para:</h4>
-                        <div class="bullet-point">Backups seguros</div>
-                        <div class="bullet-point">Versionamento de arquivos</div>
-                        <div class="bullet-point">Proteção contra exclusão acidental</div>
+                        <p><strong>Dica:</strong> Como "olhar dentro de uma gaveta" para ver o que tem lá</p>
                     </div>
                     
-                    <div class="link-card soft-link">
-                        <div class="link-header">
-                            <span class="link-emoji">🗺️</span>
-                            <span class="link-title">Soft Link</span>
+                    <div class="command-card">
+                        <div class="command-header">
+                            <span class="command-emoji">📁</span>
+                            <span class="command-name">cd - Mudar de diretório</span>
                         </div>
-                        <h4>📋 Características:</h4>
-                        <div class="bullet-point">Inode próprio</div>
-                        <div class="bullet-point">Ponteiro para nome do arquivo</div>
-                        <div class="bullet-point">Quebra se original for deletado</div>
-                        <div class="bullet-point">Funciona entre partições</div>
-                        <div class="bullet-point">Funciona com diretórios</div>
-                        
-                        <h4>🎯 Melhor para:</h4>
-                        <div class="bullet-point">Atalhos de conveniência</div>
-                        <div class="bullet-point">Organização de estruturas</div>
-                        <div class="bullet-point">Links entre sistemas de arquivos</div>
+                        <div class="command-syntax">cd [caminho]</div>
+                        <div style="margin-top: 10px;">
+                            <div class="terminal-demo">$ cd /home/usuario<br>$ cd ..<br>$ cd</div>
+                        </div>
+                        <p><strong>Analogia:</strong> Como "andar" pela casa, indo de um cômodo para outro</p>
                     </div>
-                </div>
-
-                <div class="practical-demo">
-                    <h3>🧪 Teste Comparativo</h3>
-                    <div class="terminal">
-                        <div class="comment"># Criar arquivo original</div>
-                        $ echo "Teste de links" > original.txt<br>
-                        <br>
-                        <div class="comment"># Criar ambos os tipos de link</div>
-                        $ ln original.txt hard_link.txt        # Hard link<br>
-                        $ ln -s original.txt soft_link.txt     # Soft link<br>
-                        <br>
-                        <div class="comment"># Verificar estrutura</div>
-                        $ ls -li *link.txt original.txt<br>
-                        <div class="output">555666 -rw-r--r-- 2 user user 15 Jun 21 10:30 original.txt</div>
-                        <div class="output">555666 -rw-r--r-- 2 user user 15 Jun 21 10:30 hard_link.txt</div>
-                        <div class="output">777888 lrwxrwxrwx 1 user user 12 Jun 21 10:31 soft_link.txt -> original.txt</div>
-                        <br>
-                        <div class="comment"># Deletar original</div>
-                        $ rm original.txt<br>
-                        <br>
-                        <div class="comment"># Testar sobrevivência</div>
-                        $ cat hard_link.txt   # ✅ Funciona<br>
-                        <div class="output">Teste de links</div>
-                        $ cat soft_link.txt   # ❌ Quebrado<br>
-                        <div class="output">cat: soft_link.txt: No such file or directory</div>
-                    </div>
-                </div>
-
-                <div class="warning-box">
-                    <h3>⚠️ Cuidados Importantes</h3>
-                    <div class="bullet-point">Hard links podem confundir sobre espaço em disco</div>
-                    <div class="bullet-point">Soft links quebrados podem acumular no sistema</div>
-                    <div class="bullet-point">Sempre documente a estrutura de links complexas</div>
-                    <div class="bullet-point">Use find para localizar links quebrados</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Slide 7: Casos de Uso Práticos -->
-        <div class="slide">
-            <div class="content">
-                <h2>💼 Casos de Uso no Mundo Real</h2>
-                
-                <div class="two-column">
-                    <div>
-                        <h3>🔗 Hard Links em Ação</h3>
-                        <div class="example-box">
-                            <h4>📚 Sistema de Backup</h4>
-                            <div class="terminal">
-                                <div class="comment"># Backup incremental</div>
-                                $ ln important.doc backup/2024-06-21/important.doc<br>
-                                <div class="comment"># Mesmo arquivo, múltiplas versões</div>
-                                $ ln important.doc backup/2024-06-22/important.doc<br>
-                                <div class="comment"># Só ocupa espaço uma vez!</div>
-                            </div>
-                        </div>
-                        
-                        <div class="example-box">
-                            <h4>🗂️ Organização de Mídia</h4>
-                            <div class="terminal">
-                                <div class="comment"># Arquivo em múltiplas categorias</div>
-                                $ ln video.mp4 filmes/acao/video.mp4<br>
-                                $ ln video.mp4 filmes/aventura/video.mp4<br>
-                                <div class="comment"># Aparece em 2 pastas, 1 arquivo físico</div>
-                            </div>
-                        </div>
-                        
-                        <div class="example-box">
-                            <h4>⚙️ Configurações do Sistema</h4>
-                            <div class="terminal">
-                                <div class="comment"># Backup automático de configs</div>
-                                $ ln /etc/nginx/nginx.conf /backup/configs/<br>
-                                <div class="comment"># Se config original corromper, backup salva</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                        <h3>🗺️ Soft Links em Ação</h3>
-                        <div class="example-box">
-                            <h4>🖥️ Ambiente de Desenvolvimento</h4>
-                            <div class="terminal">
-                                <div class="comment"># Link para projeto atual</div>
-                                $ ln -s /var/www/html/projeto-atual ~/projeto<br>
-                                <div class="comment"># Acesso rápido de qualquer lugar</div>
-                                $ cd ~/projeto<br>
-                                <div class="comment"># Mudança de projeto = só recriar link</div>
-                            </div>
-                        </div>
-                        
-                        <div class="example-box">
-                            <h4>🔧 Alternativas de Comando</h4>
-                            <div class="terminal">
-                                <div class="comment"># Python 3 como padrão</div>
-                                $ ln -s /usr/bin/python3 /usr/local/bin/python<br>
-                                <div class="comment"># Compatibilidade com scripts antigos</div>
-                                $ ln -s /usr/bin/vim /usr/local/bin/vi<br>
-                            </div>
-                        </div>
-                        
-                        <div class="example-box">
-                            <h4>📁 Estrutura de Diretórios</h4>
-                            <div class="terminal">
-                                <div class="comment"># Link para logs atuais</div>
-                                $ ln -s /var/log/apache2 ~/logs<br>
-                                <div class="comment"># Acesso conveniente para documentos</div>
-                                $ ln -s /mnt/drive/Documents ~/docs<br>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="practical-demo">
-                    <h3>🏢 Cenário Empresarial Completo</h3>
-                    <div class="terminal">
-                        <div class="comment"># Estrutura de projeto com links inteligentes</div>
-                        $ mkdir -p projeto/{src,docs,config,backup}<br>
-                        <br>
-                        <div class="comment"># Soft links para acesso fácil</div>
-                        $ ln -s /var/www/html/projeto ~/trabalho          # Atalho para desenvolvimento<br>
-                        $ ln -s /projeto/config ~/.config/projeto         # Config na home<br>
-                        $ ln -s /projeto/docs ~/Documentos/projeto-docs   # Docs acessíveis<br>
-                        <br>
-                        <div class="comment"># Hard links para backup crítico</div>
-                        $ ln projeto/config/database.conf backup/db-config-$(date +%Y%m%d)<br>
-                        $ ln projeto/src/main.py backup/main-$(date +%Y%m%d).py<br>
-                        <br>
-                        <div class="comment"># Resultado: organização + segurança + conveniência</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Slide 8: Comandos Avançados -->
-        <div class="slide">
-            <div class="content">
-                <h2>🔧 Comandos e Técnicas Avançadas</h2>
-                
-                <div class="two-column">
-                    <div>
-                        <h3>🔍 Encontrando Links</h3>
-                        <div class="terminal">
-                            <div class="comment"># Encontrar todos os hard links de um arquivo</div>
-                            $ find / -samefile arquivo.txt 2>/dev/null<br>
-                            <br>
-                            <div class="comment"># Buscar por número de inode</div>
-                            $ find / -inum 123456 2>/dev/null<br>
-                            <br>
-                            <div class="comment"># Encontrar soft links quebrados</div>
-                            $ find / -type l ! -exec test -e {} \; -print 2>/dev/null<br>
-                            <br>
-                            <div class="comment"># Arquivos com múltiplos hard links</div>
-                            $ find / -type f -links +1 2>/dev/null<br>
-                            <br>
-                            <div class="comment"># Soft links apontando para um arquivo</div>
-                            $ find / -type l -exec readlink {} \; | grep "arquivo.txt"
-                        </div>
-                        
-                        <h3>📊 Análise de Links</h3>
-                        <div class="terminal">
-                            <div class="comment"># Informações detalhadas do arquivo</div>
-                            $ stat arquivo.txt<br>
-                            <div class="output">File: arquivo.txt</div>
-                            <div class="output">Size: 1024      Blocks: 8     IO Block: 4096   regular file</div>
-                            <div class="output">Device: 801h/2049d    Inode: 123456  Links: 3</div>
-                            <br>
-                            <div class="comment"># Ver destino de soft link</div>
-                            $ readlink soft_link<br>
-                            $ readlink -f soft_link  # Caminho absoluto<br>
-                        </div>
-                    </div>
-                    <div>
-                        <h3>🛠️ Manutenção de Links</h3>
-                        <div class="terminal">
-                            <div class="comment"># Script para verificar links quebrados</div>
-                            #!/bin/bash<br>
-                            echo "Verificando links quebrados..."<br>
-                            find . -type l -exec test ! -e {} \; -print | while read link; do<br>
-                            &nbsp;&nbsp;echo "❌ Link quebrado: $link"<br>
-                            &nbsp;&nbsp;echo "   Aponta para: $(readlink "$link")"<br>
-                            done<br>
-                            <br>
-                            <div class="comment"># Limpar links quebrados</div>
-                            $ find . -type l ! -exec test -e {} \; -delete<br>
-                            <br>
-                            <div class="comment"># Contar links por tipo</div>
-                            $ echo "Hard links: $(find . -type f -links +1 | wc -l)"<br>
-                            $ echo "Soft links: $(find . -type l | wc -l)"<br>
-                        </div>
-                        
-                        <h3>⚡ Automação com Links</h3>
-                        <div class="terminal">
-                            <div class="comment"># Função para backup com hard link</div>
-                            backup_hard() {<br>
-                            &nbsp;&nbsp;local file="$1"<br>
-                            &nbsp;&nbsp;local backup_dir="$HOME/backup/$(date +%Y-%m-%d)"<br>
-                            &nbsp;&nbsp;mkdir -p "$backup_dir"<br>
-                            &nbsp;&nbsp;ln "$file" "$backup_dir/$(basename "$file")"<br>
-                            &nbsp;&nbsp;echo "Backup criado: $backup_dir/$(basename "$file")"<br>
-                            }<br>
-                            <br>
-                            <div class="comment"># Função para link conveniente</div>
-                            quick_link() {<br>
-                            &nbsp;&nbsp;ln -s "$(realpath "$1")" "$HOME/$(basename "$1")"<br>
-                            }
-                        </div>
-                    </div>
-                </div>
-
-                <div class="warning-box">
-                    <h3>⚠️ Cuidados com Performance</h3>
-                    <div class="bullet-point">Muitos hard links podem confundir ferramentas de backup</div>
-                    <div class="bullet-point">Soft links adicionam overhead de resolução de caminho</div>
-                    <div class="bullet-point">Links circulares podem causar loops infinitos</div>
-                    <div class="bullet-point">Links quebrados acumulam lixo no sistema</div>
                 </div>
 
                 <div class="highlight-box">
-                    <h3>💡 Boas Práticas</h3>
-                    <div class="bullet-point">Documente estruturas complexas de links</div>
-                    <div class="bullet-point">Use nomes descritivos para links</div>
-                    <div class="bullet-point">Monitore links quebrados regularmente</div>
-                    <div class="bullet-point">Prefira soft links para reorganização flexível</div>
-                    <div class="bullet-point">Use hard links para backups críticos</div>
+                    <h3>💡 Conceitos Importantes</h3>
+                    <div class="bullet-point"><strong>. (ponto)</strong> = diretório atual</div>
+                    <div class="bullet-point"><strong>.. (dois pontos)</strong> = diretório pai (subir um nível)</div>
+                    <div class="bullet-point"><strong>~ (til)</strong> = diretório pessoal do usuário</div>
+                    <div class="bullet-point"><strong>/ (barra)</strong> = diretório raiz do sistema</div>
+                </div>
+            </div>
+
+            <!-- Slide 4: Manipulação de arquivos -->
+            <div class="slide">
+                <h2>📋 Cópia e Movimentação</h2>
+                
+                <div class="commands-grid">
+                    <div class="command-card">
+                        <div class="command-header">
+                            <span class="command-emoji">📋</span>
+                            <span class="command-name">cp - Copiar arquivos e diretórios</span>
+                        </div>
+                        <div class="command-syntax">cp [opções] origem destino</div>
+                        <div style="margin-top: 10px;">
+                            <div class="terminal-demo">$ cp arquivo.txt copia.txt<br>$ cp -r pasta1 pasta2</div>
+                        </div>
+                        <p><strong>-r:</strong> Recursivo (para copiar pastas e todo seu conteúdo)</p>
+                    </div>
+                    
+                    <div class="command-card">
+                        <div class="command-header">
+                            <span class="command-emoji">🚚</span>
+                            <span class="command-name">mv - Mover ou renomear</span>
+                        </div>
+                        <div class="command-syntax">mv origem destino</div>
+                        <div style="margin-top: 10px;">
+                            <div class="terminal-demo">$ mv velho.txt novo.txt<br>$ mv arquivo.txt /tmp/</div>
+                        </div>
+                        <p><strong>Dupla função:</strong> Mover de lugar OU apenas renomear</p>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <h3>🤔 Diferença entre cp e mv</h3>
+                    <div class="two-column">
+                        <div>
+                            <strong>cp (copiar):</strong>
+                            <div class="bullet-point">Arquivo original permanece</div>
+                            <div class="bullet-point">Cria uma duplicata</div>
+                            <div class="bullet-point">Como "fotocopiar" um documento</div>
+                        </div>
+                        <div>
+                            <strong>mv (mover):</strong>
+                            <div class="bullet-point">Arquivo original sai do lugar</div>
+                            <div class="bullet-point">Vai para novo local</div>
+                            <div class="bullet-point">Como "recortar e colar"</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 5: Quiz Comandos -->
+            <div class="slide">
+                <h2>🧠 Quiz - Comandos Linux</h2>
+                
+                <div class="quiz-container" id="commands-quiz">
+                    <div class="quiz-question" id="commands-q1">
+                        <h3>📝 Questão 1</h3>
+                        <p><strong>Qual comando é usado para listar arquivos incluindo os ocultos?</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" onclick="selectQuizOption('commands', 1, 'a', false)">
+                                <span class="option-letter">A)</span> ls -l
+                            </div>
+                            <div class="quiz-option" onclick="selectQuizOption('commands', 1, 'b', true)">
+                                <span class="option-letter">B)</span> ls -a
+                            </div>
+                            <div class="quiz-option" onclick="selectQuizOption('commands', 1, 'c', false)">
+                                <span class="option-letter">C)</span> ls -h
+                            </div>
+                            <div class="quiz-option" onclick="selectQuizOption('commands', 1, 'd', false)">
+                                <span class="option-letter">D)</span> ls -r
+                            </div>
+                        </div>
+                        <div class="quiz-feedback" id="commands-feedback1"></div>
+                    </div>
+
+                    <div class="quiz-question" id="commands-q2" style="display: none;">
+                        <h3>📝 Questão 2</h3>
+                        <p><strong>Qual a diferença entre cp e mv?</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" onclick="selectQuizOption('commands', 2, 'a', false)">
+                                <span class="option-letter">A)</span> Não há diferença
+                            </div>
+                            <div class="quiz-option" onclick="selectQuizOption('commands', 2, 'b', true)">
+                                <span class="option-letter">B)</span> cp copia, mv move/renomeia
+                            </div>
+                            <div class="quiz-option" onclick="selectQuizOption('commands', 2, 'c', false)">
+                                <span class="option-letter">C)</span> cp move, mv copia
+                            </div>
+                            <div class="quiz-option" onclick="selectQuizOption('commands', 2, 'd', false)">
+                                <span class="option-letter">D)</span> Ambos fazem a mesma coisa
+                            </div>
+                        </div>
+                        <div class="quiz-feedback" id="commands-feedback2"></div>
+                    </div>
+
+                    <div class="quiz-result" id="commands-result" style="display: none;">
+                        <h3>🎉 Parabéns! Quiz Concluído!</h3>
+                        <div class="result-box">
+                            <p><strong>Sua pontuação: <span id="commands-score">0</span>/2</strong></p>
+                            <p id="commands-message"></p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Slide 9: Quiz -->
-        <div class="slide">
-            <div class="content">
-                <h2>🧠 Quiz - Teste seus conhecimentos!</h2>
+        <!-- Seção 3: Gerenciamento de Usuários -->
+        <div id="user-management" class="content-section">
+            <!-- Slide 1: Título -->
+            <div class="slide active">
+                <h1>👥 Gerenciamento de Usuários e Grupos</h1>
+                <div class="center-text">
+                    <div class="highlight-box large-text">
+                        <strong>Aula Avançada</strong><br>
+                        Controle de acesso e segurança<br>
+                        Comandos administrativos essenciais
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 2: Conceitos -->
+            <div class="slide">
+                <h2>🏗️ Conceitos Fundamentais</h2>
                 
-                <div class="quiz-container">
-                    <!-- Questão 1 -->
-                    <div class="quiz-question" id="question1">
+                <div class="two-column">
+                    <div>
+                        <div class="example-box">
+                            <h4>👤 Usuário</h4>
+                            <p>Uma conta que permite acesso ao sistema. Cada usuário tem:</p>
+                            <div class="bullet-point">ID único (UID)</div>
+                            <div class="bullet-point">Nome de login</div>
+                            <div class="bullet-point">Diretório pessoal</div>
+                            <div class="bullet-point">Shell padrão</div>
+                        </div>
+                        
+                        <div class="example-box">
+                            <h4>👥 Grupo</h4>
+                            <p>Conjunto de usuários com permissões similares:</p>
+                            <div class="bullet-point">ID único (GID)</div>
+                            <div class="bullet-point">Nome do grupo</div>
+                            <div class="bullet-point">Lista de membros</div>
+                            <div class="bullet-point">Facilita gerenciamento</div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🔐 Tipos de Usuários</h3>
+                        <div class="bullet-point"><strong>root:</strong> Superusuário (UID 0)</div>
+                        <div class="bullet-point"><strong>Sistema:</strong> UIDs 1-999 (serviços)</div>
+                        <div class="bullet-point"><strong>Normais:</strong> UIDs 1000+ (pessoas)</div>
+                        
+                        <h3>📁 Arquivos Importantes</h3>
+                        <div class="terminal-demo">/etc/passwd # Info dos usuários<br>/etc/group  # Info dos grupos<br>/etc/shadow # Senhas criptografadas</div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <h3>💡 Analogia: Sistema como um Prédio</h3>
+                    <div class="bullet-point"><strong>Usuários:</strong> Pessoas com chaves (acesso individual)</div>
+                    <div class="bullet-point"><strong>Grupos:</strong> Departamentos com acesso a salas específicas</div>
+                    <div class="bullet-point"><strong>root:</strong> Administrador predial (acesso total)</div>
+                    <div class="bullet-point"><strong>sudo:</strong> Chave temporária do administrador</div>
+                </div>
+            </div>
+
+            <!-- Slide 3: Adduser -->
+            <div class="slide">
+                <h2>➕ Adicionando Usuários</h2>
+                
+                <div class="command-card">
+                    <div class="command-header">
+                        <span class="command-emoji">🔑</span>
+                        <span class="command-name">adduser - Adicionar usuário</span>
+                    </div>
+                    <div class="command-syntax">sudo adduser nome_do_usuário</div>
+                    <p><strong>Funcionalidade:</strong> Cria usuário, grupo, diretório pessoal e define senha</p>
+                </div>
+
+                <div class="example-box">
+                    <h3>📝 Processo Completo</h3>
+                    <div class="terminal-demo">
+$ sudo adduser joao<br>
+Adicionando usuário `joao' ...<br>
+Adicionando novo grupo `joao' (1001) ...<br>
+Adicionando novo usuário `joao' (1001) com grupo `joao' ...<br>
+Criando diretório pessoal `/home/joao' ...<br>
+Copiando arquivos de `/etc/skel' ...<br>
+Nova senha:<br>
+Redigite a nova senha:<br>
+passwd: senha atualizada com sucesso
+                    </div>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>✅ O que o adduser faz</h3>
+                        <div class="bullet-point">Cria entrada em /etc/passwd</div>
+                        <div class="bullet-point">Cria grupo com mesmo nome</div>
+                        <div class="bullet-point">Cria diretório /home/usuario</div>
+                        <div class="bullet-point">Copia arquivos de /etc/skel</div>
+                        <div class="bullet-point">Define senha inicial</div>
+                    </div>
+                    <div>
+                        <h3>🎯 Variações Úteis</h3>
+                        <div class="terminal-demo">sudo adduser --system servico<br>sudo adduser --no-create-home temp<br>sudo adduser maria sudo</div>
+                        <p style="margin-top: 10px;"><strong>Última linha:</strong> Adiciona maria ao grupo sudo</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 4: Quiz Usuários -->
+            <div class="slide">
+                <h2>🧠 Quiz - Gerenciamento de Usuários</h2>
+                
+                <div class="quiz-container" id="users-quiz">
+                    <div class="quiz-question" id="users-q1">
+                        <h3>📝 Questão 1</h3>
+                        <p><strong>Qual comando cria um usuário com diretório pessoal e senha?</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" onclick="selectQuizOption('users', 1, 'a', true)">
+                                <span class="option-letter">A)</span> adduser
+                            </div>
+                            <div class="quiz-option" onclick="selectQuizOption('users', 1, 'b', false)">
+                                <span class="option-letter">B)</span> useradd
+                            </div>
+                            <div class="quiz-option" onclick="selectQuizOption('users', 1, 'c', false)">
+                                <span class="option-letter">C)</span> newuser
+                            </div>
+                            <div class="quiz-option" onclick="selectQuizOption('users', 1, 'd', false)">
+                                <span class="option-letter">D)</span> createuser
+                            </div>
+                        </div>
+                        <div class="quiz-feedback" id="users-feedback1"></div>
+                    </div>
+
+                    <div class="quiz-question" id="users-q2" style="display: none;">
+                        <h3>📝 Questão 2</h3>
+                        <p><strong>Como adicionar um usuário ao grupo sudo?</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" onclick="selectQuizOption('users', 2, 'a', false)">
+                                <span class="option-letter">A)</span> sudo usermod -g sudo usuario
+                            </div>
+                            <div class="quiz-option" onclick="selectQuizOption('users', 2, 'b', true)">
+                                <span class="option-letter">B)</span> sudo adduser usuario sudo
+                            </div>
+                            <div class="quiz-option" onclick="selectQuizOption('users', 2, 'c', false)">
+                                <span class="option-letter">C)</span> sudo groupadd usuario sudo
+                            </div>
+                            <div class="quiz-option" onclick="selectQuizOption('users', 2, 'd', false)">
+                                <span class="option-letter">D)</span> sudo passwd usuario sudo
+                            </div>
+                        </div>
+                        <div class="quiz-feedback" id="users-feedback2"></div>
+                    </div>
+
+                    <div class="quiz-result" id="users-result" style="display: none;">
+                        <h3>🎉 Parabéns! Quiz Concluído!</h3>
+                        <div class="result-box">
+                            <p><strong>Sua pontuação: <span id="users-score">0</span>/2</strong></p>
+                            <p id="users-message"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção 4: Permissões -->
+        <div id="permissions" class="content-section">
+            <!-- Slide 1: Título -->
+            <div class="slide active">
+                <h1>🔐 Permissões no Linux</h1>
+                <div class="center-text">
+                    <div class="highlight-box large-text">
+                        <strong>Aula sobre Permissões Linux</strong><br>
+                        Entendendo e gerenciando o sistema de segurança<br>
+                        Teoria, prática e exemplos reais
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 2: Analogia das Permissões -->
+            <div class="slide">
+                <h2>🏠 Entendendo Permissões: Uma Analogia</h2>
+                
+                <div class="highlight-box center-text">
+                    <h3>🔑 Pense numa Casa com Diferentes Cômodos</h3>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🏠 Na Vida Real</h3>
+                        <div class="bullet-point"><strong>Dono da casa:</strong> Acesso total</div>
+                        <div class="bullet-point"><strong>Família:</strong> Acesso a alguns cômodos</div>
+                        <div class="bullet-point"><strong>Visitas:</strong> Só sala de estar</div>
+                        
+                        <h3>🚪 Tipos de Acesso</h3>
+                        <div class="bullet-point"><strong>Ver:</strong> Olhar o que tem</div>
+                        <div class="bullet-point"><strong>Mexer:</strong> Mover/mudar coisas</div>
+                        <div class="bullet-point"><strong>Entrar:</strong> Acessar o cômodo</div>
+                    </div>
+                    <div>
+                        <h3>💻 No Linux</h3>
+                        <div class="bullet-point"><strong>Usuário dono:</strong> Criou o arquivo</div>
+                        <div class="bullet-point"><strong>Grupo:</strong> Usuários do mesmo grupo</div>
+                        <div class="bullet-point"><strong>Outros:</strong> Demais usuários do sistema</div>
+                        
+                        <h3>📁 Tipos de Permissão</h3>
+                        <div class="bullet-point"><strong>Ler (r):</strong> Ver conteúdo</div>
+                        <div class="bullet-point"><strong>Escrever (w):</strong> Modificar</div>
+                        <div class="bullet-point"><strong>Executar (x):</strong> Rodar/Acessar</div>
+                    </div>
+                </div>
+
+                <div class="example-box center-text">
+                    <h3>🔍 A Ideia Principal</h3>
+                    <p style="font-size: 1.3em;">
+                        Assim como você controla quem pode entrar nos cômodos da sua casa,<br>
+                        o Linux controla quem pode acessar arquivos e pastas!
+                    </p>
+                </div>
+            </div>
+
+            <!-- Slide 3: Visualizando Permissões -->
+            <div class="slide">
+                <h2>👀 Visualizando Permissões com ls -l</h2>
+                
+                <div class="terminal-demo">
+$ ls -l<br>
+total 8<br>
+-rw-rw-r-- 1 yurt yurt   17 Out  5 17:45 info.php<br>
+drwx------ 5 yurt yurt 4096 Fev 15  2017 loja
+                </div>
+
+                <div style="background: #f7fafc; border: 2px dashed #667eea; border-radius: 15px; padding: 20px; margin: 20px 0; text-align: center; font-family: monospace; font-size: 1.5em;">
+                    <div style="margin-bottom: 20px;">
+                        <span style="color: #e74c3c;">-</span><span style="color: #3498db;">rw-</span><span style="color: #27ae60;">rw-</span><span style="color: #f39c12;">r--</span>
+                    </div>
+                    <div style="font-size: 0.8em;">
+                        <span style="color: #e74c3c;">📄 Tipo</span> | 
+                        <span style="color: #3498db;">👤 Usuário</span> | 
+                        <span style="color: #27ae60;">👥 Grupo</span> | 
+                        <span style="color: #f39c12;">🌍 Outros</span>
+                    </div>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📄 Primeiro Caractere</h3>
+                        <div class="bullet-point"><strong>-</strong> = Arquivo comum</div>
+                        <div class="bullet-point"><strong>d</strong> = Diretório (pasta)</div>
+                        <div class="bullet-point"><strong>l</strong> = Link simbólico</div>
+                        
+                        <h3>🔤 Cada Grupo de 3 Caracteres</h3>
+                        <div class="bullet-point">Primeira posição: <strong>r</strong> (read)</div>
+                        <div class="bullet-point">Segunda posição: <strong>w</strong> (write)</div>
+                        <div class="bullet-point">Terceira posição: <strong>x</strong> (execute)</div>
+                    </div>
+                    <div>
+                        <h3>🔍 Interpretando o Exemplo</h3>
+                        <div class="example-box">
+                            <p><strong>-rw-rw-r--</strong></p>
+                            <div class="bullet-point"><strong>Usuário:</strong> rw- (ler e escrever)</div>
+                            <div class="bullet-point"><strong>Grupo:</strong> rw- (ler e escrever)</div>
+                            <div class="bullet-point"><strong>Outros:</strong> r-- (apenas ler)</div>
+                        </div>
+                        
+                        <h3>⭐ Dica Importante</h3>
+                        <div class="bullet-point">Permissão presente = letra</div>
+                        <div class="bullet-point">Permissão ausente = traço (-)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 4: Chmod -->
+            <div class="slide">
+                <h2>⚙️ Alterando Permissões com chmod</h2>
+                
+                <div class="highlight-box">
+                    <h3>🔧 O Comando chmod</h3>
+                    <p style="font-size: 1.3em;">
+                        <strong>chmod</strong> = <strong>ch</strong>ange <strong>mod</strong>e<br>
+                        É o comando usado para alterar permissões de arquivos e diretórios
+                    </p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📝 Modo Simbólico</h3>
+                        <div class="terminal-demo">
+# Dar execução ao usuário<br>
+$ chmod u+x arquivo.txt<br>
+<br>
+# Remover escrita do grupo<br>
+$ chmod g-w arquivo.txt<br>
+<br>
+# Definir leitura para outros<br>
+$ chmod o=r arquivo.txt
+                        </div>
+                        
+                        <h3>🎯 Símbolos Importantes</h3>
+                        <div class="bullet-point"><strong>+</strong> = adicionar permissão</div>
+                        <div class="bullet-point"><strong>-</strong> = remover permissão</div>
+                        <div class="bullet-point"><strong>=</strong> = definir exatamente</div>
+                    </div>
+                    <div>
+                        <h3>🔤 Quem (Who)</h3>
+                        <div class="bullet-point"><strong>u</strong> = usuário (user)</div>
+                        <div class="bullet-point"><strong>g</strong> = grupo (group)</div>
+                        <div class="bullet-point"><strong>o</strong> = outros (others)</div>
+                        <div class="bullet-point"><strong>a</strong> = todos (all)</div>
+                        
+                        <h3>📋 Exemplos Práticos</h3>
+                        <div class="example-box">
+                            <div style="font-family: monospace; font-size: 1.1em;">
+                                <div><strong>chmod ugo=rwx pasta</strong></div>
+                                <div style="margin: 5px 0; color: #666;">↳ Todos podem tudo</div>
+                                <div style="margin-top: 15px;"><strong>chmod u+x script.sh</strong></div>
+                                <div style="margin: 5px 0; color: #666;">↳ Usuário pode executar</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 5: Modo Octal -->
+            <div class="slide">
+                <h2>🔢 Modo Octal: Os Números Mágicos</h2>
+                
+                <div class="highlight-box">
+                    <h3>🎯 Por que "Octal"?</h3>
+                    <p style="font-size: 1.3em;">
+                        Usamos números de 0 a 7, onde cada número representa 
+                        uma combinação específica de permissões
+                    </p>
+                </div>
+
+                <div class="octal-table">
+                    <table>
+                        <tr>
+                            <th>Número</th>
+                            <th>Permissões</th>
+                            <th>Significado</th>
+                        </tr>
+                        <tr>
+                            <td><strong>0</strong></td>
+                            <td>---</td>
+                            <td>Nenhuma permissão</td>
+                        </tr>
+                        <tr>
+                            <td><strong>1</strong></td>
+                            <td>--x</td>
+                            <td>Apenas execução</td>
+                        </tr>
+                        <tr>
+                            <td><strong>2</strong></td>
+                            <td>-w-</td>
+                            <td>Apenas escrita</td>
+                        </tr>
+                        <tr>
+                            <td><strong>3</strong></td>
+                            <td>-wx</td>
+                            <td>Escrita + Execução</td>
+                        </tr>
+                        <tr>
+                            <td><strong>4</strong></td>
+                            <td>r--</td>
+                            <td>Apenas leitura</td>
+                        </tr>
+                        <tr>
+                            <td><strong>5</strong></td>
+                            <td>r-x</td>
+                            <td>Leitura + Execução</td>
+                        </tr>
+                        <tr>
+                            <td><strong>6</strong></td>
+                            <td>rw-</td>
+                            <td>Leitura + Escrita</td>
+                        </tr>
+                        <tr>
+                            <td><strong>7</strong></td>
+                            <td>rwx</td>
+                            <td>Todas as permissões</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="example-box">
+                    <h3>🧮 Como Calcular</h3>
+                    <p style="font-size: 1.2em; margin-bottom: 15px;">
+                        <strong>r</strong> = 4 | <strong>w</strong> = 2 | <strong>x</strong> = 1
+                    </p>
+                    <div style="font-family: monospace; font-size: 1.1em;">
+                        <div><strong>rw-</strong> = 4 + 2 + 0 = <strong>6</strong></div>
+                        <div><strong>r-x</strong> = 4 + 0 + 1 = <strong>5</strong></div>
+                        <div><strong>rwx</strong> = 4 + 2 + 1 = <strong>7</strong></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 6: Quiz Permissões -->
+            <div class="slide">
+                <h2>🧠 Quiz - Permissões Linux</h2>
+                
+                <div class="quiz-container" id="permissions-quiz">
+                    <div class="quiz-question" id="permissions-q1">
+                        <h3>📝 Questão 1</h3>
+                        <p><strong>O que significa a permissão "rwx" para um usuário?</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" onclick="selectQuizOption('permissions', 1, 'a', false)">
+                                <span class="option-letter">A)</span> Apenas leitura
+                            </div>
+                            <div class="quiz-option" onclick="selectQuizOption('permissions', 1, 'b', false)">
+                                <span class="option-letter">B)</span> Leitura e escrita
+                            </div>
+                            <div class="quiz-option" onclick="selectQuizOption('permissions', 1, 'c', true)">
+                                <span class="option-letter">C)</span> Leitura, escrita e execução
+                            </div>
+                            <div class="quiz-option" onclick="selectQuizOption('permissions', 1, 'd', false)">
+                                <span class="option-letter">D)</span> Apenas execução
+                            </div>
+                        </div>
+                        <div class="quiz-feedback" id="permissions-feedback1"></div>
+                    </div>
+
+                    <div class="quiz-question" id="permissions-q2" style="display: none;">
+                        <h3>📝 Questão 2</h3>
+                        <p><strong>No modo octal, que número representa "r-x"?</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" onclick="selectQuizOption('permissions', 2, 'a', false)">
+                                <span class="option-letter">A)</span> 6
+                            </div>
+                            <div class="quiz-option" onclick="selectQuizOption('permissions', 2, 'b', true)">
+                                <span class="option-letter">B)</span> 5
+                            </div>
+                            <div class="quiz-option" onclick="selectQuizOption('permissions', 2, 'c', false)">
+                                <span class="option-letter">C)</span> 4
+                            </div>
+                            <div class="quiz-option" onclick="selectQuizOption('permissions', 2, 'd', false)">
+                                <span class="option-letter">D)</span> 7
+                            </div>
+                        </div>
+                        <div class="quiz-feedback" id="permissions-feedback2"></div>
+                    </div>
+
+                    <div class="quiz-result" id="permissions-result" style="display: none;">
+                        <h3>🎉 Parabéns! Quiz Concluído!</h3>
+                        <div class="result-box">
+                            <p><strong>Sua pontuação: <span id="permissions-score">0</span>/2</strong></p>
+                            <p id="permissions-message"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção 5: Links -->
+        <div id="links" class="content-section">
+            <!-- Slide 1: Título -->
+            <div class="slide active">
+                <h1>🔗 Links no Linux</h1>
+                <div class="center-text">
+                    <div class="highlight-box large-text">
+                        <strong>Aula sobre Links</strong><br>
+                        Hard Links e Soft Links (Simbólicos)<br>
+                        Criando referências e atalhos para arquivos
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 2: Conceitos -->
+            <div class="slide">
+                <h2>🤔 O que são Links?</h2>
+                
+                <div class="highlight-box">
+                    <h3>📚 Definição Simples</h3>
+                    <p style="font-size: 1.3em; line-height: 1.6;">
+                        Links são como <strong>"atalhos"</strong> ou <strong>"referências"</strong> 
+                        para arquivos e diretórios. Eles permitem acessar o mesmo conteúdo 
+                        de diferentes locais no sistema.
+                    </p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🔗 Hard Links</h3>
+                        <div class="bullet-point">Aponta diretamente para os dados</div>
+                        <div class="bullet-point">Não pode ser quebrado</div>
+                        <div class="bullet-point">Mesmo inode (identificador)</div>
+                        <div class="bullet-point">Não funciona entre sistemas de arquivos</div>
+                        
+                        <h3>🏠 Analogia: Casa com Duas Portas</h3>
+                        <div class="example-box">
+                            <p>Imagine uma casa com duas portas de entrada. 
+                            Não importa qual porta você use, você sempre 
+                            chega na mesma casa. As duas portas são 
+                            igualmente válidas!</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>📎 Soft Links (Simbólicos)</h3>
+                        <div class="bullet-point">Aponta para o caminho do arquivo</div>
+                        <div class="bullet-point">Pode ser quebrado se arquivo for movido</div>
+                        <div class="bullet-point">Diferente inode</div>
+                        <div class="bullet-point">Funciona entre sistemas de arquivos</div>
+                        
+                        <h3>📍 Analogia: Placa de Endereço</h3>
+                        <div class="example-box">
+                            <p>Como uma placa que diz "A casa está na Rua A, nº 123". 
+                            Se a casa for demolida ou mudada de endereço, 
+                            a placa continua apontando para o local antigo!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 3: Criando Links -->
+            <div class="slide">
+                <h2>🛠️ Criando Links com o comando ln</h2>
+                
+                <div class="commands-grid">
+                    <div class="command-card">
+                        <div class="command-header">
+                            <span class="command-emoji">🔗</span>
+                            <span class="command-name">Hard Link</span>
+                        </div>
+                        <div class="command-syntax">ln arquivo_original nome_do_link</div>
+                        <div style="margin-top: 10px;">
+                            <div class="terminal-demo">$ ln documento.txt doc_link<br>$ ln /home/user/foto.jpg foto</div>
+                        </div>
+                        <p><strong>Resultado:</strong> Duas entradas para o mesmo arquivo</p>
+                    </div>
+                    
+                    <div class="command-card">
+                        <div class="command-header">
+                            <span class="command-emoji">📎</span>
+                            <span class="command-name">Soft Link (Simbólico)</span>
+                        </div>
+                        <div class="command-syntax">ln -s arquivo_original nome_do_link</div>
+                        <div style="margin-top: 10px;">
+                            <div class="terminal-demo">$ ln -s documento.txt doc_simbolico<br>$ ln -s /var/log/sistema.log log</div>
+                        </div>
+                        <p><strong>Resultado:</strong> Atalho que aponta para o arquivo</p>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>📋 Exemplo Prático</h3>
+                    <div class="terminal-demo">
+# Criar arquivo original<br>
+$ echo "Olá mundo!" > original.txt<br>
+<br>
+# Criar hard link<br>
+$ ln original.txt hard_link.txt<br>
+<br>
+# Criar soft link<br>
+$ ln -s original.txt soft_link.txt<br>
+<br>
+# Verificar os links<br>
+$ ls -la<br>
+-rw-rw-r-- 2 user user  12 Jun 21 10:00 original.txt<br>
+-rw-rw-r-- 2 user user  12 Jun 21 10:00 hard_link.txt<br>
+lrwxrwxrwx 1 user user  12 Jun 21 10:01 soft_link.txt -> original.txt
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <h3>🔍 Diferenças Visuais no ls -la</h3>
+                    <div class="bullet-point"><strong>Hard link:</strong> Mesmo tamanho e data, contador de links = 2</div>
+                    <div class="bullet-point"><strong>Soft link:</strong> Começa com 'l', mostra seta -> apontando para destino</div>
+                </div>
+            </div>
+
+            <!-- Slide 4: Quiz Links -->
+            <div class="slide">
+                <h2>🧠 Quiz - Links no Linux</h2>
+                
+                <div class="quiz-container" id="links-quiz">
+                    <div class="quiz-question" id="links-q1">
                         <h3>📝 Questão 1</h3>
                         <p><strong>Qual comando cria um soft link (simbólico)?</strong></p>
                         <div class="quiz-options">
-                            <div class="quiz-option" onclick="selectOption(1, 'a', false)">
+                            <div class="quiz-option" onclick="selectQuizOption('links', 1, 'a', false)">
                                 <span class="option-letter">A)</span> ln arquivo link
                             </div>
-                            <div class="quiz-option" onclick="selectOption(1, 'b', true)">
+                            <div class="quiz-option" onclick="selectQuizOption('links', 1, 'b', true)">
                                 <span class="option-letter">B)</span> ln -s arquivo link
                             </div>
-                            <div class="quiz-option" onclick="selectOption(1, 'c', false)">
-                                <span class="option-letter">C)</span> link -s arquivo link
+                            <div class="quiz-option" onclick="selectQuizOption('links', 1, 'c', false)">
+                                <span class="option-letter">C)</span> ln -h arquivo link
                             </div>
-                            <div class="quiz-option" onclick="selectOption(1, 'd', false)">
-                                <span class="option-letter">D)</span> symlink arquivo link
+                            <div class="quiz-option" onclick="selectQuizOption('links', 1, 'd', false)">
+                                <span class="option-letter">D)</span> link arquivo link
                             </div>
                         </div>
-                        <div class="quiz-feedback" id="feedback1"></div>
+                        <div class="quiz-feedback" id="links-feedback1"></div>
                     </div>
 
-                    <!-- Questão 2 -->
-                    <div class="quiz-question" id="question2" style="display: none;">
+                    <div class="quiz-question" id="links-q2" style="display: none;">
                         <h3>📝 Questão 2</h3>
-                        <p><strong>O que acontece com um hard link quando o arquivo original é deletado?</strong></p>
+                        <p><strong>O que acontece com um soft link se o arquivo original for removido?</strong></p>
                         <div class="quiz-options">
-                            <div class="quiz-option" onclick="selectOption(2, 'a', false)">
-                                <span class="option-letter">A)</span> O hard link para de funcionar
+                            <div class="quiz-option" onclick="selectQuizOption('links', 2, 'a', false)">
+                                <span class="option-letter">A)</span> O soft link continua funcionando normalmente
                             </div>
-                            <div class="quiz-option" onclick="selectOption(2, 'b', true)">
-                                <span class="option-letter">B)</span> O hard link continua funcionando normalmente
+                            <div class="quiz-option" onclick="selectQuizOption('links', 2, 'b', true)">
+                                <span class="option-letter">B)</span> O soft link fica quebrado (dangling link)
                             </div>
-                            <div class="quiz-option" onclick="selectOption(2, 'c', false)">
-                                <span class="option-letter">C)</span> O hard link é automaticamente deletado
+                            <div class="quiz-option" onclick="selectQuizOption('links', 2, 'c', false)">
+                                <span class="option-letter">C)</span> O soft link é automaticamente removido
                             </div>
-                            <div class="quiz-option" onclick="selectOption(2, 'd', false)">
-                                <span class="option-letter">D)</span> O hard link vira um soft link
+                            <div class="quiz-option" onclick="selectQuizOption('links', 2, 'd', false)">
+                                <span class="option-letter">D)</span> O soft link vira um hard link
                             </div>
                         </div>
-                        <div class="quiz-feedback" id="feedback2"></div>
+                        <div class="quiz-feedback" id="links-feedback2"></div>
                     </div>
 
-                    <!-- Questão 3 -->
-                    <div class="quiz-question" id="question3" style="display: none;">
-                        <h3>📝 Questão 3</h3>
-                        <p><strong>Qual característica é exclusiva dos soft links?</strong></p>
-                        <div class="quiz-options">
-                            <div class="quiz-option" onclick="selectOption(3, 'a', false)">
-                                <span class="option-letter">A)</span> Compartilham o mesmo inode
-                            </div>
-                            <div class="quiz-option" onclick="selectOption(3, 'b', false)">
-                                <span class="option-letter">B)</span> Sobrevivem à exclusão do original
-                            </div>
-                            <div class="quiz-option" onclick="selectOption(3, 'c', true)">
-                                <span class="option-letter">C)</span> Funcionam entre partições diferentes
-                            </div>
-                            <div class="quiz-option" onclick="selectOption(3, 'd', false)">
-                                <span class="option-letter">D)</span> Não ocupam espaço em disco
-                            </div>
-                        </div>
-                        <div class="quiz-feedback" id="feedback3"></div>
-                    </div>
-
-                    <!-- Questão 4 -->
-                    <div class="quiz-question" id="question4" style="display: none;">
-                        <h3>📝 Questão 4</h3>
-                        <p><strong>Como identificar um soft link no comando ls -l?</strong></p>
-                        <div class="quiz-options">
-                            <div class="quiz-option" onclick="selectOption(4, 'a', false)">
-                                <span class="option-letter">A)</span> Pelo número de links maior que 1
-                            </div>
-                            <div class="quiz-option" onclick="selectOption(4, 'b', true)">
-                                <span class="option-letter">B)</span> Pela letra 'l' no início e seta '->'
-                            </div>
-                            <div class="quiz-option" onclick="selectOption(4, 'c', false)">
-                                <span class="option-letter">C)</span> Pelo tamanho do arquivo zero
-                            </div>
-                            <div class="quiz-option" onclick="selectOption(4, 'd', false)">
-                                <span class="option-letter">D)</span> Pela cor diferente apenas
-                            </div>
-                        </div>
-                        <div class="quiz-feedback" id="feedback4"></div>
-                    </div>
-
-                    <!-- Resultado Final -->
-                    <div class="quiz-result" id="quizResult" style="display: none;">
+                    <div class="quiz-result" id="links-result" style="display: none;">
                         <h3>🎉 Parabéns! Quiz Concluído!</h3>
                         <div class="result-box">
-                            <p><strong>Sua pontuação: <span id="finalScore">0</span>/4</strong></p>
-                            <p id="resultMessage"></p>
+                            <p><strong>Sua pontuação: <span id="links-score">0</span>/2</strong></p>
+                            <p id="links-message"></p>
                         </div>
-                        <button class="nav-btn" onclick="restartQuiz()">🔄 Refazer Quiz</button>
                     </div>
-                </div>
-
-                <div class="quiz-navigation">
-                    <button class="nav-btn" id="nextQuizBtn" onclick="nextQuestion()" style="display: none;">
-                        Próxima Questão ➡️
-                    </button>
                 </div>
             </div>
         </div>
 
-        <!-- Slide 10: Troubleshooting -->
-        <div class="slide">
-            <div class="content">
-                <h2>🔧 Resolvendo Problemas com Links</h2>
+        <!-- Seção 6: Shell Script -->
+        <div id="shell-script" class="content-section">
+            <!-- Slide 1: Título -->
+            <div class="slide active">
+                <h1>📜 Shell Script - Primeiros Passos</h1>
+                <div class="center-text">
+                    <div class="highlight-box large-text">
+                        <strong>Automatização no Linux</strong><br>
+                        Criando seus primeiros scripts<br>
+                        Do básico à automação de tarefas
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 2: Contexto e Motivação -->
+            <div class="slide">
+                <h2>🤔 Por que Aprender Shell Script?</h2>
                 
+                <div class="highlight-box">
+                    <h3>🏠 Analogia da Casa</h3>
+                    <p style="font-size: 1.3em; line-height: 1.6;">
+                        Imagine que você tem que fazer a mesma tarefa no computador todos os dias: 
+                        criar uma pasta com a data de hoje, fazer backup de alguns arquivos e enviar um relatório por email. 
+                        Fazer isso manualmente toda vez é chato e você pode esquecer passos, certo?
+                    </p>
+                </div>
+
                 <div class="two-column">
                     <div>
-                        <h3>❌ Problemas Comuns</h3>
-                        <div class="warning-box">
-                            <h4>🔗 "Hard link não criado"</h4>
-                            <div class="terminal">
-                                $ ln /home/user/file /tmp/link<br>
-                                <div class="output">ln: failed to create hard link '/tmp/link': Invalid cross-device link</div>
-                            </div>
-                            <strong>Causa:</strong> Tentativa de hard link entre partições<br>
-                            <strong>Solução:</strong> Use soft link
-                            <div class="terminal">
-                                $ ln -s /home/user/file /tmp/link
-                            </div>
-                        </div>
+                        <h3>🤖 Shell Script = Robô Assistente</h3>
+                        <div class="bullet-point">Automatiza tarefas repetitivas</div>
+                        <div class="bullet-point">Executa sempre da mesma forma</div>
+                        <div class="bullet-point">Não esquece nenhum passo</div>
+                        <div class="bullet-point">Funciona enquanto você faz outras coisas</div>
                         
-                        <div class="warning-box">
-                            <h4>🗺️ "Soft link quebrado"</h4>
-                            <div class="terminal">
-                                $ ls -l broken_link<br>
-                                <div class="output">lrwxrwxrwx 1 user user 12 Jun 21 10:30 broken_link -> missing_file</div>
-                            </div>
-                            <strong>Diagnóstico:</strong> Link aponta para arquivo inexistente<br>
-                            <strong>Solução:</strong> Recriar arquivo ou atualizar link
-                            <div class="terminal">
-                                $ ln -sf new_target broken_link
-                            </div>
+                        <h3>👨‍🍳 Analogia da Cozinha</h3>
+                        <div class="example-box">
+                            <p>Se os comandos do Linux são como <strong>ingredientes soltos</strong> na cozinha, 
+                            o shell script é como uma <strong>receita</strong> que combina esses ingredientes 
+                            numa sequência específica para fazer um prato completo!</p>
                         </div>
                     </div>
                     <div>
-                        <h3>🔍 Diagnóstico Rápido</h3>
-                        <div class="terminal">
-                            <div class="comment"># Verificar se é link e para onde aponta</div>
-                            $ file suspicious_file<br>
-                            <div class="output">suspicious_file: symbolic link to /etc/passwd</div>
-                            <br>
-                            <div class="comment"># Testar se destino existe</div>
-                            $ test -e link && echo "OK" || echo "Broken"<br>
-                            <br>
-                            <div class="comment"># Encontrar origem de hard link</div>
-                            $ find . -samefile hardlink<br>
-                            <br>
-                            <div class="comment"># Ver todas as informações</div>
-                            $ stat -c "%n: %F, inode=%i, links=%h" file*
-                        </div>
+                        <h3>📈 Situações Práticas</h3>
+                        <div class="bullet-point">Backup diário automático</div>
+                        <div class="bullet-point">Limpeza de arquivos temporários</div>
+                        <div class="bullet-point">Instalação de vários programas</div>
+                        <div class="bullet-point">Relatórios de sistema</div>
+                        <div class="bullet-point">Monitoramento de serviços</div>
                         
-                        <h3>🛠️ Script de Verificação</h3>
-                        <div class="terminal">
-                            #!/bin/bash<br>
-                            echo "=== Análise de Links ==="<br>
-                            for file in *; do<br>
-                            &nbsp;&nbsp;if [ -L "$file" ]; then<br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;target=$(readlink "$file")<br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;if [ -e "$target" ]; then<br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo "✅ $file -> $target"<br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;else<br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo "❌ $file -> $target (BROKEN)"<br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;fi<br>
-                            &nbsp;&nbsp;elif [ -f "$file" ]; then<br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;links=$(stat -c %h "$file")<br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;if [ "$links" -gt 1 ]; then<br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo "🔗 $file (hard links: $links)"<br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;fi<br>
-                            &nbsp;&nbsp;fi<br>
-                            done
+                        <h3>⏰ Economia de Tempo</h3>
+                        <div class="warning-box">
+                            <p><strong>Exemplo:</strong> Se você gasta 10 minutos por dia numa tarefa repetitiva, 
+                            isso são <strong>60 horas por ano!</strong> Um script de 5 minutos pode economizar 
+                            todo esse tempo.</p>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="practical-demo">
-                    <h3>🧰 Kit de Ferramentas para Links</h3>
-                    <div class="terminal">
-                        <div class="comment"># Aliases úteis para gerenciamento de links</div>
-                        alias llinks='find . -type l -exec ls -l {} \;'  # Listar soft links<br>
-                        alias hlinks='find . -type f -links +1'          # Listar hard links<br>
-                        alias broken='find . -type l ! -exec test -e {} \; -print'  # Links quebrados<br>
-                        <br>
-                        <div class="comment"># Função para criar backup com hard link</div>
-                        hlbackup() {<br>
-                        &nbsp;&nbsp;cp "$1" "$1.backup" 2>/dev/null || ln "$1" "$1.backup"<br>
-                        &nbsp;&nbsp;echo "Backup criado: $1.backup"<br>
-                        }<br>
-                        <br>
-                        <div class="comment"># Função para link seguro (verifica antes)</div>
-                        safe_link() {<br>
-                        &nbsp;&nbsp;if [ ! -e "$1" ]; then<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;echo "Erro: $1 não existe"<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;return 1<br>
-                        &nbsp;&nbsp;fi<br>
-                        &nbsp;&nbsp;ln -s "$(realpath "$1")" "$2"<br>
-                        &nbsp;&nbsp;echo "Link criado: $2 -> $1"<br>
-                        }
+            <!-- Slide 3: O que é Shell Script -->
+            <div class="slide">
+                <h2>📝 O que é um Shell Script?</h2>
+                
+                <div class="highlight-box">
+                    <h3>📚 Definição Simples</h3>
+                    <p style="font-size: 1.3em; line-height: 1.6;">
+                        Um shell script é simplesmente um <strong>arquivo de texto</strong> que contém 
+                        uma lista de comandos que o Linux vai executar em sequência. 
+                        É como uma <strong>lista de afazeres para o computador</strong>.
+                    </p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🧩 Componentes Básicos</h3>
+                        <div class="bullet-point"><strong>Shebang (#!/bin/bash)</strong> - Como o "nome da receita" no topo</div>
+                        <div class="bullet-point"><strong>Comandos</strong> - Os ingredientes e passos da receita</div>
+                        <div class="bullet-point"><strong>Comentários</strong> - Suas anotações para lembrar o que faz</div>
+                        
+                        <h3>📜 Histórico Rápido</h3>
+                        <div class="bullet-point">Nasceu com o Unix nos anos 1970</div>
+                        <div class="bullet-point">Programadores queriam automatizar tarefas</div>
+                        <div class="bullet-point">Nome "shell" = "casca" que protege o sistema</div>
+                    </div>
+                    <div>
+                        <h3>💡 Exemplo Simples</h3>
+                        <div class="terminal-demo">
+#!/bin/bash<br>
+# Meu primeiro script - cria uma pasta e mostra a data<br>
+echo "Olá! Vou criar uma pasta para você."<br>
+mkdir minha_pasta<br>
+echo "Pasta criada! Hoje é:"<br>
+date<br>
+echo "Pronto!"
+                        </div>
+                        
+                        <h3>🔍 Análise do Exemplo</h3>
+                        <div class="bullet-point"><strong>#!/bin/bash</strong> - Diz qual interpretador usar</div>
+                        <div class="bullet-point"><strong># comentário</strong> - Explicação para humanos</div>
+                        <div class="bullet-point"><strong>echo</strong> - Mostra mensagens na tela</div>
+                        <div class="bullet-point"><strong>mkdir, date</strong> - Comandos que você já conhece!</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 4: Passo a Passo - Criando Primeiro Script -->
+            <div class="slide">
+                <h2>👨‍💻 Passo a Passo - Seu Primeiro Script</h2>
+                
+                <div class="example-box">
+                    <h3>🎯 Vamos Criar: primeiro_script.sh</h3>
+                    <p>Um script que mostra informações básicas do sistema</p>
+                </div>
+
+                <div class="commands-grid">
+                    <div class="command-card">
+                        <div class="command-header">
+                            <span class="command-emoji">📝</span>
+                            <span class="command-name">Passo 1: Criar o arquivo</span>
+                        </div>
+                        <div class="terminal-demo">$ vim primeiro_script.sh</div>
+                        <p>Isso abre o editor vim para criar o arquivo</p>
+                    </div>
+                    
+                    <div class="command-card">
+                        <div class="command-header">
+                            <span class="command-emoji">✏️</span>
+                            <span class="command-name">Passo 2: Entrar no modo de inserção</span>
+                        </div>
+                        <div class="terminal-demo">Pressione: i</div>
+                        <p>Agora você pode digitar normalmente (modo INSERT)</p>
                     </div>
                 </div>
 
                 <div class="highlight-box">
-                    <h3>💡 Dicas de Prevenção</h3>
-                    <div class="bullet-point">Sempre use caminhos absolutos para soft links importantes</div>
-                    <div class="bullet-point">Documente estruturas complexas de links</div>
-                    <div class="bullet-point">Execute verificações regulares de links quebrados</div>
-                    <div class="bullet-point">Use sistemas de versionamento para rastrear mudanças</div>
-                    <div class="bullet-point">Mantenha backups antes de reorganizar estruturas</div>
+                    <h3>📝 Passo 3: Escrever o conteúdo</h3>
+                    <div class="terminal-demo">
+#!/bin/bash<br>
+# Meu primeiro script<br>
+echo "Olá mundo do shell script!"<br>
+echo "Você está no diretório:"<br>
+pwd<br>
+echo "Hoje é:"<br>
+date
+                    </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- Slide 11: Casos Avançados -->
-        <div class="slide">
-            <div class="content">
-                <h2>🚀 Casos Avançados e Truques</h2>
-                
                 <div class="two-column">
                     <div>
-                        <h3>🎯 Estruturas Inteligentes</h3>
-                        <div class="example-box">
-                            <h4>📁 Sistema de Versionamento Manual</h4>
-                            <div class="terminal">
-                                <div class="comment"># Estrutura de versões com hard links</div>
-                                mkdir -p versions/{v1.0,v1.1,v1.2,current}<br>
-                                <br>
-                                <div class="comment"># Arquivo principal</div>
-                                echo "versão 1.0" > app.py<br>
-                                <br>
-                                <div class="comment"># Versões como hard links</div>
-                                ln app.py versions/v1.0/app.py<br>
-                                <br>
-                                <div class="comment"># Atualizar para v1.1</div>
-                                echo "versão 1.1" > app.py<br>
-                                ln app.py versions/v1.1/app.py<br>
-                                <br>
-                                <div class="comment"># Link para versão atual</div>
-                                ln -sf ../v1.1/app.py versions/current/app.py<br>
-                                <br>
-                                <div class="comment"># Resultado: histórico + economia de espaço</div>
-                            </div>
-                        </div>
-                        
-                        <h3>🔄 Alternativas Dinâmicas</h3>
-                        <div class="example-box">
-                            <h4>⚙️ Troca de Configurações</h4>
-                            <div class="terminal">
-                                <div class="comment"># Configurações por ambiente</div>
-                                $ ls config/<br>
-                                <div class="output">development.conf  production.conf  testing.conf</div>
-                                <br>
-                                <div class="comment"># Link dinâmico para configuração ativa</div>
-                                $ ln -sf development.conf config/active.conf<br>
-                                <br>
-                                <div class="comment"># Troca para produção</div>
-                                $ ln -sf production.conf config/active.conf<br>
-                                <br>
-                                <div class="comment"># Aplicação sempre usa config/active.conf</div>
-                            </div>
-                        </div>
+                        <h3>💾 Passo 4: Salvar e sair</h3>
+                        <div class="bullet-point">Pressione <strong>Esc</strong> para sair do modo INSERT</div>
+                        <div class="bullet-point">Digite <strong>:wq</strong> e pressione Enter</div>
+                        <div class="bullet-point"><strong>:w</strong> = salvar (write)</div>
+                        <div class="bullet-point"><strong>:q</strong> = sair (quit)</div>
                     </div>
                     <div>
-                        <h3>🌐 Links entre Sistemas</h3>
+                        <h3>🔑 Passo 5: Dar permissão</h3>
+                        <div class="terminal-demo">$ chmod +x primeiro_script.sh</div>
                         <div class="example-box">
-                            <h4>🗂️ Organização Cross-Partition</h4>
-                            <div class="terminal">
-                                <div class="comment"># Dados grandes em partição separada</div>
-                                $ df -h<br>
-                                <div class="output">/dev/sda1    20G  /home</div>
-                                <div class="output">/dev/sdb1   500G  /storage</div>
-                                <br>
-                                <div class="comment"># Links para acesso conveniente</div>
-                                $ ln -s /storage/projects ~/projects<br>
-                                $ ln -s /storage/media ~/Videos<br>
-                                $ ln -s /storage/backup ~/.backup<br>
-                                <br>
-                                <div class="comment"># Usuário acessa tudo pela home</div>
-                            </div>
-                        </div>
-                        
-                        <h3>🔒 Links Seguros</h3>
-                        <div class="example-box">
-                            <h4>🛡️ Proteção com Hard Links</h4>
-                            <div class="terminal">
-                                <div class="comment"># Arquivo crítico protegido</div>
-                                $ echo "dados importantes" > critical.data<br>
-                                <br>
-                                <div class="comment"># Hard links em locais seguros</div>
-                                $ ln critical.data /backup/critical.backup<br>
-                                $ ln critical.data /archive/critical.archive<br>
-                                <br>
-                                <div class="comment"># Mesmo se alguém deletar o original...</div>
-                                $ rm critical.data<br>
-                                <br>
-                                <div class="comment"># Dados ainda existem nos backups!</div>
-                                $ cat /backup/critical.backup<br>
-                                <div class="output">dados importantes</div>
-                            </div>
+                            <p><strong>Analogia:</strong> É como assinar uma receita dizendo "pode usar esta receita na cozinha"</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="practical-demo">
-                    <h3>🏭 Ambiente de Produção Completo</h3>
-                    <div class="terminal">
-                        <div class="comment"># Estrutura de aplicação web com links</div>
-                        /var/www/<br>
-                        ├── releases/                    # Versões da aplicação<br>
-                        │   ├── 20240621-v1.2.0/<br>
-                        │   ├── 20240620-v1.1.9/<br>
-                        │   └── 20240619-v1.1.8/<br>
-                        ├── shared/                      # Arquivos compartilhados<br>
-                        │   ├── uploads/                 # Hard links para uploads<br>
-                        │   ├── logs/                    # Logs persistentes<br>
-                        │   └── config/                  # Configurações<br>
-                        └── current -> releases/20240621-v1.2.0/  # Soft link para versão atual<br>
-                        <br>
-                        <div class="comment"># Deploy nova versão</div>
-                        $ ln -sfn releases/20240622-v1.3.0 current<br>
-                        <div class="comment"># Rollback instantâneo se necessário</div>
-                        $ ln -sfn releases/20240621-v1.2.0 current<br>
-                        <br>
-                        <div class="comment"># Links para dados compartilhados</div>
-                        $ ln -s ../../shared/uploads current/public/uploads<br>
-                        $ ln -s ../../shared/config/app.conf current/config/app.conf
-                    </div>
-                </div>
-
-                <div class="highlight-box">
-                    <h3>🎨 Design Patterns com Links</h3>
-                    <div class="bullet-point"><strong>Imutabilidade:</strong> Hard links para preservar versões</div>
-                    <div class="bullet-point"><strong>Flexibilidade:</strong> Soft links para estruturas dinâmicas</div>
-                    <div class="bullet-point"><strong>Economia:</strong> Hard links para evitar duplicação</div>
-                    <div class="bullet-point"><strong>Organização:</strong> Soft links para categorizações múltiplas</div>
-                    <div class="bullet-point"><strong>Segurança:</strong> Hard links para backup transparente</div>
+                <div class="warning-box">
+                    <h3>🚀 Passo 6: Executar</h3>
+                    <div class="terminal-demo">$ ./primeiro_script.sh</div>
+                    <p><strong>Importante:</strong> O <code>./</code> diz "procure aqui no diretório atual"</p>
                 </div>
             </div>
-        </div>
 
-        <!-- Slide 12: Performance e Limitações -->
-        <div class="slide">
-            <div class="content">
-                <h2>⚡ Performance e Limitações</h2>
+            <!-- Slide 5: Comandos Básicos do Vim -->
+            <div class="slide">
+                <h2>⚡ Comandos Essenciais do Vim</h2>
                 
+                <div class="highlight-box center-text">
+                    <h3>🎯 Regra de Ouro do Vim</h3>
+                    <p style="font-size: 1.4em;">
+                        Sempre pressione <strong>Esc</strong> primeiro se estiver em dúvida sobre qual modo você está!
+                    </p>
+                </div>
+
                 <div class="two-column">
                     <div>
-                        <h3>📊 Impacto na Performance</h3>
+                        <h3>🔑 Comandos Essenciais</h3>
+                        <div class="command-card">
+                            <h4>📝 Para Escrever</h4>
+                            <div class="bullet-point"><strong>i</strong> - Entra no modo INSERT (para digitar)</div>
+                            <div class="bullet-point"><strong>Esc</strong> - Sai do modo INSERT (volta ao normal)</div>
+                        </div>
+                        
+                        <div class="command-card">
+                            <h4>💾 Para Salvar/Sair</h4>
+                            <div class="bullet-point"><strong>:w</strong> - Salva o arquivo (write)</div>
+                            <div class="bullet-point"><strong>:q</strong> - Sai do vim (quit)</div>
+                            <div class="bullet-point"><strong>:wq</strong> - Salva e sai</div>
+                            <div class="bullet-point"><strong>:q!</strong> - Sai sem salvar (force quit)</div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🛠️ Comandos Úteis</h3>
+                        <div class="command-card">
+                            <h4>✂️ Edição</h4>
+                            <div class="bullet-point"><strong>dd</strong> - Deleta a linha inteira</div>
+                            <div class="bullet-point"><strong>u</strong> - Desfaz a última ação (undo)</div>
+                            <div class="bullet-point"><strong>yy</strong> - Copia a linha inteira</div>
+                            <div class="bullet-point"><strong>p</strong> - Cola o que foi copiado</div>
+                        </div>
+                        
+                        <div class="warning-box">
+                            <h4>🆘 Emergência: Travou no Vim?</h4>
+                            <p><strong>Solução:</strong> Pressione Esc várias vezes, depois digite <code>:q!</code> e Enter</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>📋 Workflow Completo no Vim</h3>
+                    <div style="font-family: monospace; font-size: 1.2em; line-height: 1.8;">
+                        <strong>vim nome_arquivo.sh</strong> → <strong>i</strong> → digite o código → <strong>Esc</strong> → <strong>:wq</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 6: Conceitos Importantes -->
+            <div class="slide">
+                <h2>🧠 Conceitos Fundamentais</h2>
+                
+                <div class="commands-grid">
+                    <div class="command-card">
+                        <div class="command-header">
+                            <span class="command-emoji">🏷️</span>
+                            <span class="command-name">A) Shebang (#!/bin/bash)</span>
+                        </div>
+                        <div class="bullet-point"><strong>O que é:</strong> Diz ao sistema qual "intérprete" usar</div>
+                        <div class="bullet-point"><strong>Analogia:</strong> Como escolher se vai cozinhar no fogão, forno ou microondas</div>
+                        <div class="bullet-point"><strong>Importante:</strong> Sempre na primeira linha, sem espaços antes</div>
+                    </div>
+                    
+                    <div class="command-card">
+                        <div class="command-header">
+                            <span class="command-emoji">🔐</span>
+                            <span class="command-name">B) Permissões</span>
+                        </div>
+                        <div class="bullet-point"><strong>Por que precisa:</strong> Linux é seguro - não executa qualquer arquivo</div>
+                        <div class="bullet-point"><strong>Como funciona:</strong> chmod +x = "pode executar"</div>
+                        <div class="bullet-point"><strong>Analogia:</strong> Como dar a chave da cozinha para alguém usar suas receitas</div>
+                    </div>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🚀 C) Execução</h3>
+                        <div class="terminal-demo">$ ./nome_do_script.sh</div>
+                        <div class="bullet-point"><strong>./</strong> - Executa do diretório atual</div>
+                        <div class="bullet-point"><strong>Por que o ./?</strong> - Diz "procure aqui no diretório atual"</div>
+                        
+                        <div class="example-box">
+                            <h4>❌ Erro Comum</h4>
+                            <p><code>nome_do_script.sh</code> → "Command not found"<br>
+                            <strong>✅ Correto:</strong> <code>./nome_do_script.sh</code></p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>💬 D) Comentários</h3>
+                        <div class="terminal-demo"># Isto é um comentário<br>echo "Isto é código"  # Comentário na linha</div>
+                        <div class="bullet-point"><strong>Começam com #</strong></div>
+                        <div class="bullet-point"><strong>Para que servem:</strong> Explicar o que o código faz</div>
+                        <div class="bullet-point"><strong>Analogia:</strong> Como escrever na margem da receita "isso deixa mais saboroso"</div>
+                        
                         <div class="highlight-box">
-                            <h4>🔗 Hard Links</h4>
-                            <div class="bullet-point"><strong>Velocidade:</strong> Acesso direto aos dados</div>
-                            <div class="bullet-point"><strong>Memória:</strong> Não usa RAM adicional</div>
-                            <div class="bullet-point"><strong>Disco:</strong> Zero bytes adicionais</div>
-                            <div class="bullet-point"><strong>I/O:</strong> Mesma performance do arquivo original</div>
-                        </div>
-                        
-                        <div class="warning-box">
-                            <h4>🗺️ Soft Links</h4>
-                            <div class="bullet-point"><strong>Overhead:</strong> Resolução de caminho</div>
-                            <div class="bullet-point"><strong>Memória:</strong> Cache do caminho</div>
-                            <div class="bullet-point"><strong>Disco:</strong> Poucos bytes por link</div>
-                            <div class="bullet-point"><strong>Latência:</strong> +1 operação de filesystem</div>
-                        </div>
-                        
-                        <h3>🔢 Limites do Sistema</h3>
-                        <div class="terminal">
-                            <div class="comment"># Verificar limites do filesystem</div>
-                            $ tune2fs -l /dev/sda1 | grep -i inode<br>
-                            <div class="output">Inode count: 655360</div>
-                            <div class="output">Free inodes: 590234</div>
-                            <br>
-                            <div class="comment"># Links máximos por arquivo (teórico)</div>
-                            $ getconf LINK_MAX<br>
-                            <div class="output">65000</div>
+                            <h4>💡 Boa Prática</h4>
+                            <p>Sempre use comentários - você vai esquecer o que fez depois!</p>
                         </div>
                     </div>
-                    <div>
-                        <h3>⚠️ Limitações Importantes</h3>
-                        <div class="warning-box">
-                            <h4>🚫 Hard Links NÃO podem:</h4>
-                            <div class="bullet-point">Apontar para diretórios (usuário comum)</div>
-                            <div class="bullet-point">Atravessar filesystems diferentes</div>
-                            <div class="bullet-point">Apontar para arquivos em rede (NFS)</div>
-                            <div class="bullet-point">Funcionar em alguns filesystems (FAT32)</div>
-                        </div>
-                        
-                        <div class="warning-box">
-                            <h4>🚫 Soft Links podem causar:</h4>
-                            <div class="bullet-point">Loops infinitos se mal configurados</div>
-                            <div class="bullet-point">Confusão em backups</div>
-                            <div class="bullet-point">Problemas de segurança (symlink attacks)</div>
-                            <div class="bullet-point">Dependências frágeis</div>
-                        </div>
-                        
-                        <h3>🛡️ Considerações de Segurança</h3>
-                        <div class="terminal">
-                            <div class="comment"># Verificar links suspeitos</div>
-                            $ find /tmp -type l -user root 2>/dev/null<br>
-                            <br>
-                            <div class="comment"># Proteger contra symlink attacks</div>
-                            $ ls -l /tmp/ | grep " -> /"<br>
-                            <br>
-                            <div class="comment"># Verificar propriedade de links</div>
-                            $ find . -type l ! -user $USER<br>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="practical-demo">
-                    <h3>📈 Benchmark Simples</h3>
-                    <div class="terminal">
-                        <div class="comment"># Criar arquivo de teste</div>
-                        $ dd if=/dev/zero of=test_file bs=1M count=100<br>
-                        <br>
-                        <div class="comment"># Criar links</div>
-                        $ ln test_file hard_link<br>
-                        $ ln -s test_file soft_link<br>
-                        <br>
-                        <div class="comment"># Teste de velocidade de leitura</div>
-                        $ time cat test_file > /dev/null<br>
-                        <div class="output">real    0m0.120s</div>
-                        $ time cat hard_link > /dev/null<br>
-                        <div class="output">real    0m0.120s</div>
-                        $ time cat soft_link > /dev/null<br>
-                        <div class="output">real    0m0.125s</div>
-                        <br>
-                        <div class="comment"># Diferença mínima na prática!</div>
-                    </div>
-                </div>
-
-                <div class="highlight-box">
-                    <h3>💡 Recomendações de Performance</h3>
-                    <div class="bullet-point">Use hard links para arquivos grandes acessados frequentemente</div>
-                    <div class="bullet-point">Prefira soft links para estruturas organizacionais</div>
-                    <div class="bullet-point">Evite cadeias muito longas de soft links</div>
-                    <div class="bullet-point">Monitore o uso de inodes em sistemas com muitos links</div>
-                    <div class="bullet-point">Use ferramentas específicas para filesystems otimizados</div>
                 </div>
             </div>
-        </div>
 
-        <!-- Slide 13: Resumo Final -->
-        <div class="slide">
-            <div class="content">
-                <h2>🎯 Resumo Final</h2>
+            <!-- Slide 7: Exercícios Práticos -->
+            <div class="slide">
+                <h2>🎯 Exercícios Práticos</h2>
                 
-                <div class="highlight-box large-text center-text">
-                    <strong>Links no Linux: Organize e Proteja Arquivos Inteligentemente</strong>
-                </div>
-
-                <div class="two-column">
-                    <div>
-                        <h3>🔗 Hard Links Dominados</h3>
-                        <div class="bullet-point">Referência direta aos dados</div>
-                        <div class="bullet-point">Sobrevivem à exclusão do original</div>
-                        <div class="bullet-point">Mesmo inode, zero bytes extras</div>
-                        <div class="bullet-point">Comando: ln arquivo link</div>
-                        <div class="bullet-point">Ideal para: backups, versionamento</div>
-                        
-                        <h3>🗺️ Soft Links Dominados</h3>
-                        <div class="bullet-point">Ponteiro para nome do arquivo</div>
-                        <div class="bullet-point">Funcionam entre partições</div>
-                        <div class="bullet-point">Podem apontar para diretórios</div>
-                        <div class="bullet-point">Comando: ln -s arquivo link</div>
-                        <div class="bullet-point">Ideal para: organização, atalhos</div>
-                    </div>
-                    <div>
-                        <h3>🛠️ Técnicas Aprendidas</h3>
-                        <div class="bullet-point">Identificação com ls -li</div>
-                        <div class="bullet-point">Busca com find -samefile</div>
-                        <div class="bullet-point">Diagnóstico com stat e readlink</div>
-                        <div class="bullet-point">Limpeza de links quebrados</div>
-                        
-                        <h3>💼 Aplicações Práticas</h3>
-                        <div class="bullet-point">Sistema de backup inteligente</div>
-                        <div class="bullet-point">Organização multi-categoria</div>
-                        <div class="bullet-point">Configurações dinâmicas</div>
-                        <div class="bullet-point">Deploy e rollback ágil</div>
-                    </div>
-                </div>
-
-                <div class="link-comparison">
-                    <div class="link-card hard-link">
-                        <div class="link-header">
-                            <span class="link-emoji">🔗</span>
-                            <span class="link-title">Hard Link = Porta Real</span>
+                <div class="commands-grid">
+                    <div class="command-card">
+                        <div class="command-header">
+                            <span class="command-emoji">👋</span>
+                            <span class="command-name">Exercício 1: Script de Boas-vindas</span>
                         </div>
-                        <div class="center-text">
-                            <strong>Acesso direto</strong><br>
-                            <strong>Dados seguros</strong><br>
-                            <strong>Mesma partição</strong>
+                        <div class="bullet-point">Crie um script chamado <strong>boas_vindas.sh</strong> que:</div>
+                        <div class="bullet-point">Mostra uma mensagem de boas-vindas</div>
+                        <div class="bullet-point">Mostra seu nome de usuário (<code>whoami</code>)</div>
+                        <div class="bullet-point">Mostra o diretório atual (<code>pwd</code>)</div>
+                        
+                        <div class="example-box">
+                            <h4>💡 Lembrete</h4>
+                            <p><code>vim boas_vindas.sh</code> → <code>i</code> → digite o código → <code>Esc</code> → <code>:wq</code></p>
                         </div>
                     </div>
                     
-                    <div class="link-card soft-link">
-                        <div class="link-header">
-                            <span class="link-emoji">🗺️</span>
-                            <span class="link-title">Soft Link = Placa com Endereço</span>
+                    <div class="command-card">
+                        <div class="command-header">
+                            <span class="command-emoji">📊</span>
+                            <span class="command-name">Exercício 2: Informações do Sistema</span>
                         </div>
-                        <div class="center-text">
-                            <strong>Flexibilidade total</strong><br>
-                            <strong>Entre partições</strong><br>
-                            <strong>Organização fácil</strong>
+                        <div class="bullet-point">Crie um script chamado <strong>info_sistema.sh</strong> que mostra:</div>
+                        <div class="bullet-point">A data atual (<code>date</code>)</div>
+                        <div class="bullet-point">Quantos usuários estão logados (<code>who</code>)</div>
+                        <div class="bullet-point">Quanto espaço livre tem no disco (<code>df -h</code>)</div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <h3>🗂️ Exercício 3: Script Organizador</h3>
+                    <p>Crie um script chamado <strong>organizador.sh</strong> que:</p>
+                    <div class="two-column">
+                        <div>
+                            <div class="bullet-point">Cria uma pasta chamada "backup"</div>
+                            <div class="bullet-point">Cria uma pasta chamada "documentos"</div>
+                            <div class="bullet-point">Mostra uma mensagem dizendo que as pastas foram criadas</div>
+                        </div>
+                        <div>
+                            <div class="terminal-demo">
+#!/bin/bash<br>
+# Script organizador<br>
+echo "Criando pastas..."<br>
+mkdir backup<br>
+mkdir documentos<br>
+echo "Pastas criadas com sucesso!"
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="practical-demo center-text">
-                    <h3>🏆 Você Agora Domina Links!</h3>
-                    <p style="font-size: 1.2em; line-height: 1.8;">
-                        🔗 Cria hard links para backup automático<br>
-                        🗺️ Usa soft links para organização flexível<br>
-                        🔍 Identifica e diagnostica problemas<br>
-                        🛠️ Implementa estruturas avançadas<br>
-                        ⚡ Otimiza performance e espaço em disco
-                    </p>
+                <div class="warning-box">
+                    <h3>🎯 Para Casa - Script Pessoal</h3>
+                    <p>Crie um script que:</p>
+                    <div class="bullet-point">Mostra uma mensagem personalizada com seu nome</div>
+                    <div class="bullet-point">Cria uma pasta com a data de hoje (dica: use <code>date +%Y-%m-%d</code>)</div>
+                    <div class="bullet-point">Lista os arquivos da pasta atual</div>
+                    <div class="bullet-point">Mostra há quanto tempo o computador está ligado (<code>uptime</code>)</div>
                 </div>
             </div>
-        </div>
 
-        <!-- Slide 14: Referências -->
-        <div class="slide">
-            <div class="content">
-                <h2>📚 Referências e Recursos</h2>
+            <!-- Slide 8: Erros Comuns -->
+            <div class="slide">
+                <h2>🚨 Erros Comuns e Como Evitar</h2>
                 
-                <div class="highlight-box">
-                    <h3>📖 Fonte Principal</h3>
-                    <div class="bullet-point"><strong>Material da Disciplina</strong></div>
-                    <div class="bullet-point">Fundamentos de Sistemas Operacionais</div>
-                    <div class="bullet-point">Prof. César Azevedo - IFRN</div>
+                <div class="commands-grid">
+                    <div class="command-card">
+                        <div class="command-header">
+                            <span class="command-emoji">🔒</span>
+                            <span class="command-name">Erro 1: "Permission denied"</span>
+                        </div>
+                        <div class="bullet-point"><strong>Problema:</strong> Esqueceu de dar permissão</div>
+                        <div class="bullet-point"><strong>Solução:</strong> <code>chmod +x nome_do_script.sh</code></div>
+                        <div class="example-box">
+                            <h4>💡 Analogia</h4>
+                            <p>É como tentar dirigir sem carteira de motorista</p>
+                        </div>
+                    </div>
+                    
+                    <div class="command-card">
+                        <div class="command-header">
+                            <span class="command-emoji">❓</span>
+                            <span class="command-name">Erro 2: "Command not found"</span>
+                        </div>
+                        <div class="bullet-point"><strong>Problema:</strong> Esqueceu do <code>./</code> antes do nome</div>
+                        <div class="bullet-point"><strong>Solução:</strong> <code>./nome_do_script.sh</code> (não apenas <code>nome_do_script.sh</code>)</div>
+                    </div>
                 </div>
 
                 <div class="two-column">
                     <div>
-                        <h3>🌐 Recursos Online</h3>
-                        <div class="bullet-point">man ln (manual do comando)</div>
-                        <div class="bullet-point">man find (busca de arquivos)</div>
-                        <div class="bullet-point">man stat (informações de arquivo)</div>
-                        <div class="bullet-point">Linux Filesystem Hierarchy</div>
+                        <h3>🛠️ Mais Erros Comuns</h3>
+                        <div class="warning-box">
+                            <h4>Erro 3: "bad interpreter"</h4>
+                            <div class="bullet-point"><strong>Problema:</strong> Shebang errado ou com espaços</div>
+                            <div class="bullet-point"><strong>Solução:</strong> Verificar se a primeira linha é exatamente <code>#!/bin/bash</code></div>
+                        </div>
                         
-                        <h3>📖 Comandos para Estudo</h3>
-                        <div class="terminal">
-                            $ man ln<br>
-                            $ man find<br>
-                            $ man stat<br>
-                            $ man readlink<br>
-                            $ info coreutils
+                        <div class="warning-box">
+                            <h4>Erro 4: Travou no vim</h4>
+                            <div class="bullet-point"><strong>Problema:</strong> Não consegue sair do vim</div>
+                            <div class="bullet-point"><strong>Solução:</strong> Pressione Esc várias vezes, depois <code>:q!</code> e Enter</div>
                         </div>
                     </div>
                     <div>
-                        <h3>🎯 Para Praticar</h3>
-                        <div class="bullet-point">Crie estruturas de teste</div>
-                        <div class="bullet-point">Experimente ambos os tipos</div>
-                        <div class="bullet-point">Teste cenários de quebra</div>
-                        <div class="bullet-point">Monitore uso de inodes</div>
+                        <div class="warning-box">
+                            <h4>Erro 5: Script não faz nada</h4>
+                            <div class="bullet-point"><strong>Problema:</strong> Caracteres invisíveis ou codificação errada</div>
+                            <div class="bullet-point"><strong>Solução:</strong> Recriar o arquivo no próprio Linux</div>
+                        </div>
                         
-                        <h3>🔗 Links Úteis</h3>
-                        <div class="bullet-point">filesystem.org (especificações)</div>
-                        <div class="bullet-point">tldp.org (Linux Documentation)</div>
-                        <div class="bullet-point">unix.stackexchange.com</div>
-                        <div class="bullet-point">wiki.archlinux.org</div>
+                        <div class="highlight-box">
+                            <h4>🔍 Dica de Debug</h4>
+                            <p>Use <code>bash -x script.sh</code> para ver linha por linha o que está acontecendo</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 9: Boas Práticas -->
+            <div class="slide">
+                <h2>⭐ Dicas de Boas Práticas</h2>
+                
+                <div class="commands-grid">
+                    <div class="command-card">
+                        <div class="command-header">
+                            <span class="command-emoji">📝</span>
+                            <span class="command-name">1. Sempre use comentários</span>
+                        </div>
+                        <div class="bullet-point">Você vai esquecer o que fez depois</div>
+                        <div class="bullet-point">Outros precisam entender seu código</div>
+                        <div class="terminal-demo"># Este script faz backup dos arquivos importantes<br>echo "Iniciando backup..."</div>
+                    </div>
+                    
+                    <div class="command-card">
+                        <div class="command-header">
+                            <span class="command-emoji">🏷️</span>
+                            <span class="command-name">2. Nomes descritivos</span>
+                        </div>
+                        <div class="bullet-point">✅ <code>backup_fotos.sh</code> é melhor que <code>script1.sh</code></div>
+                        <div class="bullet-point">✅ <code>limpar_temp.sh</code> é melhor que <code>limpeza.sh</code></div>
                     </div>
                 </div>
 
-                <div class="example-box center-text">
-                    <h3>🤖 Metodologia de Criação</h3>
-                    <p>Apresentação desenvolvida com assistência de IA Claude Sonnet 4<br>
-                    Baseada no material didático fornecido<br>
-                    Foco em aplicações práticas e resolução de problemas reais</p>
+                <div class="two-column">
+                    <div>
+                        <h3>🧪 3. Teste sempre</h3>
+                        <div class="bullet-point">Execute o script para ver se funciona</div>
+                        <div class="bullet-point">Teste com dados pequenos primeiro</div>
+                        <div class="bullet-point">Verifique se não quebra nada</div>
+                        
+                        <h3>🎯 4. Uma tarefa por vez</h3>
+                        <div class="bullet-point">Comece simples, depois complique</div>
+                        <div class="bullet-point">Scripts pequenos são mais fáceis de debugar</div>
+                        <div class="bullet-point">Depois você pode combinar scripts</div>
+                    </div>
+                    <div>
+                        <h3>📁 5. Organize por pastas</h3>
+                        <div class="bullet-point">Mantenha seus scripts organizados</div>
+                        <div class="bullet-point">Crie pastas por categoria</div>
+                        <div class="terminal-demo">mkdir ~/scripts<br>mkdir ~/scripts/backup<br>mkdir ~/scripts/sistema</div>
+                        
+                        <h3>🔍 6. Lembrete do vim</h3>
+                        <div class="bullet-point">Sempre pressione Esc antes de tentar sair</div>
+                        <div class="bullet-point">Evita confusão entre os modos</div>
+                    </div>
                 </div>
 
                 <div class="highlight-box center-text">
-                    <h3>🎯 Objetivo Educacional</h3>
-                    <p>Capacitar estudantes a usar links de forma eficiente e segura<br>
-                    através de exemplos práticos, analogias claras e casos de uso reais</p>
-                </div>
-
-                <div class="practical-demo">
-                    <h3>🚀 Próximos Passos</h3>
-                    <div class="bullet-point">Pratique com arquivos de teste em ambiente seguro</div>
-                    <div class="bullet-point">Implemente backup automático com hard links</div>
-                    <div class="bullet-point">Organize projetos com soft links inteligentes</div>
-                    <div class="bullet-point">Monitore links quebrados regularmente</div>
-                    <div class="bullet-point">Explore filesystems avançados (Btrfs, ZFS)</div>
+                    <h3>💡 Lembrete Final</h3>
+                    <p style="font-size: 1.3em;">
+                        Programar é como aprender a dirigir - no começo parece complicado, 
+                        mas depois vira automático. A <strong>prática é fundamental!</strong>
+                    </p>
                 </div>
             </div>
-        </div>
 
-        <div class="navigation">
-            <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">⬅️ Anterior</button>
-            <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Próximo ➡️</button>
+            <!-- Slide 10: Quiz Shell Script -->
+            <div class="slide">
+                <h2>🧠 Quiz - Shell Script</h2>
+                
+                <div class="quiz-container" id="shell-quiz">
+                    <div class="quiz-question" id="shell-q1">
+                        <h3>📝 Questão 1</h3>
+                        <p><strong>O que significa o shebang #!/bin/bash?</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" onclick="selectQuizOption('shell', 1, 'a', false)">
+                                <span class="option-letter">A)</span> É apenas um comentário decorativo
+                            </div>
+                            <div class="quiz-option" onclick="selectQuizOption('shell', 1, 'b', true)">
+                                <span class="option-letter">B)</span> Diz ao sistema qual interpretador usar
+                            </div>
+                            <div class="quiz-option" onclick="selectQuizOption('shell', 1, 'c', false)">
+                                <span class="option-letter">C)</span> Define permissões do arquivo
+                            </div>
+                            <div class="quiz-option" onclick="selectQuizOption('shell', 1, 'd', false)">
+                                <span class="option-letter">D)</span> É o nome do script
+                            </div>
+                        </div>
+                        <div class="quiz-feedback" id="shell-feedback1"></div>
+                    </div>
+
+                    <div class="quiz-question" id="shell-q2" style="display: none;">
+                        <h3>📝 Questão 2</h3>
+                        <p><strong>Como executar um script chamado backup.sh?</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" onclick="selectQuizOption('shell', 2, 'a', false)">
+                                <span class="option-letter">A)</span> backup.sh
+                            </div>
+                            <div class="quiz-option" onclick="selectQuizOption('shell', 2, 'b', true)">
+                                <span class="option-letter">B)</span> ./backup.sh
+                            </div>
+                            <div class="quiz-option" onclick="selectQuizOption('shell', 2, 'c', false)">
+                                <span class="option-letter">C)</span> run backup.sh
+                            </div>
+                            <div class="quiz-option" onclick="selectQuizOption('shell', 2, 'd', false)">
+                                <span class="option-letter">D)</span> execute backup.sh
+                            </div>
+                        </div>
+                        <div class="quiz-feedback" id="shell-feedback2"></div>
+                    </div>
+
+                    <div class="quiz-question" id="shell-q3" style="display: none;">
+                        <h3>📝 Questão 3</h3>
+                        <p><strong>Qual comando dá permissão de execução para um script?</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" onclick="selectQuizOption('shell', 3, 'a', true)">
+                                <span class="option-letter">A)</span> chmod +x script.sh
+                            </div>
+                            <div class="quiz-option" onclick="selectQuizOption('shell', 3, 'b', false)">
+                                <span class="option-letter">B)</span> permission script.sh
+                            </div>
+                            <div class="quiz-option" onclick="selectQuizOption('shell', 3, 'c', false)">
+                                <span class="option-letter">C)</span> allow script.sh
+                            </div>
+                            <div class="quiz-option" onclick="selectQuizOption('shell', 3, 'd', false)">
+                                <span class="option-letter">D)</span> enable script.sh
+                            </div>
+                        </div>
+                        <div class="quiz-feedback" id="shell-feedback3"></div>
+                    </div>
+
+                    <div class="quiz-result" id="shell-result" style="display: none;">
+                        <h3>🎉 Parabéns! Quiz Concluído!</h3>
+                        <div class="result-box">
+                            <p><strong>Sua pontuação: <span id="shell-score">0</span>/3</strong></p>
+                            <p id="shell-message"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 11: Resumo -->
+            <div class="slide">
+                <h2>🎯 Resumo da Aula</h2>
+                
+                <div class="highlight-box large-text center-text">
+                    <strong>Hoje você aprendeu os Fundamentos do Shell Script!</strong>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>✅ Conceitos Dominados</h3>
+                        <div class="bullet-point">O que é um shell script (receita para o computador)</div>
+                        <div class="bullet-point">Como usar o vim para criar scripts</div>
+                        <div class="bullet-point">Como dar permissão e executar</div>
+                        <div class="bullet-point">A importância do shebang</div>
+                        <div class="bullet-point">Comandos básicos do vim</div>
+                        <div class="bullet-point">Como evitar erros comuns</div>
+                    </div>
+                    <div>
+                        <h3>🚀 Próximos Passos</h3>
+                        <div class="bullet-point">Próxima aula: <strong>Variáveis</strong></div>
+                        <div class="bullet-point">Aprenderemos a criar "caixinhas" para guardar informações</div>
+                        <div class="bullet-point">Scripts mais dinâmicos e inteligentes</div>
+                        
+                        <div class="example-box">
+                            <h4>🎯 Meta da Próxima Aula</h4>
+                            <p>Fazer scripts que podem trabalhar com dados diferentes a cada execução!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h3>📚 Para Praticar em Casa</h3>
+                    <p>Crie um script pessoal que:</p>
+                    <div class="commands-grid">
+                        <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px;">
+                            <div class="bullet-point">Mostra uma mensagem personalizada com seu nome</div>
+                            <div class="bullet-point">Cria uma pasta com a data de hoje (use <code>date +%Y-%m-%d</code>)</div>
+                            <div class="bullet-point">Lista os arquivos da pasta atual</div>
+                            <div class="bullet-point">Mostra há quanto tempo o computador está ligado (<code>uptime</code>)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight-box center-text">
+                    <h3>💡 Lembrete do Vim</h3>
+                    <p style="font-size: 1.3em;">
+                        <code>vim nome_arquivo.sh</code> → <code>i</code> → digite → <code>Esc</code> → <code>:wq</code>
+                    </p>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
+        // Estado global da aplicação
+        let currentSection = 'menu';
         let currentSlide = 0;
-        const slides = document.querySelectorAll('.slide');
-        const totalSlides = slides.length;
+        let quizStates = {
+            linux: { currentQuestion: 1, score: 0, answered: [false, false] },
+            commands: { currentQuestion: 1, score: 0, answered: [false, false] },
+            users: { currentQuestion: 1, score: 0, answered: [false, false] },
+            permissions: { currentQuestion: 1, score: 0, answered: [false, false] },
+            links: { currentQuestion: 1, score: 0, answered: [false, false] },
+            shell: { currentQuestion: 1, score: 0, answered: [false, false, false] }
+        };
 
-        document.getElementById('total-slides').textContent = totalSlides;
-
-        // Quiz variables
-        let currentQuestion = 1;
-        let score = 0;
-        let quizAnswered = [false, false, false, false];
-
-        function showSlide(index) {
-            slides.forEach((slide, i) => {
-                slide.classList.toggle('active', i === index);
-            });
+        // Função para mostrar seção
+        function showSection(sectionId) {
+            // Ocultar menu
+            document.getElementById('mainMenu').style.display = 'none';
             
-            document.getElementById('current-slide').textContent = index + 1;
-            document.getElementById('prevBtn').disabled = index === 0;
-            document.getElementById('nextBtn').disabled = index === totalSlides - 1;
-        }
-
-        function changeSlide(direction) {
-            const newSlide = currentSlide + direction;
-            if (newSlide >= 0 && newSlide < totalSlides) {
-                currentSlide = newSlide;
-                showSlide(currentSlide);
+            // Ocultar todas as seções
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => section.classList.remove('active'));
+            
+            // Mostrar seção selecionada
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.classList.add('active');
+                targetSection.classList.add('fade-in');
+                
+                // Mostrar primeiro slide
+                const slides = targetSection.querySelectorAll('.slide');
+                slides.forEach((slide, index) => {
+                    slide.classList.toggle('active', index === 0);
+                });
+                
+                currentSection = sectionId;
+                currentSlide = 0;
+                
+                // Mostrar controles
+                document.getElementById('backBtn').style.display = 'block';
+                document.getElementById('progressIndicator').style.display = 'block';
+                
+                updateSlideNavigation();
             }
         }
 
-        // Quiz Functions
-        function selectOption(questionNum, option, isCorrect) {
-            if (quizAnswered[questionNum - 1]) return; // Já respondida
+        // Função para voltar ao menu
+        function showMainMenu() {
+            // Ocultar todas as seções
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => section.classList.remove('active'));
             
-            const options = document.querySelectorAll(`#question${questionNum} .quiz-option`);
-            const feedback = document.getElementById(`feedback${questionNum}`);
+            // Mostrar menu
+            document.getElementById('mainMenu').style.display = 'block';
+            document.getElementById('mainMenu').classList.add('fade-in');
             
-            // Marcar todas as opções
+            // Ocultar controles
+            document.getElementById('backBtn').style.display = 'none';
+            document.getElementById('progressIndicator').style.display = 'none';
+            
+            currentSection = 'menu';
+            currentSlide = 0;
+        }
+
+        // Navegação entre slides
+        function changeSlide(direction) {
+            if (currentSection === 'menu') return;
+            
+            const currentSectionElement = document.getElementById(currentSection);
+            const slides = currentSectionElement.querySelectorAll('.slide');
+            const newSlide = currentSlide + direction;
+            
+            if (newSlide >= 0 && newSlide < slides.length) {
+                slides[currentSlide].classList.remove('active');
+                slides[newSlide].classList.add('active');
+                slides[newSlide].classList.add('fade-in');
+                
+                currentSlide = newSlide;
+                updateSlideNavigation();
+            }
+        }
+
+        // Atualizar navegação dos slides
+        function updateSlideNavigation() {
+            if (currentSection === 'menu') return;
+            
+            const currentSectionElement = document.getElementById(currentSection);
+            const slides = currentSectionElement.querySelectorAll('.slide');
+            
+            // Atualizar indicador de progresso
+            document.getElementById('currentSlide').textContent = currentSlide + 1;
+            document.getElementById('totalSlides').textContent = slides.length;
+            
+            // Criar navegação se não existir
+            let navigation = currentSectionElement.querySelector('.slide-navigation');
+            if (!navigation) {
+                navigation = document.createElement('div');
+                navigation.className = 'slide-navigation';
+                navigation.innerHTML = `
+                    <button class="slide-nav-btn" onclick="changeSlide(-1)" id="prevSlideBtn">⬅️ Anterior</button>
+                    <button class="slide-nav-btn" onclick="changeSlide(1)" id="nextSlideBtn">Próximo ➡️</button>
+                `;
+                currentSectionElement.appendChild(navigation);
+            }
+            
+            // Atualizar estado dos botões
+            const prevBtn = navigation.querySelector('#prevSlideBtn');
+            const nextBtn = navigation.querySelector('#nextSlideBtn');
+            
+            if (prevBtn) prevBtn.disabled = currentSlide === 0;
+            if (nextBtn) nextBtn.disabled = currentSlide === slides.length - 1;
+        }
+
+        // Sistema de Quiz
+        function selectQuizOption(quizType, questionNum, option, isCorrect) {
+            const state = quizStates[quizType];
+            if (state.answered[questionNum - 1]) return;
+            
+            const options = document.querySelectorAll(`#${quizType}-q${questionNum} .quiz-option`);
+            const feedback = document.getElementById(`${quizType}-feedback${questionNum}`);
+            
+            // Marcar opções
             options.forEach(opt => {
                 opt.style.pointerEvents = 'none';
                 if (opt.onclick.toString().includes('true')) {
@@ -1640,103 +2533,90 @@
             if (isCorrect) {
                 feedback.innerHTML = '✅ Correto! Muito bem!';
                 feedback.className = 'quiz-feedback correct';
-                score++;
+                state.score++;
             } else {
                 feedback.innerHTML = '❌ Incorreto. A resposta correta está destacada em verde.';
                 feedback.className = 'quiz-feedback incorrect';
             }
             
-            quizAnswered[questionNum - 1] = true;
+            state.answered[questionNum - 1] = true;
             
-            // Mostrar botão para próxima questão
-            if (questionNum < 4) {
-                document.getElementById('nextQuizBtn').style.display = 'inline-block';
-            } else {
-                // Última questão - mostrar resultado
-                setTimeout(() => {
-                    showQuizResult();
-                }, 2000);
-            }
+            // Próxima questão ou resultado
+            setTimeout(() => {
+                if (questionNum < state.answered.length) {
+                    document.getElementById(`${quizType}-q${questionNum}`).style.display = 'none';
+                    document.getElementById(`${quizType}-q${questionNum + 1}`).style.display = 'block';
+                    state.currentQuestion++;
+                } else {
+                    showQuizResult(quizType);
+                }
+            }, 2000);
         }
 
-        function nextQuestion() {
-            document.getElementById(`question${currentQuestion}`).style.display = 'none';
-            currentQuestion++;
-            document.getElementById(`question${currentQuestion}`).style.display = 'block';
-            document.getElementById('nextQuizBtn').style.display = 'none';
-        }
-
-        function showQuizResult() {
+        function showQuizResult(quizType) {
+            const state = quizStates[quizType];
+            
             // Esconder última questão
-            document.getElementById('question4').style.display = 'none';
+            document.getElementById(`${quizType}-q${state.currentQuestion}`).style.display = 'none';
             
             // Mostrar resultado
-            document.getElementById('quizResult').style.display = 'block';
-            document.getElementById('finalScore').textContent = score;
+            const result = document.getElementById(`${quizType}-result`);
+            result.style.display = 'block';
             
-            const resultMessage = document.getElementById('resultMessage');
-            if (score === 4) {
-                resultMessage.innerHTML = '🏆 Excelente! Você domina os links do Linux!';
-            } else if (score === 3) {
-                resultMessage.innerHTML = '👏 Muito bom! Quase um especialista!';
-            } else if (score === 2) {
-                resultMessage.innerHTML = '👍 Bom trabalho! Continue praticando!';
-            } else if (score === 1) {
-                resultMessage.innerHTML = '📚 Estude mais sobre hard e soft links!';
-            } else {
-                resultMessage.innerHTML = '📖 Recomendo revisar o conteúdo sobre links!';
-            }
-        }
-
-        function restartQuiz() {
-            // Reset variables
-            currentQuestion = 1;
-            score = 0;
-            quizAnswered = [false, false, false, false];
+            document.getElementById(`${quizType}-score`).textContent = state.score;
             
-            // Reset interface
-            for (let i = 1; i <= 4; i++) {
-                const question = document.getElementById(`question${i}`);
-                const options = question.querySelectorAll('.quiz-option');
-                const feedback = document.getElementById(`feedback${i}`);
-                
-                // Reset options
-                options.forEach(opt => {
-                    opt.className = 'quiz-option';
-                    opt.style.pointerEvents = 'auto';
-                });
-                
-                // Hide feedback
-                feedback.style.display = 'none';
-                
-                // Hide all questions except first
-                question.style.display = i === 1 ? 'block' : 'none';
-            }
+            const messageElement = document.getElementById(`${quizType}-message`);
+            const messages = [
+                '📖 Revise o conteúdo e pratique mais!',
+                '📚 Bom início! Continue estudando!',
+                '🏆 Excelente! Você domina o assunto!'
+            ];
             
-            // Hide result and buttons
-            document.getElementById('quizResult').style.display = 'none';
-            document.getElementById('nextQuizBtn').style.display = 'none';
+            const percentage = state.score / state.answered.length;
+            let messageIndex = 0;
+            if (percentage >= 0.5) messageIndex = 1;
+            if (percentage >= 1.0) messageIndex = 2;
+            
+            messageElement.innerHTML = messages[messageIndex];
         }
 
         // Navegação por teclado
         document.addEventListener('keydown', (e) => {
+            if (currentSection === 'menu') return;
+            
             if (e.key === 'ArrowLeft') changeSlide(-1);
             if (e.key === 'ArrowRight') changeSlide(1);
+            if (e.key === 'Escape') showMainMenu();
             if (e.key === 'Home') {
+                const slides = document.getElementById(currentSection).querySelectorAll('.slide');
+                slides[currentSlide].classList.remove('active');
+                slides[0].classList.add('active');
                 currentSlide = 0;
-                showSlide(currentSlide);
-            }
-            if (e.key === 'End') {
-                currentSlide = totalSlides - 1;
-                showSlide(currentSlide);
+                updateSlideNavigation();
             }
         });
 
-        // Inicializar
-        showSlide(0);
-        
-        // Inicializar quiz no slide 9
-        document.getElementById('question1').style.display = 'block';
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', () => {
+            // Garantir que apenas o menu está visível
+            showMainMenu();
+            
+            // Efeito de digitação no título
+            const title = document.querySelector('.main-header h1');
+            if (title) {
+                const originalText = title.textContent;
+                title.textContent = '';
+                
+                let i = 0;
+                const typeEffect = setInterval(() => {
+                    title.textContent += originalText.charAt(i);
+                    i++;
+                    if (i > originalText.length - 1) {
+                        clearInterval(typeEffect);
+                    }
+                }, 100);
+            }
+        });
     </script>
 </body>
 </html>
