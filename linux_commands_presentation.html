@@ -1,0 +1,1657 @@
+        <!-- Slide 15: Resolução de Problemas -->
+        <div class="slide" id="slide-15">
+            <div class="content">
+                <h2>🔧 Resolução de Problemas</h2>
+                
+                <div class="highlight-box">
+                    <h3>🚨 Quando as Coisas Dão Errado</h3>
+                    <p>Comandos para diagnosticar e resolver problemas comuns</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>❌ Problemas Comuns</h3>
+                        <div class="example-box">
+                            <h4>🚫 "Permission denied"</h4>
+                            <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">ls -la arquivo.txt</span>
+<div class="output"># Verificar permissões</div>
+<span class="prompt">user@linux:~$</span> <span class="command">chmod +x script.sh</span>
+<div class="output"># Dar permissão de execução</div>
+<span class="prompt">user@linux:~$</span> <span class="command">sudo comando</span>
+<div class="output"># Executar como administrador</div>
+                            </div>
+                        </div>
+                        
+                        <div class="example-box">
+                            <h4>💾 "No space left on device"</h4>
+                            <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">df -h</span>
+<div class="output"># Verificar espaço em disco</div>
+<span class="prompt">user@linux:~$</span> <span class="command">du -sh * | sort -hr</span>
+<div class="output"># Encontrar pastas grandes</div>
+<span class="prompt">user@linux:~$</span> <span class="command">sudo apt autoremove</span>
+<div class="output"># Limpar pacotes desnecessários</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🔍 Diagnóstico</h3>
+                        <div class="example-box">
+                            <h4>📊 Sistema Lento</h4>
+                            <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">top</span> 
+<div class="output"># Ver processos consumindo CPU</div>
+<span class="prompt">user@linux:~$</span> <span class="command">free -h</span>
+<div class="output"># Verificar uso de memória</div>
+                            </div>
+                        </div>
+                        
+                        <div class="example-box">
+                            <h4>🌐 Problemas de Rede</h4>
+                            <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">ping -c 3 google.com</span>
+<div class="output"># Testar conectividade</div>
+<span class="prompt">user@linux:~$</span> <span class="command">ip a</span>
+<div class="output"># Verificar interfaces</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: #d1ecf1; color: #0c5460; padding: 20px; border-radius: 10px; margin: 15px 0;">
+                    <h3>📚 Logs são seus Amigos</h3>
+                    <div class="terminal-box" style="background: #0c5460; color: #00ff41;">
+<span class="prompt">user@linux:~$</span> <span class="command">tail -f /var/log/syslog</span>     <span class="output"># Log geral do sistema</span>
+<span class="prompt">user@linux:~$</span> <span class="command">dmesg | tail</span>               <span class="output"># Mensagens do kernel</span>
+                    </div>
+                </div>
+
+                <div style="background: #ffeaa7; color: #2d3436; padding: 20px; border-radius: 10px; margin: 15px 0;">
+                    <h3>🆘 Último Recurso</h3>
+                    <p>Se tudo falhar: <strong>sudo reboot</strong><br>
+                    Mas antes, salve seu trabalho! 😅</p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(14)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 15 de 18</span>
+                <button class="nav-button" onclick="showSlide(16)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 16: Sistema de Arquivos -->
+        <div class="slide" id="slide-16">
+            <div class="content">
+                <h2>📁 Sistema de Arquivos Linux</h2>
+                
+                <div class="highlight-box">
+                    <h3>🌳 Estrutura Hierárquica</h3>
+                    <p>No Linux, tudo é um arquivo!<br>
+                    E tudo começa na raiz: <strong>/</strong></p>
+                </div>
+
+                <div style="background: #f8f9fa; border: 2px solid #e2e8f0; border-radius: 15px; padding: 30px; margin: 20px 0; text-align: left;">
+                    <div style="font-family: monospace; font-size: 1.1em;">
+/<br>
+├── <strong>bin/</strong> - comandos básicos do sistema<br>
+├── <strong>boot/</strong> - arquivos de inicialização<br>
+├── <strong>dev/</strong> - dispositivos (hardware)<br>
+├── <strong>etc/</strong> - configurações do sistema<br>
+├── <strong>home/</strong> - pastas dos usuários<br>
+├── <strong>lib/</strong> - bibliotecas compartilhadas<br>
+├── <strong>tmp/</strong> - arquivos temporários<br>
+├── <strong>usr/</strong> - programas dos usuários<br>
+└── <strong>var/</strong> - dados variáveis (logs)
+                    </div>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🏠 Diretórios Importantes</h3>
+                        <div class="bullet-point"><strong>/home:</strong> suas pastas pessoais</div>
+                        <div class="bullet-point"><strong>/etc:</strong> configurações</div>
+                        <div class="bullet-point"><strong>/bin:</strong> programas essenciais</div>
+                        <div class="bullet-point"><strong>/usr:</strong> programas instalados</div>
+                        <div class="bullet-point"><strong>/var:</strong> logs e dados</div>
+                        <div class="bullet-point"><strong>/tmp:</strong> arquivos temporários</div>
+                    </div>
+                    <div>
+                        <h3>🔑 Permissões</h3>
+                        <div class="terminal-box">
+rwxr-xr-x<br>
+│││││││││<br>
+│││└┴┴┴┴┴─ outros: r-x (ler+executar)<br>
+││└─ grupo: r-x (ler+executar)<br>
+└┴─ dono: rwx (ler+escrever+executar)
+                        </div>
+                        <div class="bullet-point"><strong>r:</strong> read (ler)</div>
+                        <div class="bullet-point"><strong>w:</strong> write (escrever)</div>
+                        <div class="bullet-point"><strong>x:</strong> execute (executar)</div>
+                    </div>
+                </div>
+
+                <div class="example-box center-text">
+                    <h3>💡 Analogia</h3>
+                    <p>É como uma grande árvore genealógica,<br>
+                    onde cada pasta é um galho que pode ter mais galhos (subpastas)</p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(15)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 16 de 18</span>
+                <button class="nav-button" onclick="showSlide(17)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 17: Comandos Mais Importantes -->
+        <div class="slide" id="slide-17">
+            <div class="content">
+                <h2>⭐ Resumo: Comandos Mais Importantes</h2>
+                
+                <div class="highlight-box center-text">
+                    <h3>🎯 Comandos para Memorizar</h3>
+                    <p>Os comandos essenciais que você vai usar todos os dias</p>
+                </div>
+
+                <div class="example-box">
+                    <h3>💡 Os 10 Comandos Fundamentais</h3>
+                    <div class="terminal-box">
+<span class="command">pwd</span> <span class="output">→ onde estou?</span> <br>
+<span class="command">ls -la</span> <span class="output">→ o que tem aqui?</span> <br>
+<span class="command">cd pasta</span> <span class="output">→ ir para pasta</span> <br>
+<span class="command">mkdir nome</span> <span class="output">→ criar pasta</span> <br>
+<span class="command">touch arquivo</span> <span class="output">→ criar arquivo</span> <br>
+<span class="command">cp origem destino</span> <span class="output">→ copiar</span> <br>
+<span class="command">mv origem destino</span> <span class="output">→ mover/renomear</span> <br>
+<span class="command">rm arquivo</span> <span class="output">→ deletar</span> <br>
+<span class="command">cat arquivo</span> <span class="output">→ ver conteúdo</span> <br>
+<span class="command">sudo apt install programa</span> <span class="output">→ instalar</span> <br>
+                    </div>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📊 Monitoramento</h3>
+                        <div class="terminal-box">
+<span class="command">top</span> <span class="output">→ processos em tempo real</span> <br>
+<span class="command">ps aux</span> <span class="output">→ todos os processos</span> <br>
+<span class="command">free -h</span> <span class="output">→ uso da memória</span> <br>
+<span class="command">df -h</span> <span class="output">→ espaço em disco</span> <br>
+<span class="command">uptime</span> <span class="output">→ tempo ligado</span> <br>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🌐 Rede e Busca</h3>
+                        <div class="terminal-box">
+<span class="command">ping google.com</span> <span class="output">→ testar conexão</span> <br>
+<span class="command">curl URL</span> <span class="output">→ acessar site</span> <br>
+<span class="command">find . -name "*.txt"</span> <span class="output">→ buscar arquivos</span> <br>
+<span class="command">grep "texto" arquivo</span> <span class="output">→ buscar conteúdo</span> <br>
+<span class="command">man comando</span> <span class="output">→ ajuda</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: #d1ecf1; color: #0c5460; padding: 20px; border-radius: 10px; margin: 15px 0;">
+                    <h3>🎓 Dicas para Memorizar</h3>
+                    <div class="bullet-point">Use <strong>Tab</strong> para autocompletar</div>
+                    <div class="bullet-point">Use <strong>↑↓</strong> para histórico</div>
+                    <div class="bullet-point">Use <strong>man comando</strong> para ajuda</div>
+                    <div class="bullet-point">Pratique um pouco todos os dias</div>
+                    <div class="bullet-point">Não tenha medo de experimentar!</div>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(16)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 17 de 18</span>
+                <button class="nav-button" onclick="showSlide(18)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 18: Conclusão -->
+        <div class="slide" id="slide-18">
+            <div class="content">
+                <h2>🎓 Conclusão</h2>
+                
+                <div class="highlight-box center-text">
+                    <h3>🌟 Parabéns! Você Domina os Comandos Linux!</h3>
+                    <p>Agora você tem as ferramentas para ser produtivo no terminal</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📚 O que Você Aprendeu</h3>
+                        <div class="bullet-point">Navegação básica (pwd, ls, cd)</div>
+                        <div class="bullet-point">Gerenciamento de arquivos (cp, mv, rm)</div>
+                        <div class="bullet-point">Visualização de conteúdo (cat, less, head, tail)</div>
+                        <div class="bullet-point">Gerenciamento de pacotes (apt)</div>
+                        <div class="bullet-point">Comandos de rede (ping, curl, wget)</div>
+                        <div class="bullet-point">Monitoramento do sistema (top, ps, free, df)</div>
+                        <div class="bullet-point">Resolução de problemas</div>
+                        <div class="bullet-point">Dicas de produtividade</div>
+                    </div>
+                    <div>
+                        <h3>🚀 Próximos Passos</h3>
+                        <div class="bullet-point">Pratique os comandos diariamente</div>
+                        <div class="bullet-point">Explore man pages (man comando)</div>
+                        <div class="bullet-point">Aprenda sobre pipes e redirecionamento</div>
+                        <div class="bullet-point">Estude scripts bash</div>
+                        <div class="bullet-point">Configure aliases úteis</div>
+                        <div class="bullet-point">Aprenda vim ou emacs</div>
+                        <div class="bullet-point">Explore comandos avançados</div>
+                        <div class="bullet-point">Contribua para projetos open source</div>
+                    </div>
+                </div>
+
+                <div style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); padding: 25px; border-radius: 15px; margin: 20px 0;">
+                    <h3>🎯 Desafio Final</h3>
+                    <p>Tente fazer tudo isso sem olhar as anotações:</p>
+                    <div class="bullet-point">Criar uma pasta chamada "meu_projeto"</div>
+                    <div class="bullet-point">Entrar nela e criar um arquivo "readme.txt"</div>
+                    <div class="bullet-point">Escrever algo no arquivo usando echo</div>
+                    <div class="bullet-point">Copiar o arquivo para "readme_backup.txt"</div>
+                    <div class="bullet-point">Listar os arquivos criados</div>
+                    <div class="bullet-point">Verificar o espaço em disco</div>
+                </div>
+
+                <div class="example-box center-text" style="font-size: 1.2em;">
+                    <h3>⚡ Você Agora É um Usuário Linux! ⚡</h3>
+                    <p>"O terminal não é seu inimigo, é sua ferramenta mais poderosa!"<br>
+                    Continue praticando e explorando. O Linux tem sempre mais para ensinar!</p>
+                </div>
+
+                <div style="background: #d1ecf1; color: #0c5460; padding: 20px; border-radius: 10px; margin: 15px 0; text-align: center;">
+                    <p style="font-size: 1.1em; margin: 0;">
+                        <strong>Lembre-se:</strong> Tab para autocompletar, 
+                        man para ajuda, 
+                        Ctrl+C para cancelar!<br>
+                        <strong>Happy Linux! 🐧</strong>
+                    </p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(17)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 18 de 18</span>
+                <button class="nav-button" onclick="showSlide(1)" style="background: #27ae60;">🏠 Início</button>
+            </div>
+        </div>        <!-- Slide 12: Dicas de Produtividade -->
+        <div class="slide" id="slide-12">
+            <div class="content">
+                <h2>⚡ Dicas de Produtividade</h2>
+                
+                <div class="highlight-box">
+                    <h3>🚀 Trabalhando Mais Rápido no Terminal</h3>
+                    <p>Truques e atalhos para ser mais eficiente</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>⌨️ Atalhos Essenciais</h3>
+                        <div style="background: #d1ecf1; color: #0c5460; padding: 20px; border-radius: 10px; margin: 15px 0;">
+                            <h4>🔧 Edição de Linha</h4>
+                            <p><strong>Tab</strong> autocompletar<br>
+                            <strong>Ctrl+A</strong> início da linha<br>
+                            <strong>Ctrl+E</strong> fim da linha<br>
+                            <strong>Ctrl+U</strong> apagar até início<br>
+                            <strong>Ctrl+K</strong> apagar até fim</p>
+                        </div>
+                        
+                        <div style="background: #d1ecf1; color: #0c5460; padding: 20px; border-radius: 10px; margin: 15px 0;">
+                            <h4>📜 Histórico</h4>
+                            <p><strong>↑ ↓</strong> navegar histórico<br>
+                            <strong>Ctrl+R</strong> buscar no histórico<br>
+                            <strong>!!</strong> repetir último comando<br>
+                            <strong>history</strong> ver histórico completo</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🔗 Combinando Comandos</h3>
+                        <div class="example-box">
+                            <h4>🔀 Pipes (|)</h4>
+                            <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">ls -la | grep ".txt"</span> <br>
+<span class="prompt">user@linux:~$</span> <span class="command">cat arquivo.txt | wc -l</span> <br>
+<span class="prompt">user@linux:~$</span> <span class="command">ps aux | grep firefox</span> <br>
+                            </div>
+                        </div>
+                        
+                        <div class="example-box">
+                            <h4>🌟 Wildcards</h4>
+                            <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">ls *.txt</span>                <span class="output"># Todos os .txt</span> <br>
+<span class="prompt">user@linux:~$</span> <span class="command">cp arquivo?.txt backup/</span>  <span class="output"># ? = um caractere</span> <br>
+<span class="prompt">user@linux:~$</span> <span class="command">rm [0-9]*.log</span>           <span class="output"># Logs que começam com número</span> <br>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: #ffeaa7; color: #2d3436; padding: 20px; border-radius: 10px; margin: 15px 0;">
+                    <h3>💡 Dica de Ouro</h3>
+                    <p>Use <strong>Tab</strong> sempre! Ele evita erros de digitação e acelera muito o trabalho.<br>
+                    Se pressionar Tab duas vezes, mostra todas as opções disponíveis.</p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(11)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 12 de 18</span>
+                <button class="nav-button" onclick="showSlide(13)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 13: Exercício Prático -->
+        <div class="slide" id="slide-13">
+            <div class="content">
+                <h2>🏋️ Exercício Prático Final</h2>
+                
+                <div class="highlight-box center-text">
+                    <h3>🎯 Desafio: Administrador Linux por um Dia</h3>
+                    <p>Vamos simular tarefas reais de administração do sistema</p>
+                </div>
+
+                <div style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); padding: 25px; border-radius: 15px; margin: 20px 0;">
+                    <h3>📋 Cenário</h3>
+                    <p>Você precisa organizar arquivos de um projeto, instalar uma ferramenta e monitorar o sistema.</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🗂️ Parte 1: Organização</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">mkdir projeto_web</span> <br>
+<span class="prompt">user@linux:~$</span> <span class="command">cd projeto_web</span> <br>
+<span class="prompt">user@linux:~/projeto_web$</span> <span class="command">mkdir css js img docs</span> <br>
+<span class="prompt">user@linux:~/projeto_web$</span> <span class="command">touch index.html</span> <br>
+<span class="prompt">user@linux:~/projeto_web$</span> <span class="command">echo "&lt;h1&gt;Meu Site&lt;/h1&gt;" > index.html</span> <br>
+                        </div>
+                        
+                        <h3>💾 Parte 2: Backup</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~/projeto_web$</span> <span class="command">cd ..</span> <br>
+<span class="prompt">user@linux:~$</span> <span class="command">cp -r projeto_web backup_projeto</span> <br>
+<span class="prompt">user@linux:~$</span> <span class="command">ls -l | grep projeto</span> <br>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🔍 Parte 3: Análise</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">find projeto_web -name "*.html"</span> <br>
+<span class="prompt">user@linux:~$</span> <span class="command">wc -l projeto_web/index.html</span> <br>
+<span class="prompt">user@linux:~$</span> <span class="command">du -sh projeto_web</span> <br>
+                        </div>
+                        
+                        <h3>📊 Parte 4: Monitoramento</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">free -h</span> <br>
+<span class="prompt">user@linux:~$</span> <span class="command">df -h ~</span> <br>
+<span class="prompt">user@linux:~$</span> <span class="command">uptime</span> <br>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>✅ Resultado Esperado</h3>
+                    <div class="bullet-point">Projeto organizado em pastas</div>
+                    <div class="bullet-point">Arquivos básicos criados</div>
+                    <div class="bullet-point">Backup realizado</div>
+                    <div class="bullet-point">Sistema monitorado</div>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(12)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 13 de 18</span>
+                <button class="nav-button" onclick="showSlide(14)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 14: Quiz -->
+        <div class="slide" id="slide-14">
+            <div class="content">
+                <h2>🧠 Quiz - Teste seus conhecimentos!</h2>
+                
+                <div class="quiz-container">
+                    <div class="quiz-question" id="question1">
+                        <h3>📝 Questão 1</h3>
+                        <p><strong>Qual comando mostra o diretório atual onde você está?</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" onclick="selectOption(1, 'a', false)">
+                                <span class="option-letter">A)</span> cd
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(1, 'b', true)">
+                                <span class="option-letter">B)</span> pwd
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(1, 'c', false)">
+                                <span class="option-letter">C)</span> ls
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(1, 'd', false)">
+                                <span class="option-letter">D)</span> whoami
+                            </div>
+                        </div>
+                        <div class="quiz-feedback" id="feedback1"></div>
+                    </div>
+
+                    <div class="quiz-question" id="question2" style="display: none;">
+                        <h3>📝 Questão 2</h3>
+                        <p><strong>Qual a diferença entre cp e mv?</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" onclick="selectOption(2, 'a', true)">
+                                <span class="option-letter">A)</span> cp copia (original permanece), mv move (original sai do lugar)
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(2, 'b', false)">
+                                <span class="option-letter">B)</span> cp move arquivos, mv copia arquivos
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(2, 'c', false)">
+                                <span class="option-letter">C)</span> Não há diferença, são sinônimos
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(2, 'd', false)">
+                                <span class="option-letter">D)</span> cp funciona só com arquivos, mv só com pastas
+                            </div>
+                        </div>
+                        <div class="quiz-feedback" id="feedback2"></div>
+                    </div>
+
+                    <div class="quiz-question" id="question3" style="display: none;">
+                        <h3>📝 Questão 3</h3>
+                        <p><strong>Qual comando é usado para instalar pacotes no Ubuntu/Debian?</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" onclick="selectOption(3, 'a', false)">
+                                <span class="option-letter">A)</span> yum install
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(3, 'b', true)">
+                                <span class="option-letter">B)</span> apt install
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(3, 'c', false)">
+                                <span class="option-letter">C)</span> pacman -S
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(3, 'd', false)">
+                                <span class="option-letter">D)</span> zypper install
+                            </div>
+                        </div>
+                        <div class="quiz-feedback" id="feedback3"></div>
+                    </div>
+
+                    <div id="quiz-result" style="display: none; text-align: center; margin-top: 30px;">
+                        <h3>🎉 Quiz Concluído!</h3>
+                        <div class="highlight-box">
+                            <p><strong>Sua pontuação: <span id="final-score">0</span>/3</strong></p>
+                            <p id="result-message"></p>
+                        </div>
+                        <button class="nav-button" onclick="restartQuiz()" style="margin-top: 20px;">🔄 Refazer Quiz</button>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="nav-button" id="next-quiz-btn" onclick="nextQuestion()" style="display: none;">
+                        Próxima Questão ➡️
+                    </button>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(13)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 14 de 18</span>
+                <button class="nav-button" onclick="showSlide(15)">Próximo ➡️</button>
+            </div>
+        </div><!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comandos Fundamentais do Linux</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .presentation {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide {
+            min-height: 100vh;
+            padding: 60px 40px;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            background: white;
+            margin: 20px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        .slide h1 {
+            font-size: 3.5em;
+            color: #4a5568;
+            text-align: center;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .slide h2 {
+            font-size: 2.8em;
+            color: #2d3748;
+            margin-bottom: 30px;
+            border-bottom: 4px solid #1a1a2e;
+            padding-bottom: 15px;
+        }
+
+        .slide h3 {
+            font-size: 2.2em;
+            color: #4a5568;
+            margin: 25px 0 15px 0;
+        }
+
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        .bullet-point {
+            display: flex;
+            align-items: flex-start;
+            margin: 15px 0;
+            font-size: 1.3em;
+            line-height: 1.5;
+        }
+
+        .bullet-point::before {
+            content: "⚡";
+            margin-right: 15px;
+            font-size: 1.2em;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #1a1a2e;
+        }
+
+        .example-box {
+            background: linear-gradient(135deg, #00c9ff 0%, #92fe9d 100%);
+            color: #2d3748;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #00b894;
+        }
+
+        .terminal-box {
+            background: #2d3748;
+            color: #00ff41;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #00ff41;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+            position: relative;
+        }
+
+        .terminal-box::before {
+            content: "💻 Terminal Linux";
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            background: #2d3748;
+            color: #fff;
+            padding: 5px 15px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .prompt {
+            color: #4299e1;
+            font-weight: bold;
+        }
+
+        .command {
+            color: #00ff41;
+            font-weight: bold;
+        }
+
+        .output {
+            color: #e2e8f0;
+            margin-left: 0;
+            margin-top: 5px;
+        }
+
+        .nav-button {
+            padding: 15px 30px;
+            background: #1a1a2e;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-button:hover {
+            background: #16213e;
+            transform: translateY(-2px);
+        }
+
+        .nav-button.start {
+            background: #27ae60;
+            font-size: 1.4em;
+            padding: 20px 40px;
+        }
+
+        .nav-button.start:hover {
+            background: #229954;
+        }
+
+        .slide-navigation {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(255,255,255,0.9);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #4a5568;
+            z-index: 1000;
+        }
+
+        .center-text {
+            text-align: center;
+        }
+
+        .large-text {
+            font-size: 1.4em;
+            line-height: 1.6;
+        }
+
+        /* Quiz Styles */
+        .quiz-container {
+            max-width: 100%;
+            margin: 20px 0;
+        }
+
+        .quiz-question {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 2px solid #e2e8f0;
+        }
+
+        .quiz-question h3 {
+            color: #1a1a2e;
+            margin-bottom: 20px;
+        }
+
+        .quiz-question p {
+            font-size: 1.3em;
+            margin-bottom: 25px;
+            font-weight: bold;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .quiz-option {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1em;
+        }
+
+        .quiz-option:hover {
+            border-color: #1a1a2e;
+            background: #f0f4ff;
+            transform: translateX(5px);
+        }
+
+        .quiz-option.selected {
+            border-color: #1a1a2e;
+            background: #1a1a2e;
+            color: white;
+        }
+
+        .quiz-option.correct {
+            border-color: #48bb78;
+            background: #48bb78;
+            color: white;
+        }
+
+        .quiz-option.incorrect {
+            border-color: #f56565;
+            background: #f56565;
+            color: white;
+        }
+
+        .option-letter {
+            background: #1a1a2e;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .quiz-option.correct .option-letter {
+            background: #48bb78;
+        }
+
+        .quiz-option.incorrect .option-letter {
+            background: #f56565;
+        }
+
+        .quiz-feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            display: none;
+        }
+
+        .quiz-feedback.correct {
+            background: #c6f6d5;
+            color: #22543d;
+            border: 2px solid #48bb78;
+            display: block;
+        }
+
+        .quiz-feedback.incorrect {
+            background: #fed7d7;
+            color: #742a2a;
+            border: 2px solid #f56565;
+            display: block;
+        }
+
+        .command-example {
+            background: #1a202c;
+            color: #00ff41;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            border-left: 4px solid #00ff41;
+            font-size: 1.1em;
+            position: relative;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">18</span>
+        </div>
+
+        <!-- Slide 1: Título -->
+        <div class="slide active" id="slide-1">
+            <div class="content center-text">
+                <h1>⚡ Comandos Fundamentais do Linux</h1>
+                <h2 style="border: none; color: #1a1a2e;">Dominando o Terminal</h2>
+                <div class="highlight-box large-text">
+                    <strong>Do Básico ao Avançado</strong><br>
+                    Gerenciamento de arquivos, sistema e rede<br>
+                    Comandos essenciais para o dia a dia
+                </div>
+                
+                <div class="terminal-box" style="margin-top: 40px;">
+<span class="prompt">user@linux:~$</span> <span class="command">whoami</span>
+<div class="output">Futuro expert em Linux! 🐧</div>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 1 de 18</span>
+                <button class="nav-button start" onclick="showSlide(2)">
+                    Começar Apresentação ➡️
+                </button>
+            </div>
+        </div>
+
+        <!-- Slide 2: Tópicos da Aula -->
+        <div class="slide" id="slide-2">
+            <div class="content">
+                <h2>📋 Tópicos da Aula</h2>
+                
+                <div class="two-column">
+                    <div>
+                        <h3>🗂️ Gerenciamento de Arquivos</h3>
+                        <div class="bullet-point">Navegar pelo sistema (ls, cd, pwd)</div>
+                        <div class="bullet-point">Criar e remover (mkdir, touch, rm)</div>
+                        <div class="bullet-point">Copiar e mover (cp, mv)</div>
+                        <div class="bullet-point">Localizar arquivos (find, locate)</div>
+                        
+                        <h3>📄 Leitura e Edição</h3>
+                        <div class="bullet-point">Visualizar conteúdo (cat, less, head, tail)</div>
+                        <div class="bullet-point">Editar arquivos (nano)</div>
+                        <div class="bullet-point">Buscar e comparar (grep, diff)</div>
+                        <div class="bullet-point">Contar e manipular (wc, cut)</div>
+                    </div>
+                    <div>
+                        <h3>📦 Gerenciamento de Pacotes</h3>
+                        <div class="bullet-point">Instalação e remoção (apt-get)</div>
+                        <div class="bullet-point">Pacotes .deb (dpkg)</div>
+                        <div class="bullet-point">Atualizações do sistema</div>
+                        
+                        <h3>🌐 Rede e Sistema</h3>
+                        <div class="bullet-point">Conectividade (ping, curl, wget)</div>
+                        <div class="bullet-point">Informações do sistema (uname, top, ps)</div>
+                        <div class="bullet-point">Monitoramento (free, df, uptime)</div>
+                        <div class="bullet-point">Identidade (whoami)</div>
+                    </div>
+                </div>
+
+                <div class="highlight-box center-text">
+                    <h3>🎯 Objetivo</h3>
+                    <p>Dominar os comandos essenciais para ser produtivo<br>
+                    no terminal Linux desde o primeiro dia!</p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(1)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 2 de 18</span>
+                <button class="nav-button" onclick="showSlide(3)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 3: Navegação Básica -->
+        <div class="slide" id="slide-3">
+            <div class="content">
+                <h2>🧭 Navegação Básica</h2>
+                
+                <div class="highlight-box">
+                    <h3>🗺️ Seus Primeiros Passos no Terminal</h3>
+                    <p>Como se localizar e navegar pelo sistema de arquivos</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📍 pwd - Onde estou?</h3>
+                        <div class="example-box">
+                            <p>Mostra o caminho completo do diretório atual</p>
+                            <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">pwd</span>
+<div class="output">/home/usuario</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3>📂 ls - O que tem aqui?</h3>
+                        <div class="example-box">
+                            <p>Lista o conteúdo de diretórios</p>
+                            <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">ls -la</span>
+<div class="output">drwxr-xr-x 2 user user 4096 jun 28 10:30 Documentos
+-rw-r--r-- 1 user user 1024 jun 28 09:15 arquivo.txt</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>🎯 Opções Úteis do ls</h3>
+                    <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">ls</span>        <span class="output"># Lista simples</span> <br>
+<span class="prompt">user@linux:~$</span> <span class="command">ls -l</span>      <span class="output"># Lista detalhada</span> <br>
+<span class="prompt">user@linux:~$</span> <span class="command">ls -a</span>      <span class="output"># Inclui arquivos ocultos</span> <br>
+<span class="prompt">user@linux:~$</span> <span class="command">ls -la</span>     <span class="output"># Combinação: detalhada + ocultos</span> <br>
+<span class="prompt">user@linux:~$</span> <span class="command">ls -lh</span>     <span class="output"># Tamanhos legíveis (KB, MB)</span>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>🚶 cd - Vamos passear!</h3>
+                    <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">cd Documentos</span>    <span class="output"># Entrar na pasta</span> <br>
+<span class="prompt">user@linux:~/Documentos$</span> <span class="command">cd ..</span>     <span class="output"># Voltar um nível</span> <br>
+<span class="prompt">user@linux:~$</span> <span class="command">cd ~</span>              <span class="output"># Ir para home</span> <br>
+<span class="prompt">user@linux:~$</span> <span class="command">cd /</span>              <span class="output"># Ir para raiz</span> <br>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(2)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 3 de 18</span>
+                <button class="nav-button" onclick="showSlide(4)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 4: Criação e Remoção -->
+        <div class="slide" id="slide-4">
+            <div class="content">
+                <h2>🛠️ Criação e Remoção</h2>
+                
+                <div class="highlight-box">
+                    <h3>✨ Criando e Removendo Arquivos e Pastas</h3>
+                    <p>Comandos para organizar seu sistema de arquivos</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>➕ Criação</h3>
+                        <div class="example-box">
+                            <h4>📁 mkdir - Criar pastas</h4>
+                            <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">mkdir minha_pasta</span> <br>
+<span class="prompt">user@linux:~$</span> <span class="command">mkdir -p pasta/subpasta</span> <br>
+<div class="output"># -p cria pastas intermediárias</div>
+                            </div>
+                        </div>
+                        
+                        <div class="example-box">
+                            <h4>📄 touch - Criar arquivos</h4>
+                            <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">touch arquivo.txt</span> <br>
+<span class="prompt">user@linux:~$</span> <span class="command">touch arquivo1.txt arquivo2.txt</span> <br>
+<div class="output"># Criar múltiplos arquivos</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🗑️ Remoção</h3>
+                        <div class="example-box">
+                            <h4>🚮 rm - Remover arquivos</h4>
+                            <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">rm arquivo.txt</span> <br>
+<span class="prompt">user@linux:~$</span> <span class="command">rm -f arquivo.txt</span>    <span class="output"># Força remoção</span> <br>
+<span class="prompt">user@linux:~$</span> <span class="command">rm -r pasta/</span>        <span class="output"># Remove pasta recursivamente</span> <br>
+<span class="prompt">user@linux:~$</span> <span class="command">rm -rf pasta/</span>       <span class="output"># Força + recursivo</span>
+                            </div>
+                        </div>
+                        
+                        <div class="example-box">
+                            <h4>📂 rmdir - Remover pastas vazias</h4>
+                            <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">rmdir pasta_vazia</span>
+<div class="output"># Só funciona se a pasta estiver vazia</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: #ffeaa7; color: #2d3436; padding: 20px; border-radius: 10px; margin: 15px 0; border-left: 4px solid #fdcb6e;">
+                    <h3>⚠️ CUIDADO!</h3>
+                    <p><strong>rm -rf</strong> é muito poderoso e perigoso! Pode deletar tudo sem avisar.<br>
+                    Sempre confira o caminho antes de executar. Não existe "lixeira" no terminal!</p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(3)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 4 de 18</span>
+                <button class="nav-button" onclick="showSlide(5)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 5: Cópia e Movimentação -->
+        <div class="slide" id="slide-5">
+            <div class="content">
+                <h2>📋 Cópia e Movimentação</h2>
+                
+                <div class="highlight-box">
+                    <h3>🔄 Copiando e Movendo Arquivos</h3>
+                    <p>Como duplicar, mover e renomear arquivos e pastas</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📋 cp - Copiar</h3>
+                        <div class="example-box">
+                            <h4>Arquivo original permanece</h4>
+                            <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">cp arquivo.txt copia.txt</span> <br>
+<span class="prompt">user@linux:~$</span> <span class="command">cp arquivo.txt /tmp/</span> <br>
+<span class="prompt">user@linux:~$</span> <span class="command">cp -r pasta1 pasta2</span> <br>
+<div class="output"># -r para copiar pastas recursivamente</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🚚 mv - Mover/Renomear</h3>
+                        <div class="example-box">
+                            <h4>Arquivo original sai do lugar</h4>
+                            <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">mv velho.txt novo.txt</span> <br>
+<div class="output"># Renomear arquivo</div>
+<span class="prompt">user@linux:~$</span> <span class="command">mv arquivo.txt /tmp/</span> <br>
+<div class="output"># Mover para outra pasta</div>
+<span class="prompt">user@linux:~$</span> <span class="command">mv pasta1 pasta2</span> <br>
+<div class="output"># Renomear ou mover pasta</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <h3>😱 Diferença Crucial entre cp e mv</h3>
+                    <div class="two-column">
+                        <div>
+                            <h4>📋 cp (copiar):</h4>
+                            <div class="bullet-point">Arquivo original permanece</div>
+                            <div class="bullet-point">Cria uma duplicata</div>
+                            <div class="bullet-point">Ocupa mais espaço</div>
+                        </div>
+                        <div>
+                            <h4>🚚 mv (mover):</h4>
+                            <div class="bullet-point">Arquivo original sai do lugar</div>
+                            <div class="bullet-point">Vai para novo local</div>
+                            <div class="bullet-point">Mesmo espaço ocupado</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(4)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 5 de 18</span>
+                <button class="nav-button" onclick="showSlide(6)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 6: Visualização de Arquivos -->
+        <div class="slide" id="slide-6">
+            <div class="content">
+                <h2>👀 Visualização de Arquivos</h2>
+                
+                <div class="highlight-box">
+                    <h3>📖 Lendo Conteúdo de Arquivos</h3>
+                    <p>Diferentes formas de visualizar o que está dentro dos arquivos</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🐱 cat - Mostrar tudo</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">cat arquivo.txt</span>
+<div class="output">Linha 1 do arquivo
+Linha 2 do arquivo
+Linha 3 do arquivo</div>
+                        </div>
+                        
+                        <h3>🎯 head - Começo do arquivo</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">head arquivo.txt</span>
+<div class="output"># Mostra primeiras 10 linhas</div>
+<span class="prompt">user@linux:~$</span> <span class="command">head -n 5 arquivo.txt</span>
+<div class="output"># Mostra primeiras 5 linhas</div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>📃 less - Paginar</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">less arquivo_grande.txt</span>
+<div class="output"># Navega com ↑↓, q para sair</div>
+                        </div>
+                        
+                        <h3>🎯 tail - Final do arquivo</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">tail arquivo.txt</span>
+<div class="output"># Mostra últimas 10 linhas</div>
+<span class="prompt">user@linux:~$</span> <span class="command">tail -f log.txt</span>
+<div class="output"># Monitora arquivo em tempo real</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>📢 echo - Imprimir texto</h3>
+                    <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">echo "Olá, mundo!"</span>
+<div class="output">Olá, mundo!</div>
+<span class="prompt">user@linux:~$</span> <span class="command">echo "Texto" > arquivo.txt</span>
+<div class="output"># Salva texto em arquivo</div>
+<span class="prompt">user@linux:~$</span> <span class="command">echo "Mais texto" >> arquivo.txt</span>
+<div class="output"># Adiciona ao final do arquivo</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(5)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 6 de 18</span>
+                <button class="nav-button" onclick="showSlide(7)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 7: Gerenciamento de Pacotes -->
+        <div class="slide" id="slide-7">
+            <div class="content">
+                <h2>📦 Gerenciamento de Pacotes</h2>
+                
+                <div class="highlight-box">
+                    <h3>🛍️ Instalando e Removendo Software</h3>
+                    <p>Como instalar, atualizar e remover programas no Linux</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📥 apt - Gerenciador Principal</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">sudo apt update</span>
+<div class="output"># Atualiza lista de pacotes</div>
+<span class="prompt">user@linux:~$</span> <span class="command">sudo apt upgrade</span>
+<div class="output"># Atualiza pacotes instalados</div>
+<span class="prompt">user@linux:~$</span> <span class="command">sudo apt install firefox</span>
+<div class="output"># Instala o Firefox</div>
+<span class="prompt">user@linux:~$</span> <span class="command">sudo apt remove firefox</span>
+<div class="output"># Remove o Firefox</div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🔍 Comandos Úteis</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">apt search firefox</span>
+<div class="output"># Busca pacotes relacionados</div>
+<span class="prompt">user@linux:~$</span> <span class="command">apt show firefox</span>
+<div class="output"># Mostra informações detalhadas</div>
+<span class="prompt">user@linux:~$</span> <span class="command">sudo apt autoremove</span>
+<div class="output"># Remove dependências órfãs</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>🔄 Fluxo Típico de Instalação</h3>
+                    <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">sudo apt update</span>                <span class="output"># 1. Atualizar lista</span> <br>
+<span class="prompt">user@linux:~$</span> <span class="command">apt search nome-programa</span>       <span class="output"># 2. Buscar programa</span> <br>
+<span class="prompt">user@linux:~$</span> <span class="command">sudo apt install nome-programa</span> <span class="output"># 3. Instalar</span> <br>
+<span class="prompt">user@linux:~$</span> <span class="command">nome-programa --version</span>        <span class="output"># 4. Verificar</span> <br>
+                    </div>
+                </div>
+
+                <div style="background: #ffeaa7; color: #2d3436; padding: 20px; border-radius: 10px; margin: 15px 0;">
+                    <h3>⚠️ Sempre use sudo</h3>
+                    <p>Comandos de instalação/remoção precisam de privilégios administrativos.<br>
+                    <strong>sudo</strong> = "Super User DO" (execute como superusuário)</p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(6)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 7 de 18</span>
+                <button class="nav-button" onclick="showSlide(8)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 8: Comandos de Rede -->
+        <div class="slide" id="slide-8">
+            <div class="content">
+                <h2>🌐 Comandos de Rede</h2>
+                
+                <div class="highlight-box">
+                    <h3>🔗 Testando e Monitorando Conexões</h3>
+                    <p>Comandos essenciais para diagnóstico de rede</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🏓 ping - Testar Conectividade</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">ping google.com</span>
+<div class="output">PING google.com (172.217.28.14): 56 data bytes
+64 bytes from 172.217.28.14: icmp_seq=0 time=10.5ms</div>
+<span class="prompt">user@linux:~$</span> <span class="command">ping -c 4 google.com</span>
+<div class="output"># Envia apenas 4 pacotes</div>
+                        </div>
+                        
+                        <h3>⬇️ wget - Baixar Arquivos</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">wget https://example.com/arquivo.zip</span>
+<div class="output"># Baixa arquivo para pasta atual</div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🌍 curl - Acessar URLs</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">curl https://httpbin.org/ip</span>
+<div class="output">{
+  "origin": "192.168.1.100"
+}</div>
+                        </div>
+                        
+                        <h3>🔌 ip - Informações de Rede</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">ip a</span>
+<div class="output"># Mostra todas as interfaces</div>
+<span class="prompt">user@linux:~$</span> <span class="command">ip route</span>
+<div class="output"># Mostra tabela de roteamento</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>🏋️ Exercício: Diagnóstico de Rede</h3>
+                    <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">ping -c 3 8.8.8.8</span>                  <span class="output"># Testar conectividade</span> <br>
+<span class="prompt">user@linux:~$</span> <span class="command">ip a</span>                             <span class="output"># Ver interfaces</span> <br>
+<span class="prompt">user@linux:~$</span> <span class="command">curl -I https://www.google.com</span>    <span class="output"># Testar acesso web</span> <br>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(7)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 8 de 18</span>
+                <button class="nav-button" onclick="showSlide(9)">Próximo ➡️</button>
+            </div>
+        </div>
+        <!-- Slide 9: Informações do Sistema -->
+        <div class="slide" id="slide-9">
+            <div class="content">
+                <h2>💻 Informações do Sistema</h2>
+                
+                <div class="highlight-box">
+                    <h3>📊 Monitorando seu Sistema</h3>
+                    <p>Comandos para verificar status, performance e recursos</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🔍 Informações Básicas</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">uname -a</span>
+<div class="output">Linux ubuntu 5.15.0-67-generic #74-Ubuntu SMP x86_64 GNU/Linux</div>
+<span class="prompt">user@linux:~$</span> <span class="command">whoami</span>
+<div class="output">usuario</div>
+                        </div>
+                        
+                        <h3>⏰ Tempo e Uptime</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">uptime</span>
+<div class="output">10:30:45 up 2 days, 14:23, 2 users, load average: 0.15, 0.20, 0.18</div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🧠 free - Uso da Memória</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">free -h</span>
+<div class="output">              total   used   free   available
+Mem:          7.7Gi  2.1Gi  4.2Gi  5.1Gi
+Swap:         2.0Gi     0B  2.0Gi</div>
+                        </div>
+                        
+                        <h3>💾 df - Espaço em Disco</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">df -h</span>
+<div class="output">Filesystem  Size Used Avail Use% Mounted on
+/dev/sda1    20G 8.5G   10G  46% /</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>🏋️ Exercício: Checkup do Sistema</h3>
+                    <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">uname -a</span>     <span class="output"># Sistema</span> <br>
+<span class="prompt">user@linux:~$</span> <span class="command">uptime</span>      <span class="output"># Tempo ligado</span> <br>
+<span class="prompt">user@linux:~$</span> <span class="command">free -h</span>     <span class="output"># Memória</span> <br>
+<span class="prompt">user@linux:~$</span> <span class="command">df -h</span>       <span class="output"># Disco</span> <br>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(8)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 9 de 18</span>
+                <button class="nav-button" onclick="showSlide(10)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 10: Processos -->
+        <div class="slide" id="slide-10">
+            <div class="content">
+                <h2>⚙️ Monitoramento de Processos</h2>
+                
+                <div class="highlight-box">
+                    <h3>🔄 Gerenciando Processos em Execução</h3>
+                    <p>Como ver e controlar programas rodando no sistema</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📋 ps - Processos Estáticos</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">ps</span>
+<div class="output">  PID TTY          TIME CMD
+ 1234 pts/0    00:00:00 bash
+ 5678 pts/0    00:00:00 ps</div>
+<span class="prompt">user@linux:~$</span> <span class="command">ps aux</span>
+<div class="output"># Todos os processos de todos os usuários</div>
+                        </div>
+                        
+                        <h3>🔪 kill - Terminar Processos</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">kill 1234</span>
+<div class="output"># Termina processo com PID 1234</div>
+<span class="prompt">user@linux:~$</span> <span class="command">killall firefox</span>
+<div class="output"># Mata todos os processos Firefox</div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>📊 top - Monitor em Tempo Real</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">top</span>
+<div class="output">Tasks: 195 total,   1 running, 194 sleeping
+%Cpu(s):  2.3 us,  1.1 sy,  96.6 id
+  PID USER      %CPU %MEM COMMAND
+ 1234 user       5.3  2.1 firefox</div>
+                        </div>
+                        
+                        <div style="background: #d1ecf1; color: #0c5460; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                            <h4>⌨️ Navegando no top:</h4>
+                            <p><strong>q</strong> sair • <strong>k</strong> matar processo • <strong>u</strong> filtrar por usuário</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: #ffeaa7; color: #2d3436; padding: 20px; border-radius: 10px; margin: 15px 0;">
+                    <h3>⚠️ Cuidado com kill -9</h3>
+                    <p><strong>kill -9</strong> força o término sem permitir que o programa se feche adequadamente.<br>
+                    Use primeiro <strong>kill</strong> normal, só use <strong>kill -9</strong> se necessário.</p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(9)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 10 de 18</span>
+                <button class="nav-button" onclick="showSlide(11)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 11: Busca e Edição -->
+        <div class="slide" id="slide-11">
+            <div class="content">
+                <h2>🔍 Busca e Edição</h2>
+                
+                <div class="highlight-box">
+                    <h3>🔧 Encontrando e Editando Arquivos</h3>
+                    <p>Ferramentas para localizar, buscar conteúdo e editar</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🔎 find - O Detetive</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">find . -name "*.txt"</span>
+<div class="output"># Busca todos os .txt na pasta atual</div>
+<span class="prompt">user@linux:~$</span> <span class="command">find /home -name "arquivo.txt"</span>
+<div class="output"># Busca arquivo específico em /home</div>
+                        </div>
+                        
+                        <h3>🔍 grep - Buscar Texto</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">grep "erro" log.txt</span>
+<div class="output"># Busca palavra "erro" no arquivo</div>
+<span class="prompt">user@linux:~$</span> <span class="command">grep -i "ERRO" log.txt</span>
+<div class="output"># Busca ignorando maiúscula/minúscula</div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>📝 nano - Editor Simples</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">nano arquivo.txt</span>
+<div class="output"># Abre editor de texto simples</div>
+                        </div>
+                        <div style="background: #d1ecf1; color: #0c5460; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                            <h4>⌨️ Atalhos do nano:</h4>
+                            <p><strong>Ctrl+O</strong> salvar • <strong>Ctrl+X</strong> sair • <strong>Ctrl+W</strong> buscar</p>
+                        </div>
+                        
+                        <h3>📊 wc - Contar</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">wc arquivo.txt</span>
+<div class="output">  5  25 150 arquivo.txt</div>
+<div class="output"># linhas palavras caracteres</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>🏋️ Exercício: Analisando um arquivo</h3>
+                    <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">echo -e "João:123\nMaria:456\nPedro:789" > usuarios.txt</span> <br>
+<span class="prompt">user@linux:~$</span> <span class="command">wc -l usuarios.txt</span>           <span class="output"># Quantas linhas?</span> <br>
+<span class="prompt">user@linux:~$</span> <span class="command">grep "Maria" usuarios.txt</span>     <span class="output"># Buscar Maria</span> <br>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(10)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 11 de 18</span>
+                <button class="nav-button" onclick="showSlide(12)">Próximo ➡️</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variáveis globais
+        let currentSlide = 1;
+        
+        // Função para mostrar slide específico
+        function showSlide(slideNumber) {
+            console.log('Tentando ir para slide:', slideNumber);
+            
+            // Esconder todos os slides
+            const slides = document.querySelectorAll('.slide');
+            slides.forEach(slide => {
+                slide.classList.remove('active');
+            });
+            
+            // Mostrar slide específico
+            const targetSlide = document.getElementById('slide-' + slideNumber);
+            if (targetSlide) {
+                targetSlide.classList.add('active');
+                currentSlide = slideNumber;
+                
+                // Atualizar contador
+                document.getElementById('current-slide').textContent = slideNumber;
+                
+                console.log('Slide', slideNumber, 'ativado com sucesso!');
+            } else {
+                console.error('Slide não encontrado:', slideNumber);
+            }
+        }
+        
+        // Navegação por teclado
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft' && currentSlide > 1) {
+                showSlide(currentSlide - 1);
+            } else if (e.key === 'ArrowRight' && currentSlide < 18) {
+                showSlide(currentSlide + 1);
+            }
+        });
+        
+        // Variáveis do quiz
+        let currentQuestion = 1;
+        let score = 0;
+        let quizAnswered = [false, false, false];
+        
+        // Função do quiz
+        function selectOption(questionNum, option, isCorrect) {
+            if (quizAnswered[questionNum - 1]) return;
+            
+            const options = document.querySelectorAll('#question' + questionNum + ' .quiz-option');
+            const feedback = document.getElementById('feedback' + questionNum);
+            
+            // Marcar todas as opções
+            options.forEach(opt => {
+                opt.style.pointerEvents = 'none';
+                if (opt.onclick.toString().includes('true')) {
+                    opt.classList.add('correct');
+                } else if (opt === event.currentTarget) {
+                    opt.classList.add(isCorrect ? 'correct' : 'incorrect');
+                }
+            });
+            
+            // Mostrar feedback
+            if (isCorrect) {
+                feedback.innerHTML = '✅ Correto! Muito bem!';
+                feedback.className = 'quiz-feedback correct';
+                score++;
+            } else {
+                let correctAnswer = '';
+                switch(questionNum) {
+                    case 1:
+                        correctAnswer = 'pwd (print working directory) mostra o caminho completo do diretório atual.';
+                        break;
+                    case 2:
+                        correctAnswer = 'cp copia arquivos (original permanece), mv move ou renomeia (original sai do lugar).';
+                        break;
+                    case 3:
+                        correctAnswer = 'apt install é o comando moderno para instalar pacotes no Ubuntu/Debian.';
+                        break;
+                }
+                feedback.innerHTML = `❌ Incorreto. ${correctAnswer}`;
+                feedback.className = 'quiz-feedback incorrect';
+            }
+            
+            quizAnswered[questionNum - 1] = true;
+            
+            // Mostrar botão para próxima questão
+            if (questionNum < 3) {
+                document.getElementById('next-quiz-btn').style.display = 'inline-block';
+            } else {
+                // Última questão - mostrar resultado
+                setTimeout(() => {
+                    showQuizResult();
+                }, 2000);
+            }
+        }
+
+        function nextQuestion() {
+            document.getElementById('question' + currentQuestion).style.display = 'none';
+            currentQuestion++;
+            document.getElementById('question' + currentQuestion).style.display = 'block';
+            document.getElementById('next-quiz-btn').style.display = 'none';
+        }
+
+        function showQuizResult() {
+            // Esconder última questão
+            document.getElementById('question3').style.display = 'none';
+            
+            // Mostrar resultado
+            document.getElementById('quiz-result').style.display = 'block';
+            document.getElementById('final-score').textContent = score;
+            
+            const resultMessage = document.getElementById('result-message');
+            if (score === 3) {
+                resultMessage.innerHTML = '🏆 Perfeito! Você domina os comandos Linux!';
+            } else if (score === 2) {
+                resultMessage.innerHTML = '🌟 Excelente! Quase um expert em comandos!';
+            } else if (score === 1) {
+                resultMessage.innerHTML = '👏 Bom começo! Continue praticando!';
+            } else {
+                resultMessage.innerHTML = '📖 Recomendo revisar os comandos básicos!';
+            }
+        }
+
+        function restartQuiz() {
+            // Reset variables
+            currentQuestion = 1;
+            score = 0;
+            quizAnswered = [false, false, false];
+            
+            // Reset interface
+            for (let i = 1; i <= 3; i++) {
+                const question = document.getElementById('question' + i);
+                const options = question.querySelectorAll('.quiz-option');
+                const feedback = document.getElementById('feedback' + i);
+                
+                // Reset options
+                options.forEach(opt => {
+                    opt.className = 'quiz-option';
+                    opt.style.pointerEvents = 'auto';
+                });
+                
+                // Hide feedback
+                feedback.style.display = 'none';
+                
+                // Hide all questions except first
+                question.style.display = i === 1 ? 'block' : 'none';
+            }
+            
+            // Hide result and buttons
+            document.getElementById('quiz-result').style.display = 'none';
+            document.getElementById('next-quiz-btn').style.display = 'none';
+        }
+        
+        // Testar se JavaScript está funcionando
+        console.log('JavaScript carregado! Navegação deveria funcionar agora.');
+        console.log('Total de slides:', document.querySelectorAll('.slide').length);
+        
+        // Mostrar mensagem de teste
+        setTimeout(() => {
+            console.log('Slide atual:', currentSlide);
+            console.log('Use as setas ← → ou clique nos botões para navegar');
+        }, 1000);
+        
+        // Garantir que o quiz esteja configurado corretamente
+        setTimeout(() => {
+            const question1 = document.getElementById('question1');
+            if (question1) {
+                question1.style.display = 'block';
+            }
+        }, 500);
+    </script>
+</body>
+</html>

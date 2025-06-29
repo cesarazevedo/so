@@ -1,0 +1,1404 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shell Script - Variáveis e Interação</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .presentation {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide {
+            min-height: 100vh;
+            padding: 60px 40px;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            background: white;
+            margin: 20px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        .slide h1 {
+            font-size: 3.5em;
+            color: #4a5568;
+            text-align: center;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .slide h2 {
+            font-size: 2.8em;
+            color: #2d3748;
+            margin-bottom: 30px;
+            border-bottom: 4px solid #1a1a2e;
+            padding-bottom: 15px;
+        }
+
+        .slide h3 {
+            font-size: 2.2em;
+            color: #4a5568;
+            margin: 25px 0 15px 0;
+        }
+
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        .bullet-point {
+            display: flex;
+            align-items: flex-start;
+            margin: 15px 0;
+            font-size: 1.3em;
+            line-height: 1.5;
+        }
+
+        .bullet-point::before {
+            content: "⚡";
+            margin-right: 15px;
+            font-size: 1.2em;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #1a1a2e;
+        }
+
+        .example-box {
+            background: linear-gradient(135deg, #00c9ff 0%, #92fe9d 100%);
+            color: #2d3748;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #00b894;
+        }
+
+        .terminal-box {
+            background: #2d3748;
+            color: #00ff41;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #00ff41;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+            position: relative;
+        }
+
+        .terminal-box::before {
+            content: "💻 Terminal Linux";
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            background: #2d3748;
+            color: #fff;
+            padding: 5px 15px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .script-box {
+            background: #1a202c;
+            color: #00ff41;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #68d391;
+            font-family: 'Courier New', monospace;
+            font-size: 1.0em;
+            position: relative;
+        }
+
+        .script-box::before {
+            content: "📝 Script Shell";
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            background: #1a202c;
+            color: #68d391;
+            padding: 5px 15px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .prompt {
+            color: #4299e1;
+            font-weight: bold;
+        }
+
+        .command {
+            color: #00ff41;
+            font-weight: bold;
+        }
+
+        .output {
+            color: #e2e8f0;
+            margin-left: 0;
+            margin-top: 5px;
+        }
+
+        .variable {
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .string {
+            color: #ff6b9d;
+        }
+
+        .comment {
+            color: #68d391;
+            font-style: italic;
+        }
+
+        .nav-button {
+            padding: 15px 30px;
+            background: #1a1a2e;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-button:hover {
+            background: #16213e;
+            transform: translateY(-2px);
+        }
+
+        .nav-button.start {
+            background: #27ae60;
+            font-size: 1.4em;
+            padding: 20px 40px;
+        }
+
+        .nav-button.start:hover {
+            background: #229954;
+        }
+
+        .slide-navigation {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(255,255,255,0.9);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #4a5568;
+            z-index: 1000;
+        }
+
+        .center-text {
+            text-align: center;
+        }
+
+        .large-text {
+            font-size: 1.4em;
+            line-height: 1.6;
+        }
+
+        .warning-box {
+            background: #ffeaa7;
+            color: #2d3436;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #fdcb6e;
+        }
+
+        .info-box {
+            background: #d1ecf1;
+            color: #0c5460;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+
+        .success-box {
+            background: #c6f6d5;
+            color: #22543d;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #48bb78;
+        }
+
+        /* Quiz Styles */
+        .quiz-container {
+            max-width: 100%;
+            margin: 20px 0;
+        }
+
+        .quiz-question {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 2px solid #e2e8f0;
+        }
+
+        .quiz-question h3 {
+            color: #1a1a2e;
+            margin-bottom: 20px;
+        }
+
+        .quiz-question p {
+            font-size: 1.3em;
+            margin-bottom: 25px;
+            font-weight: bold;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .quiz-option {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1em;
+        }
+
+        .quiz-option:hover {
+            border-color: #1a1a2e;
+            background: #f0f4ff;
+            transform: translateX(5px);
+        }
+
+        .quiz-option.selected {
+            border-color: #1a1a2e;
+            background: #1a1a2e;
+            color: white;
+        }
+
+        .quiz-option.correct {
+            border-color: #48bb78;
+            background: #48bb78;
+            color: white;
+        }
+
+        .quiz-option.incorrect {
+            border-color: #f56565;
+            background: #f56565;
+            color: white;
+        }
+
+        .option-letter {
+            background: #1a1a2e;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .quiz-option.correct .option-letter {
+            background: #48bb78;
+        }
+
+        .quiz-option.incorrect .option-letter {
+            background: #f56565;
+        }
+
+        .quiz-feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            display: none;
+        }
+
+        .quiz-feedback.correct {
+            background: #c6f6d5;
+            color: #22543d;
+            border: 2px solid #48bb78;
+            display: block;
+        }
+
+        .quiz-feedback.incorrect {
+            background: #fed7d7;
+            color: #742a2a;
+            border: 2px solid #f56565;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">10</span>
+        </div>
+
+        <!-- Slide 1: Título -->
+        <div class="slide active" id="slide-1">
+            <div class="content center-text">
+                <h1>📜 Shell Script - Variáveis e Interação</h1>
+                <h2 style="border: none; color: #1a1a2e;">Programando no Terminal</h2>
+                <div class="highlight-box large-text">
+                    <strong>Do Básico ao Prático</strong><br>
+                    Variáveis, entrada de dados e códigos de saída<br>
+                    Criando scripts úteis e interativos
+                </div>
+                
+                <div class="terminal-box" style="margin-top: 40px;">
+<span class="prompt">user@linux:~$</span> <span class="command">echo "Bem-vindos ao mundo do Shell Script!"</span>
+<div class="output">Bem-vindos ao mundo do Shell Script!</div>
+<span class="prompt">user@linux:~$</span> <span class="command">echo "Vamos automatizar tudo! 🚀"</span>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 1 de 10</span>
+                <button class="nav-button start" onclick="showSlide(2)">
+                    Começar Aula ➡️
+                </button>
+            </div>
+        </div>
+
+        <!-- Slide 2: Introdução às Variáveis -->
+        <div class="slide" id="slide-2">
+            <div class="content">
+                <h2>📦 Variáveis no Shell Script</h2>
+                
+                <div class="highlight-box">
+                    <h3>🏷️ O que são Variáveis?</h3>
+                    <p>Imagine variáveis como caixinhas com etiquetas onde você guarda informações para usar depois!</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>✨ Características</h3>
+                        <div class="example-box">
+                            <div class="bullet-point">Shell Script não tem tipos de dados</div>
+                            <div class="bullet-point">Não precisa declarar antes de usar</div>
+                            <div class="bullet-point">Pode guardar texto, números, resultados</div>
+                            <div class="bullet-point">Convenção: nomes em MAIÚSCULO</div>
+                        </div>
+                        
+                        <h3>📋 Sintaxe Básica</h3>
+                        <div class="info-box">
+                            <p><strong>NOME_VARIAVEL=valor</strong><br>
+                            ⚠️ Cuidado: SEM espaços em volta do =</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🏋️ Exemplos Práticos</h3>
+                        <div class="script-box">
+<span class="comment"># Guardando uma string</span>
+<span class="variable">NOME</span>=<span class="string">"João Silva"</span>
+<span class="variable">CURSO</span>=<span class="string">"Informática"</span>
+
+<span class="comment"># Guardando um número</span>
+<span class="variable">IDADE</span>=<span class="string">20</span>
+<span class="variable">ANO</span>=<span class="string">2025</span>
+
+<span class="comment"># Exibindo as variáveis</span>
+echo $NOME
+echo $CURSO  
+echo $IDADE
+                        </div>
+                        
+                        <h3>💡 Resultado</h3>
+                        <div class="terminal-box">
+<div class="output">João Silva</div>
+<div class="output">Informática</div>
+<div class="output">20</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h3>⚠️ Erro Comum</h3>
+                    <p><strong>ERRADO:</strong> NOME = "João" (com espaços)<br>
+                    <strong>CERTO:</strong> NOME="João" (sem espaços)<br>
+                    O shell interpreta espaços como separadores de comandos!</p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(1)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 2 de 10</span>
+                <button class="nav-button" onclick="showSlide(3)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 3: Variáveis de Comando -->
+        <div class="slide" id="slide-3">
+            <div class="content">
+                <h2>⚙️ Capturando Resultados de Comandos</h2>
+                
+                <div class="highlight-box">
+                    <h3>🎯 Duas Formas de Capturar</h3>
+                    <p>Como guardar o resultado de um comando dentro de uma variável</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🔄 Método 1: Crases `comando`</h3>
+                        <div class="script-box">
+<span class="comment"># Usando crases (backticks)</span><br>
+<span class="variable">DATA_ATUAL</span>=<span class="string">`date`</span><br>
+<span class="variable">USUARIO</span>=<span class="string">`whoami`</span><br>
+<span class="variable">ARQUIVOS</span>=<span class="string">`ls -l | wc -l`</span><br>
+
+echo "Data: $DATA_ATUAL"<br>
+echo "Usuário: $USUARIO"  <br>
+echo "Arquivos: $ARQUIVOS"<br>
+                        </div>
+                        
+                        <h3>📅 Resultado</h3>
+                        <div class="terminal-box">
+<div class="output">Data: Dom 29 Jun 2025 15:30:45</div>
+<div class="output">Usuário: aluno</div>
+<div class="output">Arquivos: 8</div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🎯 Método 2: $(comando)</h3>
+                        <div class="script-box">
+<span class="comment"># Usando $()</span><br>
+<span class="variable">SISTEMA</span>=<span class="string">$(uname -s)</span><br>
+<span class="variable">VERSAO</span>=<span class="string">$(uname -r)</span><br>
+<span class="variable">ESPACO_LIVRE</span>=<span class="string">$(df -h ~ | tail -1 | awk '{print $4}')</span><br>
+
+echo "Sistema: $SISTEMA"<br>
+echo "Versão: $VERSAO"<br>
+echo "Espaço livre: $ESPACO_LIVRE"<br>
+                        </div>
+                        
+                        <h3>🖥️ Resultado</h3>
+                        <div class="terminal-box">
+<div class="output">Sistema: Linux</div>
+<div class="output">Versão: 5.15.0-67-generic</div>
+<div class="output">Espaço livre: 15G</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>🏋️ Exemplo Prático: Script de Monitoramento</h3>
+                    <div class="script-box">
+#!/bin/bash
+<span class="comment"># Script para mostrar informações do sistema</span><br>
+
+<span class="variable">HOSTNAME</span>=<span class="string">$(hostname)</span><br>
+<span class="variable">UPTIME</span>=<span class="string">$(uptime -p)</span><br>
+<span class="variable">MEMORIA</span>=<span class="string">$(free -h | grep Mem | awk '{print $3"/"$2}')</span><br>
+
+echo "=== Relatório do Sistema ==="
+echo "Servidor: $HOSTNAME"
+echo "Tempo ligado: $UPTIME"  
+echo "Memória usada: $MEMORIA"
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <h3>💡 Dica Importante</h3>
+                    <p>O método <strong>$(comando)</strong> é preferido porque:<br>
+                    • É mais legível<br>
+                    • Permite aninhamento: $(echo $(date))<br>
+                    • Funciona melhor com caracteres especiais</p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(2)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 3 de 10</span>
+                <button class="nav-button" onclick="showSlide(4)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 4: Aspas e Caracteres Especiais -->
+        <div class="slide" id="slide-4">
+            <div class="content">
+                <h2>🔒 O Uso das Aspas no Shell Script</h2>
+                
+                <div class="highlight-box">
+                    <h3>🛡️ Proteção de Caracteres</h3>
+                    <p>As aspas são como escudos que protegem caracteres especiais de serem interpretados</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>⭐ Problema dos Caracteres Especiais</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">echo *</span>
+<div class="output">arquivo1.txt arquivo2.txt script.sh</div>
+<span class="comment"># * é expandido para todos os arquivos!</span>
+
+<span class="prompt">user@linux:~$</span> <span class="command">echo "*"</span>
+<div class="output">*</div>
+<span class="comment"># Aspas protegem o *</span>
+                        </div>
+                        
+                        <h3>📝 Aspas Duplas " "</h3>
+                        <div class="example-box">
+                            <p>Protegem quase tudo, <strong>EXCETO:</strong></p>
+                            <div class="bullet-point">$ (cifrão - variáveis)</div>
+                            <div class="bullet-point">` (crase - comandos)</div>
+                            <div class="bullet-point">\ (barra - escape)</div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>✋ Aspas Simples ' '</h3>
+                        <div class="example-box">
+                            <p>Protegem <strong>TUDO</strong> literalmente</p>
+                            <div class="bullet-point">Nada é interpretado</div>
+                            <div class="bullet-point">Nem variáveis funcionam</div>
+                            <div class="bullet-point">Use quando quiser texto puro</div>
+                        </div>
+                        
+                        <h3>🔙 Barra Invertida \</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">echo \*</span>
+<div class="output">*</div>
+<span class="prompt">user@linux:~$</span> <span class="command">echo \$HOME</span>
+<div class="output">$HOME</div>
+<span class="comment"># Escape individual de caracteres</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>🎭 Comparação Prática</h3>
+                    <div class="script-box">
+<span class="variable">TESTE</span>=<span class="string">"Linux"</span>
+
+<span class="comment"># Aspas duplas - interpreta variáveis</span>
+echo "Sistema: $TESTE"     <span class="comment"># Resultado: Sistema: Linux</span>
+
+<span class="comment"># Aspas simples - não interpreta nada</span>
+echo 'Sistema: $TESTE'     <span class="comment"># Resultado: Sistema: $TESTE</span>
+
+<span class="comment"># Escape com barra</span>
+echo Sistema: \$TESTE      <span class="comment"># Resultado: Sistema: $TESTE</span>
+
+<span class="comment"># Misturando aspas</span>
+echo "O valor de \$TESTE é: $TESTE"  <span class="comment"># Sistema: O valor de $TESTE é: Linux</span>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h3>⚠️ Armadilha Comum</h3>
+                    <div class="script-box">
+<span class="comment"># PROBLEMA: espaços em nomes de arquivos</span>
+<span class="variable">ARQUIVO</span>=<span class="string">arquivo com espaços.txt</span>
+touch $ARQUIVO           <span class="comment"># Cria 3 arquivos!</span>
+
+<span class="comment"># SOLUÇÃO: usar aspas</span>
+<span class="variable">ARQUIVO</span>=<span class="string">"arquivo com espaços.txt"</span>
+touch "$ARQUIVO"         <span class="comment"># Cria 1 arquivo correto</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(3)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 4 de 10</span>
+                <button class="nav-button" onclick="showSlide(5)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 5: Exit Codes -->
+        <div class="slide" id="slide-5">
+            <div class="content">
+                <h2>🚦 Códigos de Saída (Exit Codes)</h2>
+                
+                <div class="highlight-box">
+                    <h3>📊 O Sistema de Notas dos Comandos</h3>
+                    <p>Todo comando dá uma "nota" de 0 a 255 indicando se deu certo ou errado</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🎯 Como Funcionam</h3>
+                        <div class="example-box">
+                            <div class="bullet-point"><strong>0:</strong> Sucesso! Tudo certo! 🎉</div>
+                            <div class="bullet-point"><strong>1-255:</strong> Algum erro aconteceu 💥</div>
+                            <div class="bullet-point"><strong>$?:</strong> Variável especial com último código</div>
+                        </div>
+                        
+                        <h3>✅ Exemplo de Sucesso</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">touch arquivo_teste.txt</span>
+<span class="prompt">user@linux:~$</span> <span class="command">echo $?</span>
+<div class="output">0</div>
+<span class="comment"># 0 = comando executou perfeitamente!</span>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>❌ Exemplo de Erro</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">touch -xxx arquivo.txt</span>
+<div class="output">touch: invalid option -- 'x'</div>
+<span class="prompt">user@linux:~$</span> <span class="command">echo $?</span>
+<div class="output">1</div>
+<span class="comment"># 1 = erro de sintaxe ou parâmetro</span>
+                        </div>
+                        
+                        <h3>🔍 Outros Códigos Comuns</h3>
+                        <div class="info-box">
+                            <p><strong>1:</strong> Erro geral<br>
+                            <strong>2:</strong> Uso incorreto de comando<br>
+                            <strong>126:</strong> Comando não executável<br>
+                            <strong>127:</strong> Comando não encontrado<br>
+                            <strong>130:</strong> Cancelado com Ctrl+C</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>🏋️ Script Inteligente com Exit Codes</h3>
+                    <div class="script-box">
+#!/bin/bash
+<span class="comment"># Script que verifica se arquivo existe antes de copiar</span>
+
+<span class="variable">ORIGEM</span>=<span class="string">"arquivo_importante.txt"</span>
+<span class="variable">DESTINO</span>=<span class="string">"backup/"</span>
+
+<span class="comment"># Tenta fazer backup</span>
+cp "$ORIGEM" "$DESTINO" 2>/dev/null
+
+<span class="comment"># Verifica se deu certo</span>
+if [ $? -eq 0 ]; then
+    echo "✅ Backup realizado com sucesso!"
+else
+    echo "❌ Erro no backup - código: $?"
+    echo "Verifique se o arquivo existe e se a pasta backup/ existe"
+fi
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h3>💡 Dica de Debugging</h3>
+                    <p>Use sempre <strong>echo $?</strong> após comandos importantes para entender o que aconteceu.<br>
+                    Consulte o manual (man comando) para ver todos os códigos possíveis!<br>
+                    Exemplo: <strong>man ls</strong> mostra os códigos de erro específicos do ls.</p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(4)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 5 de 10</span>
+                <button class="nav-button" onclick="showSlide(6)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 6: Comando read -->
+        <div class="slide" id="slide-6">
+            <div class="content">
+                <h2>🎤 Comando read - Conversando com o Usuário</h2>
+                
+                <div class="highlight-box">
+                    <h3>💬 Scripts Interativos</h3>
+                    <p>Como fazer seu script "conversar" com quem está usando</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📥 Uso Básico</h3>
+                        <div class="script-box">
+<span class="comment"># Pedindo uma informação</span>
+echo "Digite seu nome:"
+read NOME
+echo "Olá, $NOME!"
+                        </div>
+                        
+                        <div class="terminal-box">
+<div class="output">Digite seu nome:</div>
+<span class="command">João Silva</span>
+<div class="output">Olá, João Silva!</div>
+                        </div>
+                        
+                        <h3>📚 Múltiplas Variáveis</h3>
+                        <div class="script-box">
+<span class="comment"># Lendo 3 valores de uma vez</span>
+echo "Digite: nome idade cidade"
+read NOME IDADE CIDADE
+
+echo "Nome: $NOME"
+echo "Idade: $IDADE"  
+echo "Cidade: $CIDADE"
+                        </div>
+                    </div>
+                    <div>
+                        <h3>💡 Opções Avançadas</h3>
+                        <div class="example-box">
+                            <h4>📝 read -p (prompt)</h4>
+                            <div class="script-box">
+read -p "Seu curso: " CURSO
+echo "Estudante de $CURSO"
+                            </div>
+                            
+                            <h4>🔒 read -s (senha)</h4>
+                            <div class="script-box">
+read -s -p "Senha: " SENHA
+echo "Senha capturada!"
+<span class="comment"># Não mostra o que você digita</span>
+                            </div>
+                        </div>
+                        
+                        <h3>⚡ Comportamento Especial</h3>
+                        <div class="info-box">
+                            <p>Se você digitar <strong>mais palavras</strong> que variáveis:<br>
+                            • Primeiras palavras vão para primeiras variáveis<br>
+                            • <strong>Última variável pega todo o resto!</strong></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>🎭 Exemplo: Comportamento com Múltiplas Palavras</h3>
+                    <div class="script-box">
+<span class="comment"># Script com 2 variáveis</span>
+read PRIMEIRO RESTO
+
+<span class="comment"># Usuário digita: "João Silva Santos da Costa"</span>
+<span class="comment"># PRIMEIRO = "João"</span>
+<span class="comment"># RESTO = "Silva Santos da Costa"</span>
+                    </div>
+                    
+                    <div class="terminal-box">
+<span class="command">João Silva Santos da Costa</span>
+<div class="output">PRIMEIRO: João</div>
+<div class="output">RESTO: Silva Santos da Costa</div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>🏋️ Script de Cadastro Completo</h3>
+                    <div class="script-box">
+#!/bin/bash
+<span class="comment"># Sistema de cadastro interativo</span>
+
+echo "=== CADASTRO DE ALUNO ==="
+read -p "Nome completo: " NOME
+read -p "Idade: " IDADE
+read -p "Curso: " CURSO
+read -s -p "Senha: " SENHA
+echo <span class="comment"># Quebra linha após senha</span>
+
+echo ""
+echo "=== DADOS CONFIRMADOS ==="
+echo "Nome: $NOME"
+echo "Idade: $IDADE anos"
+echo "Curso: $CURSO"
+echo "Senha: [PROTEGIDA]"
+                    </div>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(5)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 6 de 10</span>
+                <button class="nav-button" onclick="showSlide(7)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 7: Exemplo Prático - Preparação -->
+        <div class="slide" id="slide-7">
+            <div class="content">
+                <h2>🎯 Preparando o Exemplo Prático</h2>
+                
+                <div class="highlight-box">
+                    <h3>📋 Criando a Base de Dados</h3>
+                    <p>Vamos criar um arquivo com lista de alunos para nosso script de busca</p>
+                </div>
+
+                <div class="example-box">
+                    <h3>📝 Passo 1: Criar o arquivo lista_alunos.txt</h3>
+                    <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">vim lista_alunos.txt</span>
+<span class="comment"># ou nano lista_alunos.txt</span>
+                    </div>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>👥 Conteúdo do Arquivo</h3>
+                        <div class="script-box">
+Beatriz Machado
+Ana Trim
+Zilah Freitas
+Fabio Dantas
+Marta Nogueira
+Diogo Cortez
+Valerio Pimenta
+                        </div>
+                        
+                        <h3>💾 Salvando</h3>
+                        <div class="info-box">
+                            <p><strong>No vim:</strong> Esc → :wq → Enter<br>
+                            <strong>No nano:</strong> Ctrl+O → Enter → Ctrl+X</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>✅ Verificando o Arquivo</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">cat lista_alunos.txt</span>
+<div class="output">Beatriz Machado
+Ana Trim
+Zilah Freitas
+Fabio Dantas
+Marta Nogueira
+Diogo Cortez
+Valerio Pimenta</div>
+                        </div>
+                        
+                        <h3>🔍 Testando Busca Manual</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">grep "Ana" lista_alunos.txt</span>
+<div class="output">Ana Trim</div>
+<span class="prompt">user@linux:~$</span> <span class="command">echo $?</span>
+<div class="output">0</div>
+<span class="comment"># 0 = encontrou!</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>🧪 Testando Busca que Não Existe</h3>
+                    <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">grep "Pedro" lista_alunos.txt</span>
+<span class="comment"># Não retorna nada</span>
+<span class="prompt">user@linux:~$</span> <span class="command">echo $?</span>
+<div class="output">1</div>
+<span class="comment"># 1 = não encontrou!</span>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <h3>🎯 Próximo Passo</h3>
+                    <p>Agora que temos nosso "banco de dados" de alunos, vamos criar um script que:<br>
+                    • Pergunte qual nome buscar<br>
+                    • Procure no arquivo<br>
+                    • Informe se encontrou ou não<br>
+                    • Use exit codes para controlar o fluxo!</p>
+                </div>
+
+                <div class="warning-box">
+                    <h3>📍 Localização Importante</h3>
+                    <p>Certifique-se de que o arquivo <strong>lista_alunos.txt</strong> está no seu diretório home:<br>
+                    <strong>/home/seu_usuario/lista_alunos.txt</strong><br>
+                    Use <strong>pwd</strong> para verificar onde você está!</p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(6)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 7 de 10</span>
+                <button class="nav-button" onclick="showSlide(8)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 8: Script BuscaAluno -->
+        <div class="slide" id="slide-8">
+            <div class="content">
+                <h2>🔍 Script BuscaAluno.sh - Exemplo Completo</h2>
+                
+                <div class="highlight-box">
+                    <h3>🎯 Objetivo do Script</h3>
+                    <p>Criar um programa que busca se um aluno existe na nossa lista</p>
+                </div>
+
+                <div class="example-box">
+                    <h3>📝 Criando o Script</h3>
+                    <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">vim BuscaAluno.sh</span>
+<span class="comment"># ou nano BuscaAluno.sh</span>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>💻 Código Completo do BuscaAluno.sh</h3>
+                    <div class="script-box">
+#!/bin/bash
+<span class="comment">##############################################</span>
+<span class="comment"># BuscaAluno.sh - Procurar nome completo de um aluno</span>
+<span class="comment"># Autor: SeuNome</span>
+<span class="comment"># Data de criação: DD/MM/AAAA</span>
+<span class="comment"># Descrição: Script de exemplo para o comando read.</span>
+<span class="comment">#           A partir de uma entrada do usuário, será feita uma</span>
+<span class="comment">#           busca no arquivo lista_alunos.txt</span>
+<span class="comment"># Exemplo de uso: ./BuscaAluno.sh</span>
+<span class="comment">##############################################</span>
+
+<span class="variable">ARQUIVO_ALUNOS</span>=<span class="string">"~/infof/lista_alunos.txt"</span>
+
+clear
+echo "<span class="string">================Script de Busca de Alunos================</span>"
+echo ""
+echo "<span class="string">Por favor, informe o primeiro nome do aluno: </span>"
+read ALUNO
+
+echo ""
+echo "<span class="string">O nome completo do aluno é: </span>" `grep "$ALUNO" $ARQUIVO_ALUNOS`
+echo ""
+echo "<span class="string">Fim do Script</span>"
+                    </div>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🔧 Dando Permissão</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">chmod +x BuscaAluno.sh</span>
+<span class="comment"># ou</span>
+<span class="prompt">user@linux:~$</span> <span class="command">chmod 744 BuscaAluno.sh</span>
+                        </div>
+                        
+                        <h3>▶️ Executando</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">./BuscaAluno.sh</span>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🎬 Exemplo de Execução</h3>
+                        <div class="terminal-box">
+<div class="output">================Script de Busca de Alunos================</div>
+<div class="output"></div>
+<div class="output">Por favor, informe o primeiro nome do aluno:</div>
+<span class="command">Ana</span>
+<div class="output"></div>
+<div class="output">O nome completo do aluno é: Ana Trim</div>
+<div class="output"></div>
+<div class="output">Fim do Script</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h3>🚨 Ajuste Necessário</h3>
+                    <p>No script original, a linha <strong>ARQUIVO_ALUNOS="~/infof/lista_alunos.txt"</strong><br>
+                    deve ser alterada para: <strong>ARQUIVO_ALUNOS="lista_alunos.txt"</strong><br>
+                    (assumindo que o arquivo está no mesmo diretório do script)</p>
+                </div>
+
+                <div class="success-box">
+                    <h3>🎉 Desafio Proposto</h3>
+                    <p><strong>Como buscar ignorando maiúscula/minúscula?</strong><br>
+                    Dica: use a opção <strong>-i</strong> do comando grep!<br>
+                    <strong>grep -i "$ALUNO" $ARQUIVO_ALUNOS</strong></p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(7)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 8 de 10</span>
+                <button class="nav-button" onclick="showSlide(9)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 9: Quiz -->
+        <div class="slide" id="slide-9">
+            <div class="content">
+                <h2>🧠 Quiz - Teste seus Conhecimentos!</h2>
+                
+                <div class="quiz-container">
+                    <div class="quiz-question" id="question1">
+                        <h3>📝 Questão 1</h3>
+                        <p><strong>Qual é a forma CORRETA de declarar uma variável no Shell Script?</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" onclick="selectOption(1, 'a', false)">
+                                <span class="option-letter">A)</span> NOME = "João"
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(1, 'b', true)">
+                                <span class="option-letter">B)</span> NOME="João"
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(1, 'c', false)">
+                                <span class="option-letter">C)</span> $NOME="João"
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(1, 'd', false)">
+                                <span class="option-letter">D)</span> var NOME="João"
+                            </div>
+                        </div>
+                        <div class="quiz-feedback" id="feedback1"></div>
+                    </div>
+
+                    <div class="quiz-question" id="question2" style="display: none;">
+                        <h3>📝 Questão 2</h3>
+                        <p><strong>Qual variável especial contém o código de saída do último comando executado?</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" onclick="selectOption(2, 'a', false)">
+                                <span class="option-letter">A)</span> $!
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(2, 'b', true)">
+                                <span class="option-letter">B)</span> $?
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(2, 'c', false)">
+                                <span class="option-letter">C)</span> $#
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(2, 'd', false)">
+                                <span class="option-letter">D)</span> $$
+                            </div>
+                        </div>
+                        <div class="quiz-feedback" id="feedback2"></div>
+                    </div>
+
+                    <div class="quiz-question" id="question3" style="display: none;">
+                        <h3>📝 Questão 3</h3>
+                        <p><strong>Qual a diferença entre aspas duplas " e aspas simples ' no Shell Script?</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" onclick="selectOption(3, 'a', true)">
+                                <span class="option-letter">A)</span> Aspas duplas interpretam variáveis, aspas simples não
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(3, 'b', false)">
+                                <span class="option-letter">B)</span> Não há diferença, são equivalentes
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(3, 'c', false)">
+                                <span class="option-letter">C)</span> Aspas simples interpretam variáveis, aspas duplas não
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(3, 'd', false)">
+                                <span class="option-letter">D)</span> Aspas duplas são só para números, aspas simples para texto
+                            </div>
+                        </div>
+                        <div class="quiz-feedback" id="feedback3"></div>
+                    </div>
+
+                    <div class="quiz-question" id="question4" style="display: none;">
+                        <h3>📝 Questão 4</h3>
+                        <p><strong>Qual comando lê entrada do usuário SEM mostrar o que está sendo digitado?</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" onclick="selectOption(4, 'a', false)">
+                                <span class="option-letter">A)</span> read -p SENHA
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(4, 'b', true)">
+                                <span class="option-letter">B)</span> read -s SENHA
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(4, 'c', false)">
+                                <span class="option-letter">C)</span> read -h SENHA
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(4, 'd', false)">
+                                <span class="option-letter">D)</span> read -n SENHA
+                            </div>
+                        </div>
+                        <div class="quiz-feedback" id="feedback4"></div>
+                    </div>
+
+                    <div id="quiz-result" style="display: none; text-align: center; margin-top: 30px;">
+                        <h3>🎉 Quiz Concluído!</h3>
+                        <div class="highlight-box">
+                            <p><strong>Sua pontuação: <span id="final-score">0</span>/4</strong></p>
+                            <p id="result-message"></p>
+                        </div>
+                        <button class="nav-button" onclick="restartQuiz()" style="margin-top: 20px;">🔄 Refazer Quiz</button>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="nav-button" id="next-quiz-btn" onclick="nextQuestion()" style="display: none;">
+                        Próxima Questão ➡️
+                    </button>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(8)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 9 de 10</span>
+                <button class="nav-button" onclick="showSlide(10)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 10: Conclusão -->
+        <div class="slide" id="slide-10">
+            <div class="content">
+                <h2>🎓 Conclusão: Você é um Programador Shell Script!</h2>
+                
+                <div class="highlight-box center-text">
+                    <h3>🌟 Parabéns! Você Domina os Fundamentos do Shell Script!</h3>
+                    <p>Agora você pode criar scripts úteis e interativos no Linux</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📚 O que Você Aprendeu</h3>
+                        <div class="bullet-point">Declarar e usar variáveis</div>
+                        <div class="bullet-point">Capturar resultados de comandos</div>
+                        <div class="bullet-point">Proteger texto com aspas</div>
+                        <div class="bullet-point">Interpretar códigos de saída</div>
+                        <div class="bullet-point">Interagir com usuários (read)</div>
+                        <div class="bullet-point">Criar scripts práticos</div>
+                        <div class="bullet-point">Fazer busca em arquivos</div>
+                    </div>
+                    <div>
+                        <h3>🚀 Próximos Passos</h3>
+                        <div class="bullet-point">Estruturas condicionais (if/else)</div>
+                        <div class="bullet-point">Loops (for, while)</div>
+                        <div class="bullet-point">Funções personalizadas</div>
+                        <div class="bullet-point">Arrays e listas</div>
+                        <div class="bullet-point">Manipulação avançada de strings</div>
+                        <div class="bullet-point">Expressões regulares</div>
+                        <div class="bullet-point">Scripts de automação</div>
+                    </div>
+                </div>
+
+                <div style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); padding: 25px; border-radius: 15px; margin: 20px 0;">
+                    <h3>🎯 Desafio Final</h3>
+                    <p>Crie um script que:</p>
+                    <div class="bullet-point">Pergunte nome, idade e curso do usuário</div>
+                    <div class="bullet-point">Capture a data atual do sistema</div>
+                    <div class="bullet-point">Salve tudo em um arquivo "cadastro.txt"</div>
+                    <div class="bullet-point">Confirme o sucesso com exit codes</div>
+                    <div class="bullet-point">Use aspas para proteger nomes com espaços</div>
+                </div>
+
+                <div class="example-box center-text" style="font-size: 1.2em;">
+                    <h3>⚡ Você Agora É um Scripteiro Linux! ⚡</h3>
+                    <p>"O poder do terminal está em suas mãos!"<br>
+                    Continue praticando e automatizando tarefas! 🚀</p>
+                </div>
+
+                <div class="info-box center-text">
+                    <h3>📋 Comandos Essenciais para Memorizar</h3>
+                    <div class="script-box">
+<span class="variable">VARIAVEL</span>=<span class="string">valor</span>              <span class="comment"># declarar variável</span>
+echo $VARIAVEL               <span class="comment"># exibir variável</span>
+<span class="variable">CMD</span>=<span class="string">$(date)</span>                 <span class="comment"># capturar comando</span>
+echo $?                      <span class="comment"># código de saída</span>
+read NOME                    <span class="comment"># ler entrada</span>
+read -p "Digite: " VAR       <span class="comment"># ler com prompt</span>
+read -s SENHA                <span class="comment"># ler senha oculta</span>
+echo "Texto $VAR"            <span class="comment"># aspas duplas</span>
+echo 'Texto $VAR'            <span class="comment"># aspas simples</span>
+                    </div>
+                </div>
+
+                <div style="background: #d1ecf1; color: #0c5460; padding: 20px; border-radius: 10px; margin: 15px 0; text-align: center;">
+                    <p style="font-size: 1.1em; margin: 0;">
+                        <strong>Lembre-se:</strong> chmod +x para executar, 
+                        echo $? para debugar, 
+                        aspas para proteger!<br>
+                        <strong>Happy Shell Scripting! 🐧📜</strong>
+                    </p>
+                </div>
+
+                <div class="success-box center-text">
+                    <h3>🎁 Recursos Adicionais</h3>
+                    <p>Continue aprendendo em:<br>
+                    • https://www.shellscript.sh<br>
+                    • https://www.vivaolinux.com.br<br>
+                    • man bash (manual completo)</p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(9)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 10 de 10</span>
+                <button class="nav-button" onclick="showSlide(1)" style="background: #27ae60;">🏠 Início</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variáveis globais
+        let currentSlide = 1;
+        
+        // Função para mostrar slide específico
+        function showSlide(slideNumber) {
+            // Esconder todos os slides
+            const slides = document.querySelectorAll('.slide');
+            slides.forEach(slide => {
+                slide.classList.remove('active');
+            });
+            
+            // Mostrar slide específico
+            const targetSlide = document.getElementById('slide-' + slideNumber);
+            if (targetSlide) {
+                targetSlide.classList.add('active');
+                currentSlide = slideNumber;
+                
+                // Atualizar contador
+                document.getElementById('current-slide').textContent = slideNumber;
+            }
+        }
+        
+        // Navegação por teclado
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft' && currentSlide > 1) {
+                showSlide(currentSlide - 1);
+            } else if (e.key === 'ArrowRight' && currentSlide < 10) {
+                showSlide(currentSlide + 1);
+            }
+        });
+        
+        // Variáveis do quiz
+        let currentQuestion = 1;
+        let score = 0;
+        let quizAnswered = [false, false, false, false];
+        
+        // Função do quiz
+        function selectOption(questionNum, option, isCorrect) {
+            if (quizAnswered[questionNum - 1]) return;
+            
+            const options = document.querySelectorAll('#question' + questionNum + ' .quiz-option');
+            const feedback = document.getElementById('feedback' + questionNum);
+            
+            // Marcar todas as opções
+            options.forEach(opt => {
+                opt.style.pointerEvents = 'none';
+                if (opt.onclick.toString().includes('true')) {
+                    opt.classList.add('correct');
+                } else if (opt === event.currentTarget) {
+                    opt.classList.add(isCorrect ? 'correct' : 'incorrect');
+                }
+            });
+            
+            // Mostrar feedback
+            if (isCorrect) {
+                feedback.innerHTML = '✅ Correto! Muito bem!';
+                feedback.className = 'quiz-feedback correct';
+                score++;
+            } else {
+                let correctAnswer = '';
+                switch(questionNum) {
+                    case 1:
+                        correctAnswer = 'Variáveis são declaradas sem espaços: NOME="valor"';
+                        break;
+                    case 2:
+                        correctAnswer = '$? contém o código de saída do último comando (0=sucesso, outros=erro).';
+                        break;
+                    case 3:
+                        correctAnswer = 'Aspas duplas interpretam $VARIAVEL, aspas simples mostram texto literal.';
+                        break;
+                    case 4:
+                        correctAnswer = 'read -s esconde o que está sendo digitado (útil para senhas).';
+                        break;
+                }
+                feedback.innerHTML = `❌ Incorreto. ${correctAnswer}`;
+                feedback.className = 'quiz-feedback incorrect';
+            }
+            
+            quizAnswered[questionNum - 1] = true;
+            
+            // Mostrar botão para próxima questão
+            if (questionNum < 4) {
+                document.getElementById('next-quiz-btn').style.display = 'inline-block';
+            } else {
+                // Última questão - mostrar resultado
+                setTimeout(() => {
+                    showQuizResult();
+                }, 2000);
+            }
+        }
+
+        function nextQuestion() {
+            document.getElementById('question' + currentQuestion).style.display = 'none';
+            currentQuestion++;
+            document.getElementById('question' + currentQuestion).style.display = 'block';
+            document.getElementById('next-quiz-btn').style.display = 'none';
+        }
+
+        function showQuizResult() {
+            // Esconder última questão
+            document.getElementById('question4').style.display = 'none';
+            
+            // Mostrar resultado
+            document.getElementById('quiz-result').style.display = 'block';
+            document.getElementById('final-score').textContent = score;
+            
+            const resultMessage = document.getElementById('result-message');
+            if (score === 4) {
+                resultMessage.innerHTML = '🏆 Perfeito! Você é um mestre do Shell Script!';
+            } else if (score === 3) {
+                resultMessage.innerHTML = '🌟 Excelente! Quase um expert em scripting!';
+            } else if (score === 2) {
+                resultMessage.innerHTML = '👏 Bom trabalho! Continue praticando!';
+            } else if (score === 1) {
+                resultMessage.innerHTML = '📖 Há espaço para melhorar. Revise os conceitos!';
+            } else {
+                resultMessage.innerHTML = '🔄 Recomendo revisar toda a aula novamente!';
+            }
+        }
+
+        function restartQuiz() {
+            // Reset variables
+            currentQuestion = 1;
+            score = 0;
+            quizAnswered = [false, false, false, false];
+            
+            // Reset interface
+            for (let i = 1; i <= 4; i++) {
+                const question = document.getElementById('question' + i);
+                const options = question.querySelectorAll('.quiz-option');
+                const feedback = document.getElementById('feedback' + i);
+                
+                // Reset options
+                options.forEach(opt => {
+                    opt.className = 'quiz-option';
+                    opt.style.pointerEvents = 'auto';
+                });
+                
+                // Hide feedback
+                feedback.style.display = 'none';
+                
+                // Hide all questions except first
+                question.style.display = i === 1 ? 'block' : 'none';
+            }
+            
+            // Hide result and buttons
+            document.getElementById('quiz-result').style.display = 'none';
+            document.getElementById('next-quiz-btn').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

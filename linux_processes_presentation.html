@@ -1,0 +1,1415 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciamento de Processos no Linux</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .presentation {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide {
+            min-height: 100vh;
+            padding: 60px 40px;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            background: white;
+            margin: 20px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        .slide h1 {
+            font-size: 3.5em;
+            color: #4a5568;
+            text-align: center;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .slide h2 {
+            font-size: 2.8em;
+            color: #2d3748;
+            margin-bottom: 30px;
+            border-bottom: 4px solid #1a1a2e;
+            padding-bottom: 15px;
+        }
+
+        .slide h3 {
+            font-size: 2.2em;
+            color: #4a5568;
+            margin: 25px 0 15px 0;
+        }
+
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        .bullet-point {
+            display: flex;
+            align-items: flex-start;
+            margin: 15px 0;
+            font-size: 1.3em;
+            line-height: 1.5;
+        }
+
+        .bullet-point::before {
+            content: "⚡";
+            margin-right: 15px;
+            font-size: 1.2em;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #1a1a2e;
+        }
+
+        .example-box {
+            background: linear-gradient(135deg, #00c9ff 0%, #92fe9d 100%);
+            color: #2d3748;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #00b894;
+        }
+
+        .terminal-box {
+            background: #2d3748;
+            color: #00ff41;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #00ff41;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+            position: relative;
+        }
+
+        .terminal-box::before {
+            content: "💻 Terminal Linux";
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            background: #2d3748;
+            color: #fff;
+            padding: 5px 15px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .prompt {
+            color: #4299e1;
+            font-weight: bold;
+        }
+
+        .command {
+            color: #00ff41;
+            font-weight: bold;
+        }
+
+        .output {
+            color: #e2e8f0;
+            margin-left: 0;
+            margin-top: 5px;
+        }
+
+        .nav-button {
+            padding: 15px 30px;
+            background: #1a1a2e;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-button:hover {
+            background: #16213e;
+            transform: translateY(-2px);
+        }
+
+        .nav-button.start {
+            background: #27ae60;
+            font-size: 1.4em;
+            padding: 20px 40px;
+        }
+
+        .nav-button.start:hover {
+            background: #229954;
+        }
+
+        .slide-navigation {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(255,255,255,0.9);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #4a5568;
+            z-index: 1000;
+        }
+
+        .center-text {
+            text-align: center;
+        }
+
+        .large-text {
+            font-size: 1.4em;
+            line-height: 1.6;
+        }
+
+        /* Quiz Styles */
+        .quiz-container {
+            max-width: 100%;
+            margin: 20px 0;
+        }
+
+        .quiz-question {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 2px solid #e2e8f0;
+        }
+
+        .quiz-question h3 {
+            color: #1a1a2e;
+            margin-bottom: 20px;
+        }
+
+        .quiz-question p {
+            font-size: 1.3em;
+            margin-bottom: 25px;
+            font-weight: bold;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .quiz-option {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1em;
+        }
+
+        .quiz-option:hover {
+            border-color: #1a1a2e;
+            background: #f0f4ff;
+            transform: translateX(5px);
+        }
+
+        .quiz-option.selected {
+            border-color: #1a1a2e;
+            background: #1a1a2e;
+            color: white;
+        }
+
+        .quiz-option.correct {
+            border-color: #48bb78;
+            background: #48bb78;
+            color: white;
+        }
+
+        .quiz-option.incorrect {
+            border-color: #f56565;
+            background: #f56565;
+            color: white;
+        }
+
+        .option-letter {
+            background: #1a1a2e;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .quiz-option.correct .option-letter {
+            background: #48bb78;
+        }
+
+        .quiz-option.incorrect .option-letter {
+            background: #f56565;
+        }
+
+        .quiz-feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            display: none;
+        }
+
+        .quiz-feedback.correct {
+            background: #c6f6d5;
+            color: #22543d;
+            border: 2px solid #48bb78;
+            display: block;
+        }
+
+        .quiz-feedback.incorrect {
+            background: #fed7d7;
+            color: #742a2a;
+            border: 2px solid #f56565;
+            display: block;
+        }
+
+        .warning-box {
+            background: #ffeaa7;
+            color: #2d3436;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #fdcb6e;
+        }
+
+        .info-box {
+            background: #d1ecf1;
+            color: #0c5460;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">12</span>
+        </div>
+
+        <!-- Slide 1: Título -->
+        <div class="slide active" id="slide-1">
+            <div class="content center-text">
+                <h1>⚙️ Gerenciamento de Processos no Linux</h1>
+                <h2 style="border: none; color: #1a1a2e;">Controlando a "Cozinha" do Sistema</h2>
+                <div class="highlight-box large-text">
+                    <strong>Do Básico ao Avançado</strong><br>
+                    Monitoramento, controle e otimização<br>
+                    Comandos essenciais para administradores
+                </div>
+                
+                <div class="terminal-box" style="margin-top: 40px;">
+<span class="prompt">user@linux:~$</span> <span class="command">ps aux | head -1</span>
+<div class="output">USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND</div>
+<span class="prompt">user@linux:~$</span> <span class="command">echo "Gerenciando processos como um chef! 👨‍🍳"</span>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 1 de 12</span>
+                <button class="nav-button start" onclick="showSlide(2)">
+                    Começar Aula ➡️
+                </button>
+            </div>
+        </div>
+
+        <!-- Slide 2: Introdução a Processos -->
+        <div class="slide" id="slide-2">
+            <div class="content">
+                <h2>🧭 Introdução a Processos</h2>
+                
+                <div class="highlight-box">
+                    <h3>🏭 O que é um Processo?</h3>
+                    <p>Imagine o computador como uma cozinha movimentada. Cada processo é um cozinheiro trabalhando em uma receita diferente!</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📋 Definição</h3>
+                        <div class="example-box">
+                            <p><strong>Processo</strong> = um programa em execução na memória</p>
+                            <div class="bullet-point">Cada aplicação que você abre vira um processo</div>
+                            <div class="bullet-point">Firefox = processo, Calculadora = processo</div>
+                            <div class="bullet-point">Alguns processos são invisíveis (serviços)</div>
+                        </div>
+                        
+                        <h3>🆔 Características dos Processos</h3>
+                        <div class="bullet-point"><strong>PID:</strong> Número único de identificação</div>
+                        <div class="bullet-point"><strong>PPID:</strong> Quem criou este processo</div>
+                        <div class="bullet-point"><strong>Estado:</strong> Rodando, dormindo, zumbi</div>
+                        <div class="bullet-point"><strong>Prioridade:</strong> Quem tem preferência no processador</div>
+                    </div>
+                    <div>
+                        <h3>🎭 Estados dos Processos</h3>
+                        <div class="example-box">
+                            <div class="terminal-box">
+<span class="output">R (Running)   - Trabalhando ativamente</span><br>
+<span class="output">S (Sleeping)  - Esperando algo acontecer</span><br>
+<span class="output">D (Disk Wait) - Esperando disco/rede</span><br>
+<span class="output">Z (Zombie)    - Processo "morto-vivo"</span><br>
+<span class="output">T (Stopped)   - Pausado temporariamente</span>
+                            </div>
+                        </div>
+                        
+                        <h3>👨‍👩‍👧‍👦 Hierarquia</h3>
+                        <div class="info-box">
+                            <p>Os processos formam uma árvore familiar:<br>
+                            • Processo pai cria processos filhos<br>
+                            • Se o pai morre, filhos podem virar órfãos<br>
+                            • O processo 1 (init) é o "avô" de todos</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box center-text">
+                    <h3>💡 Analogia da Cozinha</h3>
+                    <p>Cozinheiro Principal (init) → Sous Chef (bash) → Ajudantes (firefox, calculadora)<br>
+                    Cada um tem seu número de identificação (PID) e sabe quem o contratou (PPID)</p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(1)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 2 de 12</span>
+                <button class="nav-button" onclick="showSlide(3)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 3: Comando ps -->
+        <div class="slide" id="slide-3">
+            <div class="content">
+                <h2>📋 Comando ps - Fotografia dos Processos</h2>
+                
+                <div class="highlight-box">
+                    <h3>📸 O que faz o ps?</h3>
+                    <p>É como tirar uma foto da cozinha para ver quem está trabalhando neste exato momento</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📱 Uso Básico</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">ps</span>
+<div class="output">  PID TTY          TIME CMD
+ 1234 pts/0    00:00:00 bash
+ 5678 pts/0    00:00:00 ps</div>
+                        </div>
+                        
+                        <h3>🌍 Ver Todos os Processos</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">ps aux</span>
+<div class="output">USER  PID %CPU %MEM    VSZ   RSS TTY STAT START TIME COMMAND
+root    1  0.0  0.1  22556  4940  ?   Ss   10:00 0:01 /sbin/init
+user 1234  0.0  0.2  21432  8960 pts/0 Ss   10:15 0:00 bash</div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🔍 Entendendo as Colunas</h3>
+                        <div class="example-box">
+                            <div class="bullet-point"><strong>USER:</strong> Quem é o "dono" do processo</div>
+                            <div class="bullet-point"><strong>PID:</strong> Número de identificação único</div>
+                            <div class="bullet-point"><strong>%CPU:</strong> Quanto processador está usando</div>
+                            <div class="bullet-point"><strong>%MEM:</strong> Quanto de memória está usando</div>
+                            <div class="bullet-point"><strong>COMMAND:</strong> Qual programa está rodando</div>
+                        </div>
+                        
+                        <h3>🌳 Visualização em Árvore</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">ps aux --forest</span>
+<div class="output">init─┬─bash───firefox───{firefox}
+     └─systemd</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>🔎 Variações Úteis do ps</h3>
+                    <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">ps aux | grep firefox</span>        <span class="output"># Buscar processo específico</span><br>
+<span class="prompt">user@linux:~$</span> <span class="command">ps -u usuario</span>              <span class="output"># Processos de um usuário</span><br>
+<span class="prompt">user@linux:~$</span> <span class="command">ps aux | head -10</span>           <span class="output"># Primeiros 10 processos</span><br>
+<span class="prompt">user@linux:~$</span> <span class="command">ps aux --sort=-%cpu</span>         <span class="output"># Ordenar por uso de CPU</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(2)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 3 de 12</span>
+                <button class="nav-button" onclick="showSlide(4)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 4: Comando top -->
+        <div class="slide" id="slide-4">
+            <div class="content">
+                <h2>📊 Comando top - Monitor em Tempo Real</h2>
+                
+                <div class="highlight-box">
+                    <h3>🎬 Cinema dos Processos</h3>
+                    <p>Se ps é uma foto, top é um filme! Mostra processos mudando em tempo real</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📺 Interface do top</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">top</span>
+<div class="output">Tasks: 195 total,   1 running, 194 sleeping
+%Cpu(s):  2.3 us,  1.1 sy,  96.6 id
+KiB Mem :  8041564 total,  1234567 free
+  PID USER %CPU %MEM COMMAND
+ 1234 user  5.3  2.1 firefox
+ 5678 root  0.1  0.5 systemd</div>
+                        </div>
+                        
+                        <h3>📈 Informações do Cabeçalho</h3>
+                        <div class="bullet-point"><strong>Tasks:</strong> Quantos processos existem</div>
+                        <div class="bullet-point"><strong>%Cpu:</strong> Como o processador está sendo usado</div>
+                        <div class="bullet-point"><strong>Mem:</strong> Situação da memória RAM</div>
+                    </div>
+                    <div>
+                        <h3>⌨️ Navegando no top</h3>
+                        <div class="info-box">
+                            <h4>Teclas Úteis:</h4>
+                            <p><strong>q</strong> - sair do top<br>
+                            <strong>k</strong> - matar um processo<br>
+                            <strong>u</strong> - filtrar por usuário<br>
+                            <strong>M</strong> - ordenar por memória<br>
+                            <strong>P</strong> - ordenar por CPU<br>
+                            <strong>h</strong> - ajuda completa</p>
+                        </div>
+                        
+                        <h3>🎯 Analisando Performance</h3>
+                        <div class="example-box">
+                            <p>Processos no topo da lista são os que mais consomem recursos</p>
+                            <div class="bullet-point">CPU alta = muito processamento</div>
+                            <div class="bullet-point">MEM alta = usando muita RAM</div>
+                            <div class="bullet-point">TIME+ = tempo total rodando</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h3>⚠️ Interpretando o Load Average</h3>
+                    <p>Na primeira linha você vê 3 números (ex: 0.15, 0.20, 0.18):<br>
+                    • Primeiro número = carga dos últimos 1 minuto<br>
+                    • Segundo = últimos 5 minutos<br>
+                    • Terceiro = últimos 15 minutos<br>
+                    <strong>Valores acima de 1.0 = sistema sobrecarregado!</strong></p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(3)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 4 de 12</span>
+                <button class="nav-button" onclick="showSlide(5)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 5: kill -->
+        <div class="slide" id="slide-5">
+            <div class="content">
+                <h2>🔪 Comando kill - Despedindo Processos</h2>
+                
+                <div class="highlight-box">
+                    <h3>🚪 Pedindo para Sair Educadamente</h3>
+                    <p>Como demitir um funcionário da cozinha de forma educada ou... mais direta</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🤝 Formas Educadas</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">kill 1234</span>
+<div class="output"># Envia SIGTERM (pedido educado para parar)</div>
+<span class="prompt">user@linux:~$</span> <span class="command">kill -15 1234</span>
+<div class="output"># Mesmo que acima (15 = SIGTERM)</div>
+<span class="prompt">user@linux:~$</span> <span class="command">kill -TERM 1234</span>
+<div class="output"># Outra forma de escrever SIGTERM</div>
+                        </div>
+                        
+                        <h3>📞 Encontrando o PID</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">ps aux | grep firefox</span>
+<div class="output">user  1234  5.3  2.1  firefox</div>
+<span class="prompt">user@linux:~$</span> <span class="command">kill 1234</span>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>💥 Formas Mais Diretas</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">kill -9 1234</span>
+<div class="output"># SIGKILL - força o processo a parar AGORA!</div>
+<span class="prompt">user@linux:~$</span> <span class="command">kill -KILL 1234</span>
+<div class="output"># Mesmo que acima</div>
+                        </div>
+                        
+                        <h3>⏸️ Outras Opções</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">kill -STOP 1234</span>
+<div class="output"># Pausa o processo (Ctrl+Z)</div>
+<span class="prompt">user@linux:~$</span> <span class="command">kill -CONT 1234</span>
+<div class="output"># Retoma processo pausado</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>🎭 Principais Sinais (Signals)</h3>
+                    <div class="terminal-box">
+<span class="output">SIGTERM (15) - "Por favor, pare educadamente"</span><br>
+<span class="output">SIGKILL (9)  - "PARE AGORA! SEM DISCUSSÃO!"</span><br>
+<span class="output">SIGHUP (1)   - "Releia suas configurações"</span><br>
+<span class="output">SIGSTOP (19) - "Pause aí um momento"</span><br>
+<span class="output">SIGCONT (18) - "Pode continuar trabalhando"</span>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h3>⚠️ Use kill -9 com Moderação!</h3>
+                    <p><strong>kill -9</strong> é como desligar a energia de um equipamento sem avisar.<br>
+                    O processo não consegue salvar dados ou fazer limpeza.<br>
+                    <strong>Sempre tente kill normal primeiro, só use -9 se necessário!</strong></p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(4)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 5 de 12</span>
+                <button class="nav-button" onclick="showSlide(6)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 6: killall -->
+        <div class="slide" id="slide-6">
+            <div class="content">
+                <h2>💀 Comando killall - Demissão em Massa</h2>
+                
+                <div class="highlight-box">
+                    <h3>🏢 Demitindo Todos de uma Vez</h3>
+                    <p>Quando você quer despedir todos os funcionários que fazem a mesma função</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🎯 Uso Básico</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">killall firefox</span>
+<div class="output"># Mata TODOS os processos Firefox</div>
+<span class="prompt">user@linux:~$</span> <span class="command">killall -9 firefox</span>
+<div class="output"># Força a morte de todos os Firefox</div>
+<span class="prompt">user@linux:~$</span> <span class="command">killall chrome</span>
+<div class="output"># Mata todos os processos Chrome</div>
+                        </div>
+                        
+                        <h3>👤 Por Usuário</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">sudo killall -u usuario</span>
+<div class="output"># Mata todos os processos do usuário</div>
+<span class="prompt">user@linux:~$</span> <span class="command">killall -u root apache2</span>
+<div class="output"># Mata apache2 rodando como root</div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>⚡ Opções Úteis</h3>
+                        <div class="example-box">
+                            <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">killall -i firefox</span>
+<div class="output"># -i = pergunta antes de matar</div>
+<span class="prompt">user@linux:~$</span> <span class="command">killall -v firefox</span>
+<div class="output"># -v = mostra o que está fazendo</div>
+<span class="prompt">user@linux:~$</span> <span class="command">killall -w firefox</span>
+<div class="output"># -w = espera até todos morrerem</div>
+                            </div>
+                        </div>
+                        
+                        <h3>🎯 Comparação: kill vs killall</h3>
+                        <div class="info-box">
+                            <p><strong>kill:</strong> Mata um processo específico pelo PID<br>
+                            <strong>killall:</strong> Mata todos os processos com aquele nome<br><br>
+                            É como a diferença entre despedir uma pessoa específica vs. fechar um departamento inteiro!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>🏋️ Exemplo Prático</h3>
+                    <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">ps aux | grep firefox</span>     <span class="output"># Ver quantos Firefox estão rodando</span><br>
+<span class="output">user 1234  2.1  1.5  /usr/bin/firefox</span><br>
+<span class="output">user 5678  1.8  1.2  /usr/bin/firefox</span><br>
+<span class="output">user 9012  0.5  0.8  /usr/bin/firefox</span><br>
+<span class="prompt">user@linux:~$</span> <span class="command">killall firefox</span>           <span class="output"># Mata todos de uma vez!</span><br>
+<span class="prompt">user@linux:~$</span> <span class="command">ps aux | grep firefox</span>     <span class="output"># Verificar se morreram</span>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h3>⚠️ Cuidado com killall!</h3>
+                    <p>killall mata TODOS os processos com aquele nome, não importa quantos sejam.<br>
+                    Se você tem 10 abas do Firefox abertas, <strong>killall firefox</strong> fecha todas!<br>
+                    <strong>Sempre verifique antes com ps aux | grep nome_processo</strong></p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(5)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 6 de 12</span>
+                <button class="nav-button" onclick="showSlide(7)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 7: jobs, fg, bg -->
+        <div class="slide" id="slide-7">
+            <div class="content">
+                <h2>🎮 jobs, fg, bg - Controlando Tarefas</h2>
+                
+                <div class="highlight-box">
+                    <h3>🎭 Pausa e Retoma no Teatro dos Processos</h3>
+                    <p>Como pausar, retomar e alternar entre tarefas como um diretor de teatro</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>⏸️ Pausando Processos</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">ping google.com</span>
+<div class="output">PING google.com ...</div>
+<span class="output"># Pressione Ctrl+Z para pausar</span>
+<div class="output">[1]+  Stopped    ping google.com</div>
+<span class="prompt">user@linux:~$</span>
+                        </div>
+                        
+                        <h3>📋 jobs - Lista de Tarefas</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">jobs</span>
+<div class="output">[1]+  Stopped    ping google.com
+[2]-  Running    top &</div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🎬 fg - Trazer para Frente</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">fg</span>
+<div class="output"># Retoma a última tarefa pausada</div>
+<span class="prompt">user@linux:~$</span> <span class="command">fg %1</span>
+<div class="output"># Retoma especificamente a tarefa #1</div>
+                        </div>
+                        
+                        <h3>🏃 bg - Mandar para Trás</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">bg %1</span>
+<div class="output"># Faz tarefa #1 rodar no background</div>
+<span class="prompt">user@linux:~$</span> <span class="command">ping google.com &</span>
+<div class="output"># Já inicia no background</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>🎪 Workflow Completo</h3>
+                    <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">top</span>                    <span class="output"># Inicia top</span><br>
+<span class="output"># Pressione Ctrl+Z</span><br>
+<div class="output">[1]+  Stopped    top</div>
+<span class="prompt">user@linux:~$</span> <span class="command">ping google.com</span>       <span class="output"># Inicia ping</span><br>
+<span class="output"># Pressione Ctrl+Z novamente</span><br>
+<div class="output">[2]+  Stopped    ping google.com</div>
+<span class="prompt">user@linux:~$</span> <span class="command">jobs</span>                   <span class="output"># Ver todas as tarefas</span><br>
+<span class="prompt">user@linux:~$</span> <span class="command">bg %2</span>                  <span class="output"># Ping roda no background</span><br>
+<span class="prompt">user@linux:~$</span> <span class="command">fg %1</span>                  <span class="output"># Top volta para frente</span>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <h3>🎯 Entendendo os Símbolos</h3>
+                    <p><strong>[1]+</strong> = Tarefa número 1, última acessada<br>
+                    <strong>[2]-</strong> = Tarefa número 2, penúltima acessada<br>
+                    <strong>&</strong> = Executar no background desde o início<br>
+                    <strong>Ctrl+Z</strong> = Pausar tarefa atual<br>
+                    <strong>Ctrl+C</strong> = Cancelar/matar tarefa atual</p>
+                </div>
+
+                <div class="warning-box">
+                    <h3>💡 Dica Prática</h3>
+                    <p>Use isso quando você quer rodar várias coisas ao mesmo tempo no terminal:<br>
+                    • Deixe um download rodando no background<br>
+                    • Pause um editor enquanto testa um comando<br>
+                    • Alterne entre monitorar o sistema e fazer outras tarefas</p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(6)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 7 de 12</span>
+                <button class="nav-button" onclick="showSlide(8)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 8: nice e renice -->
+        <div class="slide" id="slide-8">
+            <div class="content">
+                <h2>⚖️ nice e renice - Definindo Prioridades</h2>
+                
+                <div class="highlight-box">
+                    <h3>👑 Sistema de Classes na Cozinha</h3>
+                    <p>Alguns cozinheiros são mais importantes que outros. Vamos definir quem tem prioridade!</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📊 Sistema de Prioridades</h3>
+                        <div class="example-box">
+                            <p><strong>Valores nice:</strong> -20 a +19</p>
+                            <div class="bullet-point"><strong>-20:</strong> Prioridade MÁXIMA (VIP)</div>
+                            <div class="bullet-point"><strong>0:</strong> Prioridade normal (padrão)</div>
+                            <div class="bullet-point"><strong>+19:</strong> Prioridade MÍNIMA (última fila)</div>
+                        </div>
+                        
+                        <h3>🎯 nice - Iniciando com Prioridade</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">nice -n 10 firefox</span>
+<div class="output"># Firefox com baixa prioridade</div>
+<span class="prompt">user@linux:~$</span> <span class="command">nice -n -5 programa_importante</span>
+<div class="output"># Programa com alta prioridade</div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🔧 renice - Mudando Prioridade</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">renice 15 1234</span>
+<div class="output"># Diminui prioridade do PID 1234</div>
+<span class="prompt">user@linux:~$</span> <span class="command">sudo renice -10 1234</span>
+<div class="output"># Aumenta prioridade (precisa sudo)</div>
+<span class="prompt">user@linux:~$</span> <span class="command">renice 5 -u usuario</span>
+<div class="output"># Muda todos os processos do usuário</div>
+                        </div>
+                        
+                        <h3>📊 Verificando Prioridades</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">ps -eo pid,nice,comm</span>
+<div class="output">  PID  NI COMMAND
+ 1234   0 firefox
+ 5678  10 backup_script
+ 9012  -5 game</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>🏋️ Exemplo Prático: Backup Noturno</h3>
+                    <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">nice -n 19 tar -czf backup.tar.gz /home/</span>    <span class="output"># Backup com baixíssima prioridade</span><br>
+<span class="prompt">user@linux:~$</span> <span class="command">ps aux | grep tar</span>                          <span class="output"># Ver se está rodando</span><br>
+<span class="output">user 1234  0.5  2.1  19    0  tar -czf backup.tar.gz</span><br>
+<span class="output">                    ^^ nice 19</span>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <h3>🎭 Analogia do Restaurante</h3>
+                    <p>Imagine um restaurante movimentado:<br>
+                    • <strong>Nice -20:</strong> Pedido do dono (prioridade máxima)<br>
+                    • <strong>Nice 0:</strong> Cliente normal<br>
+                    • <strong>Nice +19:</strong> Limpeza do banheiro (quando der tempo)<br><br>
+                    O sistema operacional é como o maître: decide quem atende primeiro!</p>
+                </div>
+
+                <div class="warning-box">
+                    <h3>⚠️ Cuidados com Prioridades</h3>
+                    <p>• Apenas root pode definir nice negativo (alta prioridade)<br>
+                    • Não abuse de prioridades altas - pode travar o sistema<br>
+                    • Use nice alto para tarefas pesadas que podem esperar<br>
+                    • Processos com nice -20 podem monopolizar o CPU!</p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(7)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 8 de 12</span>
+                <button class="nav-button" onclick="showSlide(9)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 9: htop -->
+        <div class="slide" id="slide-9">
+            <div class="content">
+                <h2>🌈 htop - top Turbinado</h2>
+                
+                <div class="highlight-box">
+                    <h3>🎨 O top com Superpoderes</h3>
+                    <p>htop é como um top que foi para a academia e voltou mais bonito e poderoso!</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🔥 Vantagens do htop</h3>
+                        <div class="example-box">
+                            <div class="bullet-point">Interface colorida e intuitiva</div>
+                            <div class="bullet-point">Mostra todos os cores da CPU</div>
+                            <div class="bullet-point">Navegação com mouse</div>
+                            <div class="bullet-point">Árvore de processos visual</div>
+                            <div class="bullet-point">Busca integrada</div>
+                            <div class="bullet-point">Kill integrado</div>
+                        </div>
+                        
+                        <h3>📦 Instalando htop</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">sudo apt update</span>
+<span class="prompt">user@linux:~$</span> <span class="command">sudo apt install htop</span>
+<span class="prompt">user@linux:~$</span> <span class="command">htop</span>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>⌨️ Teclas Úteis no htop</h3>
+                        <div class="info-box">
+                            <h4>Navegação:</h4>
+                            <p><strong>↑↓</strong> - navegar na lista<br>
+                            <strong>F3</strong> ou <strong>/</strong> - buscar processo<br>
+                            <strong>F5</strong> ou <strong>t</strong> - árvore de processos<br>
+                            <strong>F6</strong> - ordenar por coluna<br>
+                            <strong>F9</strong> ou <strong>k</strong> - kill processo<br>
+                            <strong>F10</strong> ou <strong>q</strong> - sair</p>
+                        </div>
+                        
+                        <h3>🎯 Filtros Úteis</h3>
+                        <div class="terminal-box">
+<span class="output">F4 - filtrar por texto</span><br>
+<span class="output">u  - filtrar por usuário</span><br>
+<span class="output">H  - mostrar/ocultar threads</span><br>
+<span class="output">K  - mostrar/ocultar kernel threads</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>🎨 Visual do htop</h3>
+                    <div class="terminal-box">
+<span class="output" style="color: #ff6b6b;">CPU[|||||||||||||||||||||| 85.2%]</span> <span class="output" style="color: #4ecdc4;">Tasks: 195, 285 thr; 1 running</span><br>
+<span class="output" style="color: #45b7d1;">Mem[|||||||||||||||       68.4%]</span> <span class="output" style="color: #96ceb4;">Load average: 0.85 0.92 0.88</span><br>
+<span class="output" style="color: #feca57;">Swp[|                      2.1%]</span> <span class="output" style="color: #ff9ff3;">Uptime: 2 days, 14:23:45</span><br>
+<br>
+<span class="output">  PID USER     PRI  NI  VIRT   RES   SHR S CPU% MEM%  TIME+  Command</span><br>
+<span class="output" style="color: #ff6b6b;"> 1234 user      20   0  2.1G  450M   85M R 15.2  5.6  3:45.67 firefox</span><br>
+<span class="output"> 5678 root      20   0  123M   12M   8M  S  2.1  0.2  0:15.43 systemd</span>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <h3>🔍 Interpretando as Barras Coloridas</h3>
+                    <p><strong>CPU:</strong> Azul=baixa prioridade, Verde=normal, Vermelho=kernel, Amarelo=IRQ<br>
+                    <strong>Memória:</strong> Verde=usada, Azul=buffers, Amarelo=cache<br>
+                    <strong>Cores:</strong> Cada barra representa um core do processador</p>
+                </div>
+
+                <div class="warning-box">
+                    <h3>💡 Dica de Ouro</h3>
+                    <p>htop é perfeito para:<br>
+                    • Identificar rapidamente processos problemáticos<br>
+                    • Monitorar uso de recursos em tempo real<br>
+                    • Matar processos sem precisar lembrar PIDs<br>
+                    • Ver a árvore completa de processos<br>
+                    <strong>Uma vez que você usar htop, nunca mais vai querer voltar para o top!</strong></p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(8)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 9 de 12</span>
+                <button class="nav-button" onclick="showSlide(10)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 10: Exemplo Prático -->
+        <div class="slide" id="slide-10">
+            <div class="content">
+                <h2>🏋️ Exemplo Prático: Administrador por um Dia</h2>
+                
+                <div class="highlight-box center-text">
+                    <h3>🎯 Cenário: Sistema Lento</h3>
+                    <p>Seu sistema está travando. Vamos investigar e resolver como um verdadeiro administrador!</p>
+                </div>
+
+                <div class="example-box">
+                    <h3>🔍 Passo 1: Diagnóstico Inicial</h3>
+                    <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">uptime</span>                          <span class="output"># Ver carga do sistema</span><br>
+<div class="output">15:30:45 up 5 days,  2:15,  3 users,  load average: 3.45, 2.88, 2.12</div>
+<span class="output"># Load acima de 1.0 = sistema sobrecarregado!</span><br>
+<br>
+<span class="prompt">user@linux:~$</span> <span class="command">free -h</span>                         <span class="output"># Verificar memória</span><br>
+<div class="output">              total        used        free      available
+Mem:          7.7Gi       7.2Gi       200Mi       300Mi</div>
+<span class="output"># Pouca memória livre!</span>
+                    </div>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🔎 Passo 2: Identificar Culpados</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">ps aux --sort=-%cpu | head -10</span>
+<div class="output">USER   PID %CPU %MEM COMMAND
+user  1234 45.2 25.1 chrome
+user  5678 23.1 15.6 firefox  
+user  9012 12.4  8.2 java</div>
+<span class="prompt">user@linux:~$</span> <span class="command">ps aux --sort=-%mem | head -10</span>
+<div class="output"># Processos que mais usam memória</div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🎯 Passo 3: Ação Imediata</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">kill 1234</span>                      <span class="output"># Tentar fechar educadamente</span><br>
+<span class="output"># Esperar 5 segundos...</span><br>
+<span class="prompt">user@linux:~$</span> <span class="command">ps aux | grep 1234</span>             <span class="output"># Ainda existe?</span><br>
+<span class="prompt">user@linux:~$</span> <span class="command">kill -9 1234</span>                   <span class="output"># Forçar se necessário</span><br>
+<br>
+<span class="prompt">user@linux:~$</span> <span class="command">killall -9 chrome</span>              <span class="output"># Emergência: matar todos</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>🔧 Passo 4: Monitoramento Contínuo</h3>
+                    <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">htop</span>                           <span class="output"># Monitor visual em tempo real</span><br>
+<span class="output"># Observar por alguns minutos...</span><br>
+<span class="output"># Pressionar 'q' para sair</span><br>
+<br>
+<span class="prompt">user@linux:~$</span> <span class="command">uptime</span>                          <span class="output"># Verificar se melhorou</span><br>
+<div class="output">15:35:12 up 5 days,  2:20,  3 users,  load average: 0.45, 1.22, 1.88</div>
+<span class="output"># Muito melhor!</span>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>⚖️ Passo 5: Prevenção</h3>
+                    <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">nice -n 10 backup_script.sh &</span>  <span class="output"># Backup com baixa prioridade</span><br>
+<span class="prompt">user@linux:~$</span> <span class="command">renice 15 5678</span>                 <span class="output"># Diminuir prioridade do Firefox</span><br>
+<span class="prompt">user@linux:~$</span> <span class="command">jobs</span>                           <span class="output"># Ver tarefas em background</span><br>
+<div class="output">[1]+  Running     backup_script.sh &</div>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <h3>✅ Resultado</h3>
+                    <p>Sistema voltou ao normal! Você aprendeu a:<br>
+                    • Diagnosticar problemas de performance<br>
+                    • Identificar processos problemáticos<br>
+                    • Usar kill de forma estratégica<br>
+                    • Monitorar sistema em tempo real<br>
+                    • Prevenir problemas futuros com prioridades</p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(9)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 10 de 12</span>
+                <button class="nav-button" onclick="showSlide(11)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 11: Quiz -->
+        <div class="slide" id="slide-11">
+            <div class="content">
+                <h2>🧠 Quiz - Teste seus Conhecimentos!</h2>
+                
+                <div class="quiz-container">
+                    <div class="quiz-question" id="question1">
+                        <h3>📝 Questão 1</h3>
+                        <p><strong>Qual comando mostra processos em tempo real, atualizando automaticamente?</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" onclick="selectOption(1, 'a', false)">
+                                <span class="option-letter">A)</span> ps aux
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(1, 'b', true)">
+                                <span class="option-letter">B)</span> top
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(1, 'c', false)">
+                                <span class="option-letter">C)</span> kill
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(1, 'd', false)">
+                                <span class="option-letter">D)</span> jobs
+                            </div>
+                        </div>
+                        <div class="quiz-feedback" id="feedback1"></div>
+                    </div>
+
+                    <div class="quiz-question" id="question2" style="display: none;">
+                        <h3>📝 Questão 2</h3>
+                        <p><strong>Qual a diferença entre "kill 1234" e "kill -9 1234"?</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" onclick="selectOption(2, 'a', true)">
+                                <span class="option-letter">A)</span> kill normal pede educadamente, kill -9 força a parada
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(2, 'b', false)">
+                                <span class="option-letter">B)</span> Não há diferença, fazem a mesma coisa
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(2, 'c', false)">
+                                <span class="option-letter">C)</span> kill -9 é mais educado que kill normal
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(2, 'd', false)">
+                                <span class="option-letter">D)</span> kill -9 só funciona para processos do root
+                            </div>
+                        </div>
+                        <div class="quiz-feedback" id="feedback2"></div>
+                    </div>
+
+                    <div class="quiz-question" id="question3" style="display: none;">
+                        <h3>📝 Questão 3</h3>
+                        <p><strong>No sistema nice, qual valor dá MAIOR prioridade ao processo?</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" onclick="selectOption(3, 'a', true)">
+                                <span class="option-letter">A)</span> -20
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(3, 'b', false)">
+                                <span class="option-letter">B)</span> 0
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(3, 'c', false)">
+                                <span class="option-letter">C)</span> 10
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(3, 'd', false)">
+                                <span class="option-letter">D)</span> 19
+                            </div>
+                        </div>
+                        <div class="quiz-feedback" id="feedback3"></div>
+                    </div>
+
+                    <div class="quiz-question" id="question4" style="display: none;">
+                        <h3>📝 Questão 4</h3>
+                        <p><strong>Qual tecla você pressiona para pausar um processo em execução no terminal?</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" onclick="selectOption(4, 'a', false)">
+                                <span class="option-letter">A)</span> Ctrl+C
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(4, 'b', true)">
+                                <span class="option-letter">B)</span> Ctrl+Z
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(4, 'c', false)">
+                                <span class="option-letter">C)</span> Ctrl+X
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(4, 'd', false)">
+                                <span class="option-letter">D)</span> Ctrl+P
+                            </div>
+                        </div>
+                        <div class="quiz-feedback" id="feedback4"></div>
+                    </div>
+
+                    <div id="quiz-result" style="display: none; text-align: center; margin-top: 30px;">
+                        <h3>🎉 Quiz Concluído!</h3>
+                        <div class="highlight-box">
+                            <p><strong>Sua pontuação: <span id="final-score">0</span>/4</strong></p>
+                            <p id="result-message"></p>
+                        </div>
+                        <button class="nav-button" onclick="restartQuiz()" style="margin-top: 20px;">🔄 Refazer Quiz</button>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="nav-button" id="next-quiz-btn" onclick="nextQuestion()" style="display: none;">
+                        Próxima Questão ➡️
+                    </button>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(10)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 11 de 12</span>
+                <button class="nav-button" onclick="showSlide(12)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 12: Conclusão -->
+        <div class="slide" id="slide-12">
+            <div class="content">
+                <h2>🎓 Conclusão: Você é um Gerente de Processos!</h2>
+                
+                <div class="highlight-box center-text">
+                    <h3>🌟 Parabéns! Você Domina o Gerenciamento de Processos!</h3>
+                    <p>Agora você pode administrar a "cozinha" do Linux como um chef experiente</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📚 O que Você Aprendeu</h3>
+                        <div class="bullet-point">Entender o que são processos</div>
+                        <div class="bullet-point">Monitorar com ps e top</div>
+                        <div class="bullet-point">Controlar com kill e killall</div>
+                        <div class="bullet-point">Gerenciar tarefas com jobs/fg/bg</div>
+                        <div class="bullet-point">Definir prioridades com nice/renice</div>
+                        <div class="bullet-point">Usar htop para diagnósticos</div>
+                        <div class="bullet-point">Resolver problemas reais</div>
+                    </div>
+                    <div>
+                        <h3>🚀 Próximos Passos</h3>
+                        <div class="bullet-point">Pratique o monitoramento diário</div>
+                        <div class="bullet-point">Configure aliases úteis</div>
+                        <div class="bullet-point">Aprenda sobre systemd</div>
+                        <div class="bullet-point">Estude cron e at</div>
+                        <div class="bullet-point">Explore nohup e screen</div>
+                        <div class="bullet-point">Configure monitoramento automático</div>
+                        <div class="bullet-point">Aprenda troubleshooting avançado</div>
+                    </div>
+                </div>
+
+                <div style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); padding: 25px; border-radius: 15px; margin: 20px 0;">
+                    <h3>🎯 Desafio Final</h3>
+                    <p>Tente fazer isso sem olhar as anotações:</p>
+                    <div class="bullet-point">Verificar a carga atual do sistema</div>
+                    <div class="bullet-point">Encontrar o processo que mais consome CPU</div>
+                    <div class="bullet-point">Pausar um processo com Ctrl+Z</div>
+                    <div class="bullet-point">Listar tarefas em background</div>
+                    <div class="bullet-point">Retomar o processo pausado</div>
+                    <div class="bullet-point">Usar htop para monitorar o sistema</div>
+                </div>
+
+                <div class="example-box center-text" style="font-size: 1.2em;">
+                    <h3>⚡ Você Agora É um Administrador de Processos! ⚡</h3>
+                    <p>"Com grandes poderes vêm grandes responsabilidades!"<br>
+                    Use kill -9 com sabedoria, jovem Padawan! 🗡️</p>
+                </div>
+
+                <div class="info-box center-text">
+                    <h3>📋 Comandos Essenciais para Memorizar</h3>
+                    <div class="terminal-box">
+<span class="command">ps aux</span> <span class="output">→ foto dos processos</span><br>
+<span class="command">top</span> <span class="output">→ filme dos processos</span><br>
+<span class="command">htop</span> <span class="output">→ filme colorido</span><br>
+<span class="command">kill PID</span> <span class="output">→ pedir para parar</span><br>
+<span class="command">kill -9 PID</span> <span class="output">→ forçar parada</span><br>
+<span class="command">killall firefox</span> <span class="output">→ matar todos firefox</span><br>
+<span class="command">jobs</span> <span class="output">→ listar tarefas</span><br>
+<span class="command">Ctrl+Z</span> <span class="output">→ pausar processo</span><br>
+<span class="command">fg</span> <span class="output">→ retomar na frente</span><br>
+<span class="command">bg</span> <span class="output">→ rodar no fundo</span>
+                    </div>
+                </div>
+
+                <div style="background: #d1ecf1; color: #0c5460; padding: 20px; border-radius: 10px; margin: 15px 0; text-align: center;">
+                    <p style="font-size: 1.1em; margin: 0;">
+                        <strong>Lembre-se:</strong> top para monitorar, 
+                        kill para controlar, 
+                        nice para priorizar!<br>
+                        <strong>Happy Process Management! 🐧⚙️</strong>
+                    </p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(11)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 12 de 12</span>
+                <button class="nav-button" onclick="showSlide(1)" style="background: #27ae60;">🏠 Início</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variáveis globais
+        let currentSlide = 1;
+        
+        // Função para mostrar slide específico
+        function showSlide(slideNumber) {
+            // Esconder todos os slides
+            const slides = document.querySelectorAll('.slide');
+            slides.forEach(slide => {
+                slide.classList.remove('active');
+            });
+            
+            // Mostrar slide específico
+            const targetSlide = document.getElementById('slide-' + slideNumber);
+            if (targetSlide) {
+                targetSlide.classList.add('active');
+                currentSlide = slideNumber;
+                
+                // Atualizar contador
+                document.getElementById('current-slide').textContent = slideNumber;
+            }
+        }
+        
+        // Navegação por teclado
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft' && currentSlide > 1) {
+                showSlide(currentSlide - 1);
+            } else if (e.key === 'ArrowRight' && currentSlide < 12) {
+                showSlide(currentSlide + 1);
+            }
+        });
+        
+        // Variáveis do quiz
+        let currentQuestion = 1;
+        let score = 0;
+        let quizAnswered = [false, false, false, false];
+        
+        // Função do quiz
+        function selectOption(questionNum, option, isCorrect) {
+            if (quizAnswered[questionNum - 1]) return;
+            
+            const options = document.querySelectorAll('#question' + questionNum + ' .quiz-option');
+            const feedback = document.getElementById('feedback' + questionNum);
+            
+            // Marcar todas as opções
+            options.forEach(opt => {
+                opt.style.pointerEvents = 'none';
+                if (opt.onclick.toString().includes('true')) {
+                    opt.classList.add('correct');
+                } else if (opt === event.currentTarget) {
+                    opt.classList.add(isCorrect ? 'correct' : 'incorrect');
+                }
+            });
+            
+            // Mostrar feedback
+            if (isCorrect) {
+                feedback.innerHTML = '✅ Correto! Muito bem!';
+                feedback.className = 'quiz-feedback correct';
+                score++;
+            } else {
+                let correctAnswer = '';
+                switch(questionNum) {
+                    case 1:
+                        correctAnswer = 'top mostra processos em tempo real, atualizando a tela automaticamente.';
+                        break;
+                    case 2:
+                        correctAnswer = 'kill normal envia SIGTERM (pedido educado), kill -9 envia SIGKILL (força parada).';
+                        break;
+                    case 3:
+                        correctAnswer = 'nice -20 é a maior prioridade (valores menores = maior prioridade).';
+                        break;
+                    case 4:
+                        correctAnswer = 'Ctrl+Z pausa um processo (Ctrl+C mata o processo).';
+                        break;
+                }
+                feedback.innerHTML = `❌ Incorreto. ${correctAnswer}`;
+                feedback.className = 'quiz-feedback incorrect';
+            }
+            
+            quizAnswered[questionNum - 1] = true;
+            
+            // Mostrar botão para próxima questão
+            if (questionNum < 4) {
+                document.getElementById('next-quiz-btn').style.display = 'inline-block';
+            } else {
+                // Última questão - mostrar resultado
+                setTimeout(() => {
+                    showQuizResult();
+                }, 2000);
+            }
+        }
+
+        function nextQuestion() {
+            document.getElementById('question' + currentQuestion).style.display = 'none';
+            currentQuestion++;
+            document.getElementById('question' + currentQuestion).style.display = 'block';
+            document.getElementById('next-quiz-btn').style.display = 'none';
+        }
+
+        function showQuizResult() {
+            // Esconder última questão
+            document.getElementById('question4').style.display = 'none';
+            
+            // Mostrar resultado
+            document.getElementById('quiz-result').style.display = 'block';
+            document.getElementById('final-score').textContent = score;
+            
+            const resultMessage = document.getElementById('result-message');
+            if (score === 4) {
+                resultMessage.innerHTML = '🏆 Perfeito! Você é um mestre dos processos Linux!';
+            } else if (score === 3) {
+                resultMessage.innerHTML = '🌟 Excelente! Quase um expert em gerenciamento!';
+            } else if (score === 2) {
+                resultMessage.innerHTML = '👏 Bom trabalho! Continue praticando!';
+            } else if (score === 1) {
+                resultMessage.innerHTML = '📖 Há espaço para melhorar. Revise os conceitos!';
+            } else {
+                resultMessage.innerHTML = '🔄 Recomendo revisar toda a aula novamente!';
+            }
+        }
+
+        function restartQuiz() {
+            // Reset variables
+            currentQuestion = 1;
+            score = 0;
+            quizAnswered = [false, false, false, false];
+            
+            // Reset interface
+            for (let i = 1; i <= 4; i++) {
+                const question = document.getElementById('question' + i);
+                const options = question.querySelectorAll('.quiz-option');
+                const feedback = document.getElementById('feedback' + i);
+                
+                // Reset options
+                options.forEach(opt => {
+                    opt.className = 'quiz-option';
+                    opt.style.pointerEvents = 'auto';
+                });
+                
+                // Hide feedback
+                feedback.style.display = 'none';
+                
+                // Hide all questions except first
+                question.style.display = i === 1 ? 'block' : 'none';
+            }
+            
+            // Hide result and buttons
+            document.getElementById('quiz-result').style.display = 'none';
+            document.getElementById('next-quiz-btn').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

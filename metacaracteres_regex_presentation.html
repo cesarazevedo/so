@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metacaracteres e Expressões Regulares</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .presentation {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide {
+            min-height: 100vh;
+            padding: 60px 40px;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            background: white;
+            margin: 20px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        .slide h1 {
+            font-size: 3.5em;
+            color: #4a5568;
+            text-align: center;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .slide h2 {
+            font-size: 2.8em;
+            color: #2d3748;
+            margin-bottom: 30px;
+            border-bottom: 4px solid #667eea;
+            padding-bottom: 15px;
+        }
+
+        .slide h3 {
+            font-size: 2.2em;
+            color: #4a5568;
+            margin: 25px 0 15px 0;
+        }
+
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        .bullet-point {
+            display: flex;
+            align-items: flex-start;
+            margin: 15px 0;
+            font-size: 1.3em;
+            line-height: 1.5;
+        }
+
+        .bullet-point::before {
+            content: "🔍";
+            margin-right: 15px;
+            font-size: 1.2em;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #4c51bf;
+        }
+
+        .example-box {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #2f855a;
+        }
+
+        .user-box {
+            background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #c05621;
+        }
+
+        .terminal-box {
+            background: #2d3748;
+            color: #00ff41;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #00ff41;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+            position: relative;
+        }
+
+        .terminal-box::before {
+            content: "💻 Terminal Linux";
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            background: #2d3748;
+            color: #fff;
+            padding: 5px 15px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .prompt {
+            color: #4299e1;
+            font-weight: bold;
+        }
+
+        .command {
+            color: #00ff41;
+            font-weight: bold;
+        }
+
+        .output {
+            color: #e2e8f0;
+            margin-left: 0;
+            margin-top: 5px;
+        }
+
+        .nav-button {
+            padding: 15px 30px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-button:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .nav-button.start {
+            background: #48bb78;
+            font-size: 1.4em;
+            padding: 20px 40px;
+        }
+
+        .nav-button.start:hover {
+            background: #38a169;
+        }
+
+        .slide-navigation {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(255,255,255,0.9);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #4a5568;
+            z-index: 1000;
+        }
+
+        .center-text {
+            text-align: center;
+        }
+
+        .large-text {
+            font-size: 1.4em;
+            line-height: 1.6;
+        }
+
+        /* Quiz Styles */
+        .quiz-container {
+            max-width: 100%;
+            margin: 20px 0;
+        }
+
+        .quiz-question {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 2px solid #e2e8f0;
+        }
+
+        .quiz-question h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .quiz-question p {
+            font-size: 1.3em;
+            margin-bottom: 25px;
+            font-weight: bold;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .quiz-option {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1em;
+        }
+
+        .quiz-option:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+            transform: translateX(5px);
+        }
+
+        .quiz-option.correct {
+            border-color: #48bb78;
+            background: #48bb78;
+            color: white;
+        }
+
+        .quiz-option.incorrect {
+            border-color: #f56565;
+            background: #f56565;
+            color: white;
+        }
+
+        .option-letter {
+            background: #667eea;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .quiz-option.correct .option-letter {
+            background: #48bb78;
+        }
+
+        .quiz-option.incorrect .option-letter {
+            background: #f56565;
+        }
+
+        .quiz-feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            display: none;
+        }
+
+        .quiz-feedback.correct {
+            background: #c6f6d5;
+            color: #22543d;
+            border: 2px solid #48bb78;
+            display: block;
+        }
+
+        .quiz-feedback.incorrect {
+            background: #fed7d7;
+            color: #742a2a;
+            border: 2px solid #f56565;
+            display: block;
+        }
+
+        .warning-box {
+            background: #ffeaa7;
+            color: #2d3436;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #fdcb6e;
+        }
+
+        .tip-box {
+            background: #d1ecf1;
+            color: #0c5460;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #17a2b8;
+        }
+
+        .command-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .command-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .command-card h4 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 1.1em;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            font-weight: bold;
+        }
+
+        .metachar-box {
+            background: #f7fafc;
+            border: 3px solid #667eea;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .metachar-symbol {
+            font-size: 4em;
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+            
+            .command-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .slide {
+                margin: 10px;
+                padding: 30px 20px;
+            }
+            
+            .slide h1 {
+                font-size: 2.5em;
+            }
+            
+            .slide h2 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">11</span>
+        </div>
+
+        <!-- Slide 1: Título -->
+        <div class="slide active" id="slide-1">
+            <div class="content center-text">
+                <h1>🔍 Metacaracteres e Expressões Regulares</h1>
+                <h2 style="border: none; color: #667eea;">Dominando Padrões de Busca no Linux</h2>
+                <div class="highlight-box large-text">
+                    <strong>🎯 Aprenda a criar filtros poderosos</strong><br>
+                    De buscas simples a padrões complexos
+                </div>
+                
+                <div class="terminal-box" style="margin-top: 40px;">
+<span class="prompt">user@linux:~$</span> <span class="command">ls file*.txt</span>
+<div class="output">file1.txt  file2.txt  fileA.txt  fileBackup.txt</div>
+<div class="output"># O poder dos metacaracteres! 🚀</div>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <span style="margin: 0 20px; font-weight: bold; color: #667eea;">Slide 1 de 11</span>
+                <button class="nav-button start" onclick="showSlide(2)">
+                    Começar Apresentação ➡️
+                </button>
+            </div>
+        </div>
+
+        <!-- Slide 2: O que vamos aprender -->
+        <div class="slide" id="slide-2">
+            <div class="content">
+                <h2>📚 O que vamos aprender</h2>
+                
+                <div class="two-column">
+                    <div>
+                        <h3>🔍 Metacaracteres</h3>
+                        <div class="bullet-point">Símbolo ? (um caractere ou opcional)</div>
+                        <div class="bullet-point">Símbolo * (zero ou mais caracteres)</div>
+                        <div class="bullet-point">Colchetes [ ] (conjunto de caracteres)</div>
+                        <div class="bullet-point">Chaves { } (expansão de múltiplos)</div>
+                        
+                        <h3>⚡ Aplicações Práticas</h3>
+                        <div class="bullet-point">Buscar arquivos com padrões</div>
+                        <div class="bullet-point">Filtrar resultados específicos</div>
+                        <div class="bullet-point">Automatizar tarefas com scripts</div>
+                    </div>
+                    <div>
+                        <h3>🎯 Expressões Regulares</h3>
+                        <div class="bullet-point">Padrões de busca avançados</div>
+                        <div class="bullet-point">Manipulação de texto</div>
+                        <div class="bullet-point">Validação de dados</div>
+                        <div class="bullet-point">Processamento de arquivos</div>
+                        
+                        <h3>🛠️ Ferramentas</h3>
+                        <div class="bullet-point">Comando ls com padrões</div>
+                        <div class="bullet-point">Busca em diretórios</div>
+                        <div class="bullet-point">Criação de múltiplos arquivos</div>
+                    </div>
+                </div>
+
+                <div class="example-box center-text">
+                    <h3>🎯 Meta Final</h3>
+                    <p>Você vai conseguir fazer buscas inteligentes e poderosas<br>
+                    como um verdadeiro ninja do terminal! 🥷</p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(1)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #667eea;">Slide 2 de 11</span>
+                <button class="nav-button" onclick="showSlide(3)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 3: Analogia -->
+        <div class="slide" id="slide-3">
+            <div class="content">
+                <h2>🕵️ Analogia: Metacaracteres como Detetives</h2>
+                
+                <div class="highlight-box center-text">
+                    <h3>🤔 Vamos imaginar que você é um detetive procurando pistas...</h3>
+                    <p>Os metacaracteres são suas "lupas especiais" para encontrar padrões!</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <div class="user-box">
+                            <h3>🔍 Metacaracteres = Lupas Especiais</h3>
+                            <div class="bullet-point"><strong>?</strong> = Lupa que vê "1 coisa qualquer"</div>
+                            <div class="bullet-point"><strong>*</strong> = Lupa que vê "várias coisas ou nada"</div>
+                            <div class="bullet-point"><strong>[ ]</strong> = Lupa seletiva "só certas coisas"</div>
+                            <div class="bullet-point"><strong>{ }</strong> = Lupa multiplicadora "várias opções"</div>
+                        </div>
+                        
+                        <div class="example-box">
+                            <h3>📂 Arquivos = Pistas Espalhadas</h3>
+                            <p>Como um detetive procurando evidências em uma sala bagunçada, você usa suas "lupas especiais" para encontrar exatamente o que precisa!</p>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="user-box">
+                            <h3>🎯 Exemplos de "Investigação"</h3>
+                            <div class="bullet-point">Procurar "arquivo + 1 letra + .txt"</div>
+                            <div class="bullet-point">Encontrar "qualquer coisa + .conf"</div>
+                            <div class="bullet-point">Buscar "arquivo com a, b ou c"</div>
+                            <div class="bullet-point">Criar "arquivo1, arquivo2, arquivo3"</div>
+                        </div>
+                        
+                        <div class="example-box">
+                            <h3>🏆 Resultado</h3>
+                            <p>Em segundos, você encontra exatamente o que procura em meio a milhares de arquivos, como um super-detetive digital!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="terminal-box">
+<span class="prompt">detetive@linux:~$</span> <span class="command">ls evidencia?.txt</span>
+<div class="output">evidencia1.txt  evidenciaA.txt  evidenciaX.txt</div>
+<div class="output"># Encontrou 3 pistas! Cada uma com exatamente 1 caractere após "evidencia"</div>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(2)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #667eea;">Slide 3 de 11</span>
+                <button class="nav-button" onclick="showSlide(4)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 4: Símbolo ? -->
+        <div class="slide" id="slide-4">
+            <div class="content">
+                <h2>❓ Símbolo ? - A Lupa do "Exatamente Um"</h2>
+                
+                <div class="metachar-box">
+                    <div class="metachar-symbol">?</div>
+                    <h3>Representa exatamente UM único caractere</h3>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <div class="example-box">
+                            <h3>🎯 Como Funciona</h3>
+                            <div class="bullet-point">Substitui <strong>exatamente 1</strong> caractere</div>
+                            <div class="bullet-point">Pode ser qualquer letra, número ou símbolo</div>
+                            <div class="bullet-point">Não substitui "nada" (sempre precisa de 1)</div>
+                            
+                            <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">ls file?.txt</span>
+<div class="output">file1.txt  file2.txt  filea.txt  fileX.txt</div>
+<div class="output"># Encontra arquivos com exatamente 1 caractere após "file"</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="user-box">
+                            <h3>📝 Exemplos Práticos</h3>
+                            <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">ls test?.log</span>
+<div class="output">test1.log  test2.log  testA.log</div>
+
+<span class="prompt">user@linux:~$</span> <span class="command">ls doc??.pdf</span>
+<div class="output">doc01.pdf  docAB.pdf  docXY.pdf</div>
+<div class="output"># ?? = exatamente 2 caracteres</div>
+
+<span class="prompt">user@linux:~$</span> <span class="command">ls backup_202?-0?.tar</span>
+<div class="output">backup_2023-01.tar  backup_2024-05.tar</div>
+<div class="output"># Padrão de data com ano e mês</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tip-box">
+                    <h3>💡 Dica Importante</h3>
+                    <p>O <strong>?</strong> é perfeito quando você sabe exatamente quantos caracteres podem variar. É como dizer "aqui pode ser qualquer coisa, mas só 1 coisa!"</p>
+                </div>
+
+                <div class="warning-box">
+                    <h3>⚠️ Cuidado!</h3>
+                    <p><code>file?.txt</code> NÃO encontra <code>file.txt</code> (sem nada entre file e .txt)<br>
+                    Para isso, você precisaria de outros metacaracteres!</p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(3)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #667eea;">Slide 4 de 11</span>
+                <button class="nav-button" onclick="showSlide(5)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 5: Símbolo * -->
+        <div class="slide" id="slide-5">
+            <div class="content">
+                <h2>⭐ Símbolo * - A Lupa do "Zero ou Mais"</h2>
+                
+                <div class="metachar-box">
+                    <div class="metachar-symbol">*</div>
+                    <h3>Representa ZERO ou MAIS caracteres</h3>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <div class="example-box">
+                            <h3>🎯 Como Funciona</h3>
+                            <div class="bullet-point">Pode ser <strong>nada</strong> (zero caracteres)</div>
+                            <div class="bullet-point">Pode ser <strong>1, 2, 10, 100...</strong> caracteres</div>
+                            <div class="bullet-point">É o mais "flexível" dos metacaracteres</div>
+                            
+                            <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">ls /etc/*.conf</span>
+<div class="output">httpd.conf  syslog.conf  myapp.conf</div>
+<div class="output"># Todos os arquivos que terminam com .conf</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="user-box">
+                            <h3>📝 Exemplos Práticos</h3>
+                            <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">ls /etc/d*.conf</span>
+<div class="output">dhcpd.conf  debug.conf  d.conf</div>
+<div class="output"># Começam com 'd' e terminam com '.conf'</div>
+
+<span class="prompt">user@linux:~$</span> <span class="command">ls backup*</span>
+<div class="output">backup  backup.tar  backup_2024.zip</div>
+<div class="output"># Qualquer coisa que comece com 'backup'</div>
+
+<span class="prompt">user@linux:~$</span> <span class="command">ls *.log</span>
+<div class="output">sistema.log  error.log  access.log</div>
+<div class="output"># Todos os arquivos .log do diretório</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>🔥 Poder do Asterisco</h3>
+                    <table>
+                        <tr><th>Comando</th><th>Encontra</th><th>Exemplo</th></tr>
+                        <tr><td>*.txt</td><td>Qualquer arquivo .txt</td><td>arquivo.txt, a.txt, documento_longo.txt</td></tr>
+                        <tr><td>file*</td><td>Começa com "file"</td><td>file, file1, file_backup.tar</td></tr>
+                        <tr><td>*log*</td><td>Contém "log"</td><td>mylog.txt, syslog.conf, catalog.db</td></tr>
+                        <tr><td>a*z</td><td>Começa com 'a', termina com 'z'</td><td>az, arquivo.zip, amazing</td></tr>
+                    </table>
+                </div>
+
+                <div class="tip-box">
+                    <h3>💡 Dica de Ouro</h3>
+                    <p>O <strong>*</strong> é seu melhor amigo para limpeza e organização! Use <code>rm *.tmp</code> para deletar arquivos temporários ou <code>mv *.jpg fotos/</code> para organizar imagens.</p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(4)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #667eea;">Slide 5 de 11</span>
+                <button class="nav-button" onclick="showSlide(6)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 6: Colchetes [ ] -->
+        <div class="slide" id="slide-6">
+            <div class="content">
+                <h2>📋 Colchetes [ ] - A Lupa Seletiva</h2>
+                
+                <div class="metachar-box">
+                    <div class="metachar-symbol">[ ]</div>
+                    <h3>Define um CONJUNTO específico de caracteres</h3>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <div class="example-box">
+                            <h3>🎯 Como Funciona</h3>
+                            <div class="bullet-point">Escolhe <strong>1</strong> caractere da lista</div>
+                            <div class="bullet-point">Você define quais são válidos</div>
+                            <div class="bullet-point">Pode usar intervalos (a-z, 0-9)</div>
+                            
+                            <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">ls file[123].txt</span>
+<div class="output">file1.txt  file2.txt  file3.txt</div>
+<div class="output"># Só aceita números 1, 2 ou 3</div>
+                            </div>
+                        </div>
+                        
+                        <div class="user-box">
+                            <h3>📝 Intervalos Úteis</h3>
+                            <div class="terminal-box">
+<span class="command">[a-z]</span>    <span class="output"># Qualquer letra minúscula</span><br>
+<span class="command">[A-Z]</span>    <span class="output"># Qualquer letra maiúscula</span><br>
+<span class="command">[0-9]</span>    <span class="output"># Qualquer dígito</span><br>
+<span class="command">[a-zA-Z]</span> <span class="output"># Qualquer letra</span><br>
+<span class="command">[0-9a-f]</span> <span class="output"># Dígitos hexadecimais</span><br>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="user-box">
+                            <h3>🔍 Exemplos Práticos</h3>
+                            <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">ls /etc/de[bl]*</span>
+<div class="output">debian.conf  debug.log  delta.txt</div>
+<div class="output"># Começa com "de" + (b ou l) + qualquer coisa</div>
+
+<span class="prompt">user@linux:~$</span> <span class="command">ls arquivo[1-5].pdf</span>
+<div class="output">arquivo1.pdf  arquivo3.pdf  arquivo5.pdf</div>
+<div class="output"># Números de 1 a 5</div>
+
+<span class="prompt">user@linux:~$</span> <span class="command">ls test[A-C]*.log</span>
+<div class="output">testA.log  testB_debug.log  testC_final.log</div>
+<div class="output"># Letras A, B ou C</div>
+                            </div>
+                        </div>
+                        
+                        <div class="example-box">
+                            <h3>🚫 Negação com ^</h3>
+                            <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">ls [^f]*</span>
+<div class="output">arquivo.txt  backup.zip  documento.pdf</div>
+<div class="output"># Todos os arquivos que NÃO começam com 'f'</div>
+                            </div>
+                            <p>O <strong>^</strong> dentro dos colchetes significa "EXCETO"!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tip-box">
+                    <h3>💡 Dica Super Útil</h3>
+                    <p>Use <code>ls log[0-9][0-9].txt</code> para encontrar logs numerados como log01.txt, log15.txt, log99.txt. É perfeito para arquivos organizados por número!</p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(5)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #667eea;">Slide 6 de 11</span>
+                <button class="nav-button" onclick="showSlide(7)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 7: Chaves { } -->
+        <div class="slide" id="slide-7">
+            <div class="content">
+                <h2>🗂️ Chaves { } - A Lupa Multiplicadora</h2>
+                
+                <div class="metachar-box">
+                    <div class="metachar-symbol">{ }</div>
+                    <h3>Cria MÚLTIPLAS variações de uma só vez</h3>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <div class="example-box">
+                            <h3>🎯 Como Funciona</h3>
+                            <div class="bullet-point">Expande em <strong>múltiplas opções</strong></div>
+                            <div class="bullet-point">Perfeito para criar vários arquivos</div>
+                            <div class="bullet-point">Funciona com intervalos (1..10)</div>
+                            
+                            <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">touch arquivo{1,2,3}.txt</span>
+<div class="output"># Cria: arquivo1.txt arquivo2.txt arquivo3.txt</div>
+
+<span class="prompt">user@linux:~$</span> <span class="command">ls arquivo{1,2,3}.txt</span>
+<div class="output">arquivo1.txt  arquivo2.txt  arquivo3.txt</div>
+                            </div>
+                        </div>
+                        
+                        <div class="user-box">
+                            <h3>📝 Intervalos Automáticos</h3>
+                            <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">ls test{1..10}</span>
+<div class="output">test1  test2  test3  test4  test5</div>
+<div class="output">test6  test7  test8  test9  test10</div>
+<div class="output"># Sequência automática de 1 a 10!</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="user-box">
+                            <h3>🔍 Exemplos Avançados</h3>
+                            <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">ls /etc/*{conf,allow}</span>
+<div class="output">httpd.conf  hosts.allow  syslog.conf</div>
+<div class="output"># Termina com "conf" OU "allow"</div>
+
+<span class="prompt">user@linux:~$</span> <span class="command">ls {cron,byobu}*</span>
+<div class="output">crontab  cron.daily  byobu.conf</div>
+<div class="output"># Começa com "cron" OU "byobu"</div>
+
+<span class="prompt">user@linux:~$</span> <span class="command">mkdir projeto{A,B,C}/{src,docs,tests}</span>
+<div class="output"># Cria 9 pastas: projetoA/src, projetoA/docs, etc.</div>
+                            </div>
+                        </div>
+                        
+                        <div class="example-box">
+                            <h3>🚀 Super Produtividade</h3>
+                            <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">cp arquivo.txt{,.backup}</span>
+<div class="output"># Copia arquivo.txt para arquivo.txt.backup</div>
+
+<span class="prompt">user@linux:~$</span> <span class="command">mv foto{.jpg,.jpeg}</span>
+<div class="output"># Renomeia foto.jpg para foto.jpeg</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tip-box">
+                    <h3>💡 Dica de Produtividade</h3>
+                    <p>Use <code>mkdir projeto{1..5}/{src,docs,tests}</code> para criar uma estrutura completa de projetos em segundos! É como ter superpoderes organizacionais! 🚀</p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(6)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #667eea;">Slide 7 de 11</span>
+                <button class="nav-button" onclick="showSlide(8)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 8: Exercícios Práticos -->
+        <div class="slide" id="slide-8">
+            <div class="content">
+                <h2>🎯 Exercícios Práticos</h2>
+                
+                <div class="command-grid">
+                    <div class="command-card">
+                        <h4>🏋️ Exercício 1: Básico</h4>
+                        <div class="bullet-point">Crie arquivos test1.txt até test5.txt</div>
+                        <div class="bullet-point">Liste arquivos que começam com 't' e têm exatamente 1 caractere após</div>
+                        <div class="bullet-point">Encontre todos os arquivos .txt do diretório</div>
+                        
+                        <div class="tip-box">
+                            <h3>💡 Dicas</h3>
+                            <p>Use <code>touch</code> para criar e <code>ls</code> para listar!</p>
+                        </div>
+                    </div>
+                    
+                    <div class="command-card">
+                        <h4>🎮 Exercício 2: Intermediário</h4>
+                        <div class="bullet-point">Crie pastas projeto{A,B,C} com subpastas {src,docs}</div>
+                        <div class="bullet-point">Liste arquivos de /etc que começam com 's' e terminam com '.conf'</div>
+                        <div class="bullet-point">Encontre arquivos com números de 0-9 no nome</div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>🗂️ Exercício 3: Organização de Arquivos</h3>
+                    <div class="terminal-box">
+# Cenário: Você tem muitos arquivos desorganizados
+# Organize os seguintes tipos:
+# - log2023.txt, log2024.txt (logs por ano)
+# - foto1.jpg, foto2.jpg, foto3.jpg (fotos numeradas)  
+# - config.conf, backup.conf (arquivos de configuração)
+
+# Seus comandos aqui:
+<span class="prompt">user@linux:~$</span> <span class="command">ls log[0-9][0-9][0-9][0-9].txt</span>
+<span class="prompt">user@linux:~$</span> <span class="command">ls foto[1-9].jpg</span>
+<span class="prompt">user@linux:~$</span> <span class="command">ls *.conf</span>
+                    </div>
+                </div>
+
+                <div class="user-box">
+                    <h3>🏆 Desafio Avançado</h3>
+                    <div class="bullet-point">Crie uma estrutura: empresa{1,2}/{vendas,marketing,ti}/{2023,2024}</div>
+                    <div class="bullet-point">Liste apenas arquivos que NÃO começam com 'a' ou 'b'</div>
+                    <div class="bullet-point">Encontre logs de 2024: formato log_2024-01.txt até log_2024-12.txt</div>
+                    
+                    <div class="warning-box">
+                        <h3>🤔 Pense antes!</h3>
+                        <p>Como você combinaria <code>{ }</code> com <code>[ ]</code> para resolver o desafio dos logs?</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(7)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #667eea;">Slide 8 de 11</span>
+                <button class="nav-button" onclick="showSlide(9)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 9: Erros Comuns -->
+        <div class="slide" id="slide-9">
+            <div class="content">
+                <h2>🚨 Erros Comuns e Como Evitar</h2>
+                
+                <div class="command-grid">
+                    <div class="command-card">
+                        <h4>❌ Erro 1: Confundir ? com *</h4>
+                        <div class="warning-box">
+                            <p><strong>Problema:</strong> <code>file?.txt</code> não encontra <code>file.txt</code></p>
+                            <p><strong>Solução:</strong> Use <code>file*.txt</code> para incluir "zero caracteres"</p>
+                        </div>
+                    </div>
+                    
+                    <div class="command-card">
+                        <h4>❌ Erro 2: Esquecer as aspas</h4>
+                        <div class="warning-box">
+                            <p><strong>Problema:</strong> <code>echo {1,2,3}</code> às vezes não funciona</p>
+                            <p><strong>Solução:</strong> Use <code>echo "{1,2,3}"</code> ou teste sem aspas primeiro</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <div class="warning-box">
+                            <h3>🔍 Erro 3: Intervalos errados</h3>
+                            <div class="terminal-box">
+<span class="output">❌ ERRADO:</span> <span class="command">[z-a]</span>  <span class="output"># Intervalo inválido</span><br>
+<span class="output">✅ CORRETO:</span> <span class="command">[a-z]</span>  <span class="output"># Ordem crescente</span><br>
+<span class="output">❌ ERRADO:</span> <span class="command">[1-a]</span>  <span class="output"># Mistura número/letra</span><br>
+<span class="output">✅ CORRETO:</span> <span class="command">[0-9a-z]</span> <span class="output"># Separar intervalos</span><br>
+                            </div>
+                        </div>
+                        
+                        <div class="warning-box">
+                            <h3>⚠️ Erro 4: Usar metacaracteres literalmente</h3>
+                            <div class="terminal-box">
+<span class="output"># Procurar arquivo que literalmente se chama "file*.txt"</span>
+<span class="command">ls "file*.txt"</span>  <span class="output"># Aspas = literal</span><br>
+<span class="command">ls file\*.txt</span>   <span class="output"># Barra = escape</span><br>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="warning-box">
+                            <h3>🚫 Erro 5: Metacaracteres em lugares errados</h3>
+                            <div class="terminal-box">
+<span class="output">❌ PERIGOSO:</span> <span class="command">rm *.txt</span> <span class="output"># Pode deletar demais!</span><br>
+<span class="output">✅ SEGURO:</span> <span class="command">ls *.txt</span>  <span class="output"># Veja antes de deletar</span><br>
+<span class="output">✅ ENTÃO:</span> <span class="command">rm arquivo[1-3].txt</span> <span class="output"># Mais específico</span><br>
+                            </div>
+                        </div>
+                        
+                        <div class="tip-box">
+                            <h3>🔍 Dica de Debug</h3>
+                            <p>Sempre teste com <code>ls</code> primeiro antes de usar <code>rm</code>, <code>mv</code> ou <code>cp</code> com metacaracteres!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>🛡️ Regra de Ouro da Segurança</h3>
+                    <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">ls *.tmp</span>          <span class="output"># 1. Veja o que vai ser afetado</span><br>
+<span class="prompt">user@linux:~$</span> <span class="command">rm *.tmp</span>          <span class="output"># 2. Só então delete</span><br>
+<div class="output"># NUNCA faça rm diretamente com metacaracteres sem verificar antes!</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(8)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #667eea;">Slide 9 de 11</span>
+                <button class="nav-button" onclick="showSlide(10)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 10: Quiz -->
+        <div class="slide" id="slide-10">
+            <div class="content">
+                <h2>🧠 Quiz - Metacaracteres</h2>
+                
+                <div class="quiz-container">
+                    <div class="quiz-question" id="question1">
+                        <h3>📝 Questão 1</h3>
+                        <p><strong>Qual comando lista arquivos com exatamente 1 caractere após "test" e antes de ".log"?</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" onclick="selectOption(1, 'a', false)">
+                                <span class="option-letter">A</span> ls test*.log
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(1, 'b', true)">
+                                <span class="option-letter">B</span> ls test?.log
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(1, 'c', false)">
+                                <span class="option-letter">C</span> ls test[1].log
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(1, 'd', false)">
+                                <span class="option-letter">D</span> ls test{1}.log
+                            </div>
+                        </div>
+                        <div class="quiz-feedback" id="feedback1"></div>
+                    </div>
+
+                    <div class="quiz-question" id="question2" style="display: none;">
+                        <h3>📝 Questão 2</h3>
+                        <p><strong>O que faz o comando: touch arquivo{1,2,3}.txt ?</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" onclick="selectOption(2, 'a', false)">
+                                <span class="option-letter">A</span> Cria um arquivo chamado "arquivo{1,2,3}.txt"
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(2, 'b', true)">
+                                <span class="option-letter">B</span> Cria 3 arquivos: arquivo1.txt, arquivo2.txt, arquivo3.txt
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(2, 'c', false)">
+                                <span class="option-letter">C</span> Lista arquivos com números 1, 2 ou 3
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(2, 'd', false)">
+                                <span class="option-letter">D</span> Não funciona, gera erro
+                            </div>
+                        </div>
+                        <div class="quiz-feedback" id="feedback2"></div>
+                    </div>
+
+                    <div class="quiz-question" id="question3" style="display: none;">
+                        <h3>📝 Questão 3</h3>
+                        <p><strong>Qual comando lista arquivos que começam com qualquer letra EXCETO 'a'?</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" onclick="selectOption(3, 'a', false)">
+                                <span class="option-letter">A</span> ls [!a]*
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(3, 'b', true)">
+                                <span class="option-letter">B</span> ls [^a]*
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(3, 'c', false)">
+                                <span class="option-letter">C</span> ls [-a]*
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(3, 'd', false)">
+                                <span class="option-letter">D</span> ls [*a]*
+                            </div>
+                        </div>
+                        <div class="quiz-feedback" id="feedback3"></div>
+                    </div>
+
+                    <div id="quiz-result" style="display: none; text-align: center; margin-top: 30px;">
+                        <h3>🎉 Quiz Concluído!</h3>
+                        <div class="highlight-box">
+                            <p><strong>Sua pontuação: <span id="final-score">0</span>/3</strong></p>
+                            <p id="result-message"></p>
+                        </div>
+                        <button class="nav-button" onclick="restartQuiz()" style="margin-top: 20px;">🔄 Refazer Quiz</button>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="nav-button" id="next-quiz-btn" onclick="nextQuestion()" style="display: none;">
+                        Próxima Questão ➡️
+                    </button>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(9)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #667eea;">Slide 10 de 11</span>
+                <button class="nav-button" onclick="showSlide(11)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 11: Resumo -->
+        <div class="slide" id="slide-11">
+            <div class="content">
+                <h2>🎯 Resumo da Aula</h2>
+                
+                <div class="highlight-box center-text">
+                    <h3>Agora você domina os Metacaracteres e Expressões Regulares!</h3>
+                </div>
+
+                <div class="command-grid">
+                    <div class="command-card">
+                        <h4>✅ Metacaracteres Dominados</h4>
+                        <div class="bullet-point"><strong>?</strong> - Exatamente 1 caractere</div>
+                        <div class="bullet-point"><strong>*</strong> - Zero ou mais caracteres</div>
+                        <div class="bullet-point"><strong>[ ]</strong> - Conjunto específico</div>
+                        <div class="bullet-point"><strong>{ }</strong> - Múltiplas variações</div>
+                        <div class="bullet-point"><strong>[^]</strong> - Negação (exceto)</div>
+                        <div class="bullet-point"><strong>{1..10}</strong> - Intervalos automáticos</div>
+                    </div>
+                    
+                    <div class="command-card">
+                        <h4>🚀 Superpoderes Desbloqueados</h4>
+                        <div class="bullet-point">Buscar arquivos com padrões complexos</div>
+                        <div class="bullet-point">Criar múltiplos arquivos instantaneamente</div>
+                        <div class="bullet-point">Organizar sistemas com eficiência</div>
+                        <div class="bullet-point">Filtrar resultados como um ninja</div>
+                        <div class="bullet-point">Automatizar tarefas repetitivas</div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>📚 Tabela de Referência Rápida</h3>
+                    <table>
+                        <tr><th>Metacaractere</th><th>Significado</th><th>Exemplo</th><th>Resultado</th></tr>
+                        <tr><td>?</td><td>1 caractere</td><td>file?.txt</td><td>file1.txt, filea.txt</td></tr>
+                        <tr><td>*</td><td>0+ caracteres</td><td>*.log</td><td>system.log, error.log</td></tr>
+                        <tr><td>[abc]</td><td>a, b ou c</td><td>test[123].txt</td><td>test1.txt, test2.txt</td></tr>
+                        <tr><td>[a-z]</td><td>a até z</td><td>file[a-c].txt</td><td>filea.txt, fileb.txt</td></tr>
+                        <tr><td>[^a]</td><td>exceto a</td><td>[^f]*</td><td>Qualquer coisa menos f</td></tr>
+                        <tr><td>{a,b}</td><td>a ou b</td><td>{doc,img}.zip</td><td>doc.zip, img.zip</td></tr>
+                    </table>
+                </div>
+
+                <div class="user-box">
+                    <h3>🎯 Para Praticar</h3>
+                    <div class="bullet-point">Organize seus arquivos pessoais usando metacaracteres</div>
+                    <div class="bullet-point">Crie scripts que usem padrões para backup automático</div>
+                    <div class="bullet-point">Pratique com <code>ls</code> antes de usar <code>rm</code> ou <code>mv</code></div>
+                    <div class="bullet-point">Experimente combinar diferentes metacaracteres</div>
+                </div>
+
+                <div class="tip-box center-text">
+                    <h3>💡 Lembrete Final</h3>
+                    <p>Os metacaracteres são como <strong>superpoderes para o terminal</strong>!<br>
+                    Pratique sempre com <code>ls</code> primeiro para evitar acidentes. 🦸‍♂️</p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(10)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #667eea;">Slide 11 de 11</span>
+                <button class="nav-button" onclick="showSlide(1)">🔄 Recomeçar</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Variáveis globais
+        let currentSlide = 1;
+        let totalSlides = 11;
+        let currentQuestion = 1;
+        let quizScore = 0;
+
+        // Função para mostrar um slide específico
+        function showSlide(slideNumber) {
+            // Esconder todos os slides
+            const slides = document.querySelectorAll('.slide');
+            slides.forEach(slide => {
+                slide.classList.remove('active');
+            });
+
+            // Mostrar o slide desejado
+            const targetSlide = document.getElementById(`slide-${slideNumber}`);
+            if (targetSlide) {
+                targetSlide.classList.add('active');
+                currentSlide = slideNumber;
+                
+                // Atualizar contador
+                document.getElementById('current-slide').textContent = slideNumber;
+                
+                // Scroll para o topo
+                window.scrollTo(0, 0);
+            }
+        }
+
+        // Funções do Quiz
+        function selectOption(questionNum, option, isCorrect) {
+            const question = document.getElementById(`question${questionNum}`);
+            const options = question.querySelectorAll('.quiz-option');
+            const feedback = document.getElementById(`feedback${questionNum}`);
+            
+            // Remove seleções anteriores
+            options.forEach(opt => {
+                opt.classList.remove('selected', 'correct', 'incorrect');
+            });
+            
+            // Marca a opção selecionada
+            event.target.closest('.quiz-option').classList.add(isCorrect ? 'correct' : 'incorrect');
+            
+            // Mostra feedback
+            setTimeout(() => {
+                if (isCorrect) {
+                    feedback.innerHTML = "✅ Correto! Muito bem!";
+                    feedback.className = "quiz-feedback correct";
+                    quizScore++;
+                } else {
+                    feedback.innerHTML = "❌ Incorreto. Revise o conteúdo!";
+                    feedback.className = "quiz-feedback incorrect";
+                }
+                
+                // Mostra botão para próxima questão
+                const nextBtn = document.getElementById('next-quiz-btn');
+                if (currentQuestion < 3) {
+                    nextBtn.style.display = 'inline-block';
+                    nextBtn.textContent = 'Próxima Questão ➡️';
+                } else {
+                    nextBtn.style.display = 'inline-block';
+                    nextBtn.textContent = 'Ver Resultado 🎯';
+                }
+            }, 300);
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < 3) {
+                // Esconder questão atual
+                document.getElementById(`question${currentQuestion}`).style.display = 'none';
+                currentQuestion++;
+                // Mostrar próxima questão
+                document.getElementById(`question${currentQuestion}`).style.display = 'block';
+                // Esconder botão
+                document.getElementById('next-quiz-btn').style.display = 'none';
+            } else {
+                // Mostrar resultado final
+                showQuizResult();
+            }
+        }
+
+        function showQuizResult() {
+            // Esconder última questão
+            document.getElementById(`question${currentQuestion}`).style.display = 'none';
+            document.getElementById('next-quiz-btn').style.display = 'none';
+            
+            // Mostrar resultado
+            const resultDiv = document.getElementById('quiz-result');
+            resultDiv.style.display = 'block';
+            
+            document.getElementById('final-score').textContent = quizScore;
+            
+            const messageElement = document.getElementById('result-message');
+            if (quizScore === 3) {
+                messageElement.innerHTML = "🎉 Perfeito! Você é um ninja dos metacaracteres!";
+                messageElement.style.color = "#22543d";
+            } else if (quizScore >= 2) {
+                messageElement.innerHTML = "👏 Muito bom! Você domina bem os padrões!";
+                messageElement.style.color = "#2d5a27";
+            } else {
+                messageElement.innerHTML = "📚 Continue praticando! Revise os metacaracteres.";
+                messageElement.style.color = "#c53030";
+            }
+        }
+
+        function restartQuiz() {
+            // Reset variáveis
+            currentQuestion = 1;
+            quizScore = 0;
+            
+            // Reset interface
+            document.getElementById('quiz-result').style.display = 'none';
+            document.getElementById('next-quiz-btn').style.display = 'none';
+            
+            // Mostrar primeira questão
+            for (let i = 1; i <= 3; i++) {
+                const question = document.getElementById(`question${i}`);
+                question.style.display = i === 1 ? 'block' : 'none';
+                
+                // Reset options
+                const options = question.querySelectorAll('.quiz-option');
+                options.forEach(opt => {
+                    opt.classList.remove('selected', 'correct', 'incorrect');
+                });
+                
+                // Reset feedback
+                document.getElementById(`feedback${i}`).className = 'quiz-feedback';
+                document.getElementById(`feedback${i}`).style.display = 'none';
+            }
+        }
+
+        // Inicialização quando a página carrega
+        window.addEventListener('DOMContentLoaded', function() {
+            // Garantir que apenas o primeiro slide está visível
+            showSlide(1);
+            
+            // Inicializar quiz
+            restartQuiz();
+        });
+
+        // Navegação por teclado
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowRight' && currentSlide < totalSlides) {
+                showSlide(currentSlide + 1);
+            } else if (event.key === 'ArrowLeft' && currentSlide > 1) {
+                showSlide(currentSlide - 1);
+            }
+        });
+    </script>
+</body>
+</html>
