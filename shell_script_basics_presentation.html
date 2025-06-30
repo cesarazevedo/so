@@ -385,6 +385,36 @@
             margin: 20px 0;
         }
 
+        .downloads-box {
+            background: linear-gradient(135deg, #4c51bf 0%, #553c9a 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            border-left: 5px solid #2d3748;
+            text-align: center;
+        }
+
+        .download-link {
+            display: inline-block;
+            background: white;
+            color: #4c51bf;
+            text-decoration: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            margin: 10px 15px;
+            font-weight: bold;
+            font-size: 1.2em;
+            transition: all 0.3s ease;
+            border: 2px solid white;
+        }
+
+        .download-link:hover {
+            background: #f0f4ff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+        }
+
         @media (max-width: 768px) {
             .two-column {
                 grid-template-columns: 1fr;
@@ -405,6 +435,11 @@
             
             .slide h2 {
                 font-size: 2em;
+            }
+
+            .download-link {
+                display: block;
+                margin: 15px 0;
             }
         }
     </style>
@@ -1082,6 +1117,23 @@ mkdir ~/scripts/sistema
                     <div class="terminal-box">
 vim nome_arquivo.sh → i → digite → Esc → :wq
                     </div>
+                </div>
+
+                <div class="downloads-box">
+                    <h3>📚 Materiais de Apoio</h3>
+                    <p>Para complementar seus estudos, baixe nossos guias rápidos:</p>
+                    
+                    <a href="manualrapidovim.pdf" class="download-link" target="_blank">
+                        📖 Manual Rápido do Vim
+                    </a>
+                    
+                    <a href="manualrapidoshellscript.pdf" class="download-link" target="_blank">
+                        🚀 Manual Rápido de Shell Script
+                    </a>
+                    
+                    <p style="margin-top: 20px; font-size: 1.1em;">
+                        Estes guias contêm comandos essenciais e exemplos práticos para consulta rápida!
+                    </p>
                 </div>
             </div>
             
