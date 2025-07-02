@@ -622,32 +622,32 @@ echo "Memória usada: $MEMORIA"
                 <div class="example-box">
                     <h3>🎭 Comparação Prática</h3>
                     <div class="script-box">
-<span class="variable">TESTE</span>=<span class="string">"Linux"</span>
+<span class="variable">TESTE</span>=<span class="string">"Linux"</span><br>
 
-<span class="comment"># Aspas duplas - interpreta variáveis</span>
-echo "Sistema: $TESTE"     <span class="comment"># Resultado: Sistema: Linux</span>
+<span class="comment"># Aspas duplas - interpreta variáveis</span><br>
+echo "Sistema: $TESTE"     <span class="comment"># Resultado: Sistema: Linux</span><br>
 
-<span class="comment"># Aspas simples - não interpreta nada</span>
-echo 'Sistema: $TESTE'     <span class="comment"># Resultado: Sistema: $TESTE</span>
+<span class="comment"># Aspas simples - não interpreta nada</span><br>
+echo 'Sistema: $TESTE'     <span class="comment"># Resultado: Sistema: $TESTE</span><br>
 
-<span class="comment"># Escape com barra</span>
-echo Sistema: \$TESTE      <span class="comment"># Resultado: Sistema: $TESTE</span>
+<span class="comment"># Escape com barra</span><br>
+echo Sistema: \$TESTE      <span class="comment"># Resultado: Sistema: $TESTE</span><br>
 
-<span class="comment"># Misturando aspas</span>
-echo "O valor de \$TESTE é: $TESTE"  <span class="comment"># Sistema: O valor de $TESTE é: Linux</span>
+<span class="comment"># Misturando aspas</span><br>
+echo "O valor de \$TESTE é: $TESTE"  <span class="comment"># Sistema: O valor de $TESTE é: Linux</span><br>
                     </div>
                 </div>
 
                 <div class="warning-box">
                     <h3>⚠️ Armadilha Comum</h3>
                     <div class="script-box">
-<span class="comment"># PROBLEMA: espaços em nomes de arquivos</span>
-<span class="variable">ARQUIVO</span>=<span class="string">arquivo com espaços.txt</span>
-touch $ARQUIVO           <span class="comment"># Cria 3 arquivos!</span>
+<span class="comment"># PROBLEMA: espaços em nomes de arquivos</span><br>
+<span class="variable">ARQUIVO</span>=<span class="string">arquivo com espaços.txt</span><br>
+touch $ARQUIVO           <span class="comment"># Cria 3 arquivos!</span><br>
 
 <span class="comment"># SOLUÇÃO: usar aspas</span>
-<span class="variable">ARQUIVO</span>=<span class="string">"arquivo com espaços.txt"</span>
-touch "$ARQUIVO"         <span class="comment"># Cria 1 arquivo correto</span>
+<span class="variable">ARQUIVO</span>=<span class="string">"arquivo com espaços.txt"</span><br>
+touch "$ARQUIVO"         <span class="comment"># Cria 1 arquivo correto</span><br>
                     </div>
                 </div>
             </div>
