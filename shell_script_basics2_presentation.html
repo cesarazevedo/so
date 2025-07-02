@@ -680,10 +680,10 @@ touch "$ARQUIVO"         <span class="comment"># Cria 1 arquivo correto</span><b
                         
                         <h3>✅ Exemplo de Sucesso</h3>
                         <div class="terminal-box">
-<span class="prompt">user@linux:~$</span> <span class="command">touch arquivo_teste.txt</span>
-<span class="prompt">user@linux:~$</span> <span class="command">echo $?</span>
+<span class="prompt">user@linux:~$</span> <span class="command">touch arquivo_teste.txt</span><br>
+<span class="prompt">user@linux:~$</span> <span class="command">echo $?</span><br>
 <div class="output">0</div>
-<span class="comment"># 0 = comando executou perfeitamente!</span>
+<span class="comment"># 0 = comando executou perfeitamente!</span><br>
                         </div>
                     </div>
                     <div>
@@ -716,10 +716,10 @@ touch "$ARQUIVO"         <span class="comment"># Cria 1 arquivo correto</span><b
 <span class="variable">ORIGEM</span>=<span class="string">"arquivo_importante.txt"</span><br>
 <span class="variable">DESTINO</span>=<span class="string">"backup/"</span><br>
 
-<span class="comment"># Tenta fazer backup</span><br>
+<span class="comment"># Tenta fazer backup</span><br><br>
 cp "$ORIGEM" "$DESTINO" 2>/dev/null
 
-<span class="comment"># Verifica se deu certo</span><br>
+<span class="comment"># Verifica se deu certo</span><br><br>
 if [ $? -eq 0 ]; then
     echo "✅ Backup realizado com sucesso!"
 else
