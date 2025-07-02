@@ -711,15 +711,15 @@ touch "$ARQUIVO"         <span class="comment"># Cria 1 arquivo correto</span><b
                     <h3>🏋️ Script Inteligente com Exit Codes</h3>
                     <div class="script-box">
 #!/bin/bash
-<span class="comment"># Script que verifica se arquivo existe antes de copiar</span>
+<span class="comment"># Script que verifica se arquivo existe antes de copiar</span><br>
 
-<span class="variable">ORIGEM</span>=<span class="string">"arquivo_importante.txt"</span>
-<span class="variable">DESTINO</span>=<span class="string">"backup/"</span>
+<span class="variable">ORIGEM</span>=<span class="string">"arquivo_importante.txt"</span><br>
+<span class="variable">DESTINO</span>=<span class="string">"backup/"</span><br>
 
-<span class="comment"># Tenta fazer backup</span>
+<span class="comment"># Tenta fazer backup</span><br>
 cp "$ORIGEM" "$DESTINO" 2>/dev/null
 
-<span class="comment"># Verifica se deu certo</span>
+<span class="comment"># Verifica se deu certo</span><br>
 if [ $? -eq 0 ]; then
     echo "✅ Backup realizado com sucesso!"
 else
