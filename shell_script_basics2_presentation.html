@@ -720,7 +720,7 @@ touch "$ARQUIVO"         <span class="comment"># Cria 1 arquivo correto</span><b
 cp "$ORIGEM" "$DESTINO" 2>/dev/null
 
 <span class="comment"># Verifica se deu certo</span><br><br>
-if [ $? -eq 0 ]; then
+if [ $? -eq 0 ];<br> then
     echo "✅ Backup realizado com sucesso!"
 else
     echo "❌ Erro no backup - código: $?"
