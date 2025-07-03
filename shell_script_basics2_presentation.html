@@ -965,7 +965,6 @@ Valerio Pimenta<br></div>
                     <h3>📝 Criando o Script</h3>
                     <div class="terminal-box">
 <span class="prompt">user@linux:~$</span> <span class="command">vim BuscaAluno.sh</span>
-<span class="comment"># ou nano BuscaAluno.sh</span>
                     </div>
                 </div>
 
@@ -973,28 +972,28 @@ Valerio Pimenta<br></div>
                     <h3>💻 Código Completo do BuscaAluno.sh</h3>
                     <div class="script-box">
 #!/bin/bash
-<span class="comment">##############################################</span>
-<span class="comment"># BuscaAluno.sh - Procurar nome completo de um aluno</span>
-<span class="comment"># Autor: SeuNome</span>
-<span class="comment"># Data de criação: DD/MM/AAAA</span>
-<span class="comment"># Descrição: Script de exemplo para o comando read.</span>
-<span class="comment">#           A partir de uma entrada do usuário, será feita uma</span>
-<span class="comment">#           busca no arquivo lista_alunos.txt</span>
-<span class="comment"># Exemplo de uso: ./BuscaAluno.sh</span>
-<span class="comment">##############################################</span>
+<span class="comment">##############################################</span><br>
+<span class="comment"># BuscaAluno.sh - Procurar nome completo de um aluno</span><br>
+<span class="comment"># Autor: SeuNome</span><br>
+<span class="comment"># Data de criação: DD/MM/AAAA</span><br>
+<span class="comment"># Descrição: Script de exemplo para o comando read.</span><br>
+<span class="comment">#           A partir de uma entrada do usuário, será feita uma</span><br>
+<span class="comment">#           busca no arquivo lista_alunos.txt</span><br>
+<span class="comment"># Exemplo de uso: ./BuscaAluno.sh</span><br>
+<span class="comment">##############################################</span><br>
 
-<span class="variable">ARQUIVO_ALUNOS</span>=<span class="string">"~/infof/lista_alunos.txt"</span>
+<span class="variable">ARQUIVO_ALUNOS</span>=<span class="string">"~/infof/lista_alunos.txt"</span><br>
 
 clear
-echo "<span class="string">================Script de Busca de Alunos================</span>"
+echo "<span class="string">================Script de Busca de Alunos================</span>"<br>
 echo ""
-echo "<span class="string">Por favor, informe o primeiro nome do aluno: </span>"
+echo "<span class="string">Por favor, informe o primeiro nome do aluno: </span>"<br>
 read ALUNO
 
 echo ""
 echo "<span class="string">O nome completo do aluno é: </span>" `grep "$ALUNO" $ARQUIVO_ALUNOS`
 echo ""
-echo "<span class="string">Fim do Script</span>"
+echo "<span class="string">Fim do Script</span>"<br>
                     </div>
                 </div>
 
