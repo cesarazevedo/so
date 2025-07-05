@@ -1,0 +1,1813 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shell Script - Loops FOR</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .presentation {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide {
+            min-height: 100vh;
+            padding: 60px 40px;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            background: white;
+            margin: 20px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        .slide h1 {
+            font-size: 3.5em;
+            color: #4a5568;
+            text-align: center;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .slide h2 {
+            font-size: 2.8em;
+            color: #2d3748;
+            margin-bottom: 30px;
+            border-bottom: 4px solid #1a1a2e;
+            padding-bottom: 15px;
+        }
+
+        .slide h3 {
+            font-size: 2.2em;
+            color: #4a5568;
+            margin: 25px 0 15px 0;
+        }
+
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        .bullet-point {
+            display: flex;
+            align-items: flex-start;
+            margin: 15px 0;
+            font-size: 1.3em;
+            line-height: 1.5;
+        }
+
+        .bullet-point::before {
+            content: "⚡";
+            margin-right: 15px;
+            font-size: 1.2em;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #1a1a2e;
+        }
+
+        .example-box {
+            background: linear-gradient(135deg, #00c9ff 0%, #92fe9d 100%);
+            color: #2d3748;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #00b894;
+        }
+
+        .terminal-box {
+            background: #2d3748;
+            color: #00ff41;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #00ff41;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+            position: relative;
+        }
+
+        .terminal-box::before {
+            content: "💻 Terminal Linux";
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            background: #2d3748;
+            color: #fff;
+            padding: 5px 15px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .script-box {
+            background: #1a202c;
+            color: #00ff41;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #68d391;
+            font-family: 'Courier New', monospace;
+            font-size: 1.0em;
+            position: relative;
+        }
+
+        .script-box::before {
+            content: "📝 Script Shell";
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            background: #1a202c;
+            color: #68d391;
+            padding: 5px 15px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .prompt {
+            color: #4299e1;
+            font-weight: bold;
+        }
+
+        .command {
+            color: #00ff41;
+            font-weight: bold;
+        }
+
+        .output {
+            color: #e2e8f0;
+            margin-left: 0;
+            margin-top: 5px;
+        }
+
+        .variable {
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .string {
+            color: #ff6b9d;
+        }
+
+        .comment {
+            color: #68d391;
+            font-style: italic;
+        }
+
+        .nav-button {
+            padding: 15px 30px;
+            background: #1a1a2e;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-button:hover {
+            background: #16213e;
+            transform: translateY(-2px);
+        }
+
+        .nav-button.start {
+            background: #27ae60;
+            font-size: 1.4em;
+            padding: 20px 40px;
+        }
+
+        .nav-button.start:hover {
+            background: #229954;
+        }
+
+        .slide-navigation {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(255,255,255,0.9);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #4a5568;
+            z-index: 1000;
+        }
+
+        .center-text {
+            text-align: center;
+        }
+
+        .large-text {
+            font-size: 1.4em;
+            line-height: 1.6;
+        }
+
+        .warning-box {
+            background: #ffeaa7;
+            color: #2d3436;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #fdcb6e;
+        }
+
+        .info-box {
+            background: #d1ecf1;
+            color: #0c5460;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+
+        .success-box {
+            background: #c6f6d5;
+            color: #22543d;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #48bb78;
+        }
+
+        .comparison-table {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+
+        .comparison-table table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 1.1em;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .comparison-table th {
+            background: #1a1a2e;
+            color: white;
+            font-weight: bold;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background: #f2f2f2;
+        }
+
+        /* Quiz Styles */
+        .quiz-container {
+            max-width: 100%;
+            margin: 20px 0;
+        }
+
+        .quiz-question {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 2px solid #e2e8f0;
+        }
+
+        .quiz-question h3 {
+            color: #1a1a2e;
+            margin-bottom: 20px;
+        }
+
+        .quiz-question p {
+            font-size: 1.3em;
+            margin-bottom: 25px;
+            font-weight: bold;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .quiz-option {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1em;
+        }
+
+        .quiz-option:hover {
+            border-color: #1a1a2e;
+            background: #f0f4ff;
+            transform: translateX(5px);
+        }
+
+        .quiz-option.selected {
+            border-color: #1a1a2e;
+            background: #1a1a2e;
+            color: white;
+        }
+
+        .quiz-option.correct {
+            border-color: #48bb78;
+            background: #48bb78;
+            color: white;
+        }
+
+        .quiz-option.incorrect {
+            border-color: #f56565;
+            background: #f56565;
+            color: white;
+        }
+
+        .option-letter {
+            background: #1a1a2e;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .quiz-option.correct .option-letter {
+            background: #48bb78;
+        }
+
+        .quiz-option.incorrect .option-letter {
+            background: #f56565;
+        }
+
+        .quiz-feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            display: none;
+        }
+
+        .quiz-feedback.correct {
+            background: #c6f6d5;
+            color: #22543d;
+            border: 2px solid #48bb78;
+            display: block;
+        }
+
+        .quiz-feedback.incorrect {
+            background: #fed7d7;
+            color: #742a2a;
+            border: 2px solid #f56565;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">12</span>
+        </div>
+
+        <!-- Slide 1: Título -->
+        <div class="slide active" id="slide-1">
+            <div class="content center-text">
+                <h1>🔁 Shell Script - Loops FOR</h1>
+                <h2 style="border: none; color: #1a1a2e;">Repetindo Tarefas de Forma Inteligente</h2>
+                <div class="highlight-box large-text">
+                    <strong>for, do, done</strong><br>
+                    Automatizando tarefas repetitivas com loops eficientes<br>
+                    Do básico às técnicas avançadas de iteração
+                </div>
+                
+                <div class="terminal-box" style="margin-top: 40px;">
+<span class="prompt">user@linux:~$</span> <span class="command">echo "Vamos repetir isso várias vezes!"</span>
+<div class="output">Vamos repetir isso várias vezes!</div>
+<span class="prompt">user@linux:~$</span> <span class="command">echo "Loops = Poder de automação! 🔄"</span>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 1 de 12</span>
+                <button class="nav-button start" onclick="showSlide(2)">
+                    Começar Aula ➡️
+                </button>
+            </div>
+        </div>
+
+        <!-- Slide 2: Introdução aos Loops -->
+        <div class="slide" id="slide-2">
+            <div class="content">
+                <h2>🔄 O que são Loops?</h2>
+                
+                <div class="highlight-box">
+                    <h3>🎡 Como uma Roda Gigante</h3>
+                    <p>Imagine um loop como uma roda gigante:</p>
+                    <p><strong>🎠 Cada volta:</strong> executa os mesmos comandos<br>
+                    <strong>🎫 Lista de passageiros:</strong> define quantas voltas dar<br>
+                    <strong>🛑 Fim da lista:</strong> a roda para</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🎯 Por que usar Loops?</h3>
+                        <div class="example-box">
+                            <div class="bullet-point">Evita repetir código manualmente</div>
+                            <div class="bullet-point">Processa listas de arquivos</div>
+                            <div class="bullet-point">Executa tarefas em sequência</div>
+                            <div class="bullet-point">Automatiza operações repetitivas</div>
+                        </div>
+                        
+                        <h3>💡 Sem Loop vs Com Loop</h3>
+                        <div class="warning-box">
+                            <p><strong>❌ Sem loop:</strong><br>
+                            echo "Arquivo1"<br>
+                            echo "Arquivo2"<br>
+                            echo "Arquivo3"<br>
+                            ... (50 linhas iguais!)</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>✅ Com Loop</h3>
+                        <div class="script-box">
+for <span class="variable">ARQUIVO</span> in arquivo1 arquivo2 arquivo3
+do<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"$ARQUIVO"</span><br>
+done
+                        </div>
+                        
+                        <h3>🎬 Resultado</h3>
+                        <div class="terminal-box">
+<div class="output">arquivo1</div>
+<div class="output">arquivo2</div>
+<div class="output">arquivo3</div>
+                        </div>
+                        
+                        <h3>🏠 Exemplos da Vida Real</h3>
+                        <div class="info-box">
+                            <p><strong>📁 Renomear 100 fotos</strong><br>
+                            <strong>📊 Processar dados em lote</strong><br>
+                            <strong>🔍 Buscar em múltiplos arquivos</strong><br>
+                            <strong>📈 Fazer backup automático</strong></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="success-box">
+                    <h3>🎯 O Princípio do FOR</h3>
+                    <p><strong>"Para cada item da lista, faça isso..."</strong><br>
+                    É como dar a mesma instrução para cada pessoa de uma fila!</p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(1)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 2 de 12</span>
+                <button class="nav-button" onclick="showSlide(3)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 3: Sintaxe Básica -->
+        <div class="slide" id="slide-3">
+            <div class="content">
+                <h2>📝 Sintaxe Básica do FOR</h2>
+                
+                <div class="highlight-box">
+                    <h3>🧩 Anatomia do Loop FOR</h3>
+                    <p>Cada parte tem sua função específica para criar repetições organizadas</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🏗️ Estrutura Fundamental</h3>
+                        <div class="script-box">
+<span class="comment"># Sintaxe básica</span><br>
+for <span class="variable">VARIAVEL</span> in <span class="string">valor1 valor2 valor3</span><br>
+do<br>
+&nbsp;&nbsp;&nbsp;&nbsp;comando1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;comando2<br>
+&nbsp;&nbsp;&nbsp;&nbsp;comando3<br>
+done<br>
+                        </div>
+                        
+                        <h3>🔍 Explicando cada parte</h3>
+                        <div class="info-box">
+                            <p><strong>for:</strong> inicia o loop<br>
+                            <strong>VARIAVEL:</strong> recebe cada valor<br>
+                            <strong>in:</strong> "nos valores:"<br>
+                            <strong>valor1 valor2:</strong> lista de items<br>
+                            <strong>do:</strong> "execute:"<br>
+                            <strong>comandos:</strong> o que fazer<br>
+                            <strong>done:</strong> fim do loop</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🎯 Primeiro Exemplo</h3>
+                        <div class="script-box">
+<span class="comment"># Exibindo números de 1 a 5</span><br>
+for <span class="variable">NUMERO</span> in 1 2 3 4 5<br>
+do<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo $NUMERO<br>
+done<br>
+                        </div>
+                        
+                        <h3>🎬 Execução Passo a Passo</h3>
+                        <div class="terminal-box">
+<span class="comment"># 1ª volta: NUMERO=1</span>
+<div class="output">1</div>
+<span class="comment"># 2ª volta: NUMERO=2</span>
+<div class="output">2</div>
+<span class="comment"># 3ª volta: NUMERO=3</span>
+<div class="output">3</div>
+<span class="comment"># 4ª volta: NUMERO=4</span>
+<div class="output">4</div>
+<span class="comment"># 5ª volta: NUMERO=5</span>
+<div class="output">5</div>
+<span class="comment"># Fim da lista - loop termina</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>🎪 Exemplo com Strings</h3>
+                    <div class="script-box">
+#!/bin/bash<br>
+<span class="comment"># Loop com palavras</span><br>
+
+for <span class="variable">FRUTA</span> in maçã banana laranja<br>
+do<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Eu gosto de $FRUTA"</span><br>
+done<br>
+
+echo <span class="string">"Fim da lista de frutas!"</span>
+                    </div>
+                    
+                    <div class="terminal-box">
+<div class="output">Eu gosto de maçã</div>
+<div class="output">Eu gosto de banana</div>
+<div class="output">Eu gosto de laranja</div>
+<div class="output">Fim da lista de frutas!</div>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h3>⚠️ Regras Importantes</h3>
+                    <p><strong>Espaços separam itens:</strong> "a b c" = 3 itens<br>
+                    <strong>Aspas juntam palavras:</strong> "palavra composta" = 1 item<br>
+                    <strong>Sempre termine com done!</strong></p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(2)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 3 de 12</span>
+                <button class="nav-button" onclick="showSlide(4)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 4: Loop com Wildcards -->
+        <div class="slide" id="slide-4">
+            <div class="content">
+                <h2>🌟 Loops com Wildcards</h2>
+                
+                <div class="highlight-box">
+                    <h3>🔍 Processando Arquivos Automaticamente</h3>
+                    <p>Use wildcards para fazer loops com arquivos que seguem um padrão</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📁 Exemplo: Arquivos que começam com "aluno"</h3>
+                        <div class="script-box">
+<span class="comment"># Processando arquivos aluno*</span><br>
+for <span class="variable">ARQUIVO</span> in aluno*<br>
+do<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"O arquivo atual é $ARQUIVO"</span><br>
+done<br>
+                        </div>
+                        
+                        <h3>🎬 Se existirem estes arquivos:</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">ls aluno*</span>
+<div class="output">aluno1.txt  aluno2.txt  aluno_lista.txt</div>
+                        </div>
+                        
+                        <h3>📊 Resultado do loop:</h3>
+                        <div class="terminal-box">
+<div class="output">O arquivo atual é aluno1.txt</div>
+<div class="output">O arquivo atual é aluno2.txt</div>
+<div class="output">O arquivo atual é aluno_lista.txt</div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🎯 Wildcards Comuns</h3>
+                        <div class="example-box">
+                            <p><strong>*:</strong> qualquer sequência<br>
+                            <strong>*.txt:</strong> arquivos .txt<br>
+                            <strong>foto*:</strong> começam com "foto"<br>
+                            <strong>*2024*:</strong> contém "2024"<br>
+                            <strong>?:</strong> um caractere qualquer<br>
+                            <strong>[0-9]*:</strong> começam com número</p>
+                        </div>
+                        
+                        <h3>🔧 Exemplo Prático: Backup</h3>
+                        <div class="script-box">
+#!/bin/bash<br>
+<span class="comment"># Fazendo backup de todos os .txt</span><br>
+
+mkdir -p backup<br>
+
+for <span class="variable">ARQUIVO</span> in *.txt<br>
+do<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Fazendo backup de $ARQUIVO"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;cp <span class="string">"$ARQUIVO"</span> backup/<br>
+done<br>
+
+echo <span class="string">"Backup concluído!"</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>🚀 Script Renomeador de Imagens</h3>
+                    <div class="script-box">
+#!/bin/bash<br>
+<span class="comment"># Renomeando todas as imagens .jpg</span><br>
+
+<span class="variable">CONTADOR</span>=1<br>
+
+for <span class="variable">IMAGEM</span> in *.jpg<br>
+do<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if [ -f <span class="string">"$IMAGEM"</span> ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mv <span class="string">"$IMAGEM"</span> <span class="string">"foto_${CONTADOR}.jpg"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"$IMAGEM → foto_${CONTADOR}.jpg"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">CONTADOR</span>=$((CONTADOR + 1))<br>
+&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+done<br>
+
+echo <span class="string">"Renomeação concluída!"</span>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h3>⚠️ Cuidado com Wildcards</h3>
+                    <p>Se não houver arquivos correspondentes, o wildcard será tratado literalmente.<br>
+                    Use <strong>if [ -f "$ARQUIVO" ]</strong> para verificar se o arquivo existe!</p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(3)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 4 de 12</span>
+                <button class="nav-button" onclick="showSlide(5)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 5: Comando seq -->
+        <div class="slide" id="slide-5">
+            <div class="content">
+                <h2>🔢 Comando seq - Gerando Sequências</h2>
+                
+                <div class="highlight-box">
+                    <h3>🎯 O Gerador de Números</h3>
+                    <p>O comando <strong>seq</strong> cria sequências numéricas automaticamente - perfeito para loops!</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📐 Sintaxes do seq</h3>
+                        <div class="script-box">
+<span class="comment"># Básico: de 1 até N</span><br>
+seq 5<br>
+<span class="comment"># Resultado: 1 2 3 4 5</span><br>
+
+<span class="comment"># Início e fim</span><br>
+seq 3 7<br>
+<span class="comment"># Resultado: 3 4 5 6 7</span><br>
+
+<span class="comment"># Início, incremento, fim</span><br>
+seq 2 3 11<br>
+<span class="comment"># Resultado: 2 5 8 11</span>
+                        </div>
+                        
+                        <h3>🧪 Testando no Terminal</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">seq 1 5</span>
+<div class="output">1</div>
+<div class="output">2</div>
+<div class="output">3</div>
+<div class="output">4</div>
+<div class="output">5</div>
+
+<span class="prompt">user@linux:~$</span> <span class="command">seq 10 2 16</span>
+<div class="output">10</div>
+<div class="output">12</div>
+<div class="output">14</div>
+<div class="output">16</div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🔄 Loop com seq</h3>
+                        <div class="script-box">
+<span class="comment"># Números de 5 a 10</span><br>
+for <span class="variable">SEQUENCIA</span> in $(seq 5 10)<br>
+do<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"O número é $SEQUENCIA"</span><br>
+done<br>
+                        </div>
+                        
+                        <h3>🎬 Resultado</h3>
+                        <div class="terminal-box">
+<div class="output">O número é 5</div>
+<div class="output">O número é 6</div>
+<div class="output">O número é 7</div>
+<div class="output">O número é 8</div>
+<div class="output">O número é 9</div>
+<div class="output">O número é 10</div>
+                        </div>
+                        
+                        <h3>⚡ Números Pares</h3>
+                        <div class="script-box">
+<span class="comment"># De 2 a 20, pulando de 2 em 2</span><br>
+for <span class="variable">PAR</span> in $(seq 2 2 20)<br>
+do<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Número par: $PAR"</span><br>
+done<br>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>🏭 Exemplo: Criador de Arquivos em Massa</h3>
+                    <div class="script-box">
+#!/bin/bash<br>
+<span class="comment"># Criando 50 arquivos numerados</span><br>
+
+for <span class="variable">NUMERO</span> in $(seq 1 50)<br>
+do<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">ARQUIVO</span>=<span class="string">"documento_${NUMERO}.txt"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Este é o documento número $NUMERO"</span> > <span class="string">"$ARQUIVO"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Criado: $ARQUIVO"</span><br>
+done<br>
+
+echo <span class="string">"Todos os 50 documentos foram criados!"</span>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>⏰ Contador Regressivo</h3>
+                    <div class="script-box">
+#!/bin/bash<br>
+<span class="comment"># Contador de 10 a 1</span><br>
+
+echo <span class="string">"Iniciando contagem regressiva..."</span><br>
+
+for <span class="variable">NUMERO</span> in $(seq 10 -1 1)<br>
+do<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"$NUMERO..."</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;sleep 1<br>
+done<br>
+
+echo <span class="string">"🚀 DECOLAGEM!"</span>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <h3>💡 Dicas do seq</h3>
+                    <p><strong>seq 10:</strong> números de 1 a 10<br>
+                    <strong>seq 5 15:</strong> números de 5 a 15<br>
+                    <strong>seq 0 5 25:</strong> de 0 a 25, pulando de 5 em 5<br>
+                    <strong>seq 10 -2 0:</strong> de 10 a 0, decrementando de 2 em 2</p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(4)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 5 de 12</span>
+                <button class="nav-button" onclick="showSlide(6)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 6: Sintaxe com Chaves -->
+        <div class="slide" id="slide-6">
+            <div class="content">
+                <h2>🔰 Sintaxe com Chaves { }</h2>
+                
+                <div class="highlight-box">
+                    <h3>🎯 Sequências Rápidas sem seq</h3>
+                    <p>O Bash oferece uma sintaxe nativa para criar ranges usando chaves { }</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📝 Sintaxe das Chaves</h3>
+                        <div class="script-box">
+<span class="comment"># Números sequenciais</span><br>
+{início..fim}<br>
+
+<span class="comment"># Com incremento</span><br>
+{início..fim..incremento}<br>
+
+<span class="comment"># Exemplos:</span><br>
+{1..5}     <span class="comment"># 1 2 3 4 5</span><br>
+{5..10}    <span class="comment"># 5 6 7 8 9 10</span><br>
+{2..10..2} <span class="comment"># 2 4 6 8 10</span><br>
+{10..1..-1} <span class="comment"># 10 9 8 7 6 5 4 3 2 1</span>
+                        </div>
+                        
+                        <h3>🧪 Testando Expansões</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">echo {1..5}</span>
+<div class="output">1 2 3 4 5</div>
+
+<span class="prompt">user@linux:~$</span> <span class="command">echo {a..f}</span>
+<div class="output">a b c d e f</div>
+
+<span class="prompt">user@linux:~$</span> <span class="command">echo {10..20..3}</span>
+<div class="output">10 13 16 19</div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🔄 Loop com Chaves</h3>
+                        <div class="script-box">
+<span class="comment"># Números de 5 a 10</span><br>
+for <span class="variable">SEQUENCIA</span> in {5..10}<br>
+do<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"O número é $SEQUENCIA"</span><br>
+done<br>
+                        </div>
+                        
+                        <h3>🎬 Resultado</h3>
+                        <div class="terminal-box">
+<div class="output">O número é 5</div>
+<div class="output">O número é 6</div>
+<div class="output">O número é 7</div>
+<div class="output">O número é 8</div>
+<div class="output">O número é 9</div>
+<div class="output">O número é 10</div>
+                        </div>
+                        
+                        <h3>🔤 Com Letras</h3>
+                        <div class="script-box">
+<span class="comment"># Alfabeto de A a E</span><br>
+for <span class="variable">LETRA</span> in {A..E}<br>
+do<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Letra: $LETRA"</span><br>
+done<br>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>📁 Criando Estrutura de Pastas</h3>
+                    <div class="script-box">
+#!/bin/bash<br>
+<span class="comment"># Criando pastas para 12 meses</span><br>
+
+for <span class="variable">MES</span> in {01..12}<br>
+do<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">PASTA</span>=<span class="string">"2024_${MES}"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;mkdir <span class="string">"$PASTA"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Pasta criada: $PASTA"</span><br>
+done<br>
+
+echo <span class="string">"Estrutura de pastas mensais criada!"</span>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>🎲 Gerador de Senhas</h3>
+                    <div class="script-box">
+#!/bin/bash<br>
+<span class="comment"># Gerando 5 senhas numéricas</span><br>
+
+for <span class="variable">TENTATIVA</span> in {1..5}<br>
+do<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">SENHA</span>=<span class="string">""</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;for <span class="variable">DIGITO</span> in {1..6}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;do<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">NUMERO</span>=$((RANDOM % 10))<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">SENHA</span>=<span class="string">"${SENHA}${NUMERO}"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;done<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Senha $TENTATIVA: $SENHA"</span><br>
+done<br>
+                    </div>
+                </div>
+
+                <div class="comparison-table">
+                    <table>
+                        <tr>
+                            <th>Método</th>
+                            <th>Sintaxe</th>
+                            <th>Velocidade</th>
+                            <th>Quando usar</th>
+                        </tr>
+                        <tr>
+                            <td>seq</td>
+                            <td>$(seq 1 10)</td>
+                            <td>Mais lento</td>
+                            <td>Incrementos complexos</td>
+                        </tr>
+                        <tr>
+                            <td>Chaves</td>
+                            <td>{1..10}</td>
+                            <td>Mais rápido</td>
+                            <td>Sequências simples</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="success-box">
+                    <h3>🏆 Vantagens das Chaves</h3>
+                    <p>• <strong>Mais rápido:</strong> não executa comando externo<br>
+                    • <strong>Mais limpo:</strong> sintaxe mais elegante<br>
+                    • <strong>Nativo:</strong> built-in do bash<br>
+                    • <strong>Funciona com letras:</strong> {a..z}, {A..Z}</p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(5)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 6 de 12</span>
+                <button class="nav-button" onclick="showSlide(7)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 7: Loop com arquivos de texto -->
+        <div class="slide" id="slide-7">
+            <div class="content">
+                <h2>📄 Loops com Conteúdo de Arquivos</h2>
+                
+                <div class="highlight-box">
+                    <h3>📖 Lendo Arquivos Palavra por Palavra</h3>
+                    <p>Como processar o conteúdo de arquivos usando loops FOR</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📝 Preparando o Arquivo</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">echo "João Maria Pedro Ana" > info4</span><br>
+<span class="prompt">user@linux:~$</span> <span class="command">cat info4</span>
+<div class="output">João Maria Pedro Ana</div>
+                        </div>
+                        
+                        <h3>🔄 Loop com cat</h3>
+                        <div class="script-box">
+<span class="comment"># Processando cada palavra do arquivo</span><br>
+for <span class="variable">I</span> in `cat info4`<br>
+do<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"A palavra atual é $I"</span><br>
+done<br>
+                        </div>
+                        
+                        <h3>🎬 Resultado</h3>
+                        <div class="terminal-box">
+<div class="output">A palavra atual é João</div>
+<div class="output">A palavra atual é Maria</div>
+<div class="output">A palavra atual é Pedro</div>
+<div class="output">A palavra atual é Ana</div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>📋 Exemplo com Lista de Tarefas</h3>
+                        <div class="script-box">
+<span class="comment"># Criando arquivo de tarefas</span><br>
+cat > tarefas.txt << EOF<br>
+estudar<br>
+exercitar<br>
+programar<br>
+descansar<br>
+EOF<br>
+
+<span class="comment"># Processando cada tarefa</span><br>
+for <span class="variable">TAREFA</span> in `cat tarefas.txt`<br>
+do<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"📝 Tarefa: $TAREFA"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"✅ Concluída!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"---"</span><br>
+done<br>
+                        </div>
+                        
+                        <h3>📊 Resultado</h3>
+                        <div class="terminal-box">
+<div class="output">📝 Tarefa: estudar</div>
+<div class="output">✅ Concluída!</div>
+<div class="output">---</div>
+<div class="output">📝 Tarefa: exercitar</div>
+<div class="output">✅ Concluída!</div>
+<div class="output">---</div>
+<span class="comment"># ... e assim por diante</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>🌐 Processador de URLs</h3>
+                    <div class="script-box">
+#!/bin/bash<br>
+<span class="comment"># Criando lista de sites</span><br>
+cat > sites.txt << EOF<br>
+google.com<br>
+github.com<br>
+stackoverflow.com<br>
+linux.org<br>
+EOF<br>
+
+echo <span class="string">"🌐 Testando conectividade..."</span><br>
+
+for <span class="variable">SITE</span> in `cat sites.txt`<br>
+do<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Testando $SITE..."</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;if ping -c 1 "$SITE" > /dev/null 2>&1; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"✅ $SITE está acessível"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"❌ $SITE não está acessível"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"---"</span><br>
+done<br>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>👥 Processador de Lista de Usuários</h3>
+                    <div class="script-box">
+#!/bin/bash<br>
+<span class="comment"># Lista de novos usuários</span><br>
+cat > novos_usuarios.txt << EOF<br>
+alice<br>
+bob<br>
+carol<br>
+dave<br>
+EOF<br>
+
+echo <span class="string">"👥 Criando contas de usuário..."</span><br>
+
+for <span class="variable">USUARIO</span> in `cat novos_usuarios.txt`<br>
+do<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Criando usuário: $USUARIO"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># useradd "$USUARIO"  # Comando real (requer sudo)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;mkdir <span class="string">"/tmp/home_$USUARIO"</span>  <span class="comment"># Simulação</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"✅ Usuário $USUARIO criado!"</span><br>
+done<br>
+
+echo <span class="string">"🎉 Todos os usuários foram processados!"</span>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h3>⚠️ Cuidado com Espaços</h3>
+                    <p>O loop com <strong>cat</strong> separa por espaços/quebras de linha.<br>
+                    Se o arquivo contém "Nome Completo", será tratado como duas palavras: "Nome" e "Completo".<br>
+                    Para linhas inteiras, use <strong>while read</strong> em vez de FOR.</p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(6)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 7 de 12</span>
+                <button class="nav-button" onclick="showSlide(8)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 8: Sintaxe estilo C -->
+        <div class="slide" id="slide-8">
+            <div class="content">
+                <h2>⚙️ Sintaxe Estilo C</h2>
+                
+                <div class="highlight-box">
+                    <h3>🔧 FOR como nas Linguagens de Programação</h3>
+                    <p>O Bash também suporta a sintaxe tradicional de FOR das linguagens C/C++/Java</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🏗️ Estrutura Estilo C</h3>
+                        <div class="script-box">
+<span class="comment"># Sintaxe: for ((inicialização; condição; incremento))</span><br>
+for ((<span class="variable">variável</span>=<span class="string">início</span>; <span class="variable">variável</span> operador <span class="string">fim</span>; <span class="variable">variável</span>++))<br>
+do<br>
+&nbsp;&nbsp;&nbsp;&nbsp;comandos<br>
+done<br>
+                        </div>
+                        
+                        <h3>🎯 Exemplo Básico</h3>
+                        <div class="script-box">
+<span class="comment"># Números de 5 até 20</span><br>
+for ((<span class="variable">I</span>=5; <span class="variable">I</span><=20; <span class="variable">I</span>++))<br>
+do<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"O número atual é $I"</span><br>
+done<br>
+                        </div>
+                        
+                        <h3>🎬 Resultado</h3>
+                        <div class="terminal-box">
+<div class="output">O número atual é 5</div>
+<div class="output">O número atual é 6</div>
+<div class="output">O número atual é 7</div>
+<span class="comment"># ... até ...</span>
+<div class="output">O número atual é 20</div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🔢 Variações de Incremento</h3>
+                        <div class="script-box">
+<span class="comment"># Incremento de 2 em 2</span><br>
+for ((<span class="variable">I</span>=0; <span class="variable">I</span><=10; <span class="variable">I</span>+=2))<br>
+do<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Número par: $I"</span><br>
+done<br>
+
+<span class="comment"># Decremento</span><br>
+for ((<span class="variable">I</span>=10; <span class="variable">I</span>>=1; <span class="variable">I</span>--))<br>
+do<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Contando: $I"</span><br>
+done<br>
+                        </div>
+                        
+                        <h3>📊 Operadores Disponíveis</h3>
+                        <div class="info-box">
+                            <p><strong>++:</strong> incrementa 1<br>
+                            <strong>--:</strong> decrementa 1<br>
+                            <strong>+=N:</strong> incrementa N<br>
+                            <strong>-=N:</strong> decrementa N<br>
+                            <strong>*=N:</strong> multiplica por N<br>
+                            <strong>/=N:</strong> divide por N</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>📈 Tabuada Automática</h3>
+                    <div class="script-box">
+#!/bin/bash<br>
+<span class="comment"># Gerando tabuada do 7</span><br>
+
+<span class="variable">NUMERO</span>=7<br>
+echo <span class="string">"=== TABUADA DO $NUMERO ==="</span><br>
+
+for ((<span class="variable">I</span>=1; <span class="variable">I</span><=10; <span class="variable">I</span>++))<br>
+do<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">RESULTADO</span>=$(($NUMERO * $I))<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"$NUMERO x $I = $RESULTADO"</span><br>
+done<br>
+                    </div>
+                    
+                    <div class="terminal-box">
+<div class="output">=== TABUADA DO 7 ===</div>
+<div class="output">7 x 1 = 7</div>
+<div class="output">7 x 2 = 14</div>
+<div class="output">7 x 3 = 21</div>
+<span class="comment"># ... até 7 x 10 = 70</span>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>🎮 Jogo de Adivinhação</h3>
+                    <div class="script-box">
+#!/bin/bash<br>
+<span class="comment"># Jogo: usuário tem 5 tentativas</span><br>
+
+<span class="variable">NUMERO_SECRETO</span>=42<br>
+<span class="variable">MAX_TENTATIVAS</span>=5<br>
+
+echo <span class="string">"🎯 Adivinhe o número (1-100)!"</span><br>
+echo <span class="string">"Você tem $MAX_TENTATIVAS tentativas."</span><br>
+
+for ((<span class="variable">TENTATIVA</span>=1; <span class="variable">TENTATIVA</span><=<span class="variable">MAX_TENTATIVAS</span>; <span class="variable">TENTATIVA</span>++))<br>
+do<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Tentativa $TENTATIVA/$MAX_TENTATIVAS:"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;read -p <span class="string">"Seu palpite: "</span> <span class="variable">PALPITE</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if [ $PALPITE -eq $NUMERO_SECRETO ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"🎉 PARABÉNS! Você acertou!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;exit 0<br>
+&nbsp;&nbsp;&nbsp;&nbsp;elif [ $PALPITE -lt $NUMERO_SECRETO ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"📈 Muito baixo!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"📉 Muito alto!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+done<br>
+
+echo <span class="string">"😞 Suas tentativas acabaram! O número era $NUMERO_SECRETO"</span>
+                    </div>
+                </div>
+
+                <div class="comparison-table">
+                    <table>
+                        <tr>
+                            <th>Estilo</th>
+                            <th>Melhor para</th>
+                            <th>Exemplo</th>
+                        </tr>
+                        <tr>
+                            <td>Lista</td>
+                            <td>Processar itens conhecidos</td>
+                            <td>for i in a b c</td>
+                        </tr>
+                        <tr>
+                            <td>Chaves</td>
+                            <td>Sequências simples</td>
+                            <td>for i in {1..10}</td>
+                        </tr>
+                        <tr>
+                            <td>Estilo C</td>
+                            <td>Controle preciso do loop</td>
+                            <td>for ((i=1;i<=10;i++))</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(7)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 8 de 12</span>
+                <button class="nav-button" onclick="showSlide(9)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 9: Exemplo Prático Completo -->
+        <div class="slide" id="slide-9">
+            <div class="content">
+                <h2>🚀 Projeto Prático: Organizador de Fotos</h2>
+                
+                <div class="highlight-box">
+                    <h3>📸 Script Real para Organizar Imagens</h3>
+                    <p>Vamos criar um script completo que organiza fotos por ano usando múltiplos tipos de loops</p>
+                </div>
+
+                <div class="example-box">
+                    <h3>📁 organizador_fotos.sh</h3>
+                    <div class="script-box">
+#!/bin/bash<br>
+<span class="comment"># Organizador automático de fotos por ano</span><br>
+
+echo <span class="string">"📸 ORGANIZADOR DE FOTOS"</span><br>
+echo <span class="string">"========================="</span><br>
+
+<span class="comment"># Criar pastas para os anos</span><br>
+echo <span class="string">"📁 Criando estrutura de pastas..."</span><br>
+for <span class="variable">ANO</span> in {2020..2024}<br>
+do<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if [ ! -d <span class="string">"fotos_$ANO"</span> ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mkdir <span class="string">"fotos_$ANO"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"✅ Pasta fotos_$ANO criada"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+done<br>
+
+<span class="comment"># Processar todas as imagens</span><br>
+echo<br>
+echo <span class="string">"🔄 Organizando imagens..."</span><br>
+<span class="variable">CONTADOR</span>=0<br>
+
+for <span class="variable">IMAGEM</span> in *.jpg *.jpeg *.png *.gif<br>
+do<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Verificar se o arquivo existe</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;if [ -f <span class="string">"$IMAGEM"</span> ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Obter ano da modificação do arquivo</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">ANO_ARQUIVO</span>=$(stat -c %Y <span class="string">"$IMAGEM"</span> | date -d @- +%Y)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Mover para pasta apropriada</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if [ -d <span class="string">"fotos_$ANO_ARQUIVO"</span> ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mv <span class="string">"$IMAGEM"</span> <span class="string">"fotos_$ANO_ARQUIVO/"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"📄 $IMAGEM → fotos_$ANO_ARQUIVO/"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">CONTADOR</span>=$(($CONTADOR + 1))<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"⚠️  $IMAGEM: ano $ANO_ARQUIVO não suportado"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+done<br>
+
+<span class="comment"># Relatório final</span><br>
+echo<br>
+echo <span class="string">"📊 RELATÓRIO FINAL"</span><br>
+echo <span class="string">"=================="</span><br>
+echo <span class="string">"Total de imagens organizadas: $CONTADOR"</span><br>
+
+<span class="comment"># Mostrar quantas fotos em cada pasta</span><br>
+for <span class="variable">ANO</span> in {2020..2024}<br>
+do<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if [ -d <span class="string">"fotos_$ANO"</span> ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">QTD</span>=$(ls -1 <span class="string">"fotos_$ANO"</span> | wc -l)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"📁 fotos_$ANO: $QTD imagens"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+done<br>
+
+echo <span class="string">"🎉 Organização concluída!"</span>
+                    </div>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🎬 Exemplo de Execução</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">./organizador_fotos.sh</span>
+<div class="output">📸 ORGANIZADOR DE FOTOS</div>
+<div class="output">=========================</div>
+<div class="output">📁 Criando estrutura de pastas...</div>
+<div class="output">✅ Pasta fotos_2020 criada</div>
+<div class="output">✅ Pasta fotos_2021 criada</div>
+<div class="output">✅ Pasta fotos_2022 criada</div>
+<div class="output">✅ Pasta fotos_2023 criada</div>
+<div class="output">✅ Pasta fotos_2024 criada</div>
+<div class="output"></div>
+<div class="output">🔄 Organizando imagens...</div>
+<div class="output">📄 foto1.jpg → fotos_2023/</div>
+<div class="output">📄 imagem.png → fotos_2024/</div>
+<div class="output">📄 vacation.jpeg → fotos_2022/</div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🔍 Tipos de Loop Usados</h3>
+                        <div class="success-box">
+                            <p><strong>🔰 Chaves {2020..2024}:</strong><br>
+                            Para criar pastas dos anos</p>
+                            
+                            <p><strong>⚡ Wildcards *.jpg:</strong><br>
+                            Para processar todas as imagens</p>
+                            
+                            <p><strong>🔢 Matemática $((CONTADOR + 1)):</strong><br>
+                            Para contar arquivos processados</p>
+                        </div>
+                        
+                        <h3>✨ Recursos Implementados</h3>
+                        <div class="example-box">
+                            <p>✅ Criação automática de pastas<br>
+                            ✅ Detecção de ano do arquivo<br>
+                            ✅ Movimentação inteligente<br>
+                            ✅ Contador de progresso<br>
+                            ✅ Relatório final detalhado<br>
+                            ✅ Tratamento de erros</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h3>💡 Melhorias Possíveis</h3>
+                    <p><strong>📅 Data EXIF:</strong> Usar data da foto em vez de modificação do arquivo<br>
+                    <strong>🎯 Seleção de tipos:</strong> Permitir escolher quais extensões processar<br>
+                    <strong>🔄 Modo teste:</strong> Mostrar o que seria feito sem mover arquivos<br>
+                    <strong>📊 Log detalhado:</strong> Salvar relatório em arquivo</p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(8)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 9 de 12</span>
+                <button class="nav-button" onclick="showSlide(10)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 10: Dicas e Boas Práticas -->
+        <div class="slide" id="slide-10">
+            <div class="content">
+                <h2>💡 Dicas e Boas Práticas</h2>
+                
+                <div class="highlight-box">
+                    <h3>🏆 Como Escrever Loops Profissionais</h3>
+                    <p>Técnicas para criar loops eficientes, legíveis e seguros</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>✅ Boas Práticas</h3>
+                        <div class="success-box">
+                            <h4>📝 1. Use nomes descritivos</h4>
+                            <div class="script-box">
+<span class="comment"># ❌ Ruim</span><br>
+for <span class="variable">i</span> in *.txt; do echo $i; done<br>
+
+<span class="comment"># ✅ Bom</span><br>
+for <span class="variable">ARQUIVO_TEXTO</span> in *.txt<br>
+do<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Processando: $ARQUIVO_TEXTO"</span><br>
+done<br>
+                            </div>
+                            
+                            <h4>🛡️ 2. Sempre use aspas</h4>
+                            <div class="script-box">
+<span class="comment"># ✅ Protege contra nomes com espaços</span><br>
+for <span class="variable">ARQUIVO</span> in *<br>
+do<br>
+&nbsp;&nbsp;&nbsp;&nbsp;cp <span class="string">"$ARQUIVO"</span> <span class="string">"/backup/$ARQUIVO"</span><br>
+done<br>
+                            </div>
+                        </div>
+                        
+                        <h3>⚡ Performance</h3>
+                        <div class="info-box">
+                            <p><strong>🔰 {1..100}:</strong> Mais rápido que seq<br>
+                            <strong>🔍 *.txt:</strong> Melhor que find para casos simples<br>
+                            <strong>📊 Variáveis:</strong> Evite recalcular dentro do loop</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>⚠️ Armadilhas Comuns</h3>
+                        <div class="warning-box">
+                            <h4>🕳️ 1. Wildcards sem arquivos</h4>
+                            <div class="script-box">
+<span class="comment"># ❌ Problema: se não houver .log, processa "*.log"</span><br>
+for <span class="variable">LOG</span> in *.log; do echo $LOG; done<br>
+
+<span class="comment"># ✅ Solução: verificar se existe</span><br>
+for <span class="variable">LOG</span> in *.log<br>
+do<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if [ -f <span class="string">"$LOG"</span> ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Processando: $LOG"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+done<br>
+                            </div>
+                            
+                            <h4>💥 2. Modificar arquivos durante o loop</h4>
+                            <div class="script-box">
+<span class="comment"># ❌ Perigoso: pode causar loops infinitos</span><br>
+for <span class="variable">f</span> in *; do touch "novo_$f"; done<br>
+
+<span class="comment"># ✅ Seguro: primeiro listar, depois processar</span><br>
+<span class="variable">ARQUIVOS</span>=(*)  <span class="comment"># Array com lista atual</span><br>
+for <span class="variable">f</span> in "${ARQUIVOS[@]}"<br>
+do<br>
+&nbsp;&nbsp;&nbsp;&nbsp;touch <span class="string">"novo_$f"</span><br>
+done<br>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>🎯 Template de Loop Profissional</h3>
+                    <div class="script-box">
+#!/bin/bash<br>
+<span class="comment"># Template para loops robustos</span><br>
+
+<span class="comment"># Configurações</span><br>
+<span class="variable">EXTENSAO</span>=<span class="string">"txt"</span><br>
+<span class="variable">DESTINO</span>=<span class="string">"/backup"</span><br>
+<span class="variable">CONTADOR</span>=0<br>
+<span class="variable">ERROS</span>=0<br>
+
+<span class="comment"># Verificações iniciais</span><br>
+if [ ! -d <span class="string">"$DESTINO"</span> ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"❌ Erro: Diretório $DESTINO não existe"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;exit 1<br>
+fi<br>
+
+echo <span class="string">"🔄 Iniciando processamento de arquivos .$EXTENSAO"</span><br>
+
+<span class="comment"># Loop principal</span><br>
+for <span class="variable">ARQUIVO</span> in *.<span class="variable">$EXTENSAO</span><br>
+do<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Verificar se arquivo existe (evita wildcard vazio)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;if [ ! -f <span class="string">"$ARQUIVO"</span> ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"ℹ️  Nenhum arquivo .$EXTENSAO encontrado"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break<br>
+&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Processar arquivo</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"📄 Processando: $ARQUIVO"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if cp <span class="string">"$ARQUIVO"</span> <span class="string">"$DESTINO/"</span> 2>/dev/null; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"✅ Sucesso: $ARQUIVO copiado"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">CONTADOR</span>=$(($CONTADOR + 1))<br>
+&nbsp;&nbsp;&nbsp;&nbsp;else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"❌ Erro: Falha ao copiar $ARQUIVO"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">ERROS</span>=$(($ERROS + 1))<br>
+&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+done<br>
+
+<span class="comment"># Relatório final</span><br>
+echo<br>
+echo <span class="string">"📊 RESUMO:"</span><br>
+echo <span class="string">"✅ Sucessos: $CONTADOR"</span><br>
+echo <span class="string">"❌ Erros: $ERROS"</span><br>
+echo <span class="string">"📁 Total: $(($CONTADOR + $ERROS))"</span><br>
+
+<span class="comment"># Exit code baseado em erros</span><br>
+exit $ERROS
+                    </div>
+                </div>
+
+                <div class="success-box">
+                    <h3>🎯 Checklist do Loop Perfeito</h3>
+                    <p>✅ Nomes de variáveis descritivos<br>
+                    ✅ Aspas em todas as expansões de variáveis<br>
+                    ✅ Verificação se arquivos existem<br>
+                    ✅ Tratamento de erros<br>
+                    ✅ Contador de progresso<br>
+                    ✅ Relatório final<br>
+                    ✅ Exit code apropriado</p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(9)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 10 de 12</span>
+                <button class="nav-button" onclick="showSlide(11)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 11: Quiz -->
+        <div class="slide" id="slide-11">
+            <div class="content">
+                <h2>🧠 Quiz - Teste seus Conhecimentos!</h2>
+                
+                <div class="quiz-container">
+                    <div class="quiz-question" id="question1">
+                        <h3>📝 Questão 1</h3>
+                        <p><strong>Qual palavra termina um loop FOR no Shell Script?</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" onclick="selectOption(1, 'a', false)">
+                                <span class="option-letter">A)</span> end
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(1, 'b', false)">
+                                <span class="option-letter">B)</span> fi
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(1, 'c', true)">
+                                <span class="option-letter">C)</span> done
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(1, 'd', false)">
+                                <span class="option-letter">D)</span> exit
+                            </div>
+                        </div>
+                        <div class="quiz-feedback" id="feedback1"></div>
+                    </div>
+
+                    <div class="quiz-question" id="question2" style="display: none;">
+                        <h3>📝 Questão 2</h3>
+                        <p><strong>Qual comando gera a sequência 1 3 5 7 9?</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" onclick="selectOption(2, 'a', true)">
+                                <span class="option-letter">A)</span> seq 1 2 9
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(2, 'b', false)">
+                                <span class="option-letter">B)</span> seq 1 9 2
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(2, 'c', false)">
+                                <span class="option-letter">C)</span> seq 2 1 9
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(2, 'd', false)">
+                                <span class="option-letter">D)</span> seq 9 1 2
+                            </div>
+                        </div>
+                        <div class="quiz-feedback" id="feedback2"></div>
+                    </div>
+
+                    <div class="quiz-question" id="question3" style="display: none;">
+                        <h3>📝 Questão 3</h3>
+                        <p><strong>Qual sintaxe representa números de 5 a 15 usando chaves?</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" onclick="selectOption(3, 'a', false)">
+                                <span class="option-letter">A)</span> [5..15]
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(3, 'b', true)">
+                                <span class="option-letter">B)</span> {5..15}
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(3, 'c', false)">
+                                <span class="option-letter">C)</span> (5..15)
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(3, 'd', false)">
+                                <span class="option-letter">D)</span> 5..15
+                            </div>
+                        </div>
+                        <div class="quiz-feedback" id="feedback3"></div>
+                    </div>
+
+                    <div class="quiz-question" id="question4" style="display: none;">
+                        <h3>📝 Questão 4</h3>
+                        <p><strong>Na sintaxe estilo C for ((i=1;i<=10;i++)), o que significa "i++"?</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" onclick="selectOption(4, 'a', true)">
+                                <span class="option-letter">A)</span> Incrementa i em 1
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(4, 'b', false)">
+                                <span class="option-letter">B)</span> Decrementa i em 1
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(4, 'c', false)">
+                                <span class="option-letter">C)</span> Multiplica i por 2
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(4, 'd', false)">
+                                <span class="option-letter">D)</span> Divide i por 2
+                            </div>
+                        </div>
+                        <div class="quiz-feedback" id="feedback4"></div>
+                    </div>
+
+                    <div id="quiz-result" style="display: none; text-align: center; margin-top: 30px;">
+                        <h3>🎉 Quiz Concluído!</h3>
+                        <div class="highlight-box">
+                            <p><strong>Sua pontuação: <span id="final-score">0</span>/4</strong></p>
+                            <p id="result-message"></p>
+                        </div>
+                        <button class="nav-button" onclick="restartQuiz()" style="margin-top: 20px;">🔄 Refazer Quiz</button>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="nav-button" id="next-quiz-btn" onclick="nextQuestion()" style="display: none;">
+                        Próxima Questão ➡️
+                    </button>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(10)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 11 de 12</span>
+                <button class="nav-button" onclick="showSlide(12)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 12: Conclusão -->
+        <div class="slide" id="slide-12">
+            <div class="content">
+                <h2>🎓 Parabéns! Você Domina os Loops FOR!</h2>
+                
+                <div class="highlight-box center-text">
+                    <h3>🎯 Agora Você Pode Automatizar Qualquer Tarefa Repetitiva!</h3>
+                    <p>Você aprendeu a criar loops eficientes e poderosos para automatizar o mundo</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📚 O que Você Domina Agora</h3>
+                        <div class="bullet-point">Sintaxe básica do FOR</div>
+                        <div class="bullet-point">Loops com listas de valores</div>
+                        <div class="bullet-point">Wildcards para arquivos</div>
+                        <div class="bullet-point">Comando seq para sequências</div>
+                        <div class="bullet-point">Sintaxe com chaves {1..10}</div>
+                        <div class="bullet-point">Loops estilo C ((i=1;i<=10;i++))</div>
+                        <div class="bullet-point">Processamento de arquivos</div>
+                        <div class="bullet-point">Boas práticas e tratamento de erros</div>
+                    </div>
+                    <div>
+                        <h3>🚀 Próximos Desafios</h3>
+                        <div class="bullet-point">Loops WHILE e UNTIL</div>
+                        <div class="bullet-point">Arrays em Shell Script</div>
+                        <div class="bullet-point">Funções com loops</div>
+                        <div class="bullet-point">Processamento paralelo</div>
+                        <div class="bullet-point">Loops aninhados complexos</div>
+                        <div class="bullet-point">Otimização de performance</div>
+                        <div class="bullet-point">Scripts de sistema profissionais</div>
+                    </div>
+                </div>
+
+                <div style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); padding: 25px; border-radius: 15px; margin: 20px 0;">
+                    <h3>🎯 Exercícios Propostos</h3>
+                    <p><strong>1. Renomeador em Massa:</strong> Script que renomeia todos os .jpg para formato "foto_AAAA_MM_DD.jpg".</p>
+                    <p><strong>2. Monitor de Sistema:</strong> Loop que verifica uso de CPU/RAM a cada 5 segundos por 1 minuto.</p>
+                    <p><strong>3. Backup Inteligente:</strong> Sistema que faz backup apenas de arquivos modificados nos últimos 7 dias.</p>
+                    <p><strong>4. Gerador de Relatórios:</strong> Processa logs de acesso e gera estatísticas por horário.</p>
+                </div>
+
+                <div class="success-box center-text">
+                    <h3>🏆 Comandos para Memorizar</h3>
+                    <div class="script-box">
+for item in lista; do comandos; done       <span class="comment"># Básico</span><br>
+for arquivo in *.txt; do echo $arquivo; done <span class="comment"># Wildcards</span><br>
+for i in $(seq 1 10); do echo $i; done     <span class="comment"># Sequência</span><br>
+for i in {1..10}; do echo $i; done         <span class="comment"># Chaves</span><br>
+for ((i=1;i<=10;i++)); do echo $i; done    <span class="comment"># Estilo C</span><br>
+for palavra in `cat arquivo`; do echo $palavra; done <span class="comment"># Arquivo</span>
+                    </div>
+                </div>
+
+                <div class="example-box center-text">
+                    <h3>⚡ Você Agora É um Mestre da Automação! ⚡</h3>
+                    <p>"Repetir tarefas manualmente é coisa do passado!"<br>
+                    Continue criando scripts que trabalham por você! 🔄🚀</p>
+                </div>
+
+                <div class="info-box center-text">
+                    <h3>📋 Recursos para Continuar Aprendendo</h3>
+                    <p>• Advanced Bash Loop Techniques<br>
+                    • Performance Optimization in Bash<br>
+                    • Bash Best Practices Guide<br>
+                    • Real-world Automation Projects</p>
+                </div>
+
+                <div style="background: #d1ecf1; color: #0c5460; padding: 20px; border-radius: 10px; margin: 15px 0; text-align: center;">
+                    <p style="font-size: 1.1em; margin: 0;">
+                        <strong>Lembre-se:</strong> sempre termine com done, 
+                        use aspas nas variáveis, e teste seus loops!<br>
+                        <strong>Happy Looping! 🐧🔁</strong>
+                    </p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(11)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 12 de 12</span>
+                <button class="nav-button" onclick="showSlide(1)" style="background: #27ae60;">🏠 Início</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variáveis globais
+        let currentSlide = 1;
+        
+        // Atualizar total de slides
+        document.getElementById('total-slides').textContent = '12';
+        
+        // Função para mostrar slide específico
+        function showSlide(slideNumber) {
+            // Esconder todos os slides
+            const slides = document.querySelectorAll('.slide');
+            slides.forEach(slide => {
+                slide.classList.remove('active');
+            });
+            
+            // Mostrar slide específico
+            const targetSlide = document.getElementById('slide-' + slideNumber);
+            if (targetSlide) {
+                targetSlide.classList.add('active');
+                currentSlide = slideNumber;
+                
+                // Atualizar contador
+                document.getElementById('current-slide').textContent = slideNumber;
+            }
+        }
+        
+        // Navegação por teclado
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft' && currentSlide > 1) {
+                showSlide(currentSlide - 1);
+            } else if (e.key === 'ArrowRight' && currentSlide < 12) {
+                showSlide(currentSlide + 1);
+            }
+        });
+        
+        // Variáveis do quiz
+        let currentQuestion = 1;
+        let score = 0;
+        let quizAnswered = [false, false, false, false];
+        
+        // Função do quiz
+        function selectOption(questionNum, option, isCorrect) {
+            if (quizAnswered[questionNum - 1]) return;
+            
+            const options = document.querySelectorAll('#question' + questionNum + ' .quiz-option');
+            const feedback = document.getElementById('feedback' + questionNum);
+            
+            // Marcar todas as opções
+            options.forEach(opt => {
+                opt.style.pointerEvents = 'none';
+                if (opt.onclick.toString().includes('true')) {
+                    opt.classList.add('correct');
+                } else if (opt === event.currentTarget) {
+                    opt.classList.add(isCorrect ? 'correct' : 'incorrect');
+                }
+            });
+            
+            // Mostrar feedback
+            if (is
