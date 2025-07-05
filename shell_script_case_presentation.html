@@ -1,0 +1,1902 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shell Script - Estrutura CASE</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .presentation {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide {
+            min-height: 100vh;
+            padding: 60px 40px;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            background: white;
+            margin: 20px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        .slide h1 {
+            font-size: 3.5em;
+            color: #4a5568;
+            text-align: center;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .slide h2 {
+            font-size: 2.8em;
+            color: #2d3748;
+            margin-bottom: 30px;
+            border-bottom: 4px solid #1a1a2e;
+            padding-bottom: 15px;
+        }
+
+        .slide h3 {
+            font-size: 2.2em;
+            color: #4a5568;
+            margin: 25px 0 15px 0;
+        }
+
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        .bullet-point {
+            display: flex;
+            align-items: flex-start;
+            margin: 15px 0;
+            font-size: 1.3em;
+            line-height: 1.5;
+        }
+
+        .bullet-point::before {
+            content: "⚡";
+            margin-right: 15px;
+            font-size: 1.2em;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #1a1a2e;
+        }
+
+        .example-box {
+            background: linear-gradient(135deg, #00c9ff 0%, #92fe9d 100%);
+            color: #2d3748;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #00b894;
+        }
+
+        .terminal-box {
+            background: #2d3748;
+            color: #00ff41;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #00ff41;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+            position: relative;
+        }
+
+        .terminal-box::before {
+            content: "💻 Terminal Linux";
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            background: #2d3748;
+            color: #fff;
+            padding: 5px 15px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .script-box {
+            background: #1a202c;
+            color: #00ff41;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #68d391;
+            font-family: 'Courier New', monospace;
+            font-size: 1.0em;
+            position: relative;
+        }
+
+        .script-box::before {
+            content: "📝 Script Shell";
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            background: #1a202c;
+            color: #68d391;
+            padding: 5px 15px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .prompt {
+            color: #4299e1;
+            font-weight: bold;
+        }
+
+        .command {
+            color: #00ff41;
+            font-weight: bold;
+        }
+
+        .output {
+            color: #e2e8f0;
+            margin-left: 0;
+            margin-top: 5px;
+        }
+
+        .variable {
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .string {
+            color: #ff6b9d;
+        }
+
+        .comment {
+            color: #68d391;
+            font-style: italic;
+        }
+
+        .nav-button {
+            padding: 15px 30px;
+            background: #1a1a2e;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-button:hover {
+            background: #16213e;
+            transform: translateY(-2px);
+        }
+
+        .nav-button.start {
+            background: #27ae60;
+            font-size: 1.4em;
+            padding: 20px 40px;
+        }
+
+        .nav-button.start:hover {
+            background: #229954;
+        }
+
+        .slide-navigation {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(255,255,255,0.9);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #4a5568;
+            z-index: 1000;
+        }
+
+        .center-text {
+            text-align: center;
+        }
+
+        .large-text {
+            font-size: 1.4em;
+            line-height: 1.6;
+        }
+
+        .warning-box {
+            background: #ffeaa7;
+            color: #2d3436;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #fdcb6e;
+        }
+
+        .info-box {
+            background: #d1ecf1;
+            color: #0c5460;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+
+        .success-box {
+            background: #c6f6d5;
+            color: #22543d;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #48bb78;
+        }
+
+        .comparison-table {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+
+        .comparison-table table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 1.1em;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .comparison-table th {
+            background: #1a1a2e;
+            color: white;
+            font-weight: bold;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background: #f2f2f2;
+        }
+
+        /* Quiz Styles */
+        .quiz-container {
+            max-width: 100%;
+            margin: 20px 0;
+        }
+
+        .quiz-question {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 2px solid #e2e8f0;
+        }
+
+        .quiz-question h3 {
+            color: #1a1a2e;
+            margin-bottom: 20px;
+        }
+
+        .quiz-question p {
+            font-size: 1.3em;
+            margin-bottom: 25px;
+            font-weight: bold;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .quiz-option {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1em;
+        }
+
+        .quiz-option:hover {
+            border-color: #1a1a2e;
+            background: #f0f4ff;
+            transform: translateX(5px);
+        }
+
+        .quiz-option.selected {
+            border-color: #1a1a2e;
+            background: #1a1a2e;
+            color: white;
+        }
+
+        .quiz-option.correct {
+            border-color: #48bb78;
+            background: #48bb78;
+            color: white;
+        }
+
+        .quiz-option.incorrect {
+            border-color: #f56565;
+            background: #f56565;
+            color: white;
+        }
+
+        .option-letter {
+            background: #1a1a2e;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .quiz-option.correct .option-letter {
+            background: #48bb78;
+        }
+
+        .quiz-option.incorrect .option-letter {
+            background: #f56565;
+        }
+
+        .quiz-feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            display: none;
+        }
+
+        .quiz-feedback.correct {
+            background: #c6f6d5;
+            color: #22543d;
+            border: 2px solid #48bb78;
+            display: block;
+        }
+
+        .quiz-feedback.incorrect {
+            background: #fed7d7;
+            color: #742a2a;
+            border: 2px solid #f56565;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">12</span>
+        </div>
+
+        <!-- Slide 1: Título -->
+        <div class="slide active" id="slide-1">
+            <div class="content center-text">
+                <h1>🔄 Shell Script - Estrutura CASE</h1>
+                <h2 style="border: none; color: #1a1a2e;">Múltiplas Escolhas de Forma Elegante</h2>
+                <div class="highlight-box large-text">
+                    <strong>case, esac, padrões</strong><br>
+                    Quando IF não é suficiente: estruturas para múltiplas opções<br>
+                    Criando menus e sistemas de escolha inteligentes
+                </div>
+                
+                <div class="terminal-box" style="margin-top: 40px;">
+<span class="prompt">user@linux:~$</span> <span class="command">echo "1, 2 ou 3? O CASE decide para você!"</span>
+<div class="output">1, 2 ou 3? O CASE decide para você!</div>
+<span class="prompt">user@linux:~$</span> <span class="command">echo "Múltiplas opções, uma só estrutura! 🎯"</span>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 1 de 12</span>
+                <button class="nav-button start" onclick="showSlide(2)">
+                    Começar Aula ➡️
+                </button>
+            </div>
+        </div>
+
+        <!-- Slide 2: Introdução ao CASE -->
+        <div class="slide" id="slide-2">
+            <div class="content">
+                <h2>🎯 O que é a Estrutura CASE?</h2>
+                
+                <div class="highlight-box">
+                    <h3>🚏 Como um Balcão de Informações</h3>
+                    <p>Imagine o CASE como um balcão de informações em um shopping:</p>
+                    <p><strong>"Para qual andar você quer ir?"</strong><br>
+                    🏪 "1º andar" → "Vá para a esquerda"<br>
+                    🍔 "2º andar" → "Suba a escada rolante"<br>
+                    🎬 "3º andar" → "Use o elevador"<br>
+                    ❓ "Qualquer outra coisa" → "Consulte o mapa"</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🔄 Por que usar CASE?</h3>
+                        <div class="example-box">
+                            <div class="bullet-point">Múltiplas opções de forma organizada</div>
+                            <div class="bullet-point">Mais legível que vários IF encadeados</div>
+                            <div class="bullet-point">Perfeito para menus e escolhas</div>
+                            <div class="bullet-point">Compara padrões, não só valores exatos</div>
+                        </div>
+                        
+                        <h3>🆚 CASE vs IF</h3>
+                        <div class="info-box">
+                            <p><strong>IF:</strong> Bom para 2-3 condições<br>
+                            <strong>CASE:</strong> Ideal para 4+ opções<br>
+                            <strong>IF:</strong> Comparações complexas<br>
+                            <strong>CASE:</strong> Comparações de padrões</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🏗️ Estrutura Básica</h3>
+                        <div class="script-box">
+case "$<span class="variable">VARIAVEL</span>" in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">padrão1</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;comando1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">padrão2</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;comando2<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;comando_padrão<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+esac
+                        </div>
+                        
+                        <h3>🔍 Primeiro Exemplo</h3>
+                        <div class="script-box">
+<span class="variable">OPCAO</span>=<span class="string">"1"</span><br>
+
+case "$OPCAO" in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">1</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Primeira opção!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">2</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Segunda opção!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+esac
+                        </div>
+                        
+                        <div class="terminal-box">
+<div class="output">Primeira opção!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h3>🎯 Palavras-Chave Importantes</h3>
+                    <p><strong>case:</strong> inicia a estrutura<br>
+                    <strong>in:</strong> "em qual dessas opções?"<br>
+                    <strong>;;</strong> termina cada caso (como um "break")<br>
+                    <strong>esac:</strong> termina a estrutura (é "case" ao contrário!)</p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(1)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 2 de 12</span>
+                <button class="nav-button" onclick="showSlide(3)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 3: Sintaxe Detalhada -->
+        <div class="slide" id="slide-3">
+            <div class="content">
+                <h2>📋 Sintaxe Detalhada do CASE</h2>
+                
+                <div class="highlight-box">
+                    <h3>🧩 Anatomia do CASE</h3>
+                    <p>Cada parte tem sua função específica para criar decisões organizadas</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🔧 Componentes Essenciais</h3>
+                        <div class="script-box">
+<span class="comment"># 1. Lê o valor do usuário</span><br>
+read <span class="variable">VALOR</span><br>
+
+<span class="comment"># 2. Inicia comparação</span><br>
+case "$<span class="variable">VALOR</span>" in<br>
+
+<span class="comment"># 3. Primeiro padrão</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">padrão1</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;comandos<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+
+<span class="comment"># 4. Segundo padrão</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">padrão2</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;comandos<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+
+<span class="comment"># 5. Caso padrão (opcional)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;*)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;comandos<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+
+<span class="comment"># 6. Finaliza estrutura</span><br>
+esac
+                        </div>
+                        
+                        <h3>⚠️ Regras Importantes</h3>
+                        <div class="warning-box">
+                            <p><strong>Sempre use aspas:</strong> "$VARIAVEL"<br>
+                            <strong>Termine com "):"</strong> cada padrão<br>
+                            <strong>Use ";;"</strong> para separar casos<br>
+                            <strong>"*)"</strong> captura qualquer valor</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🎮 Exemplo: Menu de Jogos</h3>
+                        <div class="script-box">
+#!/bin/bash<br>
+
+echo <span class="string">"=== MENU DE JOGOS ==="</span><br>
+echo <span class="string">"1) Aventura"</span><br>
+echo <span class="string">"2) Ação"</span><br>
+echo <span class="string">"3) Estratégia"</span><br>
+echo <span class="string">"Escolha uma opção: "</span><br>
+read <span class="variable">OPCAO</span><br>
+
+case "$OPCAO" in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">1</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"🗡️ Iniciando jogo de aventura!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">2</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"💥 Iniciando jogo de ação!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">3</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"🧠 Iniciando jogo de estratégia!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"❌ Opção inválida!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+esac
+                        </div>
+                        
+                        <h3>🎬 Resultado da Execução</h3>
+                        <div class="terminal-box">
+<div class="output">=== MENU DE JOGOS ===</div>
+<div class="output">1) Aventura</div>
+<div class="output">2) Ação</div>
+<div class="output">3) Estratégia</div>
+<div class="output">Escolha uma opção:</div>
+<span class="command">2</span>
+<div class="output">💥 Iniciando jogo de ação!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <h3>💡 Fluxo de Execução</h3>
+                    <p><strong>1.</strong> Lê o valor da variável<br>
+                    <strong>2.</strong> Compara com primeiro padrão<br>
+                    <strong>3.</strong> Se combinar: executa comandos e pula para esac<br>
+                    <strong>4.</strong> Se não combinar: testa próximo padrão<br>
+                    <strong>5.</strong> Se nenhum combinar: executa "*)" se existir</p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(2)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 3 de 12</span>
+                <button class="nav-button" onclick="showSlide(4)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 4: Primeiro Exemplo Prático -->
+        <div class="slide" id="slide-4">
+            <div class="content">
+                <h2>🚀 Primeiro Exemplo Prático</h2>
+                
+                <div class="highlight-box">
+                    <h3>📝 Criando um Menu Simples</h3>
+                    <p>Vamos criar um script que funciona como um menu de operações básicas</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>💻 O Script menu.sh</h3>
+                        <div class="script-box">
+#!/bin/bash<br>
+
+echo <span class="string">"=== MENU DE OPERAÇÕES ==="</span><br>
+echo <span class="string">"1 - Incluir"</span><br>
+echo <span class="string">"2 - Remover"</span><br>
+echo <span class="string">"3 - Listar"</span><br>
+echo <span class="string">"Digite sua opção: "</span><br>
+read <span class="variable">OPCAO</span><br>
+
+case $OPCAO in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">1</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"OPÇÃO Incluir"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">2</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"OPÇÃO Remover"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">3</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"OPÇÃO Listar"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"OPÇÃO Inexistente"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+esac
+                        </div>
+                        
+                        <h3>🔧 Tornando Executável</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">chmod +x menu.sh</span><br>
+<span class="prompt">user@linux:~$</span> <span class="command">./menu.sh</span>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🎬 Execução 1 - Opção Válida</h3>
+                        <div class="terminal-box">
+<div class="output">=== MENU DE OPERAÇÕES ===</div>
+<div class="output">1 - Incluir</div>
+<div class="output">2 - Remover</div>
+<div class="output">3 - Listar</div>
+<div class="output">Digite sua opção:</div>
+<span class="command">1</span>
+<div class="output">OPÇÃO Incluir</div>
+                        </div>
+                        
+                        <h3>🎬 Execução 2 - Opção Inválida</h3>
+                        <div class="terminal-box">
+<div class="output">=== MENU DE OPERAÇÕES ===</div>
+<div class="output">1 - Incluir</div>
+<div class="output">2 - Remover</div>
+<div class="output">3 - Listar</div>
+<div class="output">Digite sua opção:</div>
+<span class="command">9</span>
+<div class="output">OPÇÃO Inexistente</div>
+                        </div>
+                        
+                        <h3>🎯 O que Aconteceu?</h3>
+                        <div class="info-box">
+                            <p><strong>Opção "1":</strong> Combinou com primeiro caso<br>
+                            <strong>Opção "9":</strong> Não combinou com nenhum caso, executou "*)"</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>🔍 Análise do Código</h3>
+                    <p><strong>Linha 9:</strong> <code>case $OPCAO in</code> - Inicia comparação da variável OPCAO<br>
+                    <strong>Linhas 10-12:</strong> Primeiro caso: se OPCAO = "1"<br>
+                    <strong>Linha 12:</strong> <code>;;</code> - Termina o caso e pula para esac<br>
+                    <strong>Linhas 19-21:</strong> Caso padrão <code>*)</code> - Captura qualquer valor não previsto<br>
+                    <strong>Linha 23:</strong> <code>esac</code> - Finaliza toda a estrutura</p>
+                </div>
+
+                <div class="success-box">
+                    <h3>✨ Vantagens do CASE aqui</h3>
+                    <p>Compare com IF equivalente:<br>
+                    • <strong>CASE:</strong> 15 linhas, estrutura clara<br>
+                    • <strong>IF:</strong> Seria necessário if/elif/elif/else = mais confuso<br>
+                    • <strong>CASE:</strong> Fácil adicionar novas opções<br>
+                    • <strong>CASE:</strong> Padrão "*)" captura tudo automaticamente</p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(3)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 4 de 12</span>
+                <button class="nav-button" onclick="showSlide(5)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 5: Padrões e Wildcards -->
+        <div class="slide" id="slide-5">
+            <div class="content">
+                <h2>🎨 Padrões e Wildcards no CASE</h2>
+                
+                <div class="highlight-box">
+                    <h3>🔍 Mais que Valores Exatos</h3>
+                    <p>O CASE não compara apenas valores exatos - ele pode trabalhar com padrões como um detetive experiente!</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🃏 Tipos de Padrões</h3>
+                        <div class="example-box">
+                            <h4>📝 Valores Literais</h4>
+                            <p><code>"sim"</code>, <code>"1"</code>, <code>"opcao"</code></p>
+                            
+                            <h4>🎯 Wildcards</h4>
+                            <p><code>*</code> - qualquer sequência<br>
+                            <code>?</code> - um caractere qualquer</p>
+                            
+                            <h4>📊 Ranges</h4>
+                            <p><code>[0-9]</code> - números de 0 a 9<br>
+                            <code>[A-Z]</code> - letras maiúsculas<br>
+                            <code>[a-z]</code> - letras minúsculas</p>
+                            
+                            <h4>🔀 Múltiplas Opções</h4>
+                            <p><code>sim|yes|y</code> - qualquer uma das três</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🧪 Exemplo: Detector de Tipos</h3>
+                        <div class="script-box">
+#!/bin/bash<br>
+
+echo <span class="string">"Digite um caractere:"</span><br>
+read <span class="variable">CHAR</span><br>
+
+case "$CHAR" in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">[0-9]</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"📊 É um número!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">[A-Z]</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"🔤 É uma letra maiúscula!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">[a-z]</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"🔡 É uma letra minúscula!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"❓ É um caractere especial!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+esac
+                        </div>
+                        
+                        <h3>🎬 Testando o Script</h3>
+                        <div class="terminal-box">
+<span class="comment"># Teste 1: Número</span>
+<div class="output">Digite um caractere:</div>
+<span class="command">7</span>
+<div class="output">📊 É um número!</div>
+
+<span class="comment"># Teste 2: Letra maiúscula</span>
+<div class="output">Digite um caractere:</div>
+<span class="command">A</span>
+<div class="output">🔤 É uma letra maiúscula!</div>
+
+<span class="comment"># Teste 3: Caractere especial</span>
+<div class="output">Digite um caractere:</div>
+<span class="command">@</span>
+<div class="output">❓ É um caractere especial!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>🌟 Exemplo Avançado: Validador de Respostas</h3>
+                    <div class="script-box">
+#!/bin/bash<br>
+
+echo <span class="string">"Deseja continuar? (sim/não):"</span><br>
+read <span class="variable">RESPOSTA</span><br>
+
+case "$RESPOSTA" in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">sim|SIM|s|S|yes|YES|y|Y</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"✅ Continuando..."</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">não|NÃO|nao|NAO|n|N|no|NO</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"❌ Operação cancelada"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"❓ Resposta não compreendida"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+esac
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <h3>💡 Dicas de Padrões</h3>
+                    <p><strong>[0-9]:</strong> Apenas UM dígito (não números com múltiplos dígitos)<br>
+                    <strong>*:</strong> Aceita qualquer coisa, inclusive string vazia<br>
+                    <strong>|:</strong> Funciona como OU - aceita qualquer uma das opções<br>
+                    <strong>Maiúsculas/Minúsculas:</strong> CASE é sensível! "A" ≠ "a"</p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(4)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 5 de 12</span>
+                <button class="nav-button" onclick="showSlide(6)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 6: Exemplo com Ranges -->
+        <div class="slide" id="slide-6">
+            <div class="content">
+                <h2>📊 Trabalhando com Ranges e Múltiplos Padrões</h2>
+                
+                <div class="highlight-box">
+                    <h3>🎯 Classificação Inteligente</h3>
+                    <p>Como fazer seu script categorizar entrada de dados automaticamente</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🎨 Exemplo: Classificador de Notas</h3>
+                        <div class="script-box">
+#!/bin/bash<br>
+
+echo <span class="string">"Digite uma nota (0-100):"</span><br>
+read <span class="variable">NOTA</span><br>
+
+case "$NOTA" in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">[9][0-9]|100</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"🏆 Excelente! Nota A"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">[8][0-9]</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"🌟 Muito Bom! Nota B"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">[7][0-9]</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"👏 Bom! Nota C"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">[6][0-9]</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"😐 Regular. Nota D"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">[0-5][0-9]</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"😞 Insuficiente. Nota F"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"❌ Nota inválida!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+esac
+                        </div>
+                        
+                        <h3>🔍 Entendendo os Padrões</h3>
+                        <div class="info-box">
+                            <p><strong>[9][0-9]:</strong> 90-99<br>
+                            <strong>|100:</strong> OU exatamente 100<br>
+                            <strong>[8][0-9]:</strong> 80-89<br>
+                            <strong>[0-5][0-9]:</strong> 00-59</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🎬 Testando o Classificador</h3>
+                        <div class="terminal-box">
+<span class="comment"># Teste 1: Nota excelente</span>
+<div class="output">Digite uma nota (0-100):</div>
+<span class="command">95</span>
+<div class="output">🏆 Excelente! Nota A</div>
+
+<span class="comment"># Teste 2: Nota regular</span>
+<div class="output">Digite uma nota (0-100):</div>
+<span class="command">65</span>
+<div class="output">😐 Regular. Nota D</div>
+
+<span class="comment"># Teste 3: Entrada inválida</span>
+<div class="output">Digite uma nota (0-100):</div>
+<span class="command">150</span>
+<div class="output">❌ Nota inválida!</div>
+                        </div>
+                        
+                        <h3>🎪 Exemplo: Detector de Extensões</h3>
+                        <div class="script-box">
+#!/bin/bash<br>
+
+echo <span class="string">"Digite um nome de arquivo:"</span><br>
+read <span class="variable">ARQUIVO</span><br>
+
+case "$ARQUIVO" in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">*.txt|*.doc|*.docx</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"📄 Documento de texto"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">*.jpg|*.png|*.gif|*.bmp</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"🖼️ Arquivo de imagem"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">*.mp3|*.wav|*.ogg</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"🎵 Arquivo de áudio"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">*.sh</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"⚡ Script Shell"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"❓ Tipo desconhecido"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+esac
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>🌟 Exemplo Avançado: Sistema de Cores</h3>
+                    <div class="script-box">
+#!/bin/bash<br>
+
+echo <span class="string">"Digite uma cor:"</span><br>
+read <span class="variable">COR</span><br>
+
+case "$COR" in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">vermelho|red|rojo</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"🔴 Cor quente e energética!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">azul|blue|bleu</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"🔵 Cor fria e tranquila!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">verde|green|vert</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"🟢 Cor da natureza!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">preto|black|negro</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"⚫ Ausência de cor!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"🌈 Cor interessante!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+esac
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h3>⚠️ Cuidado com Padrões Complexos</h3>
+                    <p><strong>Ordem importa:</strong> Coloque padrões mais específicos primeiro<br>
+                    <strong>Teste sempre:</strong> Ranges podem ser traiçoeiros<br>
+                    <strong>Escape especial:</strong> Use \ para caracteres especiais literais</p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(5)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 6 de 12</span>
+                <button class="nav-button" onclick="showSlide(7)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 7: Caso Padrão (*) -->
+        <div class="slide" id="slide-7">
+            <div class="content">
+                <h2>🌟 O Caso Padrão (*) - O Faz-Tudo</h2>
+                
+                <div class="highlight-box">
+                    <h3>🕳️ A Rede de Segurança</h3>
+                    <p>O asterisco (*) é como uma rede de segurança que captura tudo que não foi previsto nos outros casos</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🎯 Por que usar o "*"?</h3>
+                        <div class="example-box">
+                            <div class="bullet-point">Captura entradas não previstas</div>
+                            <div class="bullet-point">Evita que o script "ignore" valores</div>
+                            <div class="bullet-point">Permite dar feedback ao usuário</div>
+                            <div class="bullet-point">Funciona como "else" do IF</div>
+                        </div>
+                        
+                        <h3>📍 Posicionamento Importante</h3>
+                        <div class="warning-box">
+                            <p><strong>Sempre por último!</strong><br>
+                            O "*" deve ser o último caso, pois captura TUDO.<br>
+                            Se colocar antes, os outros casos nunca executarão!</p>
+                        </div>
+                        
+                        <h3>❌ Exemplo ERRADO</h3>
+                        <div class="script-box">
+case "$OPCAO" in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Opção inválida"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">1</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Primeira opção"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+esac<br>
+<span class="comment"># PROBLEMA: * captura tudo antes!</span>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>✅ Exemplo CORRETO</h3>
+                        <div class="script-box">
+case "$OPCAO" in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">1</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Primeira opção"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">2</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Segunda opção"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Opção inválida"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+esac<br>
+<span class="comment"># CORRETO: * por último!</span>
+                        </div>
+                        
+                        <h3>🎬 Comportamento com e sem "*"</h3>
+                        <div class="terminal-box">
+<span class="comment"># COM * - entrada "xyz"</span>
+<div class="output">Opção inválida</div>
+
+<span class="comment"># SEM * - entrada "xyz"</span>
+<div class="output">(nada acontece, script continua)</div>
+                        </div>
+                        
+                        <h3>💡 O "*" é Opcional?</h3>
+                        <div class="info-box">
+                            <p><strong>Tecnicamente:</strong> Sim, é opcional<br>
+                            <strong>Na prática:</strong> Sempre use!<br>
+                            <strong>Motivo:</strong> Melhor experiência do usuário</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>🏪 Exemplo: Sistema de Loja Completo</h3>
+                    <div class="script-box">
+#!/bin/bash<br>
+
+echo <span class="string">"=== SISTEMA DE LOJA ==="</span><br>
+echo <span class="string">"1) Ver produtos"</span><br>
+echo <span class="string">"2) Adicionar ao carrinho"</span><br>
+echo <span class="string">"3) Finalizar compra"</span><br>
+echo <span class="string">"q) Sair"</span><br>
+echo <span class="string">"Escolha uma opção: "</span><br>
+read <span class="variable">OPCAO</span><br>
+
+case "$OPCAO" in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">1</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"🛍️ Exibindo produtos disponíveis..."</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">2</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"🛒 Adicionando item ao carrinho..."</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">3</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"💳 Processando pagamento..."</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">q|Q|quit|QUIT|sair|SAIR</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"👋 Obrigado por usar nossa loja!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;exit 0<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"❌ Opção '$OPCAO' não reconhecida!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"💡 Use: 1, 2, 3 ou q para sair"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+esac
+                    </div>
+                </div>
+
+                <div class="success-box">
+                    <h3>🌟 Boas Práticas com "*"</h3>
+                    <p><strong>Seja descritivo:</strong> Mostre qual valor foi digitado<br>
+                    <strong>Dê orientações:</strong> Explique as opções válidas<br>
+                    <strong>Use variáveis:</strong> <code>"Opção '$OPCAO' inválida"</code><br>
+                    <strong>Considere exit codes:</strong> exit 1 para erros</p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(6)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 7 de 12</span>
+                <button class="nav-button" onclick="showSlide(8)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 8: Exemplo Completo - Menu -->
+        <div class="slide" id="slide-8">
+            <div class="content">
+                <h2>🍔 Exemplo Completo: Sistema de Menu</h2>
+                
+                <div class="highlight-box">
+                    <h3>🎯 Projeto Real: Gerenciador de Arquivos</h3>
+                    <p>Vamos criar um sistema completo que gerencia arquivos usando CASE</p>
+                </div>
+
+                <div class="example-box">
+                    <h3>📝 Script: gerenciador.sh</h3>
+                    <div class="script-box">
+#!/bin/bash<br>
+
+clear<br>
+echo <span class="string">"================================="</span><br>
+echo <span class="string">"    GERENCIADOR DE ARQUIVOS"</span><br>
+echo <span class="string">"================================="</span><br>
+echo <span class="string">"1) Listar arquivos"</span><br>
+echo <span class="string">"2) Criar arquivo"</span><br>
+echo <span class="string">"3) Remover arquivo"</span><br>
+echo <span class="string">"4) Ver conteúdo"</span><br>
+echo <span class="string">"5) Informações do sistema"</span><br>
+echo <span class="string">"q) Sair"</span><br>
+echo <span class="string">"================================="</span><br>
+echo -n <span class="string">"Escolha uma opção: "</span><br>
+read <span class="variable">OPCAO</span><br>
+
+case "$OPCAO" in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">1</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"📂 Listando arquivos..."</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ls -la<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">2</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo -n <span class="string">"📝 Nome do arquivo: "</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;read <span class="variable">NOME</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;touch "$NOME"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"✅ Arquivo '$NOME' criado!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">3</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo -n <span class="string">"🗑️ Nome do arquivo: "</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;read <span class="variable">NOME</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if [ -f "$NOME" ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rm "$NOME"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"✅ Arquivo removido!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"❌ Arquivo não encontrado!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">4</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo -n <span class="string">"👁️ Nome do arquivo: "</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;read <span class="variable">NOME</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if [ -f "$NOME" ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cat "$NOME"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"❌ Arquivo não encontrado!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">5</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"💻 Informações do Sistema:"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Usuário: $(whoami)"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Data: $(date)"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Diretório: $(pwd)"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">q|Q|quit|sair</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"👋 Até logo!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;exit 0<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"❌ Opção '$OPCAO' inválida!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"💡 Use: 1-5 ou 'q' para sair"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+esac<br>
+
+echo<br>
+echo <span class="string">"Pressione Enter para continuar..."</span><br>
+read
+                    </div>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🎬 Execução - Opção 1</h3>
+                        <div class="terminal-box">
+<div class="output">=================================</div>
+<div class="output">    GERENCIADOR DE ARQUIVOS</div>
+<div class="output">=================================</div>
+<div class="output">1) Listar arquivos</div>
+<div class="output">2) Criar arquivo</div>
+<div class="output">3) Remover arquivo</div>
+<div class="output">4) Ver conteúdo</div>
+<div class="output">5) Informações do sistema</div>
+<div class="output">q) Sair</div>
+<div class="output">=================================</div>
+<div class="output">Escolha uma opção:</div>
+<span class="command">1</span>
+<div class="output">📂 Listando arquivos...</div>
+<div class="output">-rw-r--r-- 1 user user 1024 Jan 15 10:30 teste.txt</div>
+<div class="output">-rwxr-xr-x 1 user user 2048 Jan 15 10:25 script.sh</div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🎬 Execução - Opção 2</h3>
+                        <div class="terminal-box">
+<div class="output">Escolha uma opção:</div>
+<span class="command">2</span>
+<div class="output">📝 Nome do arquivo:</div>
+<span class="command">meuarquivo.txt</span>
+<div class="output">✅ Arquivo 'meuarquivo.txt' criado!</div>
+                        </div>
+                        
+                        <h3>🎬 Execução - Entrada Inválida</h3>
+                        <div class="terminal-box">
+<div class="output">Escolha uma opção:</div>
+<span class="command">99</span>
+<div class="output">❌ Opção '99' inválida!</div>
+<div class="output">💡 Use: 1-5 ou 'q' para sair</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="success-box">
+                    <h3>🌟 Recursos Implementados</h3>
+                    <p><strong>Interface limpa:</strong> clear e formatação visual<br>
+                    <strong>Múltiplas saídas:</strong> q|Q|quit|sair para flexibilidade<br>
+                    <strong>Validação:</strong> Verifica se arquivo existe antes de operações<br>
+                    <strong>Feedback:</strong> Mensagens claras para o usuário<br>
+                    <strong>Pausa:</strong> "Pressione Enter" para boa experiência<br>
+                    <strong>Exit codes:</strong> exit 0 para saída normal</p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(7)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 8 de 12</span>
+                <button class="nav-button" onclick="showSlide(9)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 9: Exemplo com Exit Codes -->
+        <div class="slide" id="slide-9">
+            <div class="content">
+                <h2>🚨 CASE com Exit Codes - Ping Inteligente</h2>
+                
+                <div class="highlight-box">
+                    <h3>🌐 Analisando Resultados de Comandos</h3>
+                    <p>Como usar CASE para interpretar codes de saída e criar scripts inteligentes</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>💡 A Ideia</h3>
+                        <div class="info-box">
+                            <p>Lembra dos exit codes?<br>
+                            <strong>0:</strong> Comando executou com sucesso<br>
+                            <strong>1:</strong> Erro geral<br>
+                            <strong>2:</strong> Uso incorreto do comando<br>
+                            
+                            <br>O CASE pode usar o <strong>$?</strong> para decidir o que fazer!</p>
+                        </div>
+                        
+                        <h3>📝 Script ping.sh</h3>
+                        <div class="script-box">
+#!/bin/bash<br>
+
+echo <span class="string">"=== VERIFICADOR DE CONECTIVIDADE ==="</span><br>
+echo -n <span class="string">"Digite um IP ou domínio: "</span><br>
+read <span class="variable">HOST</span><br>
+
+echo <span class="string">"🔍 Testando conectividade com $HOST..."</span><br>
+
+<span class="comment"># Executa ping e captura exit code</span><br>
+ping -c 3 "$HOST" > /dev/null 2>&1<br>
+<span class="variable">RESULTADO</span>=$?<br>
+
+case $RESULTADO in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">0</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"✅ Host $HOST está acessível!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"🌐 Conexão estabelecida com sucesso"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">1</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"❌ Host $HOST está inacessível!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"🔴 Sem resposta aos pacotes ping"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"⚠️ Erro ao tentar acessar o host!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"💥 Código de erro: $RESULTADO"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+esac
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🎬 Teste 1: Host Acessível</h3>
+                        <div class="terminal-box">
+<div class="output">=== VERIFICADOR DE CONECTIVIDADE ===</div>
+<div class="output">Digite um IP ou domínio:</div>
+<span class="command">google.com</span>
+<div class="output">🔍 Testando conectividade com google.com...</div>
+<div class="output">✅ Host google.com está acessível!</div>
+<div class="output">🌐 Conexão estabelecida com sucesso</div>
+                        </div>
+                        
+                        <h3>🎬 Teste 2: Host Inacessível</h3>
+                        <div class="terminal-box">
+<div class="output">Digite um IP ou domínio:</div>
+<span class="command">192.168.999.999</span>
+<div class="output">🔍 Testando conectividade com 192.168.999.999...</div>
+<div class="output">❌ Host 192.168.999.999 está inacessível!</div>
+<div class="output">🔴 Sem resposta aos pacotes ping</div>
+                        </div>
+                        
+                        <h3>🔍 Entendendo o Comando</h3>
+                        <div class="example-box">
+                            <p><strong>ping -c 3:</strong> Envia 3 pacotes<br>
+                            <strong>> /dev/null:</strong> Oculta saída normal<br>
+                            <strong>2>&1:</strong> Oculta mensagens de erro<br>
+                            <strong>$?:</strong> Captura o exit code</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>🚀 Versão Avançada: Ping com Estatísticas</h3>
+                    <div class="script-box">
+#!/bin/bash<br>
+
+echo <span class="string">"=== PING AVANÇADO ==="</span><br>
+echo -n <span class="string">"Digite um host: "</span><br>
+read <span class="variable">HOST</span><br>
+echo -n <span class="string">"Quantos pacotes? (padrão: 4): "</span><br>
+read <span class="variable">PACOTES</span><br>
+
+<span class="comment"># Define padrão se não informado</span><br>
+PACOTES=${PACOTES:-4}<br>
+
+echo <span class="string">"🔍 Enviando $PACOTES pacotes para $HOST..."</span><br>
+
+<span class="comment"># Executa ping e salva saída em arquivo temporário</span><br>
+ping -c $PACOTES "$HOST" > /tmp/ping_result.txt 2>&1<br>
+<span class="variable">CODIGO</span>=$?<br>
+
+case $CODIGO in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">0</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"✅ SUCCESS: Host respondeu!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Extrai estatísticas</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">PERDIDOS</span>=$(grep "packet loss" /tmp/ping_result.txt | awk '{print $6}')<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"📊 Perda de pacotes: $PERDIDOS"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;grep "round-trip" /tmp/ping_result.txt<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">1</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"❌ FAILED: Host não responde"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"🔴 Possíveis causas:"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"   • Host desligado"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"   • Firewall bloqueando"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"   • Problema de rede"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">2</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"⚠️ ERROR: Problema com o comando ping"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"💡 Verifique se o host é válido"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"❓ UNKNOWN: Erro inesperado (código: $CODIGO)"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"🔧 Verifique sua conexão de rede"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+esac<br>
+
+<span class="comment"># Limpa arquivo temporário</span><br>
+rm -f /tmp/ping_result.txt
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h3>💡 Dica Importante</h3>
+                    <p>Capture o exit code <strong>imediatamente</strong> após o comando:<br>
+                    <code>comando</code><br>
+                    <code>CODIGO=$?</code><br>
+                    <br>Qualquer outro comando entre eles pode alterar o $?!</p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(8)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 9 de 12</span>
+                <button class="nav-button" onclick="showSlide(10)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 10: CASE vs IF -->
+        <div class="slide" id="slide-10">
+            <div class="content">
+                <h2>⚖️ CASE vs IF - Quando Usar Cada Um?</h2>
+                
+                <div class="highlight-box">
+                    <h3>🎯 Escolhendo a Ferramenta Certa</h3>
+                    <p>Como um mecânico escolhe a chave de fenda certa para cada parafuso</p>
+                </div>
+
+                <div class="comparison-table">
+                    <table>
+                        <tr>
+                            <th>Critério</th>
+                            <th>🔀 CASE</th>
+                            <th>🔄 IF</th>
+                        </tr>
+                        <tr>
+                            <td><strong>Número de opções</strong></td>
+                            <td>4+ opções (ideal para menus)</td>
+                            <td>2-3 opções (melhor para decisões simples)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Tipo de comparação</strong></td>
+                            <td>Uma variável vs múltiplos padrões</td>
+                            <td>Múltiplas variáveis e condições complexas</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Legibilidade</strong></td>
+                            <td>Muito legível para múltiplas opções</td>
+                            <td>Pode ficar confuso com muitos elif</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Padrões/Wildcards</strong></td>
+                            <td>Suporte nativo ([0-9], *, |)</td>
+                            <td>Requer comandos externos (grep, etc.)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Condições lógicas</strong></td>
+                            <td>Limitado (só padrões simples)</td>
+                            <td>Completo (AND, OR, NOT, comparações)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Performance</strong></td>
+                            <td>Mais rápido para muitas opções</td>
+                            <td>Pode ser lento com muitos elif</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>✅ Use CASE quando:</h3>
+                        <div class="success-box">
+                            <div class="bullet-point">Criando menus interativos</div>
+                            <div class="bullet-point">Analisando códigos de erro</div>
+                            <div class="bullet-point">Classificando tipos de arquivo</div>
+                            <div class="bullet-point">Processando opções de linha de comando</div>
+                            <div class="bullet-point">Comparando uma variável com muitos valores</div>
+                            <div class="bullet-point">Usando padrões/wildcards</div>
+                        </div>
+                        
+                        <h3>🎯 Exemplo: CASE é Melhor</h3>
+                        <div class="script-box">
+<span class="comment"># Menu com CASE - limpo e claro</span><br>
+case "$OPCAO" in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">1</span>) echo <span class="string">"Primeira"</span> ;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">2</span>) echo <span class="string">"Segunda"</span> ;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">3</span>) echo <span class="string">"Terceira"</span> ;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">4</span>) echo <span class="string">"Quarta"</span> ;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*) echo <span class="string">"Inválida"</span> ;;<br>
+esac
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🔄 Use IF quando:</h3>
+                        <div class="info-box">
+                            <div class="bullet-point">Comparações numéricas complexas</div>
+                            <div class="bullet-point">Múltiplas condições com AND/OR</div>
+                            <div class="bullet-point">Testando arquivos e permissões</div>
+                            <div class="bullet-point">Validações de entrada complexas</div>
+                            <div class="bullet-point">Condições que envolvem múltiplas variáveis</div>
+                            <div class="bullet-point">Lógica condicional aninhada</div>
+                        </div>
+                        
+                        <h3>🎯 Exemplo: IF é Melhor</h3>
+                        <div class="script-box">
+<span class="comment"># Validação complexa com IF</span><br>
+if [ "$IDADE" -ge 18 -a "$HABILITADO" = "sim" ]<br>
+then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if [ -f "$DOCUMENTO" -a -r "$DOCUMENTO" ]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Pode dirigir"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+fi
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>🤝 Combinando CASE e IF</h3>
+                    <div class="script-box">
+#!/bin/bash<br>
+<span class="comment"># Exemplo híbrido: o melhor dos dois mundos</span><br>
+
+case "$ACAO" in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">backup</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Usa IF para validações complexas dentro do CASE</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if [ -d "$ORIGEM" -a -w "$DESTINO" ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Fazendo backup..."</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cp -r "$ORIGEM" "$DESTINO"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Erro: verificar permissões"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">restore</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Restaurando..."</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Ação desconhecida"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+esac
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h3>💡 Regra de Ouro</h3>
+                    <p><strong>Pergunta simples:</strong> "Estou comparando UMA variável com múltiplos valores fixos?"<br>
+                    <strong>SIM →</strong> Use CASE<br>
+                    <strong>NÃO →</strong> Use IF<br>
+                    <br><strong>Dica:</strong> Você sempre pode converter um para o outro, mas escolher o certo desde o início torna o código mais limpo!</p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(9)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 10 de 12</span>
+                <button class="nav-button" onclick="showSlide(11)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 11: Quiz -->
+        <div class="slide" id="slide-11">
+            <div class="content">
+                <h2>🧠 Quiz - Teste seus Conhecimentos!</h2>
+                
+                <div class="quiz-container">
+                    <div class="quiz-question" id="question1">
+                        <h3>📝 Questão 1</h3>
+                        <p><strong>Qual palavra finaliza uma estrutura CASE?</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" onclick="selectOption(1, 'a', false)">
+                                <span class="option-letter">A)</span> end
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(1, 'b', true)">
+                                <span class="option-letter">B)</span> esac
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(1, 'c', false)">
+                                <span class="option-letter">C)</span> fi
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(1, 'd', false)">
+                                <span class="option-letter">D)</span> done
+                            </div>
+                        </div>
+                        <div class="quiz-feedback" id="feedback1"></div>
+                    </div>
+
+                    <div class="quiz-question" id="question2" style="display: none;">
+                        <h3>📝 Questão 2</h3>
+                        <p><strong>Qual símbolo é usado para separar os casos em uma estrutura CASE?</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" onclick="selectOption(2, 'a', false)">
+                                <span class="option-letter">A)</span> :
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(2, 'b', true)">
+                                <span class="option-letter">B)</span> ;;
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(2, 'c', false)">
+                                <span class="option-letter">C)</span> ||
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(2, 'd', false)">
+                                <span class="option-letter">D)</span> &&
+                            </div>
+                        </div>
+                        <div class="quiz-feedback" id="feedback2"></div>
+                    </div>
+
+                    <div class="quiz-question" id="question3" style="display: none;">
+                        <h3>📝 Questão 3</h3>
+                        <p><strong>Qual padrão captura qualquer valor não especificado nos outros casos?</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" onclick="selectOption(3, 'a', true)">
+                                <span class="option-letter">A)</span> *)
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(3, 'b', false)">
+                                <span class="option-letter">B)</span> ?)
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(3, 'c', false)">
+                                <span class="option-letter">C)</span> else)
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(3, 'd', false)">
+                                <span class="option-letter">D)</span> default)
+                            </div>
+                        </div>
+                        <div class="quiz-feedback" id="feedback3"></div>
+                    </div>
+
+                    <div class="quiz-question" id="question4" style="display: none;">
+                        <h3>📝 Questão 4</h3>
+                        <p><strong>Qual padrão do CASE representa números de 0 a 9?</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" onclick="selectOption(4, 'a', true)">
+                                <span class="option-letter">A)</span> [0-9]
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(4, 'b', false)">
+                                <span class="option-letter">B)</span> (0-9)
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(4, 'c', false)">
+                                <span class="option-letter">C)</span> {0-9}
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(4, 'd', false)">
+                                <span class="option-letter">D)</span> 0-9
+                            </div>
+                        </div>
+                        <div class="quiz-feedback" id="feedback4"></div>
+                    </div>
+
+                    <div id="quiz-result" style="display: none; text-align: center; margin-top: 30px;">
+                        <h3>🎉 Quiz Concluído!</h3>
+                        <div class="highlight-box">
+                            <p><strong>Sua pontuação: <span id="final-score">0</span>/4</strong></p>
+                            <p id="result-message"></p>
+                        </div>
+                        <button class="nav-button" onclick="restartQuiz()" style="margin-top: 20px;">🔄 Refazer Quiz</button>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="nav-button" id="next-quiz-btn" onclick="nextQuestion()" style="display: none;">
+                        Próxima Questão ➡️
+                    </button>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(10)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 11 de 12</span>
+                <button class="nav-button" onclick="showSlide(12)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 12: Conclusão -->
+        <div class="slide" id="slide-12">
+            <div class="content">
+                <h2>🎓 Parabéns! Você Domina a Estrutura CASE!</h2>
+                
+                <div class="highlight-box center-text">
+                    <h3>🎯 Agora Seus Scripts São Mais Elegantes!</h3>
+                    <p>Você aprendeu a criar programas com múltiplas opções de forma organizada e eficiente</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📚 O que Você Domina Agora</h3>
+                        <div class="bullet-point">Estrutura case/esac</div>
+                        <div class="bullet-point">Padrões e wildcards</div>
+                        <div class="bullet-point">Caso padrão (*)</div>
+                        <div class="bullet-point">Múltiplas opções com |</div>
+                        <div class="bullet-point">Ranges [0-9], [A-Z], [a-z]</div>
+                        <div class="bullet-point">Separadores ;;</div>
+                        <div class="bullet-point">Menus interativos elegantes</div>
+                    </div>
+                    <div>
+                        <h3>🚀 Próximos Desafios</h3>
+                        <div class="bullet-point">Loops (for, while, until)</div>
+                        <div class="bullet-point">Funções personalizadas</div>
+                        <div class="bullet-point">Arrays e listas</div>
+                        <div class="bullet-point">Getopts para argumentos</div>
+                        <div class="bullet-point">Tratamento de sinais</div>
+                        <div class="bullet-point">Scripts daemon</div>
+                        <div class="bullet-point">Projetos avançados</div>
+                    </div>
+                </div>
+
+                <div style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); padding: 25px; border-radius: 15px; margin: 20px 0;">
+                    <h3>🎯 Exercícios Propostos</h3>
+                    <p><strong>1. Conversor de Dias:</strong> Script que converte número (1-7) para nome do dia da semana.</p>
+                    <p><strong>2. Menu de Sistema:</strong> Criar menu com opções para ver processos, espaço em disco e memória.</p>
+                    <p><strong>3. Classificador de Arquivos:</strong> Script que identifica tipo de arquivo pela extensão.</p>
+                    <p><strong>4. Verificador de Conectividade:</strong> Sistema que testa ping e interpreta códigos de saída.</p>
+                </div>
+
+                <div class="success-box center-text">
+                    <h3>🏆 Comandos para Memorizar</h3>
+                    <div class="script-box">
+case "$VAR" in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;padrão1) comandos ;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;padrão2) comandos ;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*) comando_padrão ;;<br>
+esac<br>
+<br>
+[0-9]          <span class="comment"># um dígito</span><br>
+[A-Z]          <span class="comment"># letra maiúscula</span><br>
+[a-z]          <span class="comment"># letra minúscula</span><br>
+sim|yes|y      <span class="comment"># múltiplas opções</span><br>
+*.txt          <span class="comment"># arquivos .txt</span><br>
+*)             <span class="comment"># qualquer coisa</span>
+                    </div>
+                </div>
+
+                <div class="example-box center-text">
+                    <h3>⚡ Você Agora É um Mestre dos Menus! ⚡</h3>
+                    <p>"Seus scripts agora oferecem múltiplas opções elegantemente!"<br>
+                    Continue criando interfaces cada vez mais profissionais! 🎯🚀</p>
+                </div>
+
+                <div class="info-box center-text">
+                    <h3>📋 Recursos para Continuar Aprendendo</h3>
+                    <p>• Bash Pattern Matching Guide<br>
+                    • Advanced Menu Systems<br>
+                    • Bash Manual - Case Statement<br>
+                    • Projetos com interfaces completas</p>
+                </div>
+
+                <div style="background: #d1ecf1; color: #0c5460; padding: 20px; border-radius: 10px; margin: 15px 0; text-align: center;">
+                    <p style="font-size: 1.1em; margin: 0;">
+                        <strong>Lembre-se:</strong> sempre termine com esac, 
+                        use ;; entre casos, e coloque * por último!<br>
+                        <strong>Happy Case Scripting! 🐧🔄</strong>
+                    </p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(11)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 12 de 12</span>
+                <button class="nav-button" onclick="showSlide(1)" style="background: #27ae60;">🏠 Início</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variáveis globais
+        let currentSlide = 1;
+        
+        // Atualizar total de slides
+        document.getElementById('total-slides').textContent = '12';
+        
+        // Função para mostrar slide específico
+        function showSlide(slideNumber) {
+            // Esconder todos os slides
+            const slides = document.querySelectorAll('.slide');
+            slides.forEach(slide => {
+                slide.classList.remove('active');
+            });
+            
+            // Mostrar slide específico
+            const targetSlide = document.getElementById('slide-' + slideNumber);
+            if (targetSlide) {
+                targetSlide.classList.add('active');
+                currentSlide = slideNumber;
+                
+                // Atualizar contador
+                document.getElementById('current-slide').textContent = slideNumber;
+            }
+        }
+        
+        // Navegação por teclado
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft' && currentSlide > 1) {
+                showSlide(currentSlide - 1);
+            } else if (e.key === 'ArrowRight' && currentSlide < 12) {
+                showSlide(currentSlide + 1);
+            }
+        });
+        
+        // Variáveis do quiz
+        let currentQuestion = 1;
+        let score = 0;
+        let quizAnswered = [false, false, false, false];
+        
+        // Função do quiz
+        function selectOption(questionNum, option, isCorrect) {
+            if (quizAnswered[questionNum - 1]) return;
+            
+            const options = document.querySelectorAll('#question' + questionNum + ' .quiz-option');
+            const feedback = document.getElementById('feedback' + questionNum);
+            
+            // Marcar todas as opções
+            options.forEach(opt => {
+                opt.style.pointerEvents = 'none';
+                if (opt.onclick.toString().includes('true')) {
+                    opt.classList.add('correct');
+                } else if (opt === event.currentTarget) {
+                    opt.classList.add(isCorrect ? 'correct' : 'incorrect');
+                }
+            });
+            
+            // Mostrar feedback
+            if (isCorrect) {
+                feedback.innerHTML = '✅ Correto! Muito bem!';
+                feedback.className = 'quiz-feedback correct';
+                score++;
+            } else {
+                let correctAnswer = '';
+                switch(questionNum) {
+                    case 1:
+                        correctAnswer = 'esac é "case" escrito ao contrário e finaliza a estrutura.';
+                        break;
+                    case 2:
+                        correctAnswer = ';; separa cada caso na estrutura CASE.';
+                        break;
+                    case 3:
+                        correctAnswer = '*) captura qualquer valor não especificado nos outros casos.';
+                        break;
+                    case 4:
+                        correctAnswer = '[0-9] representa qualquer dígito de 0 a 9.';
+                        break;
+                }
+                feedback.innerHTML = `❌ Incorreto. ${correctAnswer}`;
+                feedback.className = 'quiz-feedback incorrect';
+            }
+            
+            quizAnswered[questionNum - 1] = true;
+            
+            // Mostrar botão para próxima questão
+            if (questionNum < 4) {
+                document.getElementById('next-quiz-btn').style.display = 'inline-block';
+            } else {
+                // Última questão - mostrar resultado
+                setTimeout(() => {
+                    showQuizResult();
+                }, 2000);
+            }
+        }
+
+        function nextQuestion() {
+            document.getElementById('question' + currentQuestion).style.display = 'none';
+            currentQuestion++;
+            document.getElementById('question' + currentQuestion).style.display = 'block';
+            document.getElementById('next-quiz-btn').style.display = 'none';
+        }
+
+        function showQuizResult() {
+            // Esconder última questão
+            document.getElementById('question4').style.display = 'none';
+            
+            // Mostrar resultado
+            document.getElementById('quiz-result').style.display = 'block';
+            document.getElementById('final-score').textContent = score;
+            
+            const resultMessage = document.getElementById('result-message');
+            if (score === 4) {
+                resultMessage.innerHTML = '🏆 Perfeito! Você é um mestre do CASE!';
+            } else if (score === 3) {
+                resultMessage.innerHTML = '🌟 Excelente! Quase um expert em estruturas!';
+            } else if (score === 2) {
+                resultMessage.innerHTML = '👏 Bom trabalho! Continue praticando!';
+            } else if (score === 1) {
+                resultMessage.innerHTML = '📖 Há espaço para melhorar. Revise os conceitos!';
+            } else {
+                resultMessage.innerHTML = '🔄 Recomendo revisar toda a aula novamente!';
+            }
+        }
+
+        function restartQuiz() {
+            // Reset variables
+            currentQuestion = 1;
+            score = 0;
+            quizAnswered = [false, false, false, false];
+            
+            // Reset interface
+            for (let i = 1; i <= 4; i++) {
+                const question = document.getElementById('question' + i);
+                const options = question.querySelectorAll('.quiz-option');
+                const feedback = document.getElementById('feedback' + i);
+                
+                // Reset options
+                options.forEach(opt => {
+                    opt.className = 'quiz-option';
+                    opt.style.pointerEvents = 'auto';
+                });
+                
+                // Hide feedback
+                feedback.style.display = 'none';
+                
+                // Hide all questions except first
+                question.style.display = i === 1 ? 'block' : 'none';
+            }
+            
+            // Hide result and buttons
+            document.getElementById('quiz-result').style.display = 'none';
+            document.getElementById('next-quiz-btn').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
