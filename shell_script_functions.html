@@ -1,0 +1,2170 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shell Script - Funções</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1565c0 0%, #2e7d32 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .presentation {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide {
+            min-height: 100vh;
+            padding: 60px 40px;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            background: white;
+            margin: 20px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        .slide h1 {
+            font-size: 3.5em;
+            color: #4a5568;
+            text-align: center;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .slide h2 {
+            font-size: 2.8em;
+            color: #2d3748;
+            margin-bottom: 30px;
+            border-bottom: 4px solid #2196f3;
+            padding-bottom: 15px;
+        }
+
+        .slide h3 {
+            font-size: 2.2em;
+            color: #4a5568;
+            margin: 25px 0 15px 0;
+        }
+
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        .bullet-point {
+            display: flex;
+            align-items: flex-start;
+            margin: 15px 0;
+            font-size: 1.3em;
+            line-height: 1.5;
+        }
+
+        .bullet-point::before {
+            content: "🔧";
+            margin-right: 15px;
+            font-size: 1.2em;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #42a5f5 0%, #66bb6a 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #2196f3;
+        }
+
+        .example-box {
+            background: linear-gradient(135deg, #4caf50 0%, #8bc34a 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #2e7d32;
+        }
+
+        .terminal-box {
+            background: #2d3748;
+            color: #00ff41;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #00ff41;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+            position: relative;
+        }
+
+        .terminal-box::before {
+            content: "💻 Terminal Linux";
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            background: #2d3748;
+            color: #fff;
+            padding: 5px 15px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .script-box {
+            background: #1a202c;
+            color: #00ff41;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #68d391;
+            font-family: 'Courier New', monospace;
+            font-size: 1.0em;
+            position: relative;
+        }
+
+        .script-box::before {
+            content: "📝 Script Shell";
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            background: #1a202c;
+            color: #68d391;
+            padding: 5px 15px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .prompt {
+            color: #4299e1;
+            font-weight: bold;
+        }
+
+        .command {
+            color: #00ff41;
+            font-weight: bold;
+        }
+
+        .output {
+            color: #e2e8f0;
+            margin-left: 0;
+            margin-top: 5px;
+        }
+
+        .variable {
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .string {
+            color: #ff6b9d;
+        }
+
+        .comment {
+            color: #68d391;
+            font-style: italic;
+        }
+
+        .function-name {
+            color: #64b5f6;
+            font-weight: bold;
+        }
+
+        .nav-button {
+            padding: 15px 30px;
+            background: #2196f3;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-button:hover {
+            background: #1976d2;
+            transform: translateY(-2px);
+        }
+
+        .nav-button.start {
+            background: #4caf50;
+            font-size: 1.4em;
+            padding: 20px 40px;
+        }
+
+        .nav-button.start:hover {
+            background: #2e7d32;
+        }
+
+        .slide-navigation {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(255,255,255,0.9);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #4a5568;
+            z-index: 1000;
+        }
+
+        .center-text {
+            text-align: center;
+        }
+
+        .large-text {
+            font-size: 1.4em;
+            line-height: 1.6;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            color: #856404;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #ffc107;
+        }
+
+        .info-box {
+            background: #d1ecf1;
+            color: #0c5460;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+
+        .success-box {
+            background: #c6f6d5;
+            color: #22543d;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #48bb78;
+        }
+
+        .comparison-table {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+
+        .comparison-table table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 1.1em;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .comparison-table th {
+            background: #2196f3;
+            color: white;
+            font-weight: bold;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background: #f2f2f2;
+        }
+
+        /* Quiz Styles */
+        .quiz-container {
+            max-width: 100%;
+            margin: 20px 0;
+        }
+
+        .quiz-question {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 2px solid #e2e8f0;
+        }
+
+        .quiz-question h3 {
+            color: #2196f3;
+            margin-bottom: 20px;
+        }
+
+        .quiz-question p {
+            font-size: 1.3em;
+            margin-bottom: 25px;
+            font-weight: bold;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .quiz-option {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1em;
+        }
+
+        .quiz-option:hover {
+            border-color: #2196f3;
+            background: #e3f2fd;
+            transform: translateX(5px);
+        }
+
+        .quiz-option.selected {
+            border-color: #2196f3;
+            background: #2196f3;
+            color: white;
+        }
+
+        .quiz-option.correct {
+            border-color: #48bb78;
+            background: #48bb78;
+            color: white;
+        }
+
+        .quiz-option.incorrect {
+            border-color: #f56565;
+            background: #f56565;
+            color: white;
+        }
+
+        .option-letter {
+            background: #2196f3;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .quiz-option.correct .option-letter {
+            background: #48bb78;
+        }
+
+        .quiz-option.incorrect .option-letter {
+            background: #f56565;
+        }
+
+        .quiz-feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            display: none;
+        }
+
+        .quiz-feedback.correct {
+            background: #c6f6d5;
+            color: #22543d;
+            border: 2px solid #48bb78;
+            display: block;
+        }
+
+        .quiz-feedback.incorrect {
+            background: #fed7d7;
+            color: #742a2a;
+            border: 2px solid #f56565;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">12</span>
+        </div>
+
+        <!-- Slide 1: Título -->
+        <div class="slide active" id="slide-1">
+            <div class="content center-text">
+                <h1>🔧 Shell Script - Funções</h1>
+                <h2 style="border: none; color: #2196f3;">Organizando e Reutilizando Código</h2>
+                <div class="highlight-box large-text">
+                    <strong>function, (), return</strong><br>
+                    Criando blocos de código reutilizáveis<br>
+                    Da definição à importação avançada
+                </div>
+                
+                <div class="terminal-box" style="margin-top: 40px;">
+<span class="prompt">user@linux:~$</span> <span class="command">echo "Funções = Organização + Reutilização"</span>
+<div class="output">Funções = Organização + Reutilização</div>
+<span class="prompt">user@linux:~$</span> <span class="command">echo "Scripts mais limpos e eficientes! 🔧"</span>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <span style="margin: 0 20px; font-weight: bold; color: #2196f3;">Slide 1 de 12</span>
+                <button class="nav-button start" onclick="showSlide(2)">
+                    Começar Aula ➡️
+                </button>
+            </div>
+        </div>
+
+        <!-- Slide 2: Introdução às Funções -->
+        <div class="slide" id="slide-2">
+            <div class="content">
+                <h2>🔧 O que são Funções?</h2>
+                
+                <div class="highlight-box">
+                    <h3>📦 Como uma Caixa de Ferramentas</h3>
+                    <p>Imagine uma função como uma ferramenta especializada:</p>
+                    <p><strong>🔨 Cada ferramenta:</strong> tem uma função específica<br>
+                    <strong>📦 Na caixa:</strong> organizadas e fáceis de encontrar<br>
+                    <strong>🔄 Reutilizável:</strong> use quantas vezes precisar</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🎯 Por que usar Funções?</h3>
+                        <div class="example-box">
+                            <div class="bullet-point">Evita repetição de código</div>
+                            <div class="bullet-point">Reduz tamanho do script</div>
+                            <div class="bullet-point">Facilita manutenção</div>
+                            <div class="bullet-point">Organiza melhor o código</div>
+                            <div class="bullet-point">Facilita testes e debug</div>
+                        </div>
+                        
+                        <h3>💡 Sem Função vs Com Função</h3>
+                        <div class="warning-box">
+                            <p><strong>❌ Sem função:</strong><br>
+                            echo "Backup iniciado"<br>
+                            cp arquivo1.txt backup/<br>
+                            echo "Backup concluído"<br>
+                            echo "Backup iniciado"<br>
+                            cp arquivo2.txt backup/<br>
+                            echo "Backup concluído"<br>
+                            ... (repetindo 50 vezes!)</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>✅ Com Função</h3>
+                        <div class="script-box">
+<span class="function-name">fazer_backup</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Backup iniciado"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;cp <span class="string">"$1"</span> backup/<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Backup concluído"</span><br>
+}<br>
+
+<span class="comment"># Usar a função</span><br>
+<span class="function-name">fazer_backup</span> arquivo1.txt<br>
+<span class="function-name">fazer_backup</span> arquivo2.txt<br>
+<span class="function-name">fazer_backup</span> arquivo3.txt<br>
+                        </div>
+                        
+                        <h3>🏠 Exemplos da Vida Real</h3>
+                        <div class="info-box">
+                            <p><strong>📊 Gerar relatórios</strong><br>
+                            <strong>🔍 Validar dados</strong><br>
+                            <strong>📧 Enviar notificações</strong><br>
+                            <strong>🔄 Operações matemáticas</strong></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="success-box">
+                    <h3>🎯 O Princípio das Funções</h3>
+                    <p><strong>"Escreva uma vez, use muitas vezes!"</strong><br>
+                    É como ter assistentes especializados no seu script!</p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(1)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #2196f3;">Slide 2 de 12</span>
+                <button class="nav-button" onclick="showSlide(3)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 3: Sintaxe Básica -->
+        <div class="slide" id="slide-3">
+            <div class="content">
+                <h2>📝 Sintaxe Básica das Funções</h2>
+                
+                <div class="highlight-box">
+                    <h3>🧩 Anatomia de uma Função</h3>
+                    <p>Cada parte tem sua função específica para criar blocos reutilizáveis</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🏗️ Estrutura Fundamental</h3>
+                        <div class="script-box">
+<span class="comment"># Método 1: Sintaxe simples</span><br>
+<span class="function-name">nome_funcao</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;comando1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;comando2<br>
+&nbsp;&nbsp;&nbsp;&nbsp;comando3<br>
+}<br>
+
+<span class="comment"># Método 2: Com palavra function</span><br>
+function <span class="function-name">nome_funcao</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;comando1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;comando2<br>
+}<br>
+                        </div>
+                        
+                        <h3>🔍 Explicando cada parte</h3>
+                        <div class="info-box">
+                            <p><strong>nome_funcao:</strong> identificador único<br>
+                            <strong>():</strong> parênteses obrigatórios<br>
+                            <strong>{}:</strong> bloco de comandos<br>
+                            <strong>comandos:</strong> o que a função faz<br>
+                            <strong>function:</strong> palavra opcional</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🎯 Primeira Função</h3>
+                        <div class="script-box">
+#!/bin/bash<br>
+<span class="comment"># Definindo a função</span><br>
+<span class="function-name">ola</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Olá, mundo!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Esta é minha primeira função!"</span><br>
+}<br>
+
+<span class="comment"># Chamando a função</span><br>
+<span class="function-name">ola</span><br>
+                        </div>
+                        
+                        <h3>🎬 Resultado</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">./meu_script.sh</span>
+<div class="output">Olá, mundo!</div>
+<div class="output">Esta é minha primeira função!</div>
+                        </div>
+                        
+                        <h3>🎪 Chamando Múltiplas Vezes</h3>
+                        <div class="script-box">
+<span class="function-name">ola</span>()<br>
+<span class="function-name">ola</span><br>
+<span class="function-name">ola</span><br>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>🎯 Função para Mostrar Data</h3>
+                    <div class="script-box">
+#!/bin/bash<br>
+<span class="comment"># Função que mostra data formatada</span><br>
+
+<span class="function-name">mostrar_data</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"================="</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"📅 Data atual:"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;date <span class="string">"+%d/%m/%Y %H:%M:%S"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"================="</span><br>
+}<br>
+
+<span class="comment"># Usando a função</span><br>
+echo <span class="string">"Script iniciado!"</span><br>
+<span class="function-name">mostrar_data</span><br>
+echo <span class="string">"Fazendo algum processamento..."</span><br>
+sleep 2<br>
+<span class="function-name">mostrar_data</span><br>
+echo <span class="string">"Script finalizado!"</span><br>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h3>⚠️ Regras Importantes</h3>
+                    <p><strong>Definir antes de usar:</strong> função deve ser definida antes da chamada<br>
+                    <strong>Parênteses obrigatórios:</strong> mesmo vazios ()<br>
+                    <strong>Nomes únicos:</strong> não pode repetir nome de função<br>
+                    <strong>Case sensitive:</strong> MinhaFuncao ≠ minhafuncao</p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(2)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #2196f3;">Slide 3 de 12</span>
+                <button class="nav-button" onclick="showSlide(4)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 4: Funções com Parâmetros -->
+        <div class="slide" id="slide-4">
+            <div class="content">
+                <h2>📥 Funções com Parâmetros</h2>
+                
+                <div class="highlight-box">
+                    <h3>🎯 Passando Informações para Funções</h3>
+                    <p>Como fazer funções que recebem dados e trabalham com eles</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📋 Parâmetros em Funções</h3>
+                        <div class="script-box">
+<span class="comment"># $1, $2, $3... = parâmetros</span><br>
+<span class="function-name">cumprimentar</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Olá, $1!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Bem-vindo, $2!"</span><br>
+}<br>
+
+<span class="comment"># Chamando com parâmetros</span><br>
+<span class="function-name">cumprimentar</span> <span class="string">"João"</span> <span class="string">"amigo"</span><br>
+                        </div>
+                        
+                        <h3>🎬 Resultado</h3>
+                        <div class="terminal-box">
+<div class="output">Olá, João!</div>
+<div class="output">Bem-vindo, amigo!</div>
+                        </div>
+                        
+                        <h3>📊 Variáveis Especiais</h3>
+                        <div class="info-box">
+                            <p><strong>$1, $2, $3...:</strong> parâmetros individuais<br>
+                            <strong>$@:</strong> todos os parâmetros<br>
+                            <strong>$#:</strong> número de parâmetros<br>
+                            <strong>$0:</strong> nome da função/script</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🧮 Função Soma</h3>
+                        <div class="script-box">
+<span class="function-name">somar</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Digite primeiro número:"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;read <span class="variable">n1</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Digite segundo número:"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;read <span class="variable">n2</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">resultado</span>=`expr $n1 + $n2`<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"$n1 + $n2 = $resultado"</span><br>
+}<br>
+
+<span class="comment"># Chamando a função</span><br>
+<span class="function-name">somar</span><br>
+                        </div>
+                        
+                        <h3>⚡ Versão com Parâmetros</h3>
+                        <div class="script-box">
+<span class="function-name">somar_rapido</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">resultado</span>=$(($1 + $2))<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"$1 + $2 = $resultado"</span><br>
+}<br>
+
+<span class="comment"># Mais eficiente!</span><br>
+<span class="function-name">somar_rapido</span> 10 25<br>
+<span class="function-name">somar_rapido</span> 100 50<br>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>📁 Função para Backup Inteligente</h3>
+                    <div class="script-box">
+#!/bin/bash<br>
+<span class="comment"># Função que faz backup com validação</span><br>
+
+<span class="function-name">fazer_backup</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if [ $# -eq 0 ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"❌ Erro: Nenhum arquivo especificado!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Uso: fazer_backup arquivo [destino]"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">arquivo</span>=<span class="string">"$1"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">destino</span>=<span class="string">"${2:-backup}"</span>  <span class="comment"># Default: backup</span><br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;if [ ! -f <span class="string">"$arquivo"</span> ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"❌ Arquivo '$arquivo' não existe!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;mkdir -p <span class="string">"$destino"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;cp <span class="string">"$arquivo"</span> <span class="string">"$destino/"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"✅ Backup de '$arquivo' feito em '$destino/'"</span><br>
+}<br>
+
+<span class="comment"># Exemplos de uso</span><br>
+<span class="function-name">fazer_backup</span> documento.txt<br>
+<span class="function-name">fazer_backup</span> planilha.xlsx /tmp/backups<br>
+<span class="function-name">fazer_backup</span>  <span class="comment"># Vai mostrar erro</span><br>
+                    </div>
+                </div>
+
+                <div class="success-box">
+                    <h3>💡 Dicas para Parâmetros</h3>
+                    <p><strong>Validação:</strong> sempre verificar se os parâmetros foram passados<br>
+                    <strong>Defaults:</strong> use ${1:-valor_padrao} para valores padrão<br>
+                    <strong>Aspas:</strong> sempre coloque "$1" entre aspas<br>
+                    <strong>Documentação:</strong> explique que parâmetros a função espera</p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(3)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #2196f3;">Slide 4 de 12</span>
+                <button class="nav-button" onclick="showSlide(5)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 5: Variáveis Locais vs Globais -->
+        <div class="slide" id="slide-5">
+            <div class="content">
+                <h2>🌐 Variáveis Locais vs Globais</h2>
+                
+                <div class="highlight-box">
+                    <h3>🔍 Escopo de Variáveis</h3>
+                    <p>Entendendo onde as variáveis "vivem" e como elas se comportam</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🌍 Variáveis Globais</h3>
+                        <div class="info-box">
+                            <p><strong>Visíveis:</strong> em todo o script<br>
+                            <strong>Padrão:</strong> no Shell Script<br>
+                            <strong>Cuidado:</strong> podem ser alteradas por qualquer função</p>
+                        </div>
+                        
+                        <div class="script-box">
+#!/bin/bash<br>
+<span class="comment"># Variável global</span><br>
+<span class="variable">nome</span>=<span class="string">"João"</span><br>
+
+<span class="function-name">mostrar_nome</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Nome: $nome"</span><br>
+}<br>
+
+<span class="function-name">alterar_nome</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">nome</span>=<span class="string">"Maria"</span>  <span class="comment"># Altera global!</span><br>
+}<br>
+
+<span class="function-name">mostrar_nome</span>  <span class="comment"># João</span><br>
+<span class="function-name">alterar_nome</span><br>
+<span class="function-name">mostrar_nome</span>  <span class="comment"># Maria</span><br>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🏠 Variáveis Locais</h3>
+                        <div class="info-box">
+                            <p><strong>Visíveis:</strong> só dentro da função<br>
+                            <strong>Palavra-chave:</strong> local<br>
+                            <strong>Segurança:</strong> não afetam outras partes</p>
+                        </div>
+                        
+                        <div class="script-box">
+#!/bin/bash<br>
+<span class="comment"># Variável global</span><br>
+<span class="variable">contador</span>=10<br>
+
+<span class="function-name">processar</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;local <span class="variable">contador</span>=5  <span class="comment"># Local!</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Dentro: $contador"</span><br>
+}<br>
+
+echo <span class="string">"Antes: $contador"</span>    <span class="comment"># 10</span><br>
+<span class="function-name">processar</span>                <span class="comment"># 5</span><br>
+echo <span class="string">"Depois: $contador"</span>   <span class="comment"># 10</span><br>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>🔄 Exemplo Prático: Calculadora</h3>
+                    <div class="script-box">
+#!/bin/bash<br>
+<span class="comment"># Variáveis globais para o menu</span><br>
+<span class="variable">opcao</span>=0<br>
+<span class="variable">continuar</span>=true<br>
+
+<span class="function-name">calcular</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Variáveis locais - não afetam o global</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;local <span class="variable">num1</span> <span class="variable">num2</span> <span class="variable">resultado</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;read -p <span class="string">"Primeiro número: "</span> <span class="variable">num1</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;read -p <span class="string">"Segundo número: "</span> <span class="variable">num2</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;case <span class="variable">$1</span> in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"+"</span>) <span class="variable">resultado</span>=$(($num1 + $num2));;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"-"</span>) <span class="variable">resultado</span>=$(($num1 - $num2));;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"*"</span>) <span class="variable">resultado</span>=$(($num1 * $num2));;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"/"</span>) <span class="variable">resultado</span>=$(($num1 / $num2));;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;esac<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Resultado: $resultado"</span><br>
+}<br>
+
+<span class="function-name">menu</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"1) Somar    2) Subtrair"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"3) Multiplicar    4) Dividir"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"0) Sair"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;read -p <span class="string">"Escolha: "</span> <span class="variable">opcao</span>  <span class="comment"># Usa global</span><br>
+}<br>
+
+while [ <span class="variable">$continuar</span> = true ]; do<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="function-name">menu</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;case <span class="variable">$opcao</span> in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1) <span class="function-name">calcular</span> <span class="string">"+"</span>;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2) <span class="function-name">calcular</span> <span class="string">"-"</span>;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3) <span class="function-name">calcular</span> <span class="string">"*"</span>;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4) <span class="function-name">calcular</span> <span class="string">"/"</span>;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0) <span class="variable">continuar</span>=false;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;esac<br>
+done<br>
+                    </div>
+                </div>
+
+                <div class="comparison-table">
+                    <table>
+                        <tr>
+                            <th>Tipo</th>
+                            <th>Escopo</th>
+                            <th>Declaração</th>
+                            <th>Quando usar</th>
+                        </tr>
+                        <tr>
+                            <td>Global</td>
+                            <td>Todo o script</td>
+                            <td>variavel=valor</td>
+                            <td>Configurações, estado geral</td>
+                        </tr>
+                        <tr>
+                            <td>Local</td>
+                            <td>Só na função</td>
+                            <td>local variavel=valor</td>
+                            <td>Cálculos, processamento interno</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="warning-box">
+                    <h3>⚠️ Boas Práticas</h3>
+                    <p><strong>Use local sempre que possível:</strong> evita conflitos<br>
+                    <strong>Globais para configuração:</strong> apenas dados compartilhados<br>
+                    <strong>Nomes descritivos:</strong> evite x, y, temp<br>
+                    <strong>Inicialize variáveis:</strong> sempre dê valores iniciais</p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(4)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #2196f3;">Slide 5 de 12</span>
+                <button class="nav-button" onclick="showSlide(6)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 6: Retorno de Valores -->
+        <div class="slide" id="slide-6">
+            <div class="content">
+                <h2>↩️ Retorno de Valores</h2>
+                
+                <div class="highlight-box">
+                    <h3>📤 Como Funções Devolvem Resultados</h3>
+                    <p>Técnicas para capturar e usar valores retornados por funções</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🔢 return - Status de Saída</h3>
+                        <div class="script-box">
+<span class="function-name">verificar_arquivo</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if [ -f <span class="string">"$1"</span> ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Arquivo existe!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 0  <span class="comment"># Sucesso</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Arquivo não existe!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 1  <span class="comment"># Erro</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+}<br>
+
+<span class="comment"># Testando o retorno</span><br>
+<span class="function-name">verificar_arquivo</span> <span class="string">"texto.txt"</span><br>
+if [ $? -eq 0 ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Pode processar!"</span><br>
+fi<br>
+                        </div>
+                        
+                        <h3>📊 Capturando com $?</h3>
+                        <div class="info-box">
+                            <p><strong>$?:</strong> código de retorno da última função<br>
+                            <strong>0:</strong> sucesso<br>
+                            <strong>1-255:</strong> diferentes tipos de erro</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>💬 echo - Retornando Strings</h3>
+                        <div class="script-box">
+<span class="function-name">gerar_senha</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;local <span class="variable">tamanho</span>=<span class="string">"${1:-8}"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;local <span class="variable">senha</span>=$(openssl rand -base64 <span class="variable">$tamanho</span> | cut -c1-<span class="variable">$tamanho</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"$senha"</span>  <span class="comment"># "Retorna" via echo</span><br>
+}<br>
+
+<span class="comment"># Capturando o resultado</span><br>
+<span class="variable">nova_senha</span>=$(<span class="function-name">gerar_senha</span> 12)<br>
+echo <span class="string">"Sua senha: $nova_senha"</span><br>
+
+<span class="comment"># Usando diretamente</span><br>
+echo <span class="string">"Senha rápida: $(<span class="function-name">gerar_senha</span>)"</span><br>
+                        </div>
+                        
+                        <h3>🧮 Função Matemática</h3>
+                        <div class="script-box">
+<span class="function-name">calcular_area_circulo</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;local <span class="variable">raio</span>=<span class="string">"$1"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;local <span class="variable">pi</span>=3.14159<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># área = π × r²</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"scale=2; $pi * $raio * $raio"</span> | bc<br>
+}<br>
+
+<span class="variable">area</span>=$(<span class="function-name">calcular_area_circulo</span> 5)<br>
+echo <span class="string">"Área do círculo: $area cm²"</span><br>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>🔍 Sistema de Validação Completo</h3>
+                    <div class="script-box">
+#!/bin/bash<br>
+
+<span class="function-name">validar_email</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;local <span class="variable">email</span>=<span class="string">"$1"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if [[ <span class="string">"$email"</span> =~ ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$ ]]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"válido"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 0<br>
+&nbsp;&nbsp;&nbsp;&nbsp;else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"inválido"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+}<br>
+
+<span class="function-name">validar_senha</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;local <span class="variable">senha</span>=<span class="string">"$1"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;local <span class="variable">tamanho</span>=${#senha}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if [ <span class="variable">$tamanho</span> -lt 8 ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"muito curta"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;elif [ <span class="variable">$tamanho</span> -gt 20 ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"muito longa"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"válida"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 0<br>
+&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+}<br>
+
+<span class="comment"># Usando as funções</span><br>
+read -p <span class="string">"Email: "</span> <span class="variable">email</span><br>
+<span class="variable">status_email</span>=$(<span class="function-name">validar_email</span> <span class="string">"$email"</span>)<br>
+echo <span class="string">"Email está $status_email"</span><br>
+
+if [ $? -eq 0 ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;read -s -p <span class="string">"Senha: "</span> <span class="variable">senha</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">status_senha</span>=$(<span class="function-name">validar_senha</span> <span class="string">"$senha"</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Senha está $status_senha"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if [ $? -eq 0 ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"✅ Dados válidos! Usuário cadastrado."</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"❌ Corrija a senha."</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"❌ Corrija o email."</span><br>
+fi<br>
+                    </div>
+                </div>
+
+                <div class="success-box">
+                    <h3>💡 Dicas para Retornos</h3>
+                    <p><strong>return 0:</strong> use para indicar sucesso<br>
+                    <strong>return 1-255:</strong> códigos de erro específicos<br>
+                    <strong>echo:</strong> para retornar strings/dados<br>
+                    <strong>$():</strong> captura output da função<br>
+                    <strong>$?:</strong> verifica se função teve sucesso</p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(5)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #2196f3;">Slide 6 de 12</span>
+                <button class="nav-button" onclick="showSlide(7)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 7: Importando Funções -->
+        <div class="slide" id="slide-7">
+            <div class="content">
+                <h2>📥 Importando Funções</h2>
+                
+                <div class="highlight-box">
+                    <h3>🔗 Reutilizando Funções Entre Scripts</h3>
+                    <p>Como criar bibliotecas de funções e importá-las em diferentes scripts</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📚 Criando uma Biblioteca</h3>
+                        <div class="script-box">
+<span class="comment"># arquivo: utils.sh</span><br>
+#!/bin/bash<br>
+
+<span class="function-name">log_info</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"[$(date '+%H:%M:%S')] INFO: $1"</span><br>
+}<br>
+
+<span class="function-name">log_erro</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"[$(date '+%H:%M:%S')] ERRO: $1"</span> >&2<br>
+}<br>
+
+<span class="function-name">confirmar</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;read -p <span class="string">"$1 (s/n): "</span> <span class="variable">resposta</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;case <span class="variable">$resposta</span> in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;s|S|sim|SIM) return 0;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*) return 1;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;esac<br>
+}<br>
+
+<span class="function-name">validar_ip</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;local <span class="variable">ip</span>=<span class="string">"$1"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;if [[ <span class="string">"$ip"</span> =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 0<br>
+&nbsp;&nbsp;&nbsp;&nbsp;else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+}<br>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>📥 Importando com source</h3>
+                        <div class="script-box">
+<span class="comment"># arquivo: meu_script.sh</span><br>
+#!/bin/bash<br>
+
+<span class="comment"># Importar funções</span><br>
+<strong>source</strong> utils.sh<br>
+
+<span class="comment"># Agora posso usar as funções!</span><br>
+<span class="function-name">log_info</span> <span class="string">"Script iniciado"</span><br>
+
+if <span class="function-name">confirmar</span> <span class="string">"Continuar?"</span>; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="function-name">log_info</span> <span class="string">"Usuário confirmou"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;read -p <span class="string">"Digite um IP: "</span> <span class="variable">ip</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;if <span class="function-name">validar_ip</span> <span class="string">"$ip"</span>; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="function-name">log_info</span> <span class="string">"IP válido: $ip"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="function-name">log_erro</span> <span class="string">"IP inválido: $ip"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="function-name">log_info</span> <span class="string">"Operação cancelada"</span><br>
+fi<br>
+                        </div>
+                        
+                        <h3>📍 Importando com . (ponto)</h3>
+                        <div class="script-box">
+<span class="comment"># Método alternativo</span><br>
+<strong>.</strong> utils.sh<br>
+
+<span class="comment"># Funciona igual ao source!</span><br>
+<span class="function-name">log_info</span> <span class="string">"Usando ponto para importar"</span><br>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>🏗️ Sistema de Funções Modular</h3>
+                    <div class="script-box">
+<span class="comment"># arquivo: matematica.sh</span><br>
+#!/bin/bash<br>
+
+<span class="function-name">potencia</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo $(($1 ** $2))<br>
+}<br>
+
+<span class="function-name">fatorial</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;local <span class="variable">n</span>=<span class="string">"$1"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;if [ <span class="variable">$n</span> -le 1 ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo 1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo $(($n * $(<span class="function-name">fatorial</span> $(($n - 1)))))<br>
+&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+}<br>
+
+<span class="function-name">eh_primo</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;local <span class="variable">num</span>=<span class="string">"$1"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;if [ <span class="variable">$num</span> -lt 2 ]; then return 1; fi<br>
+&nbsp;&nbsp;&nbsp;&nbsp;for ((<span class="variable">i</span>=2; <span class="variable">i</span>*<span class="variable">i</span><=<span class="variable">num</span>; <span class="variable">i</span>++)); do<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if [ $((<span class="variable">num</span> % <span class="variable">i</span>)) -eq 0 ]; then return 1; fi<br>
+&nbsp;&nbsp;&nbsp;&nbsp;done<br>
+&nbsp;&nbsp;&nbsp;&nbsp;return 0<br>
+}<br>
+                    </div>
+                    
+                    <div class="script-box">
+<span class="comment"># arquivo: calculadora_avancada.sh</span><br>
+#!/bin/bash<br>
+
+<span class="comment"># Importar bibliotecas</span><br>
+source utils.sh<br>
+source matematica.sh<br>
+
+<span class="function-name">menu_matematica</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"🧮 CALCULADORA AVANÇADA"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"1) Potência    2) Fatorial"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"3) Verificar se é primo"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"0) Sair"</span><br>
+}<br>
+
+while true; do<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="function-name">menu_matematica</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;read -p <span class="string">"Escolha: "</span> <span class="variable">opcao</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;case <span class="variable">$opcao</span> in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1) read -p <span class="string">"Base: "</span> <span class="variable">base</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;read -p <span class="string">"Expoente: "</span> <span class="variable">exp</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">resultado</span>=$(<span class="function-name">potencia</span> <span class="variable">$base</span> <span class="variable">$exp</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="function-name">log_info</span> <span class="string">"$base^$exp = $resultado"</span>;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2) read -p <span class="string">"Número: "</span> <span class="variable">num</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">resultado</span>=$(<span class="function-name">fatorial</span> <span class="variable">$num</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="function-name">log_info</span> <span class="string">"$num! = $resultado"</span>;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3) read -p <span class="string">"Número: "</span> <span class="variable">num</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if <span class="function-name">eh_primo</span> <span class="variable">$num</span>; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="function-name">log_info</span> <span class="string">"$num é primo!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="function-name">log_info</span> <span class="string">"$num não é primo"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fi;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0) <span class="function-name">log_info</span> <span class="string">"Até logo!"</span>; exit 0;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*) <span class="function-name">log_erro</span> <span class="string">"Opção inválida!"</span>;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;esac<br>
+done<br>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <h3>📁 Organização de Arquivos</h3>
+                    <div style="font-family: monospace; margin: 10px 0;">
+projeto/<br>
+├── libs/<br>
+│   ├── utils.sh<br>
+│   ├── matematica.sh<br>
+│   └── rede.sh<br>
+├── scripts/<br>
+│   ├── backup.sh<br>
+│   ├── monitor.sh<br>
+│   └── calculadora.sh<br>
+└── config/<br>
+&nbsp;&nbsp;&nbsp;&nbsp;└── configuracao.sh<br>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h3>⚠️ Cuidados com Imports</h3>
+                    <p><strong>Caminho correto:</strong> certifique-se que o arquivo existe<br>
+                    <strong>Permissões:</strong> arquivo deve ser legível<br>
+                    <strong>Caminhos relativos:</strong> use ./ quando necessário<br>
+                    <strong>Conflitos:</strong> evite funções com mesmo nome</p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(6)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #2196f3;">Slide 7 de 12</span>
+                <button class="nav-button" onclick="showSlide(8)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 8: Projeto Prático -->
+        <div class="slide" id="slide-8">
+            <div class="content">
+                <h2>🚀 Projeto Prático: Sistema de Gerenciamento</h2>
+                
+                <div class="highlight-box">
+                    <h3>🏗️ Sistema Completo com Funções</h3>
+                    <p>Vamos criar um sistema modular de gerenciamento de arquivos usando tudo que aprendemos</p>
+                </div>
+
+                <div class="example-box">
+                    <h3>📁 gerenciador.sh</h3>
+                    <div class="script-box">
+#!/bin/bash<br>
+<span class="comment"># Sistema de Gerenciamento de Arquivos Modular</span><br>
+
+<span class="comment"># Configurações globais</span><br>
+<span class="variable">LOG_FILE</span>=<span class="string">"sistema.log"</span><br>
+<span class="variable">BACKUP_DIR</span>=<span class="string">"backups"</span><br>
+<span class="variable">TEMP_DIR</span>=<span class="string">"/tmp"</span><br>
+
+<span class="comment"># Função de logging</span><br>
+<span class="function-name">log_message</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;local <span class="variable">tipo</span>=<span class="string">"$1"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;local <span class="variable">mensagem</span>=<span class="string">"$2"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;local <span class="variable">timestamp</span>=$(date '+%Y-%m-%d %H:%M:%S')<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"[$timestamp] $tipo: $mensagem"</span> >> <span class="string">"$LOG_FILE"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"[$tipo] $mensagem"</span><br>
+}<br>
+
+<span class="comment"># Função para confirmar ações</span><br>
+<span class="function-name">confirmar_acao</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;local <span class="variable">pergunta</span>=<span class="string">"$1"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;local <span class="variable">resposta</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;read -p <span class="string">"$pergunta (s/n): "</span> <span class="variable">resposta</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;case <span class="string">"$resposta"</span> in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;s|S|sim|SIM|y|Y|yes|YES)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 0;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 1;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;esac<br>
+}<br>
+
+<span class="comment"># Função para validar arquivos</span><br>
+<span class="function-name">validar_arquivo</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;local <span class="variable">arquivo</span>=<span class="string">"$1"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if [ -z <span class="string">"$arquivo"</span> ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="function-name">log_message</span> <span class="string">"ERRO"</span> <span class="string">"Nome do arquivo não especificado"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if [ ! -f <span class="string">"$arquivo"</span> ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="function-name">log_message</span> <span class="string">"ERRO"</span> <span class="string">"Arquivo '$arquivo' não existe"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;return 0<br>
+}<br>
+
+<span class="comment"># Função para fazer backup</span><br>
+<span class="function-name">fazer_backup</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;local <span class="variable">arquivo</span>=<span class="string">"$1"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;local <span class="variable">timestamp</span>=$(date '+%Y%m%d_%H%M%S')<br>
+&nbsp;&nbsp;&nbsp;&nbsp;local <span class="variable">nome_backup</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if ! <span class="function-name">validar_arquivo</span> <span class="string">"$arquivo"</span>; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Criar diretório de backup se não existir</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;mkdir -p <span class="string">"$BACKUP_DIR"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Nome do backup com timestamp</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">nome_backup</span>=<span class="string">"$BACKUP_DIR/$(basename "$arquivo")_$timestamp"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if cp <span class="string">"$arquivo"</span> <span class="string">"$nome_backup"</span>; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="function-name">log_message</span> <span class="string">"INFO"</span> <span class="string">"Backup criado: $nome_backup"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"$nome_backup"</span>  <span class="comment"># Retorna nome do backup</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 0<br>
+&nbsp;&nbsp;&nbsp;&nbsp;else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="function-name">log_message</span> <span class="string">"ERRO"</span> <span class="string">"Falha ao criar backup de '$arquivo'"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+}<br>
+
+<span class="comment"># Função para listar backups</span><br>
+<span class="function-name">listar_backups</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if [ ! -d <span class="string">"$BACKUP_DIR"</span> ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="function-name">log_message</span> <span class="string">"INFO"</span> <span class="string">"Nenhum backup encontrado"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"📁 BACKUPS DISPONÍVEIS:"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"========================"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;local <span class="variable">contador</span>=1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;for <span class="variable">backup</span> in <span class="string">"$BACKUP_DIR"</span>/*; do<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if [ -f <span class="string">"$backup"</span> ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;local <span class="variable">tamanho</span>=$(du -h <span class="string">"$backup"</span> | cut -f1)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;local <span class="variable">data</span>=$(ls -l <span class="string">"$backup"</span> | awk '{print $6, $7, $8}')<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"$contador) $(basename "$backup") [$tamanho] - $data"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">contador</span>=$(($contador + 1))<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+&nbsp;&nbsp;&nbsp;&nbsp;done<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if [ <span class="variable">$contador</span> -eq 1 ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Nenhum backup encontrado no diretório."</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+}<br>
+
+<span class="comment"># Função para limpar backups antigos</span><br>
+<span class="function-name">limpar_backups_antigos</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;local <span class="variable">dias</span>=<span class="string">"${1:-7}"</span>  <span class="comment"># Padrão: 7 dias</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;local <span class="variable">removidos</span>=0<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if [ ! -d <span class="string">"$BACKUP_DIR"</span> ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="function-name">log_message</span> <span class="string">"INFO"</span> <span class="string">"Nenhum diretório de backup encontrado"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 0<br>
+&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="function-name">log_message</span> <span class="string">"INFO"</span> <span class="string">"Limpando backups anteriores a $dias dias"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Encontrar e remover arquivos antigos</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;while IFS= read -r -d '' <span class="variable">arquivo</span>; do<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if <span class="function-name">confirmar_acao</span> <span class="string">"Remover $(basename "$arquivo")?"</span>; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rm <span class="string">"$arquivo"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="function-name">log_message</span> <span class="string">"INFO"</span> <span class="string">"Backup removido: $(basename "$arquivo")"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">removidos</span>=$(($removidos + 1))<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+&nbsp;&nbsp;&nbsp;&nbsp;done < <(find <span class="string">"$BACKUP_DIR"</span> -type f -mtime +<span class="variable">$dias</span> -print0)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="function-name">log_message</span> <span class="string">"INFO"</span> <span class="string">"Limpeza concluída. $removidos arquivo(s) removido(s)"</span><br>
+}<br>
+
+<span class="comment"># Função para calcular estatísticas</span><br>
+<span class="function-name">calcular_estatisticas</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;local <span class="variable">total_arquivos</span>=0<br>
+&nbsp;&nbsp;&nbsp;&nbsp;local <span class="variable">tamanho_total</span>=0<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if [ ! -d <span class="string">"$BACKUP_DIR"</span> ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"📊 Estatísticas: Nenhum backup encontrado"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 0<br>
+&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"📊 ESTATÍSTICAS DE BACKUP"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"=========================="</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">total_arquivos</span>=$(find <span class="string">"$BACKUP_DIR"</span> -type f | wc -l)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">tamanho_total</span>=$(du -sh <span class="string">"$BACKUP_DIR"</span> 2>/dev/null | cut -f1)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Total de backups: $total_arquivos"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Tamanho total: $tamanho_total"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Diretório: $BACKUP_DIR"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if [ <span class="variable">$total_arquivos</span> -gt 0 ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Backup mais recente:"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ls -lt <span class="string">"$BACKUP_DIR"</span> | head -2 | tail -1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+}<br>
+
+<span class="comment"># Função do menu principal</span><br>
+<span class="function-name">mostrar_menu</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"🔧 SISTEMA DE GERENCIAMENTO"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"============================"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"1) Fazer backup de arquivo"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"2) Listar backups"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"3) Limpar backups antigos"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"4) Estatísticas"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"5) Ver log"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"0) Sair"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo<br>
+}<br>
+
+<span class="comment"># Função principal</span><br>
+<span class="function-name">main</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="function-name">log_message</span> <span class="string">"INFO"</span> <span class="string">"Sistema iniciado"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;while true; do<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="function-name">mostrar_menu</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;read -p <span class="string">"Escolha uma opção: "</span> <span class="variable">opcao</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;case <span class="variable">$opcao</span> in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;read -p <span class="string">"Nome do arquivo: "</span> <span class="variable">arquivo</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">backup_criado</span>=$(<span class="function-name">fazer_backup</span> <span class="string">"$arquivo"</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if [ $? -eq 0 ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"✅ Backup criado com sucesso!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="function-name">listar_backups</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;read -p <span class="string">"Dias (padrão 7): "</span> <span class="variable">dias</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="function-name">limpar_backups_antigos</span> <span class="string">"${dias:-7}"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="function-name">calcular_estatisticas</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if [ -f <span class="string">"$LOG_FILE"</span> ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;tail -20 <span class="string">"$LOG_FILE"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Nenhum log encontrado."</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="function-name">log_message</span> <span class="string">"INFO"</span> <span class="string">"Sistema finalizado pelo usuário"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"👋 Até logo!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;exit 0<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="function-name">log_message</span> <span class="string">"ERRO"</span> <span class="string">"Opção inválida: $opcao"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;esac<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;read -p <span class="string">"Pressione Enter para continuar..."</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;done<br>
+}<br>
+
+<span class="comment"># Executar programa principal</span><br>
+<span class="function-name">main</span> <span class="string">"$@"</span><br>
+                    </div>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🔍 Funções Implementadas</h3>
+                        <div class="success-box">
+                            <div class="bullet-point">log_message: sistema de log</div>
+                            <div class="bullet-point">confirmar_acao: confirmações</div>
+                            <div class="bullet-point">validar_arquivo: validações</div>
+                            <div class="bullet-point">fazer_backup: criar backups</div>
+                            <div class="bullet-point">listar_backups: listagem</div>
+                            <div class="bullet-point">limpar_backups_antigos: limpeza</div>
+                            <div class="bullet-point">calcular_estatisticas: relatórios</div>
+                            <div class="bullet-point">mostrar_menu: interface</div>
+                            <div class="bullet-point">main: orquestração</div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>✨ Características do Sistema</h3>
+                        <div class="example-box">
+                            <div class="bullet-point">Modular e organizado</div>
+                            <div class="bullet-point">Sistema de log integrado</div>
+                            <div class="bullet-point">Validações robustas</div>
+                            <div class="bullet-point">Interface amigável</div>
+                            <div class="bullet-point">Confirmações de segurança</div>
+                            <div class="bullet-point">Estatísticas detalhadas</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h3>💡 Vantagens das Funções neste Projeto</h3>
+                    <p><strong>Reutilização:</strong> log_message usada em todo script<br>
+                    <strong>Manutenção:</strong> cada função tem responsabilidade única<br>
+                    <strong>Testabilidade:</strong> funções podem ser testadas isoladamente<br>
+                    <strong>Legibilidade:</strong> código principal (main) fica limpo e claro</p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(7)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #2196f3;">Slide 8 de 12</span>
+                <button class="nav-button" onclick="showSlide(9)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 9: Dicas e Boas Práticas -->
+        <div class="slide" id="slide-9">
+            <div class="content">
+                <h2>💡 Dicas e Boas Práticas</h2>
+                
+                <div class="highlight-box">
+                    <h3>🏆 Como Escrever Funções Profissionais</h3>
+                    <p>Técnicas para criar funções eficientes, legíveis e reutilizáveis</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>✅ Boas Práticas</h3>
+                        <div class="success-box">
+                            <h4>📝 1. Nomes descritivos</h4>
+                            <div class="script-box">
+<span class="comment"># ❌ Ruim</span><br>
+<span class="function-name">func1</span>() { echo $1; }<br>
+
+<span class="comment"># ✅ Bom</span><br>
+<span class="function-name">validar_email</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;local <span class="variable">email</span>=<span class="string">"$1"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Validando: $email"</span><br>
+}<br>
+                            </div>
+                            
+                            <h4>🔍 2. Uma responsabilidade</h4>
+                            <div class="script-box">
+<span class="comment"># ❌ Função faz muitas coisas</span><br>
+<span class="function-name">processar_tudo</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;validar_dados<br>
+&nbsp;&nbsp;&nbsp;&nbsp;fazer_backup<br>
+&nbsp;&nbsp;&nbsp;&nbsp;enviar_email<br>
+&nbsp;&nbsp;&nbsp;&nbsp;gerar_relatorio<br>
+}<br>
+
+<span class="comment"># ✅ Funções específicas</span><br>
+<span class="function-name">validar_dados</span>() { ... }<br>
+<span class="function-name">fazer_backup</span>() { ... }<br>
+<span class="function-name">enviar_email</span>() { ... }<br>
+                            </div>
+                        </div>
+                        
+                        <h3>📚 Documentação</h3>
+                        <div class="script-box">
+<span class="comment"># Função para validar CPF</span><br>
+<span class="comment"># Parâmetros: $1 = CPF (formato: 000.000.000-00)</span><br>
+<span class="comment"># Retorno: 0 = válido, 1 = inválido</span><br>
+<span class="function-name">validar_cpf</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;local <span class="variable">cpf</span>=<span class="string">"$1"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Implementação...</span><br>
+}<br>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>⚠️ Armadilhas Comuns</h3>
+                        <div class="warning-box">
+                            <h4>🕳️ 1. Variáveis globais demais</h4>
+                            <div class="script-box">
+<span class="comment"># ❌ Problema: usa globais</span><br>
+<span class="variable">resultado</span>=0<br>
+<span class="function-name">calcular</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">resultado</span>=$(($1 + $2))<br>
+}<br>
+
+<span class="comment"># ✅ Solução: retorna valor</span><br>
+<span class="function-name">calcular</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;local <span class="variable">soma</span>=$(($1 + $2))<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="variable">$soma</span><br>
+}<br>
+                            </div>
+                            
+                            <h4>💥 2. Não validar parâmetros</h4>
+                            <div class="script-box">
+<span class="comment"># ❌ Perigoso: não valida</span><br>
+<span class="function-name">dividir</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo $(($1 / $2))<br>
+}<br>
+
+<span class="comment"># ✅ Seguro: sempre validar</span><br>
+<span class="function-name">dividir</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if [ $# -ne 2 ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Erro: precisa de 2 números"</span> >&2<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if [ $2 -eq 0 ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Erro: divisão por zero"</span> >&2<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo $(($1 / $2))<br>
+}<br>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>🎯 Template de Função Robusta</h3>
+                    <div class="script-box">
+<span class="comment"># Template para funções profissionais</span><br>
+
+<span class="comment"># Descrição: Processa arquivo CSV e gera relatório</span><br>
+<span class="comment"># Parâmetros: </span><br>
+<span class="comment">#   $1 = arquivo CSV de entrada</span><br>
+<span class="comment">#   $2 = arquivo de saída (opcional, padrão: relatorio.txt)</span><br>
+<span class="comment"># Retorno: 0 = sucesso, 1 = erro</span><br>
+<span class="function-name">processar_csv</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># 1. Validar parâmetros</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;if [ $# -eq 0 ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Erro: Arquivo CSV não especificado"</span> >&2<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Uso: processar_csv arquivo.csv [saida.txt]"</span> >&2<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># 2. Definir variáveis locais</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;local <span class="variable">arquivo_entrada</span>=<span class="string">"$1"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;local <span class="variable">arquivo_saida</span>=<span class="string">"${2:-relatorio.txt}"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;local <span class="variable">linhas_processadas</span>=0<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># 3. Validar arquivos</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;if [ ! -f <span class="string">"$arquivo_entrada"</span> ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Erro: Arquivo '$arquivo_entrada' não existe"</span> >&2<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># 4. Processar dados</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;while IFS=',' read -r <span class="variable">campo1</span> <span class="variable">campo2</span> <span class="variable">campo3</span>; do<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Processar linha...</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">linhas_processadas</span>=$(($linhas_processadas + 1))<br>
+&nbsp;&nbsp;&nbsp;&nbsp;done < <span class="string">"$arquivo_entrada"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># 5. Retornar resultado</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Processadas $linhas_processadas linhas"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;return 0<br>
+}<br>
+                    </div>
+                </div>
+
+                <div class="success-box">
+                    <h3>🎯 Checklist da Função Perfeita</h3>
+                    <p>✅ Nome descritivo e claro<br>
+                    ✅ Uma responsabilidade específica<br>
+                    ✅ Documentação dos parâmetros<br>
+                    ✅ Validação de entrada<br>
+                    ✅ Variáveis locais<br>
+                    ✅ Tratamento de erros<br>
+                    ✅ Retorno apropriado<br>
+                    ✅ Comentários explicativos</p>
+                </div>
+
+                <div class="comparison-table">
+                    <table>
+                        <tr>
+                            <th>Situação</th>
+                            <th>❌ Evitar</th>
+                            <th>✅ Preferir</th>
+                        </tr>
+                        <tr>
+                            <td>Nomes</td>
+                            <td>func1, f, temp</td>
+                            <td>validar_email, calcular_idade</td>
+                        </tr>
+                        <tr>
+                            <td>Tamanho</td>
+                            <td>Funções com 100+ linhas</td>
+                            <td>Funções com 10-20 linhas</td>
+                        </tr>
+                        <tr>
+                            <td>Parâmetros</td>
+                            <td>Não validar entrada</td>
+                            <td>Sempre validar e documentar</td>
+                        </tr>
+                        <tr>
+                            <td>Variáveis</td>
+                            <td>Usar só globais</td>
+                            <td>Preferir locais sempre</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(8)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #2196f3;">Slide 9 de 12</span>
+                <button class="nav-button" onclick="showSlide(10)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 10: Quiz -->
+        <div class="slide" id="slide-10">
+            <div class="content">
+                <h2>🧠 Quiz - Teste seus Conhecimentos!</h2>
+                
+                <div class="quiz-container">
+                    <div class="quiz-question" id="question1">
+                        <h3>📝 Questão 1</h3>
+                        <p><strong>Qual é a sintaxe correta para definir uma função em Shell Script?</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" onclick="selectOption(1, 'a', false)">
+                                <span class="option-letter">A)</span> function nome_funcao() [ comandos ]
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(1, 'b', true)">
+                                <span class="option-letter">B)</span> nome_funcao() { comandos }
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(1, 'c', false)">
+                                <span class="option-letter">C)</span> def nome_funcao(): comandos
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(1, 'd', false)">
+                                <span class="option-letter">D)</span> nome_funcao(args) -> comandos
+                            </div>
+                        </div>
+                        <div class="quiz-feedback" id="feedback1"></div>
+                    </div>
+
+                    <div class="quiz-question" id="question2" style="display: none;">
+                        <h3>📝 Questão 2</h3>
+                        <p><strong>Como acessar o primeiro parâmetro dentro de uma função?</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" onclick="selectOption(2, 'a', false)">
+                                <span class="option-letter">A)</span> $param1
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(2, 'b', true)">
+                                <span class="option-letter">B)</span> $1
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(2, 'c', false)">
+                                <span class="option-letter">C)</span> $args[0]
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(2, 'd', false)">
+                                <span class="option-letter">D)</span> $first
+                            </div>
+                        </div>
+                        <div class="quiz-feedback" id="feedback2"></div>
+                    </div>
+
+                    <div class="quiz-question" id="question3" style="display: none;">
+                        <h3>📝 Questão 3</h3>
+                        <p><strong>Qual comando importa funções de outro arquivo?</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" onclick="selectOption(3, 'a', false)">
+                                <span class="option-letter">A)</span> import arquivo.sh
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(3, 'b', false)">
+                                <span class="option-letter">C)</span> include arquivo.sh
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(3, 'c', true)">
+                                <span class="option-letter">C)</span> source arquivo.sh
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(3, 'd', false)">
+                                <span class="option-letter">D)</span> load arquivo.sh
+                            </div>
+                        </div>
+                        <div class="quiz-feedback" id="feedback3"></div>
+                    </div>
+
+                    <div class="quiz-question" id="question4" style="display: none;">
+                        <h3>📝 Questão 4</h3>
+                        <p><strong>Como criar uma variável local dentro de uma função?</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" onclick="selectOption(4, 'a', true)">
+                                <span class="option-letter">A)</span> local variavel=valor
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(4, 'b', false)">
+                                <span class="option-letter">B)</span> var variavel=valor
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(4, 'c', false)">
+                                <span class="option-letter">C)</span> private variavel=valor
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(4, 'd', false)">
+                                <span class="option-letter">D)</span> let variavel=valor
+                            </div>
+                        </div>
+                        <div class="quiz-feedback" id="feedback4"></div>
+                    </div>
+
+                    <div id="quiz-result" style="display: none; text-align: center; margin-top: 30px;">
+                        <h3>🎉 Quiz Concluído!</h3>
+                        <div class="highlight-box">
+                            <p><strong>Sua pontuação: <span id="final-score">0</span>/4</strong></p>
+                            <p id="result-message"></p>
+                        </div>
+                        <button class="nav-button" onclick="restartQuiz()" style="margin-top: 20px;">🔄 Refazer Quiz</button>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="nav-button" id="next-quiz-btn" onclick="nextQuestion()" style="display: none;">
+                        Próxima Questão ➡️
+                    </button>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(9)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #2196f3;">Slide 10 de 12</span>
+                <button class="nav-button" onclick="showSlide(11)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 11: Exercícios Práticos -->
+        <div class="slide" id="slide-11">
+            <div class="content">
+                <h2>🏋️ Exercícios Práticos</h2>
+                
+                <div class="highlight-box center-text">
+                    <h3>🎯 Desafios para Praticar Funções</h3>
+                    <p>Exercícios progressivos para dominar criação e uso de funções</p>
+                </div>
+
+                <div style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); padding: 25px; border-radius: 15px; margin: 20px 0;">
+                    <h3>📋 Cenário</h3>
+                    <p>Você é um administrador de sistema e precisa criar funções para automatizar tarefas comuns.</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🥉 Exercício 1 - Básico</h3>
+                        <div class="example-box">
+                            <h4>📊 Calculadora de IMC</h4>
+                            <p>Crie uma função que:</p>
+                            <div class="bullet-point">Receba peso e altura como parâmetros</div>
+                            <div class="bullet-point">Calcule o IMC (peso / altura²)</div>
+                            <div class="bullet-point">Retorne a classificação</div>
+                            <div class="bullet-point">Valide se os parâmetros são números</div>
+                        </div>
+                        
+                        <div class="script-box">
+<span class="comment"># Estrutura esperada:</span><br>
+<span class="function-name">calcular_imc</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Validar parâmetros</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Calcular IMC</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Retornar classificação</span><br>
+}<br>
+
+<span class="comment"># Uso: calcular_imc 70 1.75</span><br>
+                        </div>
+
+                        <h3>🥈 Exercício 2 - Intermediário</h3>
+                        <div class="example-box">
+                            <h4>🔐 Gerador de Senhas</h4>
+                            <p>Crie funções para:</p>
+                            <div class="bullet-point">Gerar senha com tamanho específico</div>
+                            <div class="bullet-point">Validar força da senha</div>
+                            <div class="bullet-point">Salvar senhas em arquivo</div>
+                            <div class="bullet-point">Menu interativo</div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🥇 Exercício 3 - Avançado</h3>
+                        <div class="example-box">
+                            <h4>📊 Sistema de Relatórios</h4>
+                            <p>Crie um sistema modular com:</p>
+                            <div class="bullet-point">Biblioteca de funções (utils.sh)</div>
+                            <div class="bullet-point">Função para ler dados CSV</div>
+                            <div class="bullet-point">Função para calcular estatísticas</div>
+                            <div class="bullet-point">Função para gerar gráficos ASCII</div>
+                            <div class="bullet-point">Sistema de log integrado</div>
+                        </div>
+
+                        <h3>🏆 Exercício 4 - Expert</h3>
+                        <div class="example-box">
+                            <h4>🔧 Framework de Funções</h4>
+                            <p>Desenvolva:</p>
+                            <div class="bullet-point">Sistema de cache para funções</div>
+                            <div class="bullet-point">Decorator para timing</div>
+                            <div class="bullet-point">Sistema de configuração</div>
+                            <div class="bullet-point">Tratamento de exceções</div>
+                            <div class="bullet-point">Documentação automática</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>💡 Exemplo: Exercício 1 Resolvido</h3>
+                    <div class="script-box">
+#!/bin/bash<br>
+<span class="comment"># Calculadora de IMC com validação</span><br>
+
+<span class="function-name">validar_numero</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;local <span class="variable">numero</span>=<span class="string">"$1"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;if [[ <span class="string">"$numero"</span> =~ ^[0-9]+\.?[0-9]*$ ]]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 0<br>
+&nbsp;&nbsp;&nbsp;&nbsp;else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+}<br>
+
+<span class="function-name">classificar_imc</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;local <span class="variable">imc</span>=<span class="string">"$1"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if (( $(echo <span class="string">"$imc < 18.5"</span> | bc -l) )); then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Abaixo do peso"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;elif (( $(echo <span class="string">"$imc < 25"</span> | bc -l) )); then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Peso normal"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;elif (( $(echo <span class="string">"$imc < 30"</span> | bc -l) )); then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Sobrepeso"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Obesidade"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+}<br>
+
+<span class="function-name">calcular_imc</span>() {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;local <span class="variable">peso</span>=<span class="string">"$1"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;local <span class="variable">altura</span>=<span class="string">"$2"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Validar parâmetros</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;if [ $# -ne 2 ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Uso: calcular_imc peso altura"</span> >&2<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if ! <span class="function-name">validar_numero</span> <span class="string">"$peso"</span> || ! <span class="function-name">validar_numero</span> <span class="string">"$altura"</span>; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Erro: Peso e altura devem ser números"</span> >&2<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Calcular IMC</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;local <span class="variable">imc</span>=$(echo <span class="string">"scale=2; $peso / ($altura * $altura)"</span> | bc)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;local <span class="variable">classificacao</span>=$(<span class="function-name">classificar_imc</span> <span class="string">"$imc"</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"IMC: $imc - $classificacao"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;return 0<br>
+}<br>
+
+<span class="comment"># Teste da função</span><br>
+<span class="function-name">calcular_imc</span> 70 1.75<br>
+<span class="function-name">calcular_imc</span> 85 1.80<br>
+                    </div>
+                </div>
+
+                <div class="success-box">
+                    <h3>🎯 Critérios de Avaliação</h3>
+                    <p>✅ <strong>Funcionalidade:</strong> função faz o que promete<br>
+                    ✅ <strong>Validação:</strong> trata entradas inválidas<br>
+                    ✅ <strong>Modularidade:</strong> cada função tem uma responsabilidade<br>
+                    ✅ <strong>Legibilidade:</strong> código claro e documentado<br>
+                    ✅ <strong>Reutilização:</strong> funções podem ser reaproveitadas</p>
+                </div>
+
+                <div class="info-box">
+                    <h3>💡 Dicas para os Exercícios</h3>
+                    <p><strong>Comece simples:</strong> implemente a funcionalidade básica primeiro<br>
+                    <strong>Teste constantemente:</strong> teste cada função isoladamente<br>
+                    <strong>Documente:</strong> explique o que cada função faz<br>
+                    <strong>Refatore:</strong> melhore o código após funcionar<br>
+                    <strong>Compartilhe:</strong> mostre suas soluções para outros</p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(10)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #2196f3;">Slide 11 de 12</span>
+                <button class="nav-button" onclick="showSlide(12)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 12: Conclusão -->
+        <div class="slide" id="slide-12">
+            <div class="content">
+                <h2>🎓 Parabéns! Você Domina as Funções!</h2>
+                
+                <div class="highlight-box center-text">
+                    <h3>🎯 Agora Você Pode Criar Scripts Organizados!</h3>
+                    <p>Você aprendeu a criar código reutilizável, modular e profissional</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📚 O que Você Domina Agora</h3>
+                        <div class="bullet-point">Sintaxe básica de funções</div>
+                        <div class="bullet-point">Parâmetros e argumentos</div>
+                        <div class="bullet-point">Variáveis locais vs globais</div>
+                        <div class="bullet-point">Retorno de valores</div>
+                        <div class="bullet-point">Importação de funções (source)</div>
+                        <div class="bullet-point">Validação e tratamento de erros</div>
+                        <div class="bullet-point">Organização modular</div>
+                        <div class="bullet-point">Boas práticas profissionais</div>
+                    </div>
+                    <div>
+                        <h3>🚀 Próximos Desafios</h3>
+                        <div class="bullet-point">Arrays em Shell Script</div>
+                        <div class="bullet-point">Funções recursivas</div>
+                        <div class="bullet-point">Debugging avançado</div>
+                        <div class="bullet-point">Performance e otimização</div>
+                        <div class="bullet-point">Testes automatizados</div>
+                        <div class="bullet-point">Frameworks e bibliotecas</div>
+                        <div class="bullet-point">DevOps e automação</div>
+                    </div>
+                </div>
+
+                <div style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); padding: 25px; border-radius: 15px; margin: 20px 0;">
+                    <h3>🎯 Projeto Desafio Final</h3>
+                    <p><strong>Sistema de Monitoramento Modular:</strong></p>
+                    <div class="bullet-point">Crie biblioteca de funções de sistema (cpu, memória, disco)</div>
+                    <div class="bullet-point">Desenvolva funções de notificação (email, slack)</div>
+                    <div class="bullet-point">Implemente sistema de alertas configurável</div>
+                    <div class="bullet-point">Adicione interface web simples com CGI</div>
+                    <div class="bullet-point">Crie dashboard com gráficos ASCII</div>
+                    <div class="bullet-point">Documente todas as funções criadas</div>
+                </div>
+
+                <div class="success-box center-text">
+                    <h3>🏆 Comandos para Memorizar</h3>
+                    <div class="script-box">
+<span class="function-name">nome_funcao</span>() { comandos; }             <span class="comment"># Definir função</span><br>
+function <span class="function-name">nome_funcao</span>() { comandos; }     <span class="comment"># Alternativa</span><br>
+<span class="function-name">nome_funcao</span> param1 param2             <span class="comment"># Chamar função</span><br>
+local <span class="variable">variavel</span>=<span class="string">valor</span>                  <span class="comment"># Variável local</span><br>
+return 0                                 <span class="comment"># Retornar status</span><br>
+source arquivo.sh                        <span class="comment"># Importar funções</span>
+                    </div>
+                </div>
+
+                <div class="example-box center-text">
+                    <h3>⚡ Você Agora É um Arquiteto de Scripts! ⚡</h3>
+                    <p>"Código organizado é código que funciona e dura!"<br>
+                    Continue criando funções reutilizáveis e elegantes! 🔧✨</p>
+                </div>
+
+                <div class="info-box center-text">
+                    <h3>📋 Recursos para Continuar Aprendendo</h3>
+                    <p>• Advanced Shell Function Patterns<br>
+                    • Bash Function Libraries Best Practices<br>
+                    • Modular Script Architecture<br>
+                    • Shell Script Testing Frameworks</p>
+                </div>
+
+                <div style="background: #d1ecf1; color: #0c5460; padding: 20px; border-radius: 10px; margin: 15px 0; text-align: center;">
+                    <p style="font-size: 1.1em; margin: 0;">
+                        <strong>Lembre-se:</strong> uma função bem escrita hoje,<br>
+                        é tempo economizado amanhã!<br>
+                        <strong>Happy Coding! 🐧🔧</strong>
+                    </p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(11)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #2196f3;">Slide 12 de 12</span>
+                <button class="nav-button" onclick="showSlide(1)" style="background: #4caf50;">🏠 Início</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variáveis globais
+        let currentSlide = 1;
+        
+        // Atualizar total de slides
+        document.getElementById('total-slides').textContent = '12';
+        
+        // Função para mostrar slide específico
+        function showSlide(slideNumber) {
+            // Esconder todos os slides
+            const slides = document.querySelectorAll('.slide');
+            slides.forEach(slide => {
+                slide.classList.remove('active');
+            });
+            
+            // Mostrar slide específico
+            const targetSlide = document.getElementById('slide-' + slideNumber);
+            if (targetSlide) {
+                targetSlide.classList.add('active');
+                currentSlide = slideNumber;
+                
+                // Atualizar contador
+                document.getElementById('current-slide').textContent = slideNumber;
+            }
+        }
+        
+        // Navegação por teclado
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft' && currentSlide > 1) {
+                showSlide(currentSlide - 1);
+            } else if (e.key === 'ArrowRight' && currentSlide < 12) {
+                showSlide(currentSlide + 1);
+            }
+        });
+        
+        // Variáveis do quiz
+        let currentQuestion = 1;
+        let score = 0;
+        let quizAnswered = [false, false, false, false];
+        
+        // Função do quiz
+        function selectOption(questionNum, option, isCorrect) {
+            if (quizAnswered[questionNum - 1]) return;
+            
+            const options = document.querySelectorAll('#question' + questionNum + ' .quiz-option');
+            const feedback = document.getElementById('feedback' + questionNum);
+            
+            // Marcar todas as opções
+            options.forEach(opt => {
+                opt.style.pointerEvents = 'none';
+                if (opt.onclick.toString().includes('true')) {
+                    opt.classList.add('correct');
+                } else if (opt === event.currentTarget) {
+                    opt.classList.add(isCorrect ? 'correct' : 'incorrect');
+                }
+            });
+            
+            // Mostrar feedback
+            if (isCorrect) {
+                feedback.className = 'quiz-feedback correct';
+                feedback.textContent = '✅ Correto! Excelente!';
+                score++;
+            } else {
+                feedback.className = 'quiz-feedback incorrect';
+                switch(questionNum) {
+                    case 1: feedback.textContent = '❌ Incorreto. A sintaxe correta é nome_funcao() { comandos }'; break;
+                    case 2: feedback.textContent = '❌ Incorreto. $1 é o primeiro parâmetro, $2 o segundo, etc.'; break;
+                    case 3: feedback.textContent = '❌ Incorreto. Use "source arquivo.sh" ou ". arquivo.sh" para importar.'; break;
+                    case 4: feedback.textContent = '❌ Incorreto. Use "local variavel=valor" para criar variáveis locais.'; break;
+                }
+            }
+            
+            quizAnswered[questionNum - 1] = true;
+            
+            // Mostrar botão para próxima pergunta ou resultado
+            if (questionNum < 4) {
+                document.getElementById('next-quiz-btn').style.display = 'inline-block';
+            } else {
+                showQuizResult();
+            }
+        }
+        
+        function nextQuestion() {
+            document.getElementById('question' + currentQuestion).style.display = 'none';
+            currentQuestion++;
+            document.getElementById('question' + currentQuestion).style.display = 'block';
+            document.getElementById('next-quiz-btn').style.display = 'none';
+        }
+        
+        function showQuizResult() {
+            document.getElementById('question4').style.display = 'none';
+            document.getElementById('quiz-result').style.display = 'block';
+            document.getElementById('final-score').textContent = score;
+            
+            const resultMessage = document.getElementById('result-message');
+            if (score === 4) {
+                resultMessage.textContent = '🏆 Perfeito! Você domina completamente as funções em Shell Script!';
+                resultMessage.style.color = '#22543d';
+            } else if (score >= 3) {
+                resultMessage.textContent = '🎉 Muito bom! Você entende bem os conceitos de funções!';
+                resultMessage.style.color = '#22543d';
+            } else if (score >= 2) {
+                resultMessage.textContent = '👍 Bom trabalho! Revise alguns conceitos para melhorar.';
+                resultMessage.style.color = '#856404';
+            } else {
+                resultMessage.textContent = '📚 Continue estudando! Pratique mais com funções.';
+                resultMessage.style.color = '#742a2a';
+            }
+        }
+        
+        function restartQuiz() {
+            currentQuestion = 1;
+            score = 0;
+            quizAnswered = [false, false, false, false];
+            
+            // Resetar todas as questões
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById('question' + i).style.display = i === 1 ? 'block' : 'none';
+                document.getElementById('feedback' + i).style.display = 'none';
+                
+                const options = document.querySelectorAll('#question' + i + ' .quiz-option');
+                options.forEach(opt => {
+                    opt.style.pointerEvents = 'auto';
+                    opt.classList.remove('correct', 'incorrect', 'selected');
+                });
+            }
+            
+            document.getElementById('quiz-result').style.display = 'none';
+            document.getElementById('next-quiz-btn').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
