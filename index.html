@@ -1,942 +1,855 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apostila Virtual da disciplina Fundamentos de Sistemas Operacionais e Sistemas Operacionais de Redes</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            color: #333;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 40px 20px;
-        }
-
-        .header {
-            text-align: center;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 60px 40px;
-            border-radius: 25px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            margin-bottom: 50px;
-            backdrop-filter: blur(10px);
-        }
-
-        .header h1 {
-            font-size: 3.5em;
-            color: #4a5568;
-            margin-bottom: 20px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .header .subtitle {
-            font-size: 1.4em;
-            color: #667eea;
-            margin-bottom: 30px;
-            font-weight: 500;
-        }
-
-        .author-info {
-            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-            padding: 25px;
-            border-radius: 15px;
-            border-left: 5px solid #20b2aa;
-            margin-top: 30px;
-        }
-
-        .author-info h3 {
-            color: #4a5568;
-            margin-bottom: 10px;
-        }
-
-        .author-info p {
-            font-size: 1.2em;
-            color: #2d3748;
-        }
-
-        .bimestre-section {
-            margin-bottom: 60px;
-            clear: both;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .bimestre-header {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 30px 40px;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
-            text-align: center;
-            backdrop-filter: blur(10px);
-            position: relative;
-        }
-
-        .bimestre-header h2 {
-            font-size: 2.5em;
-            color: #4a5568;
-            margin-bottom: 15px;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
-        }
-/* Temas específicos por bimestre */
-        .theme-linux {
-            background: rgba(102, 126, 234, 0.1);
-            color: #667eea;
-        }
-
-        .theme-shell {
-            background: rgba(56, 239, 125, 0.1);
-            color: #11998e;
-        }
-
-        .theme-network {
-            background: rgba(247, 151, 30, 0.1);
-            color: #f7971e;
-        }
-
-        .theme-windows {
-            background: rgba(255, 117, 140, 0.1);
-            color: #ff758c;
-        }
-
-        /* NOVO: Calendário do Bimestre */
-        .calendar-info {
-            background: linear-gradient(135deg, #e0f2fe 0%, #f3e5f5 100%);
-            border-radius: 15px;
-            padding: 20px;
-            margin-top: 20px;
-            border-left: 4px solid #667eea;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-        }
-
-        .calendar-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .calendar-header h4 {
-            color: #4a5568;
-            font-size: 1.1em;
-            margin: 0;
-        }
-
-        .calendar-dates {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            font-size: 0.95em;
-            color: #2d3748;
-        }
-
-        .date-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 12px;
-            background: rgba(255, 255, 255, 0.7);
-            border-radius: 8px;
-            transition: all 0.2s ease;
-        }
-
-        .date-item:hover {
-            background: rgba(255, 255, 255, 0.9);
-            transform: translateX(3px);
-        }
-
-        .date-icon {
-            font-size: 1.1em;
-            width: 20px;
-            text-align: center;
-        }
-
-        .chapters-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 30px;
-        }
-
-        .chapter-card {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-            cursor: pointer;
-            text-decoration: none;
-            color: inherit;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .chapter-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-
-        .chapter-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
-        }
-
-        .chapter-number {
-            display: inline-block;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5em;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-
-        .chapter-title {
-            font-size: 1.8em;
-            color: #2d3748;
-            margin-bottom: 15px;
-            font-weight: 600;
-        }
-
-        .chapter-description {
-            color: #4a5568;
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
-
-        .chapter-topics {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 20px;
-        }
-
-        .topic-tag {
-            background: #e2e8f0;
-            color: #4a5568;
-            padding: 5px 12px;
-            border-radius: 15px;
-            font-size: 0.9em;
-            font-weight: 500;
-        }
-
-        .chapter-status {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #e2e8f0;
-        }
-
-        .status-badge {
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.9em;
-            font-weight: bold;
-        }
-
-        .status-available {
-            background: #c6f6d5;
-            color: #22543d;
-        }
-
-        .chapter-icon {
-            font-size: 1.2em;
-        }
-
-        .coming-soon-message {
-            background: rgba(255, 255, 255, 0.8);
-            padding: 40px;
-            border-radius: 15px;
-            text-align: center;
-            margin: 20px 0;
-            border: 2px dashed #667eea;
-        }
-
-        .coming-soon-message p {
-            font-size: 1.3em;
-            color: #667eea;
-            margin: 0;
-            font-weight: 500;
-        }
-
-        .footer {
-            text-align: center;
-            margin-top: 60px;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-        }
-
-        .footer h3 {
-            color: #4a5568;
-            margin-bottom: 15px;
-        }
-
-        .footer p {
-            color: #667eea;
-            font-size: 1.1em;
-        }
-
-        .progress-info {
-            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
-            padding: 25px;
-            border-radius: 15px;
-            border-left: 5px solid #ff7f50;
-            margin: 30px 0;
-            text-align: center;
-        }
-
-        .progress-bar {
-            background: #e2e8f0;
-            border-radius: 10px;
-            overflow: hidden;
-            height: 20px;
-            margin: 15px 0;
-        }
-
-        .progress-fill {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            height: 100%;
-            width: 0%;
-            transition: width 0.3s ease;
-        }
-
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 2.5em;
-            }
-            
-            .chapters-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .container {
-                padding: 20px 15px;
-            }
-
-            .calendar-dates {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .chapter-card.intro::before {
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-        }
-
-        .chapter-card.osi::before {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-
-        .chapter-card.tcpip::before {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-        }
-
-        .chapter-card.http::before {
-            background: linear-gradient(135deg, #ff7b7b 0%, #667eea 100%);
-        }
-
-        .chapter-card.dns::before {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-
-        .chapter-card.ftp::before {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-        }
-
-        .chapter-card.dhcp::before {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-
-        .chapter-card.telnet::before {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-
-        .chapter-card.tcpudp::before {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-        }
-
-        .chapter-card.internet::before {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-
-        .chapter-card.ip::before {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-        }
-        
-        .chapter-card.completed::after {
-        content: "";
-        position: absolute;
-        top: 15px;
-        right: 15px;
-        width: 80px;
-        height: 80px;
-        background-image: url('images/100completo.jpg');
-        background-size: contain;
-        background-repeat: no-repeat;
-        background-position: center;
-        opacity: 0.85;
-        transform: rotate(-15deg);
-        z-index: 10;
-        pointer-events: none;
-    }
-
-        .chapter-card.pendente::after {
-        content: "";
-        position: absolute;
-        top: 15px;
-        right: 15px;
-        width: 80px;
-        height: 80px;
-        background-image: url('images/pendente.jpg');
-        background-size: contain;
-        background-repeat: no-repeat;
-        background-position: center;
-        opacity: 0.85;
-        transform: rotate(-15deg);
-        z-index: 10;
-        pointer-events: none;
-    }
-
-/* Bimestre 2 - tom esverdeado */
-    .chapter-card.bimestre2 .chapter-number {
-        background: linear-gradient(135deg, #38ef7d 0%, #11998e 100%);
-    }
-
-    /* Bimestre 3 - tom alaranjado */
-    .chapter-card.bimestre3 .chapter-number {
-        background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%);
-    }
-
-    /* Bimestre 4 - tom rosado */
-    .chapter-card.bimestre4 .chapter-number {
-        background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%);
-    }
-    .home-btn {
-    position: fixed;
-    top: 30px;
-    left: 30px;
-    background: #667eea;
-    color: white;
-    border: none;
-    border-radius: 25px;
-    padding: 12px 20px;
-    font-size: 1em;
-    font-weight: bold;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: all 0.3s ease;
-    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
-    z-index: 1001;
-}
-
-    .home-btn:hover {
-    background: #5a67d8;
-    transform: translateY(-2px);
-    box-shadow: 0 7px 20px rgba(102, 126, 234, 0.4);
-    }
-    .status-icon.coming-soon {
-     background: #9c27b0;
-     
-        }
-        
-        .status-badge.coming-soon {
-            background: rgba(156, 39, 176, 0.1);
-            color: #9c27b0;
-            border-color: #9c27b0;
-        }
-        .lesson-number.coming-soon {
-            background: linear-gradient(135deg, #9c27b0, #7b1fa2);
-            box-shadow: 0 4px 15px rgba(156, 39, 176, 0.3);
-        }
-
-    }    
-
-        /* Calendários específicos por bimestre */
-        .bimestre-section:nth-child(3) .calendar-info {
-            border-left-color: #667eea;
-        }
-
-        .bimestre-section:nth-child(4) .calendar-info {
-            border-left-color: #38ef7d;
-            background: linear-gradient(135deg, #e8f5e8 0%, #f0f9ff 100%);
-        }
-
-        .bimestre-section:nth-child(5) .calendar-info {
-            border-left-color: #f7971e;
-            background: linear-gradient(135deg, #fff7ed 0%, #fef3c7 100%);
-        }
-
-        .bimestre-section:nth-child(6) .calendar-info {
-            border-left-color: #ff758c;
-            background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
-        }
-
-    </style>
-</head>
-<body>
-
-    <div class="container">
-        <div class="header">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Apostila Virtual da disciplina Fundamentos de Sistemas Operacionais e Sistemas Operacionais de Redes</title>
+      <style>
+         * {
+         margin: 0;
+         padding: 0;
+         box-sizing: border-box;
+         }
+         body {
+         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+         min-height: 100vh;
+         color: #333;
+         }
+         .container {
+         max-width: 1200px;
+         margin: 0 auto;
+         padding: 40px 20px;
+         }
+         .header {
+         text-align: center;
+         background: rgba(255, 255, 255, 0.95);
+         padding: 60px 40px;
+         border-radius: 25px;
+         box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+         margin-bottom: 50px;
+         backdrop-filter: blur(10px);
+         }
+         .header h1 {
+         font-size: 3.5em;
+         color: #4a5568;
+         margin-bottom: 20px;
+         text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+         }
+         .header .subtitle {
+         font-size: 1.4em;
+         color: #667eea;
+         margin-bottom: 30px;
+         font-weight: 500;
+         }
+         .author-info {
+         background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+         padding: 25px;
+         border-radius: 15px;
+         border-left: 5px solid #20b2aa;
+         margin-top: 30px;
+         }
+         .author-info h3 {
+         color: #4a5568;
+         margin-bottom: 10px;
+         }
+         .author-info p {
+         font-size: 1.2em;
+         color: #2d3748;
+         }
+         .bimestre-section {
+         margin-bottom: 60px;
+         clear: both;
+         width: 100%;
+         display: flex;
+         flex-direction: column;
+         }
+         .bimestre-header {
+         background: rgba(255, 255, 255, 0.95);
+         padding: 30px 40px;
+         border-radius: 20px;
+         box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+         margin-bottom: 30px;
+         text-align: center;
+         backdrop-filter: blur(10px);
+         position: relative;
+         }
+         .bimestre-header h2 {
+         font-size: 2.5em;
+         color: #4a5568;
+         margin-bottom: 15px;
+         text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+         }
+         /* Temas específicos por bimestre */
+         .theme-linux {
+         background: rgba(102, 126, 234, 0.1);
+         color: #667eea;
+         }
+         .theme-shell {
+         background: rgba(56, 239, 125, 0.1);
+         color: #11998e;
+         }
+         .theme-network {
+         background: rgba(247, 151, 30, 0.1);
+         color: #f7971e;
+         }
+         .theme-windows {
+         background: rgba(255, 117, 140, 0.1);
+         color: #ff758c;
+         }
+         /* NOVO: Calendário do Bimestre */
+         .calendar-info {
+         background: linear-gradient(135deg, #e0f2fe 0%, #f3e5f5 100%);
+         border-radius: 15px;
+         padding: 20px;
+         margin-top: 20px;
+         border-left: 4px solid #667eea;
+         box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+         }
+         .calendar-header {
+         display: flex;
+         align-items: center;
+         gap: 10px;
+         margin-bottom: 15px;
+         }
+         .calendar-header h4 {
+         color: #4a5568;
+         font-size: 1.1em;
+         margin: 0;
+         }
+         .calendar-dates {
+         display: grid;
+         grid-template-columns: 1fr 1fr;
+         gap: 15px;
+         font-size: 0.95em;
+         color: #2d3748;
+         }
+         .date-item {
+         display: flex;
+         align-items: center;
+         gap: 8px;
+         padding: 8px 12px;
+         background: rgba(255, 255, 255, 0.7);
+         border-radius: 8px;
+         transition: all 0.2s ease;
+         }
+         .date-item:hover {
+         background: rgba(255, 255, 255, 0.9);
+         transform: translateX(3px);
+         }
+         .date-icon {
+         font-size: 1.1em;
+         width: 20px;
+         text-align: center;
+         }
+         .chapters-grid {
+         display: grid;
+         grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+         gap: 30px;
+         }
+         .chapter-card {
+         background: rgba(255, 255, 255, 0.95);
+         border-radius: 20px;
+         padding: 30px;
+         box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+         backdrop-filter: blur(10px);
+         transition: all 0.3s ease;
+         cursor: pointer;
+         text-decoration: none;
+         color: inherit;
+         position: relative;
+         overflow: hidden;
+         }
+         .chapter-card::before {
+         content: '';
+         position: absolute;
+         top: 0;
+         left: 0;
+         width: 100%;
+         height: 4px;
+         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+         }
+         .chapter-card:hover {
+         transform: translateY(-10px);
+         box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+         }
+         .chapter-number {
+         display: inline-block;
+         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+         color: white;
+         width: 50px;
+         height: 50px;
+         border-radius: 50%;
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         font-size: 1.5em;
+         font-weight: bold;
+         margin-bottom: 20px;
+         }
+         .chapter-title {
+         font-size: 1.8em;
+         color: #2d3748;
+         margin-bottom: 15px;
+         font-weight: 600;
+         }
+         .chapter-description {
+         color: #4a5568;
+         line-height: 1.6;
+         margin-bottom: 20px;
+         }
+         .chapter-topics {
+         display: flex;
+         flex-wrap: wrap;
+         gap: 8px;
+         margin-bottom: 20px;
+         }
+         .topic-tag {
+         background: #e2e8f0;
+         color: #4a5568;
+         padding: 5px 12px;
+         border-radius: 15px;
+         font-size: 0.9em;
+         font-weight: 500;
+         }
+         .chapter-status {
+         display: flex;
+         align-items: center;
+         justify-content: space-between;
+         margin-top: 20px;
+         padding-top: 20px;
+         border-top: 1px solid #e2e8f0;
+         }
+         .status-badge {
+         padding: 8px 16px;
+         border-radius: 20px;
+         font-size: 0.9em;
+         font-weight: bold;
+         }
+         .status-available {
+         background: #c6f6d5;
+         color: #22543d;
+         }
+         .chapter-icon {
+         font-size: 1.2em;
+         }
+         .coming-soon-message {
+         background: rgba(255, 255, 255, 0.8);
+         padding: 40px;
+         border-radius: 15px;
+         text-align: center;
+         margin: 20px 0;
+         border: 2px dashed #667eea;
+         }
+         .coming-soon-message p {
+         font-size: 1.3em;
+         color: #667eea;
+         margin: 0;
+         font-weight: 500;
+         }
+         .footer {
+         text-align: center;
+         margin-top: 60px;
+         background: rgba(255, 255, 255, 0.95);
+         padding: 40px;
+         border-radius: 20px;
+         box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+         }
+         .footer h3 {
+         color: #4a5568;
+         margin-bottom: 15px;
+         }
+         .footer p {
+         color: #667eea;
+         font-size: 1.1em;
+         }
+         .progress-info {
+         background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+         padding: 25px;
+         border-radius: 15px;
+         border-left: 5px solid #ff7f50;
+         margin: 30px 0;
+         text-align: center;
+         }
+         .progress-bar {
+         background: #e2e8f0;
+         border-radius: 10px;
+         overflow: hidden;
+         height: 20px;
+         margin: 15px 0;
+         }
+         .progress-fill {
+         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+         height: 100%;
+         width: 0%;
+         transition: width 0.3s ease;
+         }
+         @media (max-width: 768px) {
+         .header h1 {
+         font-size: 2.5em;
+         }
+         .chapters-grid {
+         grid-template-columns: 1fr;
+         }
+         .container {
+         padding: 20px 15px;
+         }
+         .calendar-dates {
+         grid-template-columns: 1fr;
+         }
+         }
+         .chapter-card.intro::before {
+         background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+         }
+         .chapter-card.osi::before {
+         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+         }
+         .chapter-card.tcpip::before {
+         background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+         }
+         .chapter-card.http::before {
+         background: linear-gradient(135deg, #ff7b7b 0%, #667eea 100%);
+         }
+         .chapter-card.dns::before {
+         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+         }
+         .chapter-card.ftp::before {
+         background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+         }
+         .chapter-card.dhcp::before {
+         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+         }
+         .chapter-card.telnet::before {
+         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+         }
+         .chapter-card.tcpudp::before {
+         background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+         }
+         .chapter-card.internet::before {
+         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+         }
+         .chapter-card.ip::before {
+         background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+         }
+         .chapter-card.completed::after {
+         content: "";
+         position: absolute;
+         top: 15px;
+         right: 15px;
+         width: 80px;
+         height: 80px;
+         background-image: url('images/100completo.jpg');
+         background-size: contain;
+         background-repeat: no-repeat;
+         background-position: center;
+         opacity: 0.85;
+         transform: rotate(-15deg);
+         z-index: 10;
+         pointer-events: none;
+         }
+         .chapter-card.pendente::after {
+         content: "";
+         position: absolute;
+         top: 15px;
+         right: 15px;
+         width: 80px;
+         height: 80px;
+         background-image: url('images/pendente.jpg');
+         background-size: contain;
+         background-repeat: no-repeat;
+         background-position: center;
+         opacity: 0.85;
+         transform: rotate(-15deg);
+         z-index: 10;
+         pointer-events: none;
+         }
+         /* Bimestre 2 - tom esverdeado */
+         .chapter-card.bimestre2 .chapter-number {
+         background: linear-gradient(135deg, #38ef7d 0%, #11998e 100%);
+         }
+         /* Bimestre 3 - tom alaranjado */
+         .chapter-card.bimestre3 .chapter-number {
+         background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%);
+         }
+         /* Bimestre 4 - tom rosado */
+         .chapter-card.bimestre4 .chapter-number {
+         background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%);
+         }
+         .home-btn {
+         position: fixed;
+         top: 30px;
+         left: 30px;
+         background: #667eea;
+         color: white;
+         border: none;
+         border-radius: 25px;
+         padding: 12px 20px;
+         font-size: 1em;
+         font-weight: bold;
+         text-decoration: none;
+         display: flex;
+         align-items: center;
+         gap: 8px;
+         transition: all 0.3s ease;
+         box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+         z-index: 1001;
+         }
+         .home-btn:hover {
+         background: #5a67d8;
+         transform: translateY(-2px);
+         box-shadow: 0 7px 20px rgba(102, 126, 234, 0.4);
+         }
+         .status-icon.coming-soon {
+         background: #9c27b0;
+         }
+         .status-badge.coming-soon {
+         background: rgba(156, 39, 176, 0.1);
+         color: #9c27b0;
+         border-color: #9c27b0;
+         }
+         .lesson-number.coming-soon {
+         background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+         box-shadow: 0 4px 15px rgba(156, 39, 176, 0.3);
+         }
+         }    
+         /* Calendários específicos por bimestre */
+         .bimestre-section:nth-child(3) .calendar-info {
+         border-left-color: #667eea;
+         }
+         .bimestre-section:nth-child(4) .calendar-info {
+         border-left-color: #38ef7d;
+         background: linear-gradient(135deg, #e8f5e8 0%, #f0f9ff 100%);
+         }
+         .bimestre-section:nth-child(5) .calendar-info {
+         border-left-color: #f7971e;
+         background: linear-gradient(135deg, #fff7ed 0%, #fef3c7 100%);
+         }
+         .bimestre-section:nth-child(6) .calendar-info {
+         border-left-color: #ff758c;
+         background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
+         }
+      </style>
+   </head>
+   <body>
+      <div class="container">
+         <div class="header">
             <h1>🐧 Sistemas Operacionais de Redes</h1>
             <p class="subtitle">Apostila Virtual</p>
-            
             <div class="progress-info">
-                <h3>📊 Progresso Geral da Apostila</h3>
-                <p>Capítulos distribuídos em 4 bimestres</p>
-                <div class="progress-bar">
-                    <div class="progress-fill"></div>
-                </div>
-                <p><strong>1º bimestre concluído</strong></p>
+               <h3>📊 Progresso Geral da Apostila</h3>
+               <p>Capítulos distribuídos em 4 bimestres</p>
+               <div class="progress-bar">
+                  <div class="progress-fill"></div>
+               </div>
+               <p><strong>1º bimestre concluído</strong></p>
             </div>
-
             <div class="author-info">
-                <h3>👨‍🏫 Professor</h3>
-                <p><strong>César Augusto de Freitas Azevedo</strong><br>
-                📧 cesar.augusto@escolar.ifrn.edu.br<br></p>
+               <h3>👨‍🏫 Professor</h3>
+               <p><strong>César Augusto de Freitas Azevedo</strong><br>
+                  📧 cesar.augusto@escolar.ifrn.edu.br<br>
+               </p>
             </div>
-        </div>
-
-<!-- 1º BIMESTRE -->
-        <div class="bimestre-section">
+         </div>
+         <!-- 1º BIMESTRE -->
+         <div class="bimestre-section">
             <div class="bimestre-header">
-                <h2>📚 1º BIMESTRE</h2>
-                <div class="bimestre-theme theme-linux">🐧 Fundamentos Linux</div>
-                <!-- Calendário do 1º Bimestre -->
-                <div class="calendar-info">
-                    <div class="calendar-header">
-                        <span>📅</span>
-                        <h4>Calendário 2025.1</h4>
-                    </div>
-                    <div class="calendar-dates">
-                        <div class="date-item">
-                            <span class="date-icon">🎯</span>
-                            <span><strong>Início:</strong> 07/04/2025</span>
-                        </div>
-                        <div class="date-item">
-                            <span class="date-icon">✅</span>
-                            <span><strong>Término:</strong> 10/06/2025</span>
-                        </div>
-                    </div>
-                </div>
+               <h2>📚 1º BIMESTRE</h2>
+               <div class="bimestre-theme theme-linux">🐧 Fundamentos Linux</div>
+               <!-- Calendário do 1º Bimestre -->
+               <div class="calendar-info">
+                  <div class="calendar-header">
+                     <span>📅</span>
+                     <h4>Calendário 2025.1</h4>
+                  </div>
+                  <div class="calendar-dates">
+                     <div class="date-item">
+                        <span class="date-icon">🎯</span>
+                        <span><strong>Início:</strong> 07/04/2025</span>
+                     </div>
+                     <div class="date-item">
+                        <span class="date-icon">✅</span>
+                        <span><strong>Término:</strong> 10/06/2025</span>
+                     </div>
+                  </div>
+               </div>
             </div>
-            
             <div class="chapters-grid">
-<!-- Capítulo 1 - Introdução ao Linux -->
-                <a href="intro_so.html" class="chapter-card intro completed">
-                    <div class="chapter-number">1</div>
-                    <h2 class="chapter-title">🐧 Introdução ao Linux</h2>
-                    <p class="chapter-description">
-                        Do sonho de um estudante finlandês ao sistema que move o mundo. 
-                        História do Linus Torvalds, projeto GNU e como o Linux se tornou 
-                        a base da Internet moderna.
-                    </p>
-                    <div class="chapter-topics">
-                        <span class="topic-tag">História do Linux</span>
-                        <span class="topic-tag">Linus Torvalds</span>
-                        <span class="topic-tag">Projeto GNU</span>
-                        <span class="topic-tag">Software Livre</span>
-                    </div>
-                    <div class="chapter-status">
-                        <span class="status-badge status-available">✅ Disponível</span>
-                        <span class="chapter-icon">🌐</span>
-                    </div>
-                </a>
-
-<!-- Capítulo 2 - Comandos Básicos do Linux -->
-                <a href="linux_commands_presentation.html" class="chapter-card comut completed">
-                    <div class="chapter-number">2</div>
-                    <h2 class="chapter-title">💻️ Comandos Básicos do Linux</h2>
-                    <p class="chapter-description">
-                        Os comandos essenciais para ser produtivo no Linux. 
-                        ls, cd, cp, mv, apt, top e muito mais. Com exemplos práticos 
-                        e dicas de produtividade para o terminal.
-                    </p>
-                    <div class="chapter-topics">
-                        <span class="topic-tag">Comandos básicos</span>
-                        <span class="topic-tag">Terminal Linux</span>
-                        <span class="topic-tag">Produtividade</span>
-                        <span class="topic-tag">Exemplos práticos</span>
-                    </div>
-                    <div class="chapter-status">
-                        <span class="status-badge status-available">✅ Disponível</span>
-                        <span class="chapter-icon">⌨️</span>
-                    </div>
-                </a>
-                
-<!-- Capítulo 3 - Gerenciamento de Usuários e Grupos -->
-                <a href="linux_user_management_presentation.html" class="chapter-card osi completed">
-                    <div class="chapter-number">3</div>
-                    <h2 class="chapter-title">👥 Gerenciamento de Usuários e Grupos</h2>
-                    <p class="chapter-description">
-                        Aprenda a criar, modificar e organizar contas, configurar permissões 
-                        e usar sudo com segurança, através de analogias simples e exercícios reais.
-                    </p>
-                    <div class="chapter-topics">
-                        <span class="topic-tag">administração</span>
-                        <span class="topic-tag">usuários</span>
-                        <span class="topic-tag">grupos</span>
-                        <span class="topic-tag">contas</span>
-                    </div>
-                    <div class="chapter-status">
-                        <span class="status-badge status-available">✅ Disponível</span>
-                        <span class="chapter-icon">🛡️</span>
-                    </div>
-                </a>
-    
-<!-- Capítulo 4 - Metacaracteres e expressões regulares -->
-                <a href="metacaracteres_regex_presentation.html" class="chapter-card tcpip completed">
-                    <div class="chapter-number">4</div>
-                    <h2 class="chapter-title">🔍 Metacaracteres e expressões regulares</h2>
-                    <p class="chapter-description">
-                        Aprenda a criar filtros poderosos
-                        De buscas simples a padrões complexos
-                    </p>
-                    <div class="chapter-topics">
-                        <span class="topic-tag">Filtro</span>
-                        <span class="topic-tag">Metacaracteres</span>
-                        <span class="topic-tag">Busca</span>
-                    </div>
-                    <div class="chapter-status">
-                        <span class="status-badge status-available">✅ Disponível</span>
-                        <span class="chapter-icon">🔍</span>
-                    </div>
-                </a>
-<!-- Capítulo 5 - Gerenciamento de processos no Linux -->
-                <a href="linux_processes_presentation.html" class="chapter-card tcpip completed">
-                    <div class="chapter-number">5</div>
-                    <h2 class="chapter-title">🔄 Gerenciamento de processos no Linux</h2>
-                    <p class="chapter-description">
-                        Do Básico ao Avançado
-                        Monitoramento, controle e otimização
-                        Comandos essenciais para administradores
-                    </p>
-                    <div class="chapter-topics">
-                        <span class="topic-tag">Monitoramento</span>
-                        <span class="topic-tag">Processo</span>
-                        <span class="topic-tag">Prioridade</span>
-                        <span class="topic-tag">Controle</span>
-                    </div>
-                    <div class="chapter-status">
-                        <span class="status-badge status-available">✅ Disponível</span>
-                        <span class="chapter-icon">📊</span>
-                    </div>
-                </a>
-<!-- Capítulo 6 - Permissões Linux -->
-                <a href="linux_permissions_presentation.html" class="chapter-card tcpip completed">
-                    <div class="chapter-number">6</div>
-                    <h2 class="chapter-title">🔑 Gerenciamento de permissões no Linux</h2>
-                    <p class="chapter-description">
-                        Aprenda a controlar quem pode acessar, modificar e executar arquivos e diretórios. 
-            Essencial para segurança e administração de sistemas.
-                    </p>
-                    <div class="chapter-topics">
-                        <span class="topic-tag">chmod</span>
-                        <span class="topic-tag">chown</span>
-                        <span class="topic-tag">grupos</span>
-                        <span class="topic-tag">rwx</span>
-                    </div>
-                    <div class="chapter-status">
-                        <span class="status-badge status-available">✅ Disponível</span>
-                        <span class="chapter-icon">🌐</span>
-                    </div>
-                </a>
+               <!-- Capítulo 1 - Introdução ao Linux -->
+               <a href="intro_so.html" class="chapter-card intro completed">
+                  <div class="chapter-number">1</div>
+                  <h2 class="chapter-title">🐧 Introdução ao Linux</h2>
+                  <p class="chapter-description">
+                     Do sonho de um estudante finlandês ao sistema que move o mundo. 
+                     História do Linus Torvalds, projeto GNU e como o Linux se tornou 
+                     a base da Internet moderna.
+                  </p>
+                  <div class="chapter-topics">
+                     <span class="topic-tag">História do Linux</span>
+                     <span class="topic-tag">Linus Torvalds</span>
+                     <span class="topic-tag">Projeto GNU</span>
+                     <span class="topic-tag">Software Livre</span>
+                  </div>
+                  <div class="chapter-status">
+                     <span class="status-badge status-available">✅ Disponível</span>
+                     <span class="chapter-icon">🌐</span>
+                  </div>
+               </a>
+               <!-- Capítulo 2 - Comandos Básicos do Linux -->
+               <a href="linux_commands_presentation.html" class="chapter-card comut completed">
+                  <div class="chapter-number">2</div>
+                  <h2 class="chapter-title">💻️ Comandos Básicos do Linux</h2>
+                  <p class="chapter-description">
+                     Os comandos essenciais para ser produtivo no Linux. 
+                     ls, cd, cp, mv, apt, top e muito mais. Com exemplos práticos 
+                     e dicas de produtividade para o terminal.
+                  </p>
+                  <div class="chapter-topics">
+                     <span class="topic-tag">Comandos básicos</span>
+                     <span class="topic-tag">Terminal Linux</span>
+                     <span class="topic-tag">Produtividade</span>
+                     <span class="topic-tag">Exemplos práticos</span>
+                  </div>
+                  <div class="chapter-status">
+                     <span class="status-badge status-available">✅ Disponível</span>
+                     <span class="chapter-icon">⌨️</span>
+                  </div>
+               </a>
+               <!-- Capítulo 3 - Gerenciamento de Usuários e Grupos -->
+               <a href="linux_user_management_presentation.html" class="chapter-card osi completed">
+                  <div class="chapter-number">3</div>
+                  <h2 class="chapter-title">👥 Gerenciamento de Usuários e Grupos</h2>
+                  <p class="chapter-description">
+                     Aprenda a criar, modificar e organizar contas, configurar permissões 
+                     e usar sudo com segurança, através de analogias simples e exercícios reais.
+                  </p>
+                  <div class="chapter-topics">
+                     <span class="topic-tag">administração</span>
+                     <span class="topic-tag">usuários</span>
+                     <span class="topic-tag">grupos</span>
+                     <span class="topic-tag">contas</span>
+                  </div>
+                  <div class="chapter-status">
+                     <span class="status-badge status-available">✅ Disponível</span>
+                     <span class="chapter-icon">🛡️</span>
+                  </div>
+               </a>
+               <!-- Capítulo 4 - Metacaracteres e expressões regulares -->
+               <a href="metacaracteres_regex_presentation.html" class="chapter-card tcpip completed">
+                  <div class="chapter-number">4</div>
+                  <h2 class="chapter-title">🔍 Metacaracteres e expressões regulares</h2>
+                  <p class="chapter-description">
+                     Aprenda a criar filtros poderosos
+                     De buscas simples a padrões complexos
+                  </p>
+                  <div class="chapter-topics">
+                     <span class="topic-tag">Filtro</span>
+                     <span class="topic-tag">Metacaracteres</span>
+                     <span class="topic-tag">Busca</span>
+                  </div>
+                  <div class="chapter-status">
+                     <span class="status-badge status-available">✅ Disponível</span>
+                     <span class="chapter-icon">🔍</span>
+                  </div>
+               </a>
+               <!-- Capítulo 5 - Gerenciamento de processos no Linux -->
+               <a href="linux_processes_presentation.html" class="chapter-card tcpip completed">
+                  <div class="chapter-number">5</div>
+                  <h2 class="chapter-title">🔄 Gerenciamento de processos no Linux</h2>
+                  <p class="chapter-description">
+                     Do Básico ao Avançado
+                     Monitoramento, controle e otimização
+                     Comandos essenciais para administradores
+                  </p>
+                  <div class="chapter-topics">
+                     <span class="topic-tag">Monitoramento</span>
+                     <span class="topic-tag">Processo</span>
+                     <span class="topic-tag">Prioridade</span>
+                     <span class="topic-tag">Controle</span>
+                  </div>
+                  <div class="chapter-status">
+                     <span class="status-badge status-available">✅ Disponível</span>
+                     <span class="chapter-icon">📊</span>
+                  </div>
+               </a>
+               <!-- Capítulo 6 - Permissões Linux -->
+               <a href="linux_permissions_presentation.html" class="chapter-card tcpip completed">
+                  <div class="chapter-number">6</div>
+                  <h2 class="chapter-title">🔑 Gerenciamento de permissões no Linux</h2>
+                  <p class="chapter-description">
+                     Aprenda a controlar quem pode acessar, modificar e executar arquivos e diretórios. 
+                     Essencial para segurança e administração de sistemas.
+                  </p>
+                  <div class="chapter-topics">
+                     <span class="topic-tag">chmod</span>
+                     <span class="topic-tag">chown</span>
+                     <span class="topic-tag">grupos</span>
+                     <span class="topic-tag">rwx</span>
+                  </div>
+                  <div class="chapter-status">
+                     <span class="status-badge status-available">✅ Disponível</span>
+                     <span class="chapter-icon">🌐</span>
+                  </div>
+               </a>
             </div>
-        </div>      
-        <br>
-<!-- 2º BIMESTRE -->
-        <div class="bimestre-section">
+         </div>
+         <br>
+         <!-- 2º BIMESTRE -->
+         <div class="bimestre-section">
             <div class="bimestre-header">
-                <h2>📚 2º BIMESTRE</h2>
-                <div class="bimestre-theme theme-shell">🤖 Shell Script</div>
-                <!-- Calendário do 2º Bimestre -->
-                <div class="calendar-info">
-                    <div class="calendar-header">
-                        <span>📅</span>
-                        <h4>Calendário 2025.1</h4>
-                    </div>
-                    <div class="calendar-dates">
-                        <div class="date-item">
-                            <span class="date-icon">🎯</span>
-                            <span><strong>Início:</strong> 11/06/2025</span>
-                        </div>
-                        <div class="date-item">
-                            <span class="date-icon">✅</span>
-                            <span><strong>Término:</strong> 13/08/2025</span>
-                        </div>
-                    </div>
-                </div>
+               <h2>📚 2º BIMESTRE</h2>
+               <div class="bimestre-theme theme-shell">🤖 Shell Script</div>
+               <!-- Calendário do 2º Bimestre -->
+               <div class="calendar-info">
+                  <div class="calendar-header">
+                     <span>📅</span>
+                     <h4>Calendário 2025.1</h4>
+                  </div>
+                  <div class="calendar-dates">
+                     <div class="date-item">
+                        <span class="date-icon">🎯</span>
+                        <span><strong>Início:</strong> 11/06/2025</span>
+                     </div>
+                     <div class="date-item">
+                        <span class="date-icon">✅</span>
+                        <span><strong>Término:</strong> 13/08/2025</span>
+                     </div>
+                  </div>
+               </div>
             </div>
-            
             <div class="chapters-grid">
-<!-- Capítulo 7 - Shell Script -->
-                <a href="shell_script_basics_presentation.html" class="chapter-card dns bimestre2 completed">
-                    <div class="chapter-number">7</div>
-                    <h2 class="chapter-title">🤖 Shell Script - primeiros passos</h2>
-                    <p class="chapter-description">
-                        Aprenda a criar seus primeiros "robôs assistentes" no Linux! 
-                        Domine os fundamentos da automação: desde criar scripts básicos 
-                        até automatizar tarefas repetitivas do dia a dia.
-                    </p>
-                    <div class="chapter-topics">
-                        <span class="topic-tag">Automatização</span>
-                        <span class="topic-tag">Scripts básicos</span>
-                        <span class="topic-tag">Vim</span>
-                        <span class="topic-tag">Bash</span>
-                    </div>
-                    <div class="chapter-status">
-                        <span class="status-badge status-available">✅ Disponível</span>
-                        <span class="chapter-icon">📇</span>
-                    </div>
-                </a>
-<!-- Capítulo 8 - Shell Script -->
-                <a href="shell_script_basics2_presentation.html" class="chapter-card dns bimestre2 completed">
-                    <div class="chapter-number">8</div>
-                    <h2 class="chapter-title">💬 Shell Script - Variáveis e Interação</h2>
-                    <p class="chapter-description">
-                        Transforme comandos repetitivos em scripts poderosos! Crie programas que 
-                        conversam com usuários, processam dados e automatizam tarefas. Do básico 
-                        ao primeiro projeto real: um sistema de busca de alunos.
-                    </p>
-                    <div class="chapter-topics">
-                        <span class="topic-tag">ExitCode</span>
-                        <span class="topic-tag">Variáveis</span>
-                        <span class="topic-tag">Interação</span>
-                        <span class="topic-tag">Bash</span>
-                    </div>
-                    <div class="chapter-status">
-                        <span class="status-badge status-available">✅ Disponível</span>
-                        <span class="chapter-icon">📦</span>
-                    </div>
-                </a>
-<!-- Capítulo 9 - Shell Script Condicionais -->
-<a href="shell_script_if_presentation.html" class="chapter-card dns bimestre2 completed">
-    <div class="chapter-number">9</div>
-    <h2 class="chapter-title">🔀 Shell Script - Instruções Condicionais</h2>
-    <p class="chapter-description">
-        Dê inteligência aos seus scripts! Aprenda a criar programas que tomam 
-        decisões, reagem a diferentes situações e executam ações baseadas em 
-        condições. Do if básico aos operadores lógicos complexos.
-    </p>
-    <div class="chapter-topics">
-        <span class="topic-tag">IF/ELSE</span>
-        <span class="topic-tag">Test</span>
-        <span class="topic-tag">Operadores</span>
-        <span class="topic-tag">Lógica</span>
-    </div>
-    <div class="chapter-status">
-        <span class="status-badge status-available">✅ Disponível</span>
-        <span class="chapter-icon">🧠</span>
-    </div>
-</a>
-                
-<!-- Capítulo 10 - Shell Script CASE -->
-<a href="shell_script_case_presentation.html" class="chapter-card dns bimestre2">
-    <div class="chapter-number">10</div>
-    <h2 class="chapter-title">🔄 Shell Script - Estrutura CASE</h2>
-    <p class="chapter-description">
-        Múltiplas escolhas de forma elegante! Domine a estrutura CASE para 
-        criar menus interativos, sistemas de opções e scripts que lidam 
-        com várias possibilidades. Quando IF não é suficiente!
-    </p>
-    <div class="chapter-topics">
-        <span class="topic-tag">CASE</span>
-        <span class="topic-tag">Padrões</span>
-        <span class="topic-tag">Menus</span>
-        <span class="topic-tag">Wildcards</span>
-    </div>
-    <div class="chapter-status">
-        <span class="status-badge status-available">✅ Disponível</span>
-        <span class="chapter-icon">🎯</span>
-    </div>
-</a>
-                
-<!-- Capítulo 11 - Shell Script FOR -->
-<a href="shell_script_for_presentation.html" class="chapter-card dns bimestre2">
-    <div class="chapter-number">11</div>
-    <h2 class="chapter-title">🔁 Shell Script - Loops FOR</h2>
-    <p class="chapter-description">
-        Repetindo tarefas de forma inteligente! Domine os loops FOR para 
-        automatizar operações, processar arquivos em lote e criar scripts 
-        que trabalham com listas. O poder da automação nas suas mãos!
-    </p>
-    <div class="chapter-topics">
-        <span class="topic-tag">FOR</span>
-        <span class="topic-tag">Sequências</span>
-        <span class="topic-tag">Arquivos</span>
-        <span class="topic-tag">Wildcards</span>
-    </div>
-    <div class="chapter-status">
-        <span class="status-badge status-available">✅ Disponível</span>
-        <span class="chapter-icon">⚡</span>
-    </div>
-</a>
-<!-- Capítulo 12 - Shell Script WHILE -->
-<a href="while_loop_presentation.html" class="chapter-card dns bimestre2">
-    <div class="chapter-number">12</div>
-    <h2 class="chapter-title">🔄 Shell Script - Loops WHILE</h2>
-    <p class="chapter-description">
-        Repetindo enquanto a condição for verdadeira! Domine os loops WHILE para 
-        criar scripts inteligentes que respondem a situações, monitoram sistemas 
-        e interagem com usuários. Scripts que pensam e decidem!
-    </p>
-    <div class="chapter-topics">
-        <span class="topic-tag">WHILE</span>
-        <span class="topic-tag">Condições</span>
-        <span class="topic-tag">Interativo</span>
-        <span class="topic-tag">Comparadores</span>
-    </div>
-    <div class="chapter-status">
-        <span class="status-badge status-available">✅ Disponível</span>
-        <span class="chapter-icon">🔄</span>
-    </div>
-</a>
-<!-- Capítulo 13 - Shell Script Funções -->
-<a href="shell_script_functions.html" class="chapter-card dns bimestre2">
-    <div class="chapter-number">13</div>
-    <h2 class="chapter-title">📦 Shell Script - Funções</h2>
-    <p class="chapter-description">
-        Organizando e reutilizando código! Domine as funções para 
-        criar scripts modulares, eliminar repetições e construir 
-        bibliotecas reutilizáveis. Código limpo e profissional!
-    </p>
-    <div class="chapter-topics">
-        <span class="topic-tag">function</span>
-        <span class="topic-tag">Parâmetros</span>
-        <span class="topic-tag">Modular</span>
-        <span class="topic-tag">source</span>
-    </div>
-    <div class="chapter-status">
-        <span class="status-badge status-available">✅ Disponível</span>
-        <span class="chapter-icon">🧩</span>
-    </div>
-</a>
-                
-    </div>  <!-- ADICIONAR: Fecha chapters-grid do 2º bimestre -->
-</div>      <!-- ADICIONAR: Fecha bimestre-section do 2º bimestre -->
-
-        <!-- 3º BIMESTRE -->
-        <div class="bimestre-section">
+               <!-- Capítulo 7 - Shell Script -->
+               <a href="shell_script_basics_presentation.html" class="chapter-card dns bimestre2 completed">
+                  <div class="chapter-number">7</div>
+                  <h2 class="chapter-title">🤖 Shell Script - primeiros passos</h2>
+                  <p class="chapter-description">
+                     Aprenda a criar seus primeiros "robôs assistentes" no Linux! 
+                     Domine os fundamentos da automação: desde criar scripts básicos 
+                     até automatizar tarefas repetitivas do dia a dia.
+                  </p>
+                  <div class="chapter-topics">
+                     <span class="topic-tag">Automatização</span>
+                     <span class="topic-tag">Scripts básicos</span>
+                     <span class="topic-tag">Vim</span>
+                     <span class="topic-tag">Bash</span>
+                  </div>
+                  <div class="chapter-status">
+                     <span class="status-badge status-available">✅ Disponível</span>
+                     <span class="chapter-icon">📇</span>
+                  </div>
+               </a>
+               <!-- Capítulo 8 - Shell Script -->
+               <a href="shell_script_basics2_presentation.html" class="chapter-card dns bimestre2 completed">
+                  <div class="chapter-number">8</div>
+                  <h2 class="chapter-title">💬 Shell Script - Variáveis e Interação</h2>
+                  <p class="chapter-description">
+                     Transforme comandos repetitivos em scripts poderosos! Crie programas que 
+                     conversam com usuários, processam dados e automatizam tarefas. Do básico 
+                     ao primeiro projeto real: um sistema de busca de alunos.
+                  </p>
+                  <div class="chapter-topics">
+                     <span class="topic-tag">ExitCode</span>
+                     <span class="topic-tag">Variáveis</span>
+                     <span class="topic-tag">Interação</span>
+                     <span class="topic-tag">Bash</span>
+                  </div>
+                  <div class="chapter-status">
+                     <span class="status-badge status-available">✅ Disponível</span>
+                     <span class="chapter-icon">📦</span>
+                  </div>
+               </a>
+               <!-- Capítulo 9 - Shell Script Condicionais -->
+               <a href="shell_script_if_presentation.html" class="chapter-card dns bimestre2 completed">
+                  <div class="chapter-number">9</div>
+                  <h2 class="chapter-title">🔀 Shell Script - Instruções Condicionais</h2>
+                  <p class="chapter-description">
+                     Dê inteligência aos seus scripts! Aprenda a criar programas que tomam 
+                     decisões, reagem a diferentes situações e executam ações baseadas em 
+                     condições. Do if básico aos operadores lógicos complexos.
+                  </p>
+                  <div class="chapter-topics">
+                     <span class="topic-tag">IF/ELSE</span>
+                     <span class="topic-tag">Test</span>
+                     <span class="topic-tag">Operadores</span>
+                     <span class="topic-tag">Lógica</span>
+                  </div>
+                  <div class="chapter-status">
+                     <span class="status-badge status-available">✅ Disponível</span>
+                     <span class="chapter-icon">🧠</span>
+                  </div>
+               </a>
+               <!-- Capítulo 10 - Shell Script CASE -->
+               <a href="shell_script_case_presentation.html" class="chapter-card dns bimestre2">
+                  <div class="chapter-number">10</div>
+                  <h2 class="chapter-title">🔄 Shell Script - Estrutura CASE</h2>
+                  <p class="chapter-description">
+                     Múltiplas escolhas de forma elegante! Domine a estrutura CASE para 
+                     criar menus interativos, sistemas de opções e scripts que lidam 
+                     com várias possibilidades. Quando IF não é suficiente!
+                  </p>
+                  <div class="chapter-topics">
+                     <span class="topic-tag">CASE</span>
+                     <span class="topic-tag">Padrões</span>
+                     <span class="topic-tag">Menus</span>
+                     <span class="topic-tag">Wildcards</span>
+                  </div>
+                  <div class="chapter-status">
+                     <span class="status-badge status-available">✅ Disponível</span>
+                     <span class="chapter-icon">🎯</span>
+                  </div>
+               </a>
+               <!-- Capítulo 11 - Shell Script FOR -->
+               <a href="shell_script_for_presentation.html" class="chapter-card dns bimestre2">
+                  <div class="chapter-number">11</div>
+                  <h2 class="chapter-title">🔁 Shell Script - Loops FOR</h2>
+                  <p class="chapter-description">
+                     Repetindo tarefas de forma inteligente! Domine os loops FOR para 
+                     automatizar operações, processar arquivos em lote e criar scripts 
+                     que trabalham com listas. O poder da automação nas suas mãos!
+                  </p>
+                  <div class="chapter-topics">
+                     <span class="topic-tag">FOR</span>
+                     <span class="topic-tag">Sequências</span>
+                     <span class="topic-tag">Arquivos</span>
+                     <span class="topic-tag">Wildcards</span>
+                  </div>
+                  <div class="chapter-status">
+                     <span class="status-badge status-available">✅ Disponível</span>
+                     <span class="chapter-icon">⚡</span>
+                  </div>
+               </a>
+               <!-- Capítulo 12 - Shell Script WHILE -->
+               <a href="while_loop_presentation.html" class="chapter-card dns bimestre2">
+                  <div class="chapter-number">12</div>
+                  <h2 class="chapter-title">🔄 Shell Script - Loops WHILE</h2>
+                  <p class="chapter-description">
+                     Repetindo enquanto a condição for verdadeira! Domine os loops WHILE para 
+                     criar scripts inteligentes que respondem a situações, monitoram sistemas 
+                     e interagem com usuários. Scripts que pensam e decidem!
+                  </p>
+                  <div class="chapter-topics">
+                     <span class="topic-tag">WHILE</span>
+                     <span class="topic-tag">Condições</span>
+                     <span class="topic-tag">Interativo</span>
+                     <span class="topic-tag">Comparadores</span>
+                  </div>
+                  <div class="chapter-status">
+                     <span class="status-badge status-available">✅ Disponível</span>
+                     <span class="chapter-icon">🔄</span>
+                  </div>
+               </a>
+               <!-- Capítulo 13 - Shell Script Funções -->
+               <a href="shell_script_functions.html" class="chapter-card dns bimestre2">
+                  <div class="chapter-number">13</div>
+                  <h2 class="chapter-title">📦 Shell Script - Funções</h2>
+                  <p class="chapter-description">
+                     Organizando e reutilizando código! Domine as funções para 
+                     criar scripts modulares, eliminar repetições e construir 
+                     bibliotecas reutilizáveis. Código limpo e profissional!
+                  </p>
+                  <div class="chapter-topics">
+                     <span class="topic-tag">function</span>
+                     <span class="topic-tag">Parâmetros</span>
+                     <span class="topic-tag">Modular</span>
+                     <span class="topic-tag">source</span>
+                  </div>
+                  <div class="chapter-status">
+                     <span class="status-badge status-available">✅ Disponível</span>
+                     <span class="chapter-icon">🧩</span>
+                  </div>
+               </a>
+            </div>
+            <!-- ADICIONAR: Fecha chapters-grid do 2º bimestre -->
+         </div>
+         <!-- ADICIONAR: Fecha bimestre-section do 2º bimestre -->
+         <!-- 3º BIMESTRE -->
+         <div class="bimestre-section">
             <div class="bimestre-header">
-                <h2>📚 3º BIMESTRE</h2>
-                <div class="bimestre-theme theme-network">🌐 Serviços de Rede</div>
-                <!-- Calendário do 4º Bimestre -->
-                <div class="calendar-info">
-                    <div class="calendar-header">
-                        <span>📅</span>
-                        <h4>Calendário 2025.2</h4>
-                    </div>
-                    <div class="calendar-dates">
-                        <div class="date-item">
-                            <span class="date-icon">🎯</span>
-                            <span><strong>Início:</strong> 09/09/2025</span>
-                        </div>
-                        <div class="date-item">
-                            <span class="date-icon">✅</span>
-                            <span><strong>Término:</strong> 12/11/2025</span>
-                        </div>
-                    </div>
-                </div>
+               <h2>📚 3º BIMESTRE</h2>
+               <div class="bimestre-theme theme-network">🌐 Serviços de Rede</div>
+               <!-- Calendário do 4º Bimestre -->
+               <div class="calendar-info">
+                  <div class="calendar-header">
+                     <span>📅</span>
+                     <h4>Calendário 2025.2</h4>
+                  </div>
+                  <div class="calendar-dates">
+                     <div class="date-item">
+                        <span class="date-icon">🎯</span>
+                        <span><strong>Início:</strong> 09/09/2025</span>
+                     </div>
+                     <div class="date-item">
+                        <span class="date-icon">✅</span>
+                        <span><strong>Término:</strong> 12/11/2025</span>
+                     </div>
+                  </div>
+               </div>
             </div>
-            
             <div class="coming-soon-message">
-                <p>🚧 Capítulos do 3º bimestre em desenvolvimento...</p>
+               <p>🚧 Capítulos do 3º bimestre em desenvolvimento...</p>
             </div>
-        </div>
-
-        <!-- 4º BIMESTRE -->
-        <div class="bimestre-section">
+         </div>
+         <!-- 4º BIMESTRE -->
+         <div class="bimestre-section">
             <div class="bimestre-header">
-                <h2>📚 4º BIMESTRE</h2>
-                <div class="bimestre-theme theme-windows">🪟 Windows Server</div>
-
-                <!-- Calendário do 4º Bimestre -->
-                <div class="calendar-info">
-                    <div class="calendar-header">
-                        <span>📅</span>
-                        <h4>Calendário 2025.2</h4>
-                    </div>
-                    <div class="calendar-dates">
-                        <div class="date-item">
-                            <span class="date-icon">🎯</span>
-                            <span><strong>Início:</strong> 13/11/2025</span>
-                        </div>
-                        <div class="date-item">
-                            <span class="date-icon">✅</span>
-                            <span><strong>Término:</strong> 10/02/2025</span>
-                        </div>
-                    </div>
-                </div>
+               <h2>📚 4º BIMESTRE</h2>
+               <div class="bimestre-theme theme-windows">🪟 Windows Server</div>
+               <!-- Calendário do 4º Bimestre -->
+               <div class="calendar-info">
+                  <div class="calendar-header">
+                     <span>📅</span>
+                     <h4>Calendário 2025.2</h4>
+                  </div>
+                  <div class="calendar-dates">
+                     <div class="date-item">
+                        <span class="date-icon">🎯</span>
+                        <span><strong>Início:</strong> 13/11/2025</span>
+                     </div>
+                     <div class="date-item">
+                        <span class="date-icon">✅</span>
+                        <span><strong>Término:</strong> 10/02/2025</span>
+                     </div>
+                  </div>
+               </div>
             </div>
-            
             <div class="coming-soon-message">
-                <p>🚧 Capítulos do 4º bimestre em desenvolvimento...</p>
+               <p>🚧 Capítulos do 4º bimestre em desenvolvimento...</p>
             </div>
-        </div>        
-    </div>
-       
-
-    <script>
-        // Adicionar efeitos de hover e interatividade
-        document.addEventListener('DOMContentLoaded', function() {
-            const cards = document.querySelectorAll('.chapter-card');
-            
-            cards.forEach(card => {
-                card.addEventListener('mouseenter', function() {
-                    this.style.transform = 'translateY(-10px) scale(1.02)';
-                });
-                
-                card.addEventListener('mouseleave', function() {
-                    this.style.transform = 'translateY(0) scale(1)';
-                });
-            });
-
-            // Efeito de digitação no título
-            const title = document.querySelector('.header h1');
-            const originalText = title.textContent;
-            title.textContent = '';
-            
-            let i = 0;
-            const typeEffect = setInterval(() => {
-                title.textContent += originalText.charAt(i);
-                i++;
-                if (i > originalText.length - 1) {
-                    clearInterval(typeEffect);
-                }
-            }, 100);
-
-            // Animação da barra de progresso geral (2 de 4 bimestres)
-            setTimeout(() => {
-                document.querySelector('.progress-fill').style.width = '25%';
-            }, 1000);
-        });
-    </script>
-</body>
+         </div>
+      </div>
+      <script>
+         // Adicionar efeitos de hover e interatividade
+         document.addEventListener('DOMContentLoaded', function() {
+             const cards = document.querySelectorAll('.chapter-card');
+             
+             cards.forEach(card => {
+                 card.addEventListener('mouseenter', function() {
+                     this.style.transform = 'translateY(-10px) scale(1.02)';
+                 });
+                 
+                 card.addEventListener('mouseleave', function() {
+                     this.style.transform = 'translateY(0) scale(1)';
+                 });
+             });
+         
+             // Efeito de digitação no título
+             const title = document.querySelector('.header h1');
+             const originalText = title.textContent;
+             title.textContent = '';
+             
+             let i = 0;
+             const typeEffect = setInterval(() => {
+                 title.textContent += originalText.charAt(i);
+                 i++;
+                 if (i > originalText.length - 1) {
+                     clearInterval(typeEffect);
+                 }
+             }, 100);
+         
+             // Animação da barra de progresso geral (2 de 4 bimestres)
+             setTimeout(() => {
+                 document.querySelector('.progress-fill').style.width = '25%';
+             }, 1000);
+         });
+      </script>
+   </body>
 </html>
