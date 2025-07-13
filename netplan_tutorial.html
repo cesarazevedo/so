@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuração de IP Estático - Ubuntu Netplan</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .presentation {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide {
+            min-height: 100vh;
+            padding: 60px 40px;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            background: white;
+            margin: 20px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        .slide h1 {
+            font-size: 3.5em;
+            color: #4a5568;
+            text-align: center;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .slide h2 {
+            font-size: 2.8em;
+            color: #2d3748;
+            margin-bottom: 30px;
+            border-bottom: 4px solid #667eea;
+            padding-bottom: 15px;
+        }
+
+        .slide h3 {
+            font-size: 2.2em;
+            color: #4a5568;
+            margin: 25px 0 15px 0;
+        }
+
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        .bullet-point {
+            display: flex;
+            align-items: flex-start;
+            margin: 15px 0;
+            font-size: 1.3em;
+            line-height: 1.5;
+        }
+
+        .bullet-point::before {
+            content: "🌐";
+            margin-right: 15px;
+            font-size: 1.2em;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #4c51bf;
+        }
+
+        .example-box {
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #2c5aa0;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #c53030;
+        }
+
+        .step-box {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #2f855a;
+        }
+
+        .terminal-box {
+            background: #2d3748;
+            color: #00ff00;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #00ff00;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+        }
+
+        .yaml-box {
+            background: #2d3748;
+            color: #ffd700;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #ffd700;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            padding: 15px 25px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .nav-btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .nav-btn:disabled {
+            background: #a0a0a0;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(255,255,255,0.9);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #4a5568;
+            z-index: 1000;
+        }
+
+        .center-text {
+            text-align: center;
+        }
+
+        .large-text {
+            font-size: 1.4em;
+            line-height: 1.6;
+        }
+
+        .command-example {
+            background: #2d3748;
+            color: #00ff41;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            border-left: 4px solid #00ff41;
+        }
+
+        .ip-example {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: monospace;
+            font-size: 1.1em;
+        }
+
+        .step-number {
+            background: #667eea;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin: 0 auto 20px;
+        }
+
+        .grid-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 20px 0;
+        }
+
+        .step-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid #e2e8f0;
+            text-align: center;
+        }
+
+        .analogy-box {
+            background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #c05621;
+        }
+
+        .important-note {
+            background: #fff5f5;
+            border: 2px solid #fc8181;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #742a2a;
+        }
+
+        .success-box {
+            background: #f0fff4;
+            border: 2px solid #68d391;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #22543d;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">9</span>
+        </div>
+
+        <!-- Slide 1: Título -->
+        <div class="slide active">
+            <div class="content center-text">
+                <h1>🌐 Configuração de IP Estático</h1>
+                <h2 style="border: none; color: #667eea;">Ubuntu Server com Netplan</h2>
+                <div class="highlight-box large-text">
+                    <strong>Tutorial Prático Passo a Passo</strong><br>
+                    Configure um endereço IP fixo no seu servidor<br>
+                    Método simples e confiável
+                </div>
+                
+                <div class="example-box" style="margin-top: 40px;">
+                    <h3>🎯 Objetivo da Aula</h3>
+                    <p style="font-size: 1.3em; margin: 10px 0;">
+                        <strong>Aprender a configurar IP estático no Ubuntu</strong><br>
+                        Usando o Netplan de forma prática e segura
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: O que é IP Estático -->
+        <div class="slide">
+            <div class="content">
+                <h2>🤔 O que é IP Estático?</h2>
+                
+                <div class="analogy-box center-text">
+                    <h3>🏠 Analogia Simples</h3>
+                    <p style="font-size: 1.3em;">
+                        IP estático é como ter um endereço fixo para sua casa<br>
+                        Sempre o mesmo, nunca muda!
+                    </p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🔄 IP Dinâmico (DHCP)</h3>
+                        <div class="bullet-point">Muda automaticamente</div>
+                        <div class="bullet-point">Servidor DHCP escolhe</div>
+                        <div class="bullet-point">Pode criar problemas</div>
+                        <div class="bullet-point">Dificulta acesso remoto</div>
+                        
+                        <div class="example-box">
+                            <h4>📱 Como um número de celular temporário</h4>
+                            <p>Hoje é 192.168.1.10<br>
+                            Amanhã pode ser 192.168.1.15</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>📌 IP Estático</h3>
+                        <div class="bullet-point">Sempre o mesmo endereço</div>
+                        <div class="bullet-point">Você define qual usar</div>
+                        <div class="bullet-point">Mais estável</div>
+                        <div class="bullet-point">Ideal para servidores</div>
+                        
+                        <div class="step-box">
+                            <h4>🏠 Como um endereço residencial</h4>
+                            <p>Sempre 192.168.1.100<br>
+                            Nunca muda, sempre encontra!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <h3>🎯 Quando Usar IP Estático?</h3>
+                    <div class="bullet-point">Servidores web</div>
+                    <div class="bullet-point">Acesso remoto (SSH)</div>
+                    <div class="bullet-point">Serviços de rede</div>
+                    <div class="bullet-point">Ambientes empresariais</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: O que é Netplan -->
+        <div class="slide">
+            <div class="content">
+                <h2>⚙️ O que é Netplan?</h2>
+                
+                <div class="highlight-box">
+                    <h3>🛠️ Ferramenta de Configuração de Rede</h3>
+                    <p style="font-size: 1.3em;">
+                        Netplan é o sistema moderno do Ubuntu para configurar redes<br>
+                        Substitui métodos antigos de forma mais simples e confiável
+                    </p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📋 Características</h3>
+                        <div class="bullet-point">Arquivos YAML simples</div>
+                        <div class="bullet-point">Configuração declarativa</div>
+                        <div class="bullet-point">Validação automática</div>
+                        <div class="bullet-point">Rollback de segurança</div>
+                        
+                        <h3>📁 Localização</h3>
+                        <div class="terminal-box">
+/etc/netplan/<br>
+├── 00-installer-config.yaml<br>
+├── 01-network-manager.yaml<br>
+└── 99-custom.yaml
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🔧 Vantagens</h3>
+                        <div class="bullet-point">Mais seguro que métodos antigos</div>
+                        <div class="bullet-point">Suporte a múltiplas interfaces</div>
+                        <div class="bullet-point">Fácil de entender</div>
+                        <div class="bullet-point">Padrão no Ubuntu 18.04+</div>
+                        
+                        <div class="analogy-box">
+                            <h4>🎛️ Analogia</h4>
+                            <p>Netplan é como um painel de controle moderno:<br>
+                            você configura tudo em um lugar e ele aplica as mudanças automaticamente!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h3>⚠️ Importante</h3>
+                    <p>A indentação no YAML é crucial! Use espaços, nunca TABs</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Comandos do Netplan -->
+        <div class="slide">
+            <div class="content">
+                <h2>⌨️ Principais Comandos do Netplan</h2>
+                
+                <div class="highlight-box center-text">
+                    <h3>🛠️ Caixa de Ferramentas do Netplan</h3>
+                    <p>Conheça os comandos essenciais para gerenciar sua rede</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🔧 Comandos Essenciais</h3>
+                        
+                        <div class="step-box">
+                            <h4>netplan apply</h4>
+                            <p>Aplica as configurações definidas nos arquivos YAML</p>
+                            <div class="command-example">sudo netplan apply</div>
+                        </div>
+                        
+                        <div class="step-box">
+                            <h4>netplan try</h4>
+                            <p>Aplica temporariamente e oferece opção de reverter</p>
+                            <div class="command-example">sudo netplan try</div>
+                        </div>
+                        
+                        <div class="step-box">
+                            <h4>netplan status</h4>
+                            <p>Mostra o status das interfaces de rede</p>
+                            <div class="command-example">sudo netplan status</div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>📊 Comandos de Informação</h3>
+                        
+                        <div class="example-box">
+                            <h4>netplan info</h4>
+                            <p>Mostra informações sobre sistema e renderizador</p>
+                            <div class="command-example">sudo netplan info</div>
+                        </div>
+                        
+                        <div class="example-box">
+                            <h4>netplan get</h4>
+                            <p>Lê valor específico da configuração atual</p>
+                            <div class="command-example">sudo netplan get</div>
+                        </div>
+                        
+                        <div class="example-box">
+                            <h4>netplan --debug</h4>
+                            <p>Mostra saída detalhada para depuração</p>
+                            <div class="command-example">sudo netplan --debug apply</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="terminal-box">
+                    <h3>✅ Exemplos Práticos</h3>
+<strong># Aplicar configurações de rede</strong><br>
+sudo netplan apply<br><br>
+<strong># Aplicar com fallback em 120s</strong><br>
+sudo netplan try<br><br>
+<strong># Ver informações do sistema</strong><br>
+sudo netplan info<br><br>
+<strong># Ver status das interfaces</strong><br>
+sudo netplan status<br><br>
+<strong># Depurar aplicação das configurações</strong><br>
+sudo netplan --debug apply
+                </div>
+
+                <div class="analogy-box">
+                    <h3>💡 Comandos Experimentais</h3>
+                    <div class="bullet-point"><strong>netplan set:</strong> Define configuração dinamicamente</div>
+                    <div class="bullet-point"><strong>netplan update:</strong> Recarrega configurações (generate + apply)</div>
+                    <div class="bullet-point"><strong>netplan generate:</strong> Gera arquivos para o renderizador</div>
+                    <p style="margin-top: 15px; font-style: italic;">⚠️ Use com cuidado: são recursos experimentais</p>
+                </div>
+
+                <div class="warning-box center-text">
+                    <h3>🎯 Dica Importante</h3>
+                    <p>Sempre use "netplan try" antes de "netplan apply"<br>
+                    É sua rede de segurança contra configurações problemáticas!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Preparação -->
+        <div class="slide">
+            <div class="content">
+                <h2>🚀 Preparação</h2>
+                
+                <div class="step-box center-text">
+                    <h3>📋 Antes de Começar</h3>
+                    <p>Vamos verificar algumas informações importantes</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📋 Informações Necessárias</h3>
+                        <div class="bullet-point">IP desejado (ex: 192.168.0.100)</div>
+                        <div class="bullet-point">Máscara de rede (/24)</div>
+                        <div class="bullet-point">Gateway (ex: 192.168.0.1)</div>
+                        <div class="bullet-point">DNS servers</div>
+                        
+                        <div class="ip-example">
+                            <strong>Exemplo de configuração:</strong><br>
+                            IP: 192.168.0.100/24<br>
+                            Gateway: 192.168.0.1<br>
+                            DNS: 192.168.0.1, 8.8.8.8
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🔍 Comandos Úteis</h3>
+                        <div class="command-example">
+# Ver configuração atual<br>
+ip address<br><br>
+# Ver gateway atual<br>
+ip route<br><br>
+# Ver DNS atual<br>
+cat /etc/resolv.conf<br><br>
+# Ver interface de rede<br>
+ip link show
+                        </div>
+                    </div>
+                </div>
+
+                <div class="important-note">
+                    <h3>⚠️ Cuidados Importantes</h3>
+                    <div class="bullet-point">Tenha acesso físico ao servidor (caso perca conexão SSH)</div>
+                    <div class="bullet-point">Anote a configuração atual antes de mudar</div>
+                    <div class="bullet-point">Escolha um IP que não esteja em uso</div>
+                    <div class="bullet-point">Confirme o range da sua rede</div>
+                </div>
+
+                <div class="analogy-box center-text">
+                    <h3>🎯 Dica</h3>
+                    <p>É como trocar o endereço da sua casa:<br>
+                    você precisa avisar todo mundo do novo endereço!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Passo 1 - Editar arquivo -->
+        <div class="slide">
+            <div class="content">
+                <h2>📝 Passo 1: Editar Arquivo de Configuração</h2>
+                
+                <div class="step-number">1</div>
+                
+                <div class="step-box">
+                    <h3>🎯 Objetivo</h3>
+                    <p>Abrir e editar o arquivo de configuração do Netplan</p>
+                </div>
+
+                <div class="command-example center-text">
+                    <h3>💻 Comando</h3>
+                    sudo vim /etc/netplan/00-installer-config.yaml
+                </div>
+
+                <div class="warning-box">
+                    <h3>⚠️ ATENÇÃO: Indentação é Crucial!</h3>
+                    <p>No YAML, a indentação deve ser EXATAMENTE como mostrado.<br>
+                    Use 2 espaços para cada nível. NUNCA use TAB!</p>
+                </div>
+
+                <div class="yaml-box">
+                    <h3>📄 Conteúdo do Arquivo</h3>
+# This is the network config written by 'subiquity'<br>
+network:<br>
+&nbsp;&nbsp;ethernets:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;enp0s3:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dhcp4: true<br>
+&nbsp;&nbsp;&nbsp;&nbsp;enp0s8:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;addresses: [192.168.0.1/24]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gateway4: 192.168.0.1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nameservers:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;addresses: [192.168.0.1, 8.8.8.8]<br>
+&nbsp;&nbsp;version: 2
+                </div>
+
+                <div class="example-box">
+                    <h3>📖 Explicação do Arquivo</h3>
+                    <div class="bullet-point"><strong>enp0s8:</strong> nome da interface de rede</div>
+                    <div class="bullet-point"><strong>addresses:</strong> IP estático que você quer</div>
+                    <div class="bullet-point"><strong>gateway4:</strong> roteador da sua rede</div>
+                    <div class="bullet-point"><strong>nameservers:</strong> servidores DNS</div>
+                </div>
+
+                <div class="analogy-box center-text">
+                    <h3>💡 Analogia</h3>
+                    <p>É como preencher um formulário de endereço:<br>
+                    cada campo tem sua informação específica!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Passo 2 - Verificar -->
+        <div class="slide">
+            <div class="content">
+                <h2>🔍 Passo 2: Verificar Configuração</h2>
+                
+                <div class="step-number">2</div>
+                
+                <div class="step-box">
+                    <h3>🎯 Objetivo</h3>
+                    <p>Verificar se não há erros na configuração antes de aplicar</p>
+                </div>
+
+                <div class="command-example center-text">
+                    <h3>💻 Comando</h3>
+                    sudo netplan try
+                </div>
+
+                <div class="highlight-box">
+                    <h3>🛡️ Recurso de Segurança</h3>
+                    <p>O comando "try" é uma rede de segurança:<br>
+                    se algo der errado, a configuração volta automaticamente!</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>✅ Se Tudo Estiver OK</h3>
+                        <div class="terminal-box">
+Do you want to keep these settings?<br><br>
+Press ENTER before the timeout to accept the new configuration<br><br>
+Changes will revert in 107 seconds<br>
+Configuration accepted.
+                        </div>
+                        
+                        <div class="success-box">
+                            <p><strong>👍 Ótimo!</strong><br>
+                            Pressione ENTER e vá para o próximo passo</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>❌ Se Houver Erro</h3>
+                        <div class="terminal-box">
+Invalid YAML syntax<br>
+Error in network definition<br>
+Indentation error
+                        </div>
+                        
+                        <div class="warning-box">
+                            <p><strong>🔧 O que fazer:</strong><br>
+                            1. Volte ao arquivo<br>
+                            2. Corrija a indentação<br>
+                            3. Verifique a sintaxe<br>
+                            4. Tente novamente</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="analogy-box center-text">
+                    <h3>💡 Analogia</h3>
+                    <p>É como um teste de direção:<br>
+                    se você errar, pode tentar de novo sem consequências!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Passos 3 e 4 - Aplicar e Verificar -->
+        <div class="slide">
+            <div class="content">
+                <h2>🚀 Passos 3 e 4: Aplicar e Verificar</h2>
+                
+                <div class="grid-steps">
+                    <div class="step-card">
+                        <div class="step-number">3</div>
+                        <h3>Aplicar Mudanças</h3>
+                        <div class="command-example">
+sudo netplan apply
+                        </div>
+                        <p>Aplica a configuração permanentemente</p>
+                    </div>
+                    
+                    <div class="step-card">
+                        <div class="step-number">4</div>
+                        <h3>Verificar Resultado</h3>
+                        <div class="command-example">
+ip address
+                        </div>
+                        <p>Confirma se o IP foi configurado corretamente</p>
+                    </div>
+                </div>
+
+                <div class="step-box">
+                    <h3>🎯 Resultado Esperado</h3>
+                    <div class="terminal-box">
+enp0s8: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc fq_codel state UP group default qlen 1000<br>
+&nbsp;&nbsp;&nbsp;&nbsp;link/ether 08:00:27:e9:99:09 brd ff:ff:ff:ff:ff:ff<br>
+&nbsp;&nbsp;&nbsp;&nbsp;inet <strong style="color: #ff6b6b;">192.168.0.1/24</strong> brd 192.168.0.255 scope global enp0s8<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;valid_lft forever preferred_lft forever
+                    </div>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>✅ Verificações Extras</h3>
+                        <div class="command-example">
+# Testar conectividade<br>
+ping 8.8.8.8<br><br>
+# Verificar gateway<br>
+ip route<br><br>
+# Testar DNS<br>
+nslookup google.com
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🔧 Comandos Úteis</h3>
+                        <div class="command-example">
+# Reiniciar rede (se necessário)<br>
+sudo systemctl restart systemd-networkd<br><br>
+# Ver status da rede<br>
+sudo netplan status<br><br>
+# Ver configuração ativa<br>
+sudo netplan get
+                        </div>
+                    </div>
+                </div>
+
+                <div class="success-box center-text">
+                    <h3>🎉 Parabéns!</h3>
+                    <p>Se você chegou até aqui, seu IP estático está configurado!<br>
+                    Agora seu servidor tem um endereço fixo e confiável.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Resolução de Problemas -->
+        <div class="slide">
+            <div class="content">
+                <h2>🛠️ Resolução de Problemas</h2>
+                
+                <div class="warning-box center-text">
+                    <h3>🆘 E se algo der errado?</h3>
+                    <p>Não entre em pânico! Vamos resolver juntos</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>❌ Problemas Comuns</h3>
+                        
+                        <div class="important-note">
+                            <h4>1. Perdi a conexão SSH</h4>
+                            <div class="bullet-point">Use acesso físico ao servidor</div>
+                            <div class="bullet-point">Execute: sudo netplan apply</div>
+                            <div class="bullet-point">Ou reverta: sudo cp backup.yaml /etc/netplan/</div>
+                        </div>
+                        
+                        <div class="important-note">
+                            <h4>2. Erro de YAML</h4>
+                            <div class="bullet-point">Verifique indentação (2 espaços)</div>
+                            <div class="bullet-point">Não use TABs</div>
+                            <div class="bullet-point">Confira os dois pontos (:)</div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🔧 Comandos de Emergência</h3>
+                        
+                        <div class="command-example">
+# Voltar configuração DHCP temporária<br>
+sudo dhclient enp0s8<br><br>
+# Aplicar IP manualmente<br>
+sudo ip addr add 192.168.0.100/24 dev enp0s8<br><br>
+# Verificar interfaces<br>
+ip link show<br><br>
+# Reiniciar rede<br>
+sudo systemctl restart networking
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-box">
+                    <h3>📋 Checklist de Verificação</h3>
+                    <div class="bullet-point">✅ Arquivo YAML com indentação correta</div>
+                    <div class="bullet-point">✅ IP no range correto da rede</div>
+                    <div class="bullet-point">✅ Gateway correto</div>
+                    <div class="bullet-point">✅ DNS servers funcionando</div>
+                    <div class="bullet-point">✅ Interface de rede correta (enp0s8)</div>
+                </div>
+
+                <div class="highlight-box">
+                    <h3>💡 Dicas Finais</h3>
+                    <div class="bullet-point">Sempre faça backup antes de mudanças</div>
+                    <div class="bullet-point">Teste em ambiente controlado primeiro</div>
+                    <div class="bullet-point">Mantenha acesso físico disponível</div>
+                    <div class="bullet-point">Documente suas configurações</div>
+                </div>
+
+                <div class="analogy-box center-text">
+                    <h3>🎯 Conclusão</h3>
+                    <p>Configurar IP estático é como definir o endereço da sua casa:<br>
+                    depois de configurado, todo mundo sabe onde te encontrar!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">⬅️ Anterior</button>
+            <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Próximo ➡️</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('total-slides').textContent = totalSlides;
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.classList.toggle('active', i === index);
+            });
+            
+            document.getElementById('current-slide').textContent = index + 1;
+            document.getElementById('prevBtn').disabled = index === 0;
+            document.getElementById('nextBtn').disabled = index === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            const newSlide = currentSlide + direction;
+            if (newSlide >= 0 && newSlide < totalSlides) {
+                currentSlide = newSlide;
+                showSlide(currentSlide);
+            }
+        }
+
+        // Navegação por teclado
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+            if (e.key === 'Home') {
+                currentSlide = 0;
+                showSlide(currentSlide);
+            }
+            if (e.key === 'End') {
+                currentSlide = totalSlides - 1;
+                showSlide(currentSlide);
+            }
+        });
+
+        // Inicializar
+        showSlide(0);
+    </script>
+</body>
+</html>
