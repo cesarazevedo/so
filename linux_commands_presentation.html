@@ -1561,6 +1561,10 @@ rwxr-xr-x<br>
             } else {
                 console.error('Slide não encontrado:', slideNumber);
             }
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
         }
         
         // Navegação por teclado
