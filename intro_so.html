@@ -1693,6 +1693,10 @@ $ sudo ufw default allow outgoing
         function showSlide(index) {
             slides.forEach((slide, i) => {
                 slide.classList.toggle('active', i === index);
+            window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
             });
             
             document.getElementById('current-slide').textContent = index + 1;
