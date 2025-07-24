@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shell Script - Comando CASE</title>
+    <title>Shell Script - Estrutura CASE</title>
     <style>
         * {
             margin: 0;
@@ -272,7 +272,7 @@
             border-left: 4px solid #48bb78;
         }
 
-        .operators-table {
+        .comparison-table {
             background: #f8f9fa;
             border-radius: 10px;
             padding: 20px;
@@ -280,26 +280,26 @@
             overflow-x: auto;
         }
 
-        .operators-table table {
+        .comparison-table table {
             width: 100%;
             border-collapse: collapse;
             font-size: 1.1em;
         }
 
-        .operators-table th,
-        .operators-table td {
+        .comparison-table th,
+        .comparison-table td {
             padding: 12px;
             text-align: left;
             border-bottom: 1px solid #dee2e6;
         }
 
-        .operators-table th {
+        .comparison-table th {
             background: #1a1a2e;
             color: white;
             font-weight: bold;
         }
 
-        .operators-table tr:nth-child(even) {
+        .comparison-table tr:nth-child(even) {
             background: #f2f2f2;
         }
 
@@ -424,18 +424,18 @@
         <!-- Slide 1: Título -->
         <div class="slide active" id="slide-1">
             <div class="content center-text">
-                <h1>🎯 Shell Script - Comando CASE</h1>
-                <h2 style="border: none; color: #1a1a2e;">Criando Menus Inteligentes</h2>
+                <h1>🔄 Shell Script - Estrutura CASE</h1>
+                <h2 style="border: none; color: #1a1a2e;">Múltiplas Escolhas de Forma Elegante</h2>
                 <div class="highlight-box large-text">
-                    <strong>case, in, esac</strong><br>
-                    Como criar menus e decisões múltiplas<br>
-                    A alternativa elegante ao IF para várias opções
+                    <strong>case, esac, padrões</strong><br>
+                    Quando IF não é suficiente: estruturas para múltiplas opções<br>
+                    Criando menus e sistemas de escolha inteligentes
                 </div>
                 
                 <div class="terminal-box" style="margin-top: 40px;">
-<span class="prompt">user@linux:~$</span> <span class="command">echo "Escolha uma opção do menu!"</span>
-<div class="output">Escolha uma opção do menu!</div>
-<span class="prompt">user@linux:~$</span> <span class="command">echo "CASE = Menu inteligente! 🍽️"</span>
+<span class="prompt">user@linux:~$</span> <span class="command">echo "1, 2 ou 3? O CASE decide para você!"</span>
+<div class="output">1, 2 ou 3? O CASE decide para você!</div>
+<span class="prompt">user@linux:~$</span> <span class="command">echo "Múltiplas opções, uma só estrutura! 🎯"</span>
                 </div>
             </div>
             
@@ -450,82 +450,78 @@
         <!-- Slide 2: Introdução ao CASE -->
         <div class="slide" id="slide-2">
             <div class="content">
-                <h2>🍽️ O que é o Comando CASE?</h2>
+                <h2>🎯 O que é a Estrutura CASE?</h2>
                 
                 <div class="highlight-box">
-                    <h3>🏪 Como um Cardápio de Restaurante</h3>
-                    <p>Imagine que você está em um restaurante olhando o cardápio. O garçom pergunta: "O que você vai querer?"</p>
-                    <p><strong>Opção 1:</strong> "Hambúrguer" → Ele traz hambúrguer<br>
-                    <strong>Opção 2:</strong> "Pizza" → Ele traz pizza<br>
-                    <strong>Opção 3:</strong> "Salada" → Ele traz salada<br>
-                    <strong>Outra coisa:</strong> "Não temos esse prato"</p>
+                    <h3>🚏 Como um Balcão de Informações</h3>
+                    <p>Imagine o CASE como um balcão de informações em um shopping:</p>
+                    <p><strong>"Para qual andar você quer ir?"</strong><br>
+                    🏪 "1º andar" → "Vá para a esquerda"<br>
+                    🍔 "2º andar" → "Suba a escada rolante"<br>
+                    🎬 "3º andar" → "Use o elevador"<br>
+                    ❓ "Qualquer outra coisa" → "Consulte o mapa"</p>
                 </div>
 
                 <div class="two-column">
                     <div>
-                        <h3>🎯 Estrutura Básica do CASE</h3>
-                        <div class="script-box">
-case $variavel in<br>
-    padrão1)<br>
-        comando1<br>
-        ;;<br>
-    padrão2)<br>
-        comando2<br>
-        ;;<br>
-    *)<br>
-        comando_padrão<br>
-        ;;<br>
-esac
+                        <h3>🔄 Por que usar CASE?</h3>
+                        <div class="example-box">
+                            <div class="bullet-point">Múltiplas opções de forma organizada</div>
+                            <div class="bullet-point">Mais legível que vários IF encadeados</div>
+                            <div class="bullet-point">Perfeito para menus e escolhas</div>
+                            <div class="bullet-point">Compara padrões, não só valores exatos</div>
                         </div>
                         
+                        <h3>🆚 CASE vs IF</h3>
                         <div class="info-box">
-                            <h4>📋 Como Lê-se:</h4>
-                            <p><strong>case</strong> = "analise o valor de"<br>
-                            <strong>in</strong> = "entre essas opções"<br>
-                            <strong>;;</strong> = "fim desta opção"<br>
-                            <strong>*)</strong> = "qualquer outra coisa"<br>
-                            <strong>esac</strong> = "fim da análise" (case ao contrário!)</p>
+                            <p><strong>IF:</strong> Bom para 2-3 condições<br>
+                            <strong>CASE:</strong> Ideal para 4+ opções<br>
+                            <strong>IF:</strong> Comparações complexas<br>
+                            <strong>CASE:</strong> Comparações de padrões</p>
                         </div>
                     </div>
                     <div>
-                        <h3>🏠 Exemplo da Vida Real</h3>
-                        <div class="example-box">
-                            <p><strong>Na vida:</strong><br>
-                            🚦 "Dependendo da cor do semáforo, faça algo diferente"</p>
-                            
-                            <p><strong>No script:</strong><br>
-                            💻 "Dependendo da opção escolhida, execute comandos diferentes"</p>
+                        <h3>🏗️ Estrutura Básica</h3>
+                        <div class="script-box">
+case "$<span class="variable">VARIAVEL</span>" in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">padrão1</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;comando1<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">padrão2</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;comando2<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;comando_padrão<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+esac
                         </div>
                         
                         <h3>🔍 Primeiro Exemplo</h3>
                         <div class="script-box">
-read <span class="variable">OPCAO</span><br>
-case $OPCAO in<br>
-    1)<br>
-        echo <span class="string">"Incluir arquivo"</span><br>
-        ;;<br>
-    2)<br>
-        echo <span class="string">"Remover arquivo"</span><br>
-        ;;<br>
-    *)<br>
-        echo <span class="string">"Opção inválida"</span><br>
-        ;;<br>
+<span class="variable">OPCAO</span>=<span class="string">"1"</span><br>
+
+case "$OPCAO" in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">1</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Primeira opção!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">2</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Segunda opção!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
 esac
                         </div>
                         
                         <div class="terminal-box">
-<span class="prompt">Entrada:</span> <span class="command">1</span>
-<div class="output">Incluir arquivo</div>
+<div class="output">Primeira opção!</div>
                         </div>
                     </div>
                 </div>
 
                 <div class="warning-box">
-                    <h3>⚠️ Palavras-Chave Importantes</h3>
-                    <p><strong>case:</strong> inicia a estrutura de decisão<br>
-                    <strong>in:</strong> "entre estas opções"<br>
-                    <strong>;;</strong> terminador obrigatório de cada caso<br>
-                    <strong>esac:</strong> termina a estrutura (case invertido!)</p>
+                    <h3>🎯 Palavras-Chave Importantes</h3>
+                    <p><strong>case:</strong> inicia a estrutura<br>
+                    <strong>in:</strong> "em qual dessas opções?"<br>
+                    <strong>;;</strong> termina cada caso (como um "break")<br>
+                    <strong>esac:</strong> termina a estrutura (é "case" ao contrário!)</p>
                 </div>
             </div>
             
@@ -536,84 +532,101 @@ esac
             </div>
         </div>
 
-        <!-- Slide 3: Estrutura Detalhada -->
+        <!-- Slide 3: Sintaxe Detalhada -->
         <div class="slide" id="slide-3">
             <div class="content">
-                <h2>🏗️ Anatomia do CASE - Como Funciona</h2>
+                <h2>📋 Sintaxe Detalhada do CASE</h2>
                 
                 <div class="highlight-box">
-                    <h3>🔍 Destrinchando Cada Parte</h3>
-                    <p>Vamos entender cada pedacinho da estrutura CASE como um mecânico desmontando um motor!</p>
-                </div>
-
-                <div class="script-box">
-#!/bin/bash<br>
-echo "Escolha uma opção:"<br>
-echo "1 - Listar arquivos"<br>
-echo "2 - Mostrar data"<br>
-echo "3 - Mostrar usuário"<br>
-read <span class="variable">ESCOLHA</span><br>
-<br>
-case <span class="variable">$ESCOLHA</span> in     <span class="comment"># ← Analisa o valor da variável ESCOLHA</span><br>
-    1)                    <span class="comment"># ← Se for "1", faça isto:</span><br>
-        echo "📁 Listando arquivos..."<br>
-        ls -la<br>
-        ;;                <span class="comment"># ← Fim deste caso</span><br>
-    2)                    <span class="comment"># ← Se for "2", faça isto:</span><br>
-        echo "📅 Data atual:"<br>
-        date<br>
-        ;;                <span class="comment"># ← Fim deste caso</span><br>
-    3)                    <span class="comment"># ← Se for "3", faça isto:</span><br>
-        echo "👤 Usuário atual:"<br>
-        whoami<br>
-        ;;                <span class="comment"># ← Fim deste caso</span><br>
-    *)                    <span class="comment"># ← Para qualquer outro valor:</span><br>
-        echo "❌ Opção inválida!"<br>
-        ;;                <span class="comment"># ← Fim deste caso</span><br>
-esac                      <span class="comment"># ← Fim da estrutura CASE</span><br>
+                    <h3>🧩 Anatomia do CASE</h3>
+                    <p>Cada parte tem sua função específica para criar decisões organizadas</p>
                 </div>
 
                 <div class="two-column">
                     <div>
-                        <h3>🎬 Simulação da Execução</h3>
-                        <div class="terminal-box">
-<span class="prompt">user@linux:~$</span> <span class="command">./menu.sh</span>
-<div class="output">Escolha uma opção:</div>
-<div class="output">1 - Listar arquivos</div>
-<div class="output">2 - Mostrar data</div>
-<div class="output">3 - Mostrar usuário</div>
-<span class="prompt">Digite sua escolha:</span> <span class="command">2</span>
-<div class="output">📅 Data atual:</div>
-<div class="output">Qua 23 Jul 2025 14:30:15</div>
+                        <h3>🔧 Componentes Essenciais</h3>
+                        <div class="script-box">
+<span class="comment"># 1. Lê o valor do usuário</span><br>
+read <span class="variable">VALOR</span><br>
+
+<span class="comment"># 2. Inicia comparação</span><br>
+case "$<span class="variable">VALOR</span>" in<br>
+
+<span class="comment"># 3. Primeiro padrão</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">padrão1</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;comandos<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+
+<span class="comment"># 4. Segundo padrão</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">padrão2</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;comandos<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+
+<span class="comment"># 5. Caso padrão (opcional)</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;*)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;comandos<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+
+<span class="comment"># 6. Finaliza estrutura</span><br>
+esac
+                        </div>
+                        
+                        <h3>⚠️ Regras Importantes</h3>
+                        <div class="warning-box">
+                            <p><strong>Sempre use aspas:</strong> "$VARIAVEL"<br>
+                            <strong>Termine com "):"</strong> cada padrão<br>
+                            <strong>Use ";;"</strong> para separar casos<br>
+                            <strong>"*)"</strong> captura qualquer valor</p>
                         </div>
                     </div>
                     <div>
-                        <h3>🧩 Como o CASE Pensa</h3>
-                        <div class="info-box">
-                            <h4>🤔 Processo Mental do CASE:</h4>
-                            <p>1. "Vou analisar o valor de $ESCOLHA"<br>
-                            2. "É igual a '1'? Não..."<br>
-                            3. "É igual a '2'? SIM!"<br>
-                            4. "Então vou executar o bloco do '2)'"<br>
-                            5. "Encontrei ';;', fim desta opção"<br>
-                            6. "Pulo direto para 'esac' e termino"</p>
+                        <h3>🎮 Exemplo: Menu de Jogos</h3>
+                        <div class="script-box">
+#!/bin/bash<br>
+
+echo <span class="string">"=== MENU DE JOGOS ==="</span><br>
+echo <span class="string">"1) Aventura"</span><br>
+echo <span class="string">"2) Ação"</span><br>
+echo <span class="string">"3) Estratégia"</span><br>
+echo <span class="string">"Escolha uma opção: "</span><br>
+read <span class="variable">OPCAO</span><br>
+
+case "$OPCAO" in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">1</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"🗡️ Iniciando jogo de aventura!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">2</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"💥 Iniciando jogo de ação!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">3</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"🧠 Iniciando jogo de estratégia!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"❌ Opção inválida!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+esac
                         </div>
                         
-                        <h3>⭐ Por que usar ";;" ?</h3>
-                        <div class="warning-box">
-                            <p>O ";;" funciona como uma parede que impede o CASE de "vazar" para o próximo caso. Sem ele, o script executaria TODOS os casos seguintes!</p>
+                        <h3>🎬 Resultado da Execução</h3>
+                        <div class="terminal-box">
+<div class="output">=== MENU DE JOGOS ===</div>
+<div class="output">1) Aventura</div>
+<div class="output">2) Ação</div>
+<div class="output">3) Estratégia</div>
+<div class="output">Escolha uma opção:</div>
+<span class="command">2</span>
+<div class="output">💥 Iniciando jogo de ação!</div>
                         </div>
                     </div>
                 </div>
 
-                <div class="example-box">
-                    <h3>🔗 Analogia com Elevador</h3>
-                    <p>O CASE é como um elevador:<br>
-                    🏢 <strong>case $ANDAR in</strong> → "Para qual andar você quer ir?"<br>
-                    🔴 <strong>1) comandos ;;</strong> → "1º andar, porta abre, você sai, porta fecha"<br>
-                    🔴 <strong>2) comandos ;;</strong> → "2º andar, porta abre, você sai, porta fecha"<br>
-                    🔴 <strong>*) comandos ;;</strong> → "Andar inválido, volta ao térreo"<br>
-                    🏢 <strong>esac</strong> → "Fim da viagem no elevador"</p>
+                <div class="info-box">
+                    <h3>💡 Fluxo de Execução</h3>
+                    <p><strong>1.</strong> Lê o valor da variável<br>
+                    <strong>2.</strong> Compara com primeiro padrão<br>
+                    <strong>3.</strong> Se combinar: executa comandos e pula para esac<br>
+                    <strong>4.</strong> Se não combinar: testa próximo padrão<br>
+                    <strong>5.</strong> Se nenhum combinar: executa "*)" se existir</p>
                 </div>
             </div>
             
@@ -624,152 +637,98 @@ esac                      <span class="comment"># ← Fim da estrutura CASE</spa
             </div>
         </div>
 
-        <!-- Slide 4: Padrões e Wildcards -->
+        <!-- Slide 4: Primeiro Exemplo Prático -->
         <div class="slide" id="slide-4">
             <div class="content">
-                <h2>🎨 Padrões e Wildcards - Sendo Criativo</h2>
+                <h2>🚀 Primeiro Exemplo Prático</h2>
                 
                 <div class="highlight-box">
-                    <h3>🕵️ CASE: Detetive de Padrões</h3>
-                    <p>O CASE não compara apenas valores exatos! Ele pode reconhecer padrões, como um detetive que identifica pistas!</p>
-                </div>
-
-                <div class="operators-table">
-                    <table>
-                        <tr>
-                            <th>Padrão</th>
-                            <th>Significado</th>
-                            <th>Exemplo</th>
-                            <th>O que detecta</th>
-                        </tr>
-                        <tr>
-                            <td><strong>[0-9]</strong></td>
-                            <td>Qualquer dígito</td>
-                            <td>[0-9]) echo "É número" ;;</td>
-                            <td>0, 1, 2, 3... 9</td>
-                        </tr>
-                        <tr>
-                            <td><strong>[A-Z]</strong></td>
-                            <td>Letra maiúscula</td>
-                            <td>[A-Z]) echo "Maiúscula" ;;</td>
-                            <td>A, B, C... Z</td>
-                        </tr>
-                        <tr>
-                            <td><strong>[a-z]</strong></td>
-                            <td>Letra minúscula</td>
-                            <td>[a-z]) echo "Minúscula" ;;</td>
-                            <td>a, b, c... z</td>
-                        </tr>
-                        <tr>
-                            <td><strong>*)</strong></td>
-                            <td>Qualquer coisa</td>
-                            <td>*) echo "Outros" ;;</td>
-                            <td>Todo o resto</td>
-                        </tr>
-                        <tr>
-                            <td><strong>[Ss]</strong></td>
-                            <td>S ou s</td>
-                            <td>[Ss]) echo "Sim" ;;</td>
-                            <td>S maiúsculo ou s minúsculo</td>
-                        </tr>
-                    </table>
+                    <h3>📝 Criando um Menu Simples</h3>
+                    <p>Vamos criar um script que funciona como um menu de operações básicas</p>
                 </div>
 
                 <div class="two-column">
                     <div>
-                        <h3>🔤 Analisador de Caracteres</h3>
+                        <h3>💻 O Script menu.sh</h3>
                         <div class="script-box">
 #!/bin/bash<br>
-echo "Digite um caractere:"<br>
-read <span class="variable">CHAR</span><br>
-<br>
-case <span class="variable">$CHAR</span> in<br>
-    [0-9])<br>
-        echo "🔢 É um número!"<br>
-        ;;<br>
-    [A-Z])<br>
-        echo "🔠 É letra maiúscula!"<br>
-        ;;<br>
-    [a-z])<br>
-        echo "🔡 É letra minúscula!"<br>
-        ;;<br>
-    [!@#$%*])<br>
-        echo "🔣 É um símbolo especial!"<br>
-        ;;<br>
-    *)<br>
-        echo "❓ Não sei o que é isso!"<br>
-        ;;<br>
+
+echo <span class="string">"=== MENU DE OPERAÇÕES ==="</span><br>
+echo <span class="string">"1 - Incluir"</span><br>
+echo <span class="string">"2 - Remover"</span><br>
+echo <span class="string">"3 - Listar"</span><br>
+echo <span class="string">"Digite sua opção: "</span><br>
+read <span class="variable">OPCAO</span><br>
+
+case $OPCAO in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">1</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"OPÇÃO Incluir"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">2</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"OPÇÃO Remover"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">3</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"OPÇÃO Listar"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"OPÇÃO Inexistente"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
 esac
+                        </div>
+                        
+                        <h3>🔧 Tornando Executável</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">chmod +x menu.sh</span><br>
+<span class="prompt">user@linux:~$</span> <span class="command">./menu.sh</span>
                         </div>
                     </div>
                     <div>
-                        <h3>📊 Teste dos Exemplos</h3>
+                        <h3>🎬 Execução 1 - Opção Válida</h3>
                         <div class="terminal-box">
-<span class="prompt">Digite um caractere:</span> <span class="command">7</span>
-<div class="output">🔢 É um número!</div>
-<br>
-<span class="prompt">Digite um caractere:</span> <span class="command">B</span>
-<div class="output">🔠 É letra maiúscula!</div>
-<br>
-<span class="prompt">Digite um caractere:</span> <span class="command">m</span>
-<div class="output">🔡 É letra minúscula!</div>
-<br>
-<span class="prompt">Digite um caractere:</span> <span class="command">@</span>
-<div class="output">🔣 É um símbolo especial!</div>
+<div class="output">=== MENU DE OPERAÇÕES ===</div>
+<div class="output">1 - Incluir</div>
+<div class="output">2 - Remover</div>
+<div class="output">3 - Listar</div>
+<div class="output">Digite sua opção:</div>
+<span class="command">1</span>
+<div class="output">OPÇÃO Incluir</div>
                         </div>
                         
-                        <h3>🎯 Validador Sim/Não</h3>
-                        <div class="script-box">
-echo "Tem certeza? (S/N)"<br>
-read <span class="variable">RESPOSTA</span><br>
-<br>
-case <span class="variable">$RESPOSTA</span> in<br>
-    [SsYy])<br>
-        echo "✅ Confirmado!"<br>
-        ;;<br>
-    [NnNão])<br>
-        echo "❌ Cancelado!"<br>
-        ;;<br>
-    *)<br>
-        echo "🤔 Resposta inválida"<br>
-        ;;<br>
-esac
+                        <h3>🎬 Execução 2 - Opção Inválida</h3>
+                        <div class="terminal-box">
+<div class="output">=== MENU DE OPERAÇÕES ===</div>
+<div class="output">1 - Incluir</div>
+<div class="output">2 - Remover</div>
+<div class="output">3 - Listar</div>
+<div class="output">Digite sua opção:</div>
+<span class="command">9</span>
+<div class="output">OPÇÃO Inexistente</div>
+                        </div>
+                        
+                        <h3>🎯 O que Aconteceu?</h3>
+                        <div class="info-box">
+                            <p><strong>Opção "1":</strong> Combinou com primeiro caso<br>
+                            <strong>Opção "9":</strong> Não combinou com nenhum caso, executou "*)"</p>
                         </div>
                     </div>
                 </div>
 
                 <div class="example-box">
-                    <h3>🎮 Classificador de Notas</h3>
-                    <div class="script-box">
-#!/bin/bash<br>
-echo "Digite sua nota (0-10):"<br>
-read <span class="variable">NOTA</span><br>
-<br>
-case <span class="variable">$NOTA</span> in<br>
-    [9-9]|10)<br>
-        echo "🏆 EXCELENTE! Parabéns!"<br>
-        ;;<br>
-    [7-8])<br>
-        echo "😊 BOM! Continue assim!"<br>
-        ;;<br>
-    [5-6])<br>
-        echo "😐 REGULAR. Pode melhorar!"<br>
-        ;;<br>
-    [0-4])<br>
-        echo "😞 INSUFICIENTE. Estude mais!"<br>
-        ;;<br>
-    *)<br>
-        echo "❌ Nota inválida! Use 0-10"<br>
-        ;;<br>
-esac
-                    </div>
+                    <h3>🔍 Análise do Código</h3>
+                    <p><strong>Linha 9:</strong> <code>case $OPCAO in</code> - Inicia comparação da variável OPCAO<br>
+                    <strong>Linhas 10-12:</strong> Primeiro caso: se OPCAO = "1"<br>
+                    <strong>Linha 12:</strong> <code>;;</code> - Termina o caso e pula para esac<br>
+                    <strong>Linhas 19-21:</strong> Caso padrão <code>*)</code> - Captura qualquer valor não previsto<br>
+                    <strong>Linha 23:</strong> <code>esac</code> - Finaliza toda a estrutura</p>
                 </div>
 
-                <div class="info-box">
-                    <h3>💡 Dica dos Padrões</h3>
-                    <p>Use | (pipe) para combinar opções: <strong>[SsYy]</strong> aceita S, s, Y ou y<br>
-                    Use hífen para ranges: <strong>[0-9]</strong> aceita qualquer dígito<br>
-                    Use * como "coringa" para tudo que não foi mencionado</p>
+                <div class="success-box">
+                    <h3>✨ Vantagens do CASE aqui</h3>
+                    <p>Compare com IF equivalente:<br>
+                    • <strong>CASE:</strong> 15 linhas, estrutura clara<br>
+                    • <strong>IF:</strong> Seria necessário if/elif/elif/else = mais confuso<br>
+                    • <strong>CASE:</strong> Fácil adicionar novas opções<br>
+                    • <strong>CASE:</strong> Padrão "*)" captura tudo automaticamente</p>
                 </div>
             </div>
             
@@ -780,130 +739,108 @@ esac
             </div>
         </div>
 
-        <!-- Slide 5: Exemplo Menu Completo -->
+        <!-- Slide 5: Padrões e Wildcards -->
         <div class="slide" id="slide-5">
             <div class="content">
-                <h2>🍔 Menu Completo - Sistema de Gerenciamento</h2>
+                <h2>🎨 Padrões e Wildcards no CASE</h2>
                 
                 <div class="highlight-box">
-                    <h3>🏪 Criando um Menu Profissional</h3>
-                    <p>Vamos criar um menu de verdade, como os que você vê em programas profissionais!</p>
-                </div>
-
-                <div class="script-box">
-#!/bin/bash<br>
-<span class="comment"># Sistema de Gerenciamento de Arquivos</span><br>
-<br>
-while true; do<br>
-    clear<br>
-    echo "=================================="<br>
-    echo "  🗂️  GERENCIADOR DE ARQUIVOS"<br>
-    echo "=================================="<br>
-    echo "1 📁 Listar arquivos"<br>
-    echo "2 📝 Criar arquivo"<br>
-    echo "3 🗑️  Remover arquivo"<br>
-    echo "4 📊 Mostrar espaço em disco"<br>
-    echo "5 👤 Informações do sistema"<br>
-    echo "q 🚪 Sair"<br>
-    echo "=================================="<br>
-    echo -n "Escolha uma opção: "<br>
-    read <span class="variable">OPCAO</span><br>
-    <br>
-    case <span class="variable">$OPCAO</span> in<br>
-        1)<br>
-            echo "📁 Listando arquivos do diretório atual..."<br>
-            ls -la --color=auto<br>
-            echo<br>
-            read -p "Pressione Enter para continuar..." <span class="variable">pause</span><br>
-            ;;<br>
-        2)<br>
-            echo -n "📝 Nome do arquivo a criar: "<br>
-            read <span class="variable">ARQUIVO</span><br>
-            touch "$ARQUIVO"<br>
-            echo "✅ Arquivo '$ARQUIVO' criado com sucesso!"<br>
-            read -p "Pressione Enter para continuar..." <span class="variable">pause</span><br>
-            ;;<br>
-        3)<br>
-            echo -n "🗑️  Nome do arquivo a remover: "<br>
-            read <span class="variable">ARQUIVO</span><br>
-            if [ -f "$ARQUIVO" ]; then<br>
-                rm "$ARQUIVO"<br>
-                echo "✅ Arquivo '$ARQUIVO' removido!"<br>
-            else<br>
-                echo "❌ Arquivo não encontrado!"<br>
-            fi<br>
-            read -p "Pressione Enter para continuar..." <span class="variable">pause</span><br>
-            ;;<br>
-        4)<br>
-            echo "📊 Espaço em disco:"<br>
-            df -h<br>
-            echo<br>
-            read -p "Pressione Enter para continuar..." <span class="variable">pause</span><br>
-            ;;<br>
-        5)<br>
-            echo "👤 Informações do sistema:"<br>
-            echo "Usuário: $(whoami)"<br>
-            echo "Data: $(date)"<br>
-            echo "Diretório: $(pwd)"<br>
-            echo "Sistema: $(uname -a)"<br>
-            echo<br>
-            read -p "Pressione Enter para continuar..." <span class="variable">pause</span><br>
-            ;;<br>
-        q|Q)<br>
-            echo "👋 Saindo... Até logo!"<br>
-            exit 0<br>
-            ;;<br>
-        *)<br>
-            echo "❌ Opção inválida! Tente novamente."<br>
-            sleep 2<br>
-            ;;<br>
-    esac<br>
-done
+                    <h3>🔍 Mais que Valores Exatos</h3>
+                    <p>O CASE não compara apenas valores exatos - ele pode trabalhar com padrões como um detetive experiente!</p>
                 </div>
 
                 <div class="two-column">
                     <div>
-                        <h3>🎬 Como Ficaria na Tela</h3>
-                        <div class="terminal-box">
-<div class="output">==================================</div>
-<div class="output">  🗂️  GERENCIADOR DE ARQUIVOS</div>
-<div class="output">==================================</div>
-<div class="output">1 📁 Listar arquivos</div>
-<div class="output">2 📝 Criar arquivo</div>
-<div class="output">3 🗑️  Remover arquivo</div>
-<div class="output">4 📊 Mostrar espaço em disco</div>
-<div class="output">5 👤 Informações do sistema</div>
-<div class="output">q 🚪 Sair</div>
-<div class="output">==================================</div>
-<span class="prompt">Escolha uma opção:</span> <span class="command">1</span><br>
-<div class="output">📁 Listando arquivos do diretório atual...</div>
-<div class="output">total 24</div>
-<div class="output">drwxr-xr-x 2 user user 4096 Jul 23 14:30 .</div>
-<div class="output">-rw-r--r-- 1 user user  156 Jul 23 14:25 script.sh</div>
+                        <h3>🃏 Tipos de Padrões</h3>
+                        <div class="example-box">
+                            <h4>📝 Valores Literais</h4>
+                            <p><code>"sim"</code>, <code>"1"</code>, <code>"opcao"</code></p>
+                            
+                            <h4>🎯 Wildcards</h4>
+                            <p><code>*</code> - qualquer sequência<br>
+                            <code>?</code> - um caractere qualquer</p>
+                            
+                            <h4>📊 Ranges</h4>
+                            <p><code>[0-9]</code> - números de 0 a 9<br>
+                            <code>[A-Z]</code> - letras maiúsculas<br>
+                            <code>[a-z]</code> - letras minúsculas</p>
+                            
+                            <h4>🔀 Múltiplas Opções</h4>
+                            <p><code>sim|yes|y</code> - qualquer uma das três</p>
                         </div>
                     </div>
                     <div>
-                        <h3>🎯 Recursos Avançados</h3>
-                        <div class="info-box">
-                            <h4>🔧 Técnicas Usadas:</h4>
-                            <p><strong>while true:</strong> Loop infinito<br>
-                            <strong>clear:</strong> Limpa a tela<br>
-                            <strong>read -p:</strong> Mostra prompt<br>
-                            <strong>q|Q):</strong> Aceita 'q' ou 'Q'<br>
-                            <strong>exit 0:</strong> Sai do script<br>
-                            <strong>sleep 2:</strong> Pausa 2 segundos</p>
+                        <h3>🧪 Exemplo: Detector de Tipos</h3>
+                        <div class="script-box">
+#!/bin/bash<br>
+
+echo <span class="string">"Digite um caractere:"</span><br>
+read <span class="variable">CHAR</span><br>
+
+case "$CHAR" in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">[0-9]</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"📊 É um número!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">[A-Z]</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"🔤 É uma letra maiúscula!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">[a-z]</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"🔡 É uma letra minúscula!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"❓ É um caractere especial!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+esac
                         </div>
                         
-                        <h3>💡 Por que while true?</h3>
-                        <div class="example-box">
-                            <p>O <strong>while true</strong> mantém o menu funcionando continuamente, como uma máquina de refrigerante que fica sempre disponível!</p>
-                        </div>
-                        
-                        <h3>⚠️ Boa Prática</h3>
-                        <div class="warning-box">
-                            <p>Sempre inclua uma opção de saída (q) e trate opções inválidas com o padrão "*)" para evitar que o usuário fique "preso" no menu!</p>
+                        <h3>🎬 Testando o Script</h3>
+                        <div class="terminal-box">
+<span class="comment"># Teste 1: Número</span>
+<div class="output">Digite um caractere:</div>
+<span class="command">7</span>
+<div class="output">📊 É um número!</div>
+
+<span class="comment"># Teste 2: Letra maiúscula</span>
+<div class="output">Digite um caractere:</div>
+<span class="command">A</span>
+<div class="output">🔤 É uma letra maiúscula!</div>
+
+<span class="comment"># Teste 3: Caractere especial</span>
+<div class="output">Digite um caractere:</div>
+<span class="command">@</span>
+<div class="output">❓ É um caractere especial!</div>
                         </div>
                     </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>🌟 Exemplo Avançado: Validador de Respostas</h3>
+                    <div class="script-box">
+#!/bin/bash<br>
+
+echo <span class="string">"Deseja continuar? (sim/não):"</span><br>
+read <span class="variable">RESPOSTA</span><br>
+
+case "$RESPOSTA" in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">sim|SIM|s|S|yes|YES|y|Y</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"✅ Continuando..."</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">não|NÃO|nao|NAO|n|N|no|NO</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"❌ Operação cancelada"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"❓ Resposta não compreendida"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+esac
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <h3>💡 Dicas de Padrões</h3>
+                    <p><strong>[0-9]:</strong> Apenas UM dígito (não números com múltiplos dígitos)<br>
+                    <strong>*:</strong> Aceita qualquer coisa, inclusive string vazia<br>
+                    <strong>|:</strong> Funciona como OU - aceita qualquer uma das opções<br>
+                    <strong>Maiúsculas/Minúsculas:</strong> CASE é sensível! "A" ≠ "a"</p>
                 </div>
             </div>
             
@@ -914,148 +851,135 @@ done
             </div>
         </div>
 
-        <!-- Slide 6: Conversor de Dias -->
+        <!-- Slide 6: Exemplo com Ranges -->
         <div class="slide" id="slide-6">
             <div class="content">
-                <h2>📅 Conversor de Dias da Semana</h2>
+                <h2>📊 Trabalhando com Ranges e Múltiplos Padrões</h2>
                 
                 <div class="highlight-box">
-                    <h3>🗓️ De Número para Nome</h3>
-                    <p>Vamos criar um conversor que transforma números em nomes dos dias, como um tradutor de calendário!</p>
+                    <h3>🎯 Classificação Inteligente</h3>
+                    <p>Como fazer seu script categorizar entrada de dados automaticamente</p>
                 </div>
 
                 <div class="two-column">
                     <div>
-                        <h3>📝 Script Conversor</h3>
+                        <h3>🎨 Exemplo: Classificador de Notas</h3>
                         <div class="script-box">
 #!/bin/bash<br>
-<span class="comment"># conversor.sh - Conversor de Dias</span><br>
-<br>
-echo "🗓️  CONVERSOR DE DIAS DA SEMANA"<br>
-echo "==============================="<br>
-echo "Digite o número do dia (1-7):"<br>
-echo "1=Segunda, 2=Terça, 3=Quarta"<br>
-echo "4=Quinta, 5=Sexta, 6=Sábado, 7=Domingo"<br>
-echo -n "Sua escolha: "<br>
-read <span class="variable">DIA</span><br>
-<br>
-case <span class="variable">$DIA</span> in<br>
-    1)<br>
-        echo "📊 O dia da semana é: SEGUNDA-FEIRA"<br>
-        echo "💼 Dia de trabalho!"<br>
-        ;;<br>
-    2)<br>
-        echo "📊 O dia da semana é: TERÇA-FEIRA"<br>
-        echo "💼 Dia de trabalho!"<br>
-        ;;<br>
-    3)<br>
-        echo "📊 O dia da semana é: QUARTA-FEIRA"<br>
-        echo "💼 Meio da semana!"<br>
-        ;;<br>
-    4)<br>
-        echo "📊 O dia da semana é: QUINTA-FEIRA"<br>
-        echo "💼 Quase chegando!"<br>
-        ;;<br>
-    5)<br>
-        echo "📊 O dia da semana é: SEXTA-FEIRA"<br>
-        echo "🎉 SEXTOU! Fim de semana chegando!"<br>
-        ;;<br>
-    6)<br>
-        echo "📊 O dia da semana é: SÁBADO"<br>
-        echo "🎈 Weekend! Hora de relaxar!"<br>
-        ;;<br>
-    7)<br>
-        echo "📊 O dia da semana é: DOMINGO"<br>
-        echo "😴 Dia de descanso!"<br>
-        ;;<br>
-    *)<br>
-        echo "❌ Número inválido!"<br>
-        echo "📋 Use apenas números de 1 a 7"<br>
-        echo "💡 Tente novamente!"<br>
-        ;;<br>
-esac<br>
-<br>
-echo<br>
-echo "Obrigado por usar o conversor! 🙂"
+
+echo <span class="string">"Digite uma nota (0-100):"</span><br>
+read <span class="variable">NOTA</span><br>
+
+case "$NOTA" in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">[9][0-9]|100</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"🏆 Excelente! Nota A"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">[8][0-9]</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"🌟 Muito Bom! Nota B"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">[7][0-9]</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"👏 Bom! Nota C"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">[6][0-9]</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"😐 Regular. Nota D"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">[0-5][0-9]</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"😞 Insuficiente. Nota F"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"❌ Nota inválida!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+esac
+                        </div>
+                        
+                        <h3>🔍 Entendendo os Padrões</h3>
+                        <div class="info-box">
+                            <p><strong>[9][0-9]:</strong> 90-99<br>
+                            <strong>|100:</strong> OU exatamente 100<br>
+                            <strong>[8][0-9]:</strong> 80-89<br>
+                            <strong>[0-5][0-9]:</strong> 00-59</p>
                         </div>
                     </div>
                     <div>
-                        <h3>🎬 Demonstrações</h3>
+                        <h3>🎬 Testando o Classificador</h3>
                         <div class="terminal-box">
-<span class="prompt">user@linux:~$</span> <span class="command">./conversor.sh</span>
-<div class="output">🗓️  CONVERSOR DE DIAS DA SEMANA</div>
-<div class="output">===============================</div>
-<div class="output">Digite o número do dia (1-7):</div>
-<div class="output">1=Segunda, 2=Terça, 3=Quarta</div>
-<div class="output">4=Quinta, 5=Sexta, 6=Sábado, 7=Domingo</div>
-<span class="prompt">Sua escolha:</span> <span class="command">5</span>
-<div class="output">📊 O dia da semana é: SEXTA-FEIRA</div>
-<div class="output">🎉 SEXTOU! Fim de semana chegando!</div>
-<div class="output"></div>
-<div class="output">Obrigado por usar o conversor! 🙂</div>
+<span class="comment"># Teste 1: Nota excelente</span>
+<div class="output">Digite uma nota (0-100):</div>
+<span class="command">95</span>
+<div class="output">🏆 Excelente! Nota A</div>
+
+<span class="comment"># Teste 2: Nota regular</span>
+<div class="output">Digite uma nota (0-100):</div>
+<span class="command">65</span>
+<div class="output">😐 Regular. Nota D</div>
+
+<span class="comment"># Teste 3: Entrada inválida</span>
+<div class="output">Digite uma nota (0-100):</div>
+<span class="command">150</span>
+<div class="output">❌ Nota inválida!</div>
                         </div>
                         
-                        <div class="terminal-box">
-<span class="prompt">Sua escolha:</span> <span class="command">8</span>
-<div class="output">❌ Número inválido!</div>
-<div class="output">📋 Use apenas números de 1 a 7</div>
-<div class="output">💡 Tente novamente!</div>
-                        </div>
-                        
-                        <h3>✨ Versão Melhorada</h3>
+                        <h3>🎪 Exemplo: Detector de Extensões</h3>
                         <div class="script-box">
-<span class="comment"># Adicionando validação extra</span><br>
-case <span class="variable">$DIA</span> in<br>
-    [1-7])<br>
-        <span class="comment"># Array de dias</span><br>
-        DIAS=("Segunda" "Terça" "Quarta" "Quinta" "Sexta" "Sábado" "Domingo")<br>
-        echo "Dia: ${DIAS[$((DIA-1))]}"<br>
-        ;;<br>
-    [0])<br>
-        echo "❌ Não existe dia 0!"<br>
-        ;;<br>
-    [8-9]|[1-9][0-9]*)<br>
-        echo "❌ Número muito alto!"<br>
-        ;;<br>
-    *)<br>
-        echo "❌ Digite apenas números!"<br>
-        ;;<br>
+#!/bin/bash<br>
+
+echo <span class="string">"Digite um nome de arquivo:"</span><br>
+read <span class="variable">ARQUIVO</span><br>
+
+case "$ARQUIVO" in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">*.txt|*.doc|*.docx</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"📄 Documento de texto"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">*.jpg|*.png|*.gif|*.bmp</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"🖼️ Arquivo de imagem"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">*.mp3|*.wav|*.ogg</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"🎵 Arquivo de áudio"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">*.sh</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"⚡ Script Shell"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"❓ Tipo desconhecido"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
 esac
                         </div>
                     </div>
                 </div>
 
                 <div class="example-box">
-                    <h3>🚀 Desafio Extra: Conversor Bidirecional</h3>
+                    <h3>🌟 Exemplo Avançado: Sistema de Cores</h3>
                     <div class="script-box">
 #!/bin/bash<br>
-echo "Escolha: (1) Número→Dia ou (2) Dia→Número"<br>
-read <span class="variable">MODO</span><br>
-<br>
-case <span class="variable">$MODO</span> in<br>
-    1)<br>
-        echo "Digite o número (1-7):"<br>
-        read <span class="variable">NUM</span><br>
-        case <span class="variable">$NUM</span> in<br>
-            1) echo "Segunda-feira" ;;<br>
-            2) echo "Terça-feira" ;;<br>
-            *) echo "Número inválido" ;;<br>
-        esac<br>
-        ;;<br>
-    2)<br>
-        echo "Digite o dia (ex: segunda):"<br>
-        read <span class="variable">DIA_NOME</span><br>
-        case <span class="variable">$DIA_NOME</span> in<br>
-            segunda|Segunda) echo "Número: 1" ;;<br>
-            terca|Terça) echo "Número: 2" ;;<br>
-            *) echo "Dia inválido" ;;<br>
-        esac<br>
-        ;;<br>
-    *)<br>
-        echo "Modo inválido!"<br>
-        ;;<br>
+
+echo <span class="string">"Digite uma cor:"</span><br>
+read <span class="variable">COR</span><br>
+
+case "$COR" in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">vermelho|red|rojo</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"🔴 Cor quente e energética!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">azul|blue|bleu</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"🔵 Cor fria e tranquila!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">verde|green|vert</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"🟢 Cor da natureza!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">preto|black|negro</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"⚫ Ausência de cor!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"🌈 Cor interessante!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
 esac
                     </div>
+                </div>
+
+                <div class="warning-box">
+                    <h3>⚠️ Cuidado com Padrões Complexos</h3>
+                    <p><strong>Ordem importa:</strong> Coloque padrões mais específicos primeiro<br>
+                    <strong>Teste sempre:</strong> Ranges podem ser traiçoeiros<br>
+                    <strong>Escape especial:</strong> Use \ para caracteres especiais literais</p>
                 </div>
             </div>
             
@@ -1066,143 +990,122 @@ esac
             </div>
         </div>
 
-        <!-- Slide 7: CASE vs IF -->
+        <!-- Slide 7: Caso Padrão (*) -->
         <div class="slide" id="slide-7">
             <div class="content">
-                <h2>⚖️ CASE vs IF - Quando Usar Cada Um?</h2>
+                <h2>🌟 O Caso Padrão (*) - O Faz-Tudo</h2>
                 
                 <div class="highlight-box">
-                    <h3>🥊 Batalha dos Titãs: CASE vs IF</h3>
-                    <p>Como escolher a ferramenta certa para cada situação? Vamos comparar!</p>
+                    <h3>🕳️ A Rede de Segurança</h3>
+                    <p>O asterisco (*) é como uma rede de segurança que captura tudo que não foi previsto nos outros casos</p>
                 </div>
 
                 <div class="two-column">
                     <div>
-                        <h3>🎯 Use CASE quando...</h3>
-                        <div class="success-box">
-                            <div class="bullet-point">Você tem UMA variável e MUITAS opções</div>
-                            <div class="bullet-point">Quer criar menus</div>
-                            <div class="bullet-point">Precisa testar padrões ([0-9], [A-Z])</div>
-                            <div class="bullet-point">O código fica mais limpo</div>
-                            <div class="bullet-point">As opções são excludentes</div>
+                        <h3>🎯 Por que usar o "*"?</h3>
+                        <div class="example-box">
+                            <div class="bullet-point">Captura entradas não previstas</div>
+                            <div class="bullet-point">Evita que o script "ignore" valores</div>
+                            <div class="bullet-point">Permite dar feedback ao usuário</div>
+                            <div class="bullet-point">Funciona como "else" do IF</div>
                         </div>
                         
-                        <h3>📝 Exemplo: Menu com CASE</h3>
+                        <h3>📍 Posicionamento Importante</h3>
+                        <div class="warning-box">
+                            <p><strong>Sempre por último!</strong><br>
+                            O "*" deve ser o último caso, pois captura TUDO.<br>
+                            Se colocar antes, os outros casos nunca executarão!</p>
+                        </div>
+                        
+                        <h3>❌ Exemplo ERRADO</h3>
                         <div class="script-box">
-case <span class="variable">$OPCAO</span> in<br>
-    1) echo "Incluir" ;;<br>
-    2) echo "Alterar" ;;<br>
-    3) echo "Excluir" ;;<br>
-    4) echo "Consultar" ;;<br>
-    *) echo "Inválido" ;;<br>
-esac
-                        </div>
-                        
-                        <div class="info-box">
-                            <p>✅ <strong>Limpo e organizado!</strong><br>
-                            5 linhas para 5 opções</p>
+case "$OPCAO" in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Opção inválida"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">1</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Primeira opção"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+esac<br>
+<span class="comment"># PROBLEMA: * captura tudo antes!</span>
                         </div>
                     </div>
                     <div>
-                        <h3>🔀 Use IF quando...</h3>
-                        <div class="warning-box">
-                            <div class="bullet-point">Você tem condições complexas</div>
-                            <div class="bullet-point">Precisa comparar MÚLTIPLAS variáveis</div>
-                            <div class="bullet-point">Usa operadores (-gt, -lt, -eq)</div>
-                            <div class="bullet-point">Combina condições (AND, OR)</div>
-                            <div class="bullet-point">Testa arquivos (-f, -d, -r)</div>
-                        </div>
-                        
-                        <h3>📝 Mesmo Menu com IF</h3>
+                        <h3>✅ Exemplo CORRETO</h3>
                         <div class="script-box">
-if [ <span class="variable">$OPCAO</span> -eq 1 ]; then<br>
-    echo "Incluir"<br>
-elif [ <span class="variable">$OPCAO</span> -eq 2 ]; then<br>
-    echo "Alterar"<br>
-elif [ <span class="variable">$OPCAO</span> -eq 3 ]; then<br>
-    echo "Excluir"<br>
-elif [ <span class="variable">$OPCAO</span> -eq 4 ]; then<br>
-    echo "Consultar"<br>
-else<br>
-    echo "Inválido"<br>
-fi
+case "$OPCAO" in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">1</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Primeira opção"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">2</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Segunda opção"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Opção inválida"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+esac<br>
+<span class="comment"># CORRETO: * por último!</span>
                         </div>
                         
+                        <h3>🎬 Comportamento com e sem "*"</h3>
+                        <div class="terminal-box">
+<span class="comment"># COM * - entrada "xyz"</span>
+<div class="output">Opção inválida</div>
+
+<span class="comment"># SEM * - entrada "xyz"</span>
+<div class="output">(nada acontece, script continua)</div>
+                        </div>
+                        
+                        <h3>💡 O "*" é Opcional?</h3>
                         <div class="info-box">
-                            <p>❌ <strong>Repetitivo e verboso!</strong><br>
-                            12 linhas para 5 opções</p>
+                            <p><strong>Tecnicamente:</strong> Sim, é opcional<br>
+                            <strong>Na prática:</strong> Sempre use!<br>
+                            <strong>Motivo:</strong> Melhor experiência do usuário</p>
                         </div>
                     </div>
-                </div>
-
-                <div class="operators-table">
-                    <table>
-                        <tr>
-                            <th>Situação</th>
-                            <th>CASE</th>
-                            <th>IF</th>
-                            <th>Melhor Escolha</th>
-                        </tr>
-                        <tr>
-                            <td>Menu com 5 opções</td>
-                            <td>5 linhas</td>
-                            <td>12 linhas</td>
-                            <td>🏆 CASE</td>
-                        </tr>
-                        <tr>
-                            <td>Testar se idade > 18</td>
-                            <td>Não aplicável</td>
-                            <td>2 linhas</td>
-                            <td>🏆 IF</td>
-                        </tr>
-                        <tr>
-                            <td>Classificar notas A, B, C</td>
-                            <td>6 linhas</td>
-                            <td>8 linhas</td>
-                            <td>🏆 CASE</td>
-                        </tr>
-                        <tr>
-                            <td>Testar arquivo E permissão</td>
-                            <td>Difícil</td>
-                            <td>3 linhas</td>
-                            <td>🏆 IF</td>
-                        </tr>
-                        <tr>
-                            <td>Validar entrada S/N</td>
-                            <td>3 linhas</td>
-                            <td>6 linhas</td>
-                            <td>🏆 CASE</td>
-                        </tr>
-                    </table>
                 </div>
 
                 <div class="example-box">
-                    <h3>🎯 Exemplo Prático: Sistema de Login</h3>
+                    <h3>🏪 Exemplo: Sistema de Loja Completo</h3>
                     <div class="script-box">
-<span class="comment"># Para o MENU inicial, use CASE:</span><br>
-case <span class="variable">$ACAO</span> in<br>
-    "login") fazer_login ;;<br>
-    "cadastro") fazer_cadastro ;;<br>
-    "sair") exit 0 ;;<br>
-esac<br>
-<br>
-<span class="comment"># Para VALIDAÇÕES dentro do login, use IF:</span><br>
-fazer_login() {<br>
-    if [ -z "$USUARIO" ]; then<br>
-        echo "Usuário não pode estar vazio"<br>
-    elif [ ${#SENHA} -lt 8 ]; then<br>
-        echo "Senha deve ter pelo menos 8 caracteres"<br>
-    elif [ -f "/etc/passwd" -a -r "/etc/passwd" ]; then<br>
-        echo "Verificando credenciais..."<br>
-    fi<br>
-}<br>
+#!/bin/bash<br>
+
+echo <span class="string">"=== SISTEMA DE LOJA ==="</span><br>
+echo <span class="string">"1) Ver produtos"</span><br>
+echo <span class="string">"2) Adicionar ao carrinho"</span><br>
+echo <span class="string">"3) Finalizar compra"</span><br>
+echo <span class="string">"q) Sair"</span><br>
+echo <span class="string">"Escolha uma opção: "</span><br>
+read <span class="variable">OPCAO</span><br>
+
+case "$OPCAO" in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">1</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"🛍️ Exibindo produtos disponíveis..."</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">2</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"🛒 Adicionando item ao carrinho..."</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">3</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"💳 Processando pagamento..."</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">q|Q|quit|QUIT|sair|SAIR</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"👋 Obrigado por usar nossa loja!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;exit 0<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"❌ Opção '$OPCAO' não reconhecida!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"💡 Use: 1, 2, 3 ou q para sair"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+esac
                     </div>
                 </div>
 
-                <div class="info-box">
-                    <h3>💡 Regra de Ouro</h3>
-                    <p><strong>CASE:</strong> Uma variável, muitos valores → "Qual opção você escolhe?"<br>
-                    <strong>IF:</strong> Condições complexas → "Esta condição é verdadeira?"</p>
+                <div class="success-box">
+                    <h3>🌟 Boas Práticas com "*"</h3>
+                    <p><strong>Seja descritivo:</strong> Mostre qual valor foi digitado<br>
+                    <strong>Dê orientações:</strong> Explique as opções válidas<br>
+                    <strong>Use variáveis:</strong> <code>"Opção '$OPCAO' inválida"</code><br>
+                    <strong>Considere exit codes:</strong> exit 1 para erros</p>
                 </div>
             </div>
             
@@ -1213,152 +1116,136 @@ fazer_login() {<br>
             </div>
         </div>
 
-        <!-- Slide 8: Exercícios Práticos -->
+        <!-- Slide 8: Exemplo Completo - Menu -->
         <div class="slide" id="slide-8">
             <div class="content">
-                <h2>🏋️ Exercícios Práticos - Hora de Treinar!</h2>
+                <h2>🍔 Exemplo Completo: Sistema de Menu</h2>
                 
                 <div class="highlight-box">
-                    <h3>💪 Pratique para Dominar!</h3>
-                    <p>Agora que você sabe a teoria, vamos praticar com exercícios reais!</p>
+                    <h3>🎯 Projeto Real: Gerenciador de Arquivos</h3>
+                    <p>Vamos criar um sistema completo que gerencia arquivos usando CASE</p>
+                </div>
+
+                <div class="example-box">
+                    <h3>📝 Script: gerenciador.sh</h3>
+                    <div class="script-box">
+#!/bin/bash<br>
+
+clear<br>
+echo <span class="string">"================================="</span><br>
+echo <span class="string">"    GERENCIADOR DE ARQUIVOS"</span><br>
+echo <span class="string">"================================="</span><br>
+echo <span class="string">"1) Listar arquivos"</span><br>
+echo <span class="string">"2) Criar arquivo"</span><br>
+echo <span class="string">"3) Remover arquivo"</span><br>
+echo <span class="string">"4) Ver conteúdo"</span><br>
+echo <span class="string">"5) Informações do sistema"</span><br>
+echo <span class="string">"q) Sair"</span><br>
+echo <span class="string">"================================="</span><br>
+echo -n <span class="string">"Escolha uma opção: "</span><br>
+read <span class="variable">OPCAO</span><br>
+
+case "$OPCAO" in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">1</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"📂 Listando arquivos..."</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ls -la<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">2</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo -n <span class="string">"📝 Nome do arquivo: "</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;read <span class="variable">NOME</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;touch "$NOME"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"✅ Arquivo '$NOME' criado!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">3</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo -n <span class="string">"🗑️ Nome do arquivo: "</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;read <span class="variable">NOME</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if [ -f "$NOME" ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rm "$NOME"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"✅ Arquivo removido!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"❌ Arquivo não encontrado!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">4</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo -n <span class="string">"👁️ Nome do arquivo: "</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;read <span class="variable">NOME</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if [ -f "$NOME" ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cat "$NOME"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"❌ Arquivo não encontrado!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">5</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"💻 Informações do Sistema:"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Usuário: $(whoami)"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Data: $(date)"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Diretório: $(pwd)"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">q|Q|quit|sair</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"👋 Até logo!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;exit 0<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"❌ Opção '$OPCAO' inválida!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"💡 Use: 1-5 ou 'q' para sair"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+esac<br>
+
+echo<br>
+echo <span class="string">"Pressione Enter para continuar..."</span><br>
+read
+                    </div>
                 </div>
 
                 <div class="two-column">
                     <div>
-                        <h3>🎯 Exercício 1: Calculadora</h3>
-                        <div class="example-box">
-                            <p><strong>Missão:</strong> Criar uma calculadora simples<br>
-                            <strong>Entrada:</strong> Dois números e uma operação (+, -, *, /)<br>
-                            <strong>Use CASE</strong> para escolher a operação</p>
-                        </div>
-                        
-                        <div class="script-box">
-<span class="comment"># Seu código aqui:</span><br>
-echo "Digite o primeiro número:"<br>
-read <span class="variable">NUM1</span><br>
-echo "Digite a operação (+, -, *, /):"<br>
-read <span class="variable">OP</span><br>
-echo "Digite o segundo número:"<br>
-read <span class="variable">NUM2</span><br>
-<br>
-case <span class="variable">$OP</span> in<br>
-    "+")<br>
-        echo "Resultado: $((NUM1 + NUM2))"<br>
-        ;;<br>
-    <span class="comment"># Complete você!</span><br>
-    *)<br>
-        echo "Operação inválida!"<br>
-        ;;<br>
-esac
-                        </div>
-                        
-                        <h3>🔍 Exercício 2: Analisador de Arquivos</h3>
-                        <div class="example-box">
-                            <p><strong>Missão:</strong> Analisar extensões de arquivo<br>
-                            <strong>.txt</strong> → "Arquivo de texto"<br>
-                            <strong>.jpg/.png</strong> → "Imagem"<br>
-                            <strong>.pdf</strong> → "Documento PDF"</p>
+                        <h3>🎬 Execução - Opção 1</h3>
+                        <div class="terminal-box">
+<div class="output">=================================</div>
+<div class="output">    GERENCIADOR DE ARQUIVOS</div>
+<div class="output">=================================</div>
+<div class="output">1) Listar arquivos</div>
+<div class="output">2) Criar arquivo</div>
+<div class="output">3) Remover arquivo</div>
+<div class="output">4) Ver conteúdo</div>
+<div class="output">5) Informações do sistema</div>
+<div class="output">q) Sair</div>
+<div class="output">=================================</div>
+<div class="output">Escolha uma opção:</div>
+<span class="command">1</span>
+<div class="output">📂 Listando arquivos...</div>
+<div class="output">-rw-r--r-- 1 user user 1024 Jan 15 10:30 teste.txt</div>
+<div class="output">-rwxr-xr-x 1 user user 2048 Jan 15 10:25 script.sh</div>
                         </div>
                     </div>
                     <div>
-                        <h3>🌐 Exercício 3: Ping Checker</h3>
-                        <div class="example-box">
-                            <p><strong>Missão:</strong> Testar conectividade<br>
-                            <strong>Use:</strong> comando ping<br>
-                            <strong>Analise:</strong> código de saída com CASE</p>
+                        <h3>🎬 Execução - Opção 2</h3>
+                        <div class="terminal-box">
+<div class="output">Escolha uma opção:</div>
+<span class="command">2</span>
+<div class="output">📝 Nome do arquivo:</div>
+<span class="command">meuarquivo.txt</span>
+<div class="output">✅ Arquivo 'meuarquivo.txt' criado!</div>
                         </div>
                         
-                        <div class="script-box">
-#!/bin/bash<br>
-echo "Digite o endereço para testar:"<br>
-read <span class="variable">HOST</span><br>
-<br>
-<span class="comment"># Executa ping e captura código de saída</span><br>
-ping -c 1 "$HOST" > /dev/null 2>&1<br>
-<span class="variable">RESULTADO</span>=$?<br>
-<br>
-case <span class="variable">$RESULTADO</span> in<br>
-    0)<br>
-        echo "✅ Host $HOST acessível!"<br>
-        ;;<br>
-    1)<br>
-        echo "❌ Host $HOST inacessível!"<br>
-        ;;<br>
-    *)<br>
-        echo "🔧 Erro ao tentar acessar!"<br>
-        ;;<br>
-esac
-                        </div>
-                        
-                        <h3>🎮 Exercício 4: Sistema de Notas</h3>
-                        <div class="script-box">
-<span class="comment"># Use [0-4], [5-6], [7-8], [9-9]|10</span><br>
-echo "Digite sua nota (0-10):"<br>
-read <span class="variable">NOTA</span><br>
-<br>
-case <span class="variable">$NOTA</span> in<br>
-    <span class="comment"># Complete com os ranges!</span><br>
-    [9-9]|10)<br>
-        echo "🏆 EXCELENTE!"<br>
-        ;;<br>
-    <span class="comment"># Suas opções aqui...</span><br>
-    *)<br>
-        echo "❌ Nota inválida!"<br>
-        ;;<br>
-esac
+                        <h3>🎬 Execução - Entrada Inválida</h3>
+                        <div class="terminal-box">
+<div class="output">Escolha uma opção:</div>
+<span class="command">99</span>
+<div class="output">❌ Opção '99' inválida!</div>
+<div class="output">💡 Use: 1-5 ou 'q' para sair</div>
                         </div>
                     </div>
                 </div>
 
-                <div class="operators-table">
-                    <table style="font-size: 1em;">
-                        <tr>
-                            <th>Exercício</th>
-                            <th>Dificuldade</th>
-                            <th>Conceitos</th>
-                            <th>Tempo Estimado</th>
-                        </tr>
-                        <tr>
-                            <td>Calculadora</td>
-                            <td>⭐⭐</td>
-                            <td>CASE básico, aritmética</td>
-                            <td>10 minutos</td>
-                        </tr>
-                        <tr>
-                            <td>Analisador de Arquivos</td>
-                            <td>⭐⭐⭐</td>
-                            <td>Padrões de texto, wildcards</td>
-                            <td>15 minutos</td>
-                        </tr>
-                        <tr>
-                            <td>Ping Checker</td>
-                            <td>⭐⭐⭐⭐</td>
-                            <td>Exit codes, redirecionamento</td>
-                            <td>20 minutos</td>
-                        </tr>
-                        <tr>
-                            <td>Sistema de Notas</td>
-                            <td>⭐⭐</td>
-                            <td>Ranges numéricos</td>
-                            <td>10 minutos</td>
-                        </tr>
-                    </table>
-                </div>
-
                 <div class="success-box">
-                    <h3>🎯 Dicas para os Exercícios</h3>
-                    <p><strong>1.</strong> Sempre teste com valores válidos E inválidos<br>
-                    <strong>2.</strong> Use o padrão "*)" para casos não previstos<br>
-                    <strong>3.</strong> Adicione mensagens amigáveis para o usuário<br>
-                    <strong>4.</strong> Teste seu script linha por linha</p>
-                </div>
-
-                <div class="warning-box">
-                    <h3>⚠️ Erros Comuns para Evitar</h3>
-                    <p>• Esquecer o ";;" no final de cada caso<br>
-                    • Não incluir o caso padrão "*)"<br>
-                    • Usar aspas desnecessárias em números<br>
-                    • Esquecer o "esac" no final</p>
+                    <h3>🌟 Recursos Implementados</h3>
+                    <p><strong>Interface limpa:</strong> clear e formatação visual<br>
+                    <strong>Múltiplas saídas:</strong> q|Q|quit|sair para flexibilidade<br>
+                    <strong>Validação:</strong> Verifica se arquivo existe antes de operações<br>
+                    <strong>Feedback:</strong> Mensagens claras para o usuário<br>
+                    <strong>Pausa:</strong> "Pressione Enter" para boa experiência<br>
+                    <strong>Exit codes:</strong> exit 0 para saída normal</p>
                 </div>
             </div>
             
@@ -1369,181 +1256,144 @@ esac
             </div>
         </div>
 
-        <!-- Slide 9: CASE com Múltiplos Padrões -->
+        <!-- Slide 9: Exemplo com Exit Codes -->
         <div class="slide" id="slide-9">
             <div class="content">
-                <h2>🎭 CASE Avançado - Múltiplos Padrões</h2>
+                <h2>🚨 CASE com Exit Codes - Ping Inteligente</h2>
                 
                 <div class="highlight-box">
-                    <h3>🎪 CASE Ninja: Técnicas Avançadas</h3>
-                    <p>Agora vamos dominar as técnicas avançadas do CASE para criar scripts ainda mais inteligentes!</p>
+                    <h3>🌐 Analisando Resultados de Comandos</h3>
+                    <p>Como usar CASE para interpretar codes de saída e criar scripts inteligentes</p>
                 </div>
 
                 <div class="two-column">
                     <div>
-                        <h3>🔗 Múltiplas Opções com "|"</h3>
-                        <div class="script-box">
-#!/bin/bash<br>
-echo "Você quer continuar? (S/N)"<br>
-read <span class="variable">RESPOSTA</span><br>
-<br>
-case <span class="variable">$RESPOSTA</span> in<br>
-    S|s|Y|y|Sim|sim|YES|yes)<br>
-        echo "✅ Continuando..."<br>
-        ;;<br>
-    N|n|Nao|nao|NO|no)<br>
-        echo "❌ Parando..."<br>
-        ;;<br>
-    *)<br>
-        echo "🤔 Resposta não entendida"<br>
-        ;;<br>
-esac
+                        <h3>💡 A Ideia</h3>
+                        <div class="info-box">
+                            <p>Lembra dos exit codes?<br>
+                            <strong>0:</strong> Comando executou com sucesso<br>
+                            <strong>1:</strong> Erro geral<br>
+                            <strong>2:</strong> Uso incorreto do comando<br>
+                            
+                            <br>O CASE pode usar o <strong>$?</strong> para decidir o que fazer!</p>
                         </div>
                         
-                        <h3>🌟 Padrões com Wildcards</h3>
+                        <h3>📝 Script ping.sh</h3>
                         <div class="script-box">
 #!/bin/bash<br>
-echo "Digite um arquivo:"<br>
-read <span class="variable">ARQUIVO</span><br>
-<br>
-case <span class="variable">$ARQUIVO</span> in<br>
-    *.txt|*.doc|*.pdf)<br>
-        echo "📄 Documento"<br>
-        ;;<br>
-    *.jpg|*.png|*.gif)<br>
-        echo "🖼️  Imagem"<br>
-        ;;<br>
-    *.mp3|*.wav|*.flac)<br>
-        echo "🎵 Arquivo de áudio"<br>
-        ;;<br>
-    *.mp4|*.avi|*.mkv)<br>
-        echo "🎬 Vídeo"<br>
-        ;;<br>
-    backup_*)<br>
-        echo "💾 Arquivo de backup"<br>
-        ;;<br>
-    temp_*|tmp_*)<br>
-        echo "🗑️  Arquivo temporário"<br>
-        ;;<br>
-    *)<br>
-        echo "❓ Tipo desconhecido"<br>
-        ;;<br>
+
+echo <span class="string">"=== VERIFICADOR DE CONECTIVIDADE ==="</span><br>
+echo -n <span class="string">"Digite um IP ou domínio: "</span><br>
+read <span class="variable">HOST</span><br>
+
+echo <span class="string">"🔍 Testando conectividade com $HOST..."</span><br>
+
+<span class="comment"># Executa ping e captura exit code</span><br>
+ping -c 3 "$HOST" > /dev/null 2>&1<br>
+<span class="variable">RESULTADO</span>=$?<br>
+
+case $RESULTADO in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">0</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"✅ Host $HOST está acessível!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"🌐 Conexão estabelecida com sucesso"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">1</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"❌ Host $HOST está inacessível!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"🔴 Sem resposta aos pacotes ping"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"⚠️ Erro ao tentar acessar o host!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"💥 Código de erro: $RESULTADO"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
 esac
                         </div>
                     </div>
                     <div>
-                        <h3>🧪 Testando os Padrões</h3>
+                        <h3>🎬 Teste 1: Host Acessível</h3>
                         <div class="terminal-box">
-<span class="prompt">Digite um arquivo:</span> <span class="command">foto.jpg</span>
-<div class="output">🖼️  Imagem</div>
-<br>
-<span class="prompt">Digite um arquivo:</span> <span class="command">backup_dados.tar</span>
-<div class="output">💾 Arquivo de backup</div>
-<br>
-<span class="prompt">Digite um arquivo:</span> <span class="command">temp_123.log</span>
-<div class="output">🗑️  Arquivo temporário</div>
+<div class="output">=== VERIFICADOR DE CONECTIVIDADE ===</div>
+<div class="output">Digite um IP ou domínio:</div>
+<span class="command">google.com</span>
+<div class="output">🔍 Testando conectividade com google.com...</div>
+<div class="output">✅ Host google.com está acessível!</div>
+<div class="output">🌐 Conexão estabelecida com sucesso</div>
                         </div>
                         
-                        <h3>📱 Validador de Entrada Avançado</h3>
-                        <div class="script-box">
-#!/bin/bash<br>
-echo "Digite uma entrada:"<br>
-read <span class="variable">ENTRADA</span><br>
-<br>
-case <span class="variable">$ENTRADA</span> in<br>
-    [0-9])<br>
-        echo "🔢 Um dígito"<br>
-        ;;<br>
-    [0-9][0-9])<br>
-        echo "🔢 Dois dígitos"<br>
-        ;;<br>
-    [0-9]*)<br>
-        echo "🔢 Número com vários dígitos"<br>
-        ;;<br>
-    [A-Z])<br>
-        echo "🔤 Uma letra maiúscula"<br>
-        ;;<br>
-    [a-z])<br>
-        echo "🔡 Uma letra minúscula"<br>
-        ;;<br>
-    [A-Za-z]*)<br>
-        echo "📝 Palavra ou texto"<br>
-        ;;<br>
-    *@*.*)<br>
-        echo "📧 Parece um email"<br>
-        ;;<br>
-    http*|ftp*)<br>
-        echo "🌐 Parece uma URL"<br>
-        ;;<br>
-    "")<br>
-        echo "🕳️  Entrada vazia"<br>
-        ;;<br>
-    *)<br>
-        echo "❓ Tipo não identificado"<br>
-        ;;<br>
-esac
+                        <h3>🎬 Teste 2: Host Inacessível</h3>
+                        <div class="terminal-box">
+<div class="output">Digite um IP ou domínio:</div>
+<span class="command">192.168.999.999</span>
+<div class="output">🔍 Testando conectividade com 192.168.999.999...</div>
+<div class="output">❌ Host 192.168.999.999 está inacessível!</div>
+<div class="output">🔴 Sem resposta aos pacotes ping</div>
+                        </div>
+                        
+                        <h3>🔍 Entendendo o Comando</h3>
+                        <div class="example-box">
+                            <p><strong>ping -c 3:</strong> Envia 3 pacotes<br>
+                            <strong>> /dev/null:</strong> Oculta saída normal<br>
+                            <strong>2>&1:</strong> Oculta mensagens de erro<br>
+                            <strong>$?:</strong> Captura o exit code</p>
                         </div>
                     </div>
                 </div>
 
                 <div class="example-box">
-                    <h3>🎯 Sistema de Classificação de Senha</h3>
+                    <h3>🚀 Versão Avançada: Ping com Estatísticas</h3>
                     <div class="script-box">
 #!/bin/bash<br>
-echo "Digite uma senha para analisar:"<br>
-read -s <span class="variable">SENHA</span>  <span class="comment"># -s oculta a digitação</span><br>
-echo  <span class="comment"># Nova linha</span><br>
-<br>
-<span class="variable">TAMANHO</span>=${#SENHA}<br>
-<br>
-case <span class="variable">$SENHA</span> in<br>
-    *[0-9]*[A-Z]*[a-z]*[!@#$%]*)<br>
-        if [ $TAMANHO -ge 12 ]; then<br>
-            echo "🔒 SENHA ULTRA FORTE!"<br>
-        else<br>
-            echo "🔒 SENHA FORTE"<br>
-        fi<br>
-        ;;<br>
-    *[0-9]*[A-Za-z]*)<br>
-        if [ $TAMANHO -ge 8 ]; then<br>
-            echo "🔑 SENHA BOA"<br>
-        else<br>
-            echo "🔑 SENHA REGULAR"<br>
-        fi<br>
-        ;;<br>
-    *[A-Za-z]*)<br>
-        echo "🔓 SENHA FRACA (só letras)"<br>
-        ;;<br>
-    *[0-9]*)<br>
-        echo "🔓 SENHA FRACA (só números)"<br>
-        ;;<br>
-    "")<br>
-        echo "❌ SENHA VAZIA!"<br>
-        ;;<br>
-    *)<br>
-        echo "🔴 SENHA MUITO FRACA"<br>
-        ;;<br>
+
+echo <span class="string">"=== PING AVANÇADO ==="</span><br>
+echo -n <span class="string">"Digite um host: "</span><br>
+read <span class="variable">HOST</span><br>
+echo -n <span class="string">"Quantos pacotes? (padrão: 4): "</span><br>
+read <span class="variable">PACOTES</span><br>
+
+<span class="comment"># Define padrão se não informado</span><br>
+PACOTES=${PACOTES:-4}<br>
+
+echo <span class="string">"🔍 Enviando $PACOTES pacotes para $HOST..."</span><br>
+
+<span class="comment"># Executa ping e salva saída em arquivo temporário</span><br>
+ping -c $PACOTES "$HOST" > /tmp/ping_result.txt 2>&1<br>
+<span class="variable">CODIGO</span>=$?<br>
+
+case $CODIGO in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">0</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"✅ SUCCESS: Host respondeu!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Extrai estatísticas</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">PERDIDOS</span>=$(grep "packet loss" /tmp/ping_result.txt | awk '{print $6}')<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"📊 Perda de pacotes: $PERDIDOS"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;grep "round-trip" /tmp/ping_result.txt<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">1</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"❌ FAILED: Host não responde"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"🔴 Possíveis causas:"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"   • Host desligado"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"   • Firewall bloqueando"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"   • Problema de rede"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">2</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"⚠️ ERROR: Problema com o comando ping"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"💡 Verifique se o host é válido"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"❓ UNKNOWN: Erro inesperado (código: $CODIGO)"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"🔧 Verifique sua conexão de rede"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
 esac<br>
-<br>
-echo "Tamanho: $TAMANHO caracteres"
+
+<span class="comment"># Limpa arquivo temporário</span><br>
+rm -f /tmp/ping_result.txt
                     </div>
                 </div>
 
-                <div class="info-box">
-                    <h3>💡 Dicas dos Padrões Avançados</h3>
-                    <p><strong>*palavra*:</strong> contém "palavra" em qualquer lugar<br>
-                    <strong>palavra*:</strong> começa com "palavra"<br>
-                    <strong>*palavra:</strong> termina com "palavra"<br>
-                    <strong>[abc]:</strong> um dos caracteres a, b ou c<br>
-                    <strong>[0-9]*:</strong> começa com número, resto qualquer<br>
-                    <strong>"":</strong> string vazia (muito importante!)</p>
-                </div>
-
                 <div class="warning-box">
-                    <h3>⚠️ Ordem dos Padrões Importa!</h3>
-                    <p>O CASE testa na ordem que você escreve. Padrões mais específicos devem vir ANTES dos genéricos!<br>
-                    <strong>✅ Certo:</strong> [0-9] depois [0-9]*<br>
-                    <strong>❌ Errado:</strong> [0-9]* depois [0-9] (nunca chegará no segundo!)</p>
+                    <h3>💡 Dica Importante</h3>
+                    <p>Capture o exit code <strong>imediatamente</strong> após o comando:<br>
+                    <code>comando</code><br>
+                    <code>CODIGO=$?</code><br>
+                    <br>Qualquer outro comando entre eles pode alterar o $?!</p>
                 </div>
             </div>
             
@@ -1554,208 +1404,137 @@ echo "Tamanho: $TAMANHO caracteres"
             </div>
         </div>
 
-        <!-- Slide 10: Truques e Dicas -->
+        <!-- Slide 10: CASE vs IF -->
         <div class="slide" id="slide-10">
             <div class="content">
-                <h2>🎩 Truques e Dicas de Mestre</h2>
+                <h2>⚖️ CASE vs IF - Quando Usar Cada Um?</h2>
                 
                 <div class="highlight-box">
-                    <h3>🧙‍♂️ Segredos dos Experts</h3>
-                    <p>Técnicas avançadas que transformam scripts iniciantes em soluções profissionais!</p>
+                    <h3>🎯 Escolhendo a Ferramenta Certa</h3>
+                    <p>Como um mecânico escolhe a chave de fenda certa para cada parafuso</p>
+                </div>
+
+                <div class="comparison-table">
+                    <table>
+                        <tr>
+                            <th>Critério</th>
+                            <th>🔀 CASE</th>
+                            <th>🔄 IF</th>
+                        </tr>
+                        <tr>
+                            <td><strong>Número de opções</strong></td>
+                            <td>4+ opções (ideal para menus)</td>
+                            <td>2-3 opções (melhor para decisões simples)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Tipo de comparação</strong></td>
+                            <td>Uma variável vs múltiplos padrões</td>
+                            <td>Múltiplas variáveis e condições complexas</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Legibilidade</strong></td>
+                            <td>Muito legível para múltiplas opções</td>
+                            <td>Pode ficar confuso com muitos elif</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Padrões/Wildcards</strong></td>
+                            <td>Suporte nativo ([0-9], *, |)</td>
+                            <td>Requer comandos externos (grep, etc.)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Condições lógicas</strong></td>
+                            <td>Limitado (só padrões simples)</td>
+                            <td>Completo (AND, OR, NOT, comparações)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Performance</strong></td>
+                            <td>Mais rápido para muitas opções</td>
+                            <td>Pode ser lento com muitos elif</td>
+                        </tr>
+                    </table>
                 </div>
 
                 <div class="two-column">
                     <div>
-                        <h3>🎯 CASE Aninhado (Case dentro de Case)</h3>
-                        <div class="script-box">
-#!/bin/bash<br>
-echo "Escolha categoria: (1)Comida (2)Bebida"<br>
-read <span class="variable">CATEGORIA</span><br>
-<br>
-case <span class="variable">$CATEGORIA</span> in<br>
-    1)<br>
-        echo "Tipo de comida: (a)Doce (b)Salgado"<br>
-        read <span class="variable">TIPO</span><br>
-        case <span class="variable">$TIPO</span> in<br>
-            a) echo "🍰 Doce selecionado!" ;;<br>
-            b) echo "🍕 Salgado selecionado!" ;;<br>
-            *) echo "❌ Tipo inválido" ;;<br>
-        esac<br>
-        ;;<br>
-    2)<br>
-        echo "Tipo de bebida: (a)Quente (b)Fria"<br>
-        read <span class="variable">TIPO</span><br>
-        case <span class="variable">$TIPO</span> in<br>
-            a) echo "☕ Bebida quente!" ;;<br>
-            b) echo "🧊 Bebida fria!" ;;<br>
-            *) echo "❌ Tipo inválido" ;;<br>
-        esac<br>
-        ;;<br>
-    *)<br>
-        echo "❌ Categoria inválida"<br>
-        ;;<br>
-esac
+                        <h3>✅ Use CASE quando:</h3>
+                        <div class="success-box">
+                            <div class="bullet-point">Criando menus interativos</div>
+                            <div class="bullet-point">Analisando códigos de erro</div>
+                            <div class="bullet-point">Classificando tipos de arquivo</div>
+                            <div class="bullet-point">Processando opções de linha de comando</div>
+                            <div class="bullet-point">Comparando uma variável com muitos valores</div>
+                            <div class="bullet-point">Usando padrões/wildcards</div>
                         </div>
                         
-                        <h3>🔄 CASE com Funções</h3>
+                        <h3>🎯 Exemplo: CASE é Melhor</h3>
                         <div class="script-box">
-#!/bin/bash<br>
-<br>
-<span class="comment"># Definindo funções</span><br>
-fazer_backup() {<br>
-    echo "🔄 Iniciando backup..."<br>
-    tar -czf backup.tar.gz *<br>
-    echo "✅ Backup concluído!"<br>
-}<br>
-<br>
-limpar_sistema() {<br>
-    echo "🧹 Limpando arquivos temporários..."<br>
-    rm -rf /tmp/*<br>
-    echo "✅ Sistema limpo!"<br>
-}<br>
-<br>
-<span class="comment"># Menu com funções</span><br>
-case <span class="variable">$1</span> in<br>
-    backup)<br>
-        fazer_backup<br>
-        ;;<br>
-    clean)<br>
-        limpar_sistema<br>
-        ;;<br>
-    *)<br>
-        echo "Uso: $0 {backup|clean}"<br>
-        ;;<br>
+<span class="comment"># Menu com CASE - limpo e claro</span><br>
+case "$OPCAO" in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">1</span>) echo <span class="string">"Primeira"</span> ;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">2</span>) echo <span class="string">"Segunda"</span> ;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">3</span>) echo <span class="string">"Terceira"</span> ;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">4</span>) echo <span class="string">"Quarta"</span> ;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*) echo <span class="string">"Inválida"</span> ;;<br>
 esac
                         </div>
                     </div>
                     <div>
-                        <h3>📊 CASE com Arrays</h3>
-                        <div class="script-box">
-#!/bin/bash<br>
-<br>
-<span class="comment"># Definindo arrays</span><br>
-declare -a CORES=("vermelho" "verde" "azul")<br>
-declare -a ANIMAIS=("gato" "cão" "pássaro")<br>
-<br>
-echo "Escolha: (1)Cores (2)Animais"<br>
-read <span class="variable">ESCOLHA</span><br>
-<br>
-case <span class="variable">$ESCOLHA</span> in<br>
-    1)<br>
-        echo "Cores disponíveis:"<br>
-        for i in "${CORES[@]}"; do<br>
-            echo "  🎨 $i"<br>
-        done<br>
-        ;;<br>
-    2)<br>
-        echo "Animais disponíveis:"<br>
-        for i in "${ANIMAIS[@]}"; do<br>
-            echo "  🐾 $i"<br>
-        done<br>
-        ;;<br>
-    *)<br>
-        echo "❌ Opção inválida"<br>
-        ;;<br>
-esac
+                        <h3>🔄 Use IF quando:</h3>
+                        <div class="info-box">
+                            <div class="bullet-point">Comparações numéricas complexas</div>
+                            <div class="bullet-point">Múltiplas condições com AND/OR</div>
+                            <div class="bullet-point">Testando arquivos e permissões</div>
+                            <div class="bullet-point">Validações de entrada complexas</div>
+                            <div class="bullet-point">Condições que envolvem múltiplas variáveis</div>
+                            <div class="bullet-point">Lógica condicional aninhada</div>
                         </div>
                         
-                        <h3>📋 CASE com Arquivo de Configuração</h3>
+                        <h3>🎯 Exemplo: IF é Melhor</h3>
                         <div class="script-box">
-#!/bin/bash<br>
-<br>
-<span class="comment"># Lê configuração de arquivo</span><br>
-if [ -f config.txt ]; then<br>
-    <span class="variable">MODO</span>=$(cat config.txt)<br>
-else<br>
-    <span class="variable">MODO</span>="padrao"<br>
-fi<br>
-<br>
-case <span class="variable">$MODO</span> in<br>
-    "debug")<br>
-        echo "🐛 Modo DEBUG ativado"<br>
-        set -x  <span class="comment"># Mostra todos os comandos</span><br>
-        ;;<br>
-    "producao")<br>
-        echo "🚀 Modo PRODUÇÃO"<br>
-        exec 2>/dev/null  <span class="comment"># Oculta erros</span><br>
-        ;;<br>
-    "teste")<br>
-        echo "🧪 Modo TESTE"<br>
-        ;;<br>
-    *)<br>
-        echo "⚙️  Modo PADRÃO"<br>
-        ;;<br>
-esac
+<span class="comment"># Validação complexa com IF</span><br>
+if [ "$IDADE" -ge 18 -a "$HABILITADO" = "sim" ]<br>
+then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if [ -f "$DOCUMENTO" -a -r "$DOCUMENTO" ]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Pode dirigir"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+fi
                         </div>
                     </div>
                 </div>
 
                 <div class="example-box">
-                    <h3>🚀 Super Script: Gerenciador do Sistema</h3>
+                    <h3>🤝 Combinando CASE e IF</h3>
                     <div class="script-box">
 #!/bin/bash<br>
-<br>
-<span class="comment"># Script profissional com CASE</span><br>
-<br>
-mostrar_ajuda() {<br>
-    echo "📚 USO: $0 [OPÇÃO]"<br>
-    echo "🔧 OPÇÕES:"<br>
-    echo "  info     - Informações do sistema"<br>
-    echo "  monitor  - Monitor de recursos"<br>
-    echo "  backup   - Fazer backup"<br>
-    echo "  update   - Atualizar sistema"<br>
-    echo "  help     - Mostrar esta ajuda"<br>
-}<br>
-<br>
-<span class="comment"># Verifica se tem parâmetro</span><br>
-if [ $# -eq 0 ]; then<br>
-    mostrar_ajuda<br>
-    exit 1<br>
-fi<br>
-<br>
-<span class="comment"># Processa opções</span><br>
-case <span class="variable">$1</span> in<br>
-    info|information|i)<br>
-        echo "💻 INFORMAÇÕES DO SISTEMA"<br>
-        echo "Usuário: $(whoami)"<br>
-        echo "Sistema: $(uname -a)"<br>
-        echo "Uptime: $(uptime)"<br>
-        ;;<br>
-    monitor|mon|m)<br>
-        echo "📊 MONITOR DE RECURSOS"<br>
-        echo "Memória:"<br>
-        free -h<br>
-        echo -e "\nDisco:"<br>
-        df -h<br>
-        ;;<br>
-    backup|bkp|b)<br>
-        echo "💾 FAZENDO BACKUP..."<br>
-        tar -czf backup_$(date +%Y%m%d_%H%M%S).tar.gz $HOME<br>
-        echo "✅ Backup concluído!"<br>
-        ;;<br>
-    update|upd|u)<br>
-        echo "🔄 ATUALIZANDO SISTEMA..."<br>
-        sudo apt update && sudo apt upgrade<br>
-        ;;<br>
-    help|ajuda|h|-h|--help)<br>
-        mostrar_ajuda<br>
-        ;;<br>
-    *)<br>
-        echo "❌ Opção '$1' não reconhecida"<br>
-        mostrar_ajuda<br>
-        exit 1<br>
-        ;;<br>
+<span class="comment"># Exemplo híbrido: o melhor dos dois mundos</span><br>
+
+case "$ACAO" in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">backup</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Usa IF para validações complexas dentro do CASE</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if [ -d "$ORIGEM" -a -w "$DESTINO" ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Fazendo backup..."</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cp -r "$ORIGEM" "$DESTINO"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Erro: verificar permissões"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">restore</span>)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Restaurando..."</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Ação desconhecida"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;;;<br>
 esac
                     </div>
                 </div>
 
-                <div class="success-box">
-                    <h3>🏆 Boas Práticas Profissionais</h3>
-                    <p>✅ <strong>Sempre</strong> inclua ajuda com --help<br>
-                    ✅ <strong>Use</strong> sinônimos para opções (i|info|information)<br>
-                    ✅ <strong>Valide</strong> parâmetros antes de processar<br>
-                    ✅ <strong>Adicione</strong> emojis para interface amigável<br>
-                    ✅ <strong>Trate</strong> casos de erro com exit codes apropriados</p>
+                <div class="warning-box">
+                    <h3>💡 Regra de Ouro</h3>
+                    <p><strong>Pergunta simples:</strong> "Estou comparando UMA variável com múltiplos valores fixos?"<br>
+                    <strong>SIM →</strong> Use CASE<br>
+                    <strong>NÃO →</strong> Use IF<br>
+                    <br><strong>Dica:</strong> Você sempre pode converter um para o outro, mas escolher o certo desde o início torna o código mais limpo!</p>
                 </div>
             </div>
             
@@ -1769,21 +1548,21 @@ esac
         <!-- Slide 11: Quiz -->
         <div class="slide" id="slide-11">
             <div class="content">
-                <h2>🧠 Quiz - Teste seus Conhecimentos sobre CASE!</h2>
+                <h2>🧠 Quiz - Teste seus Conhecimentos!</h2>
                 
                 <div class="quiz-container">
                     <div class="quiz-question" id="question1">
                         <h3>📝 Questão 1</h3>
-                        <p><strong>Como termina um bloco CASE?</strong></p>
+                        <p><strong>Qual palavra finaliza uma estrutura CASE?</strong></p>
                         <div class="quiz-options">
                             <div class="quiz-option" onclick="selectOption(1, 'a', false)">
                                 <span class="option-letter">A)</span> end
                             </div>
-                            <div class="quiz-option" onclick="selectOption(1, 'b', false)">
-                                <span class="option-letter">B)</span> fi
+                            <div class="quiz-option" onclick="selectOption(1, 'b', true)">
+                                <span class="option-letter">B)</span> esac
                             </div>
-                            <div class="quiz-option" onclick="selectOption(1, 'c', true)">
-                                <span class="option-letter">C)</span> esac
+                            <div class="quiz-option" onclick="selectOption(1, 'c', false)">
+                                <span class="option-letter">C)</span> fi
                             </div>
                             <div class="quiz-option" onclick="selectOption(1, 'd', false)">
                                 <span class="option-letter">D)</span> done
@@ -1794,19 +1573,19 @@ esac
 
                     <div class="quiz-question" id="question2" style="display: none;">
                         <h3>📝 Questão 2</h3>
-                        <p><strong>O que faz o padrão "*)" no CASE?</strong></p>
+                        <p><strong>Qual símbolo é usado para separar os casos em uma estrutura CASE?</strong></p>
                         <div class="quiz-options">
                             <div class="quiz-option" onclick="selectOption(2, 'a', false)">
-                                <span class="option-letter">A)</span> Multiplica valores
+                                <span class="option-letter">A)</span> :
                             </div>
                             <div class="quiz-option" onclick="selectOption(2, 'b', true)">
-                                <span class="option-letter">B)</span> Captura qualquer valor não especificado
+                                <span class="option-letter">B)</span> ;;
                             </div>
                             <div class="quiz-option" onclick="selectOption(2, 'c', false)">
-                                <span class="option-letter">C)</span> Só aceita asterisco
+                                <span class="option-letter">C)</span> ||
                             </div>
                             <div class="quiz-option" onclick="selectOption(2, 'd', false)">
-                                <span class="option-letter">D)</span> Interrompe o script
+                                <span class="option-letter">D)</span> &&
                             </div>
                         </div>
                         <div class="quiz-feedback" id="feedback2"></div>
@@ -1814,19 +1593,19 @@ esac
 
                     <div class="quiz-question" id="question3" style="display: none;">
                         <h3>📝 Questão 3</h3>
-                        <p><strong>Qual padrão aceita qualquer letra maiúscula?</strong></p>
+                        <p><strong>Qual padrão captura qualquer valor não especificado nos outros casos?</strong></p>
                         <div class="quiz-options">
                             <div class="quiz-option" onclick="selectOption(3, 'a', true)">
-                                <span class="option-letter">A)</span> [A-Z]
+                                <span class="option-letter">A)</span> *)
                             </div>
                             <div class="quiz-option" onclick="selectOption(3, 'b', false)">
-                                <span class="option-letter">B)</span> [a-z]
+                                <span class="option-letter">B)</span> ?)
                             </div>
                             <div class="quiz-option" onclick="selectOption(3, 'c', false)">
-                                <span class="option-letter">C)</span> [0-9]
+                                <span class="option-letter">C)</span> else)
                             </div>
                             <div class="quiz-option" onclick="selectOption(3, 'd', false)">
-                                <span class="option-letter">D)</span> [A-a]
+                                <span class="option-letter">D)</span> default)
                             </div>
                         </div>
                         <div class="quiz-feedback" id="feedback3"></div>
@@ -1834,19 +1613,19 @@ esac
 
                     <div class="quiz-question" id="question4" style="display: none;">
                         <h3>📝 Questão 4</h3>
-                        <p><strong>O que deve aparecer no final de cada caso?</strong></p>
+                        <p><strong>Qual padrão do CASE representa números de 0 a 9?</strong></p>
                         <div class="quiz-options">
-                            <div class="quiz-option" onclick="selectOption(4, 'a', false)">
-                                <span class="option-letter">A)</span> ;
+                            <div class="quiz-option" onclick="selectOption(4, 'a', true)">
+                                <span class="option-letter">A)</span> [0-9]
                             </div>
-                            <div class="quiz-option" onclick="selectOption(4, 'b', true)">
-                                <span class="option-letter">B)</span> ;;
+                            <div class="quiz-option" onclick="selectOption(4, 'b', false)">
+                                <span class="option-letter">B)</span> (0-9)
                             </div>
                             <div class="quiz-option" onclick="selectOption(4, 'c', false)">
-                                <span class="option-letter">C)</span> :
+                                <span class="option-letter">C)</span> {0-9}
                             </div>
                             <div class="quiz-option" onclick="selectOption(4, 'd', false)">
-                                <span class="option-letter">D)</span> end
+                                <span class="option-letter">D)</span> 0-9
                             </div>
                         </div>
                         <div class="quiz-feedback" id="feedback4"></div>
@@ -1879,79 +1658,81 @@ esac
         <!-- Slide 12: Conclusão -->
         <div class="slide" id="slide-12">
             <div class="content">
-                <h2>🎓 Parabéns! Você Domina o Comando CASE!</h2>
+                <h2>🎓 Parabéns! Você Domina a Estrutura CASE!</h2>
                 
                 <div class="highlight-box center-text">
-                    <h3>🎯 Agora Seus Scripts Têm Múltiplas Personalidades!</h3>
-                    <p>Você aprendeu a criar menus inteligentes e decisões elegantes com CASE</p>
+                    <h3>🎯 Agora Seus Scripts São Mais Elegantes!</h3>
+                    <p>Você aprendeu a criar programas com múltiplas opções de forma organizada e eficiente</p>
                 </div>
 
                 <div class="two-column">
                     <div>
                         <h3>📚 O que Você Domina Agora</h3>
-                        <div class="bullet-point">Estrutura case-in-esac completa</div>
-                        <div class="bullet-point">Padrões simples e wildcards</div>
-                        <div class="bullet-point">Múltiplas opções com "|"</div>
+                        <div class="bullet-point">Estrutura case/esac</div>
+                        <div class="bullet-point">Padrões e wildcards</div>
+                        <div class="bullet-point">Caso padrão (*)</div>
+                        <div class="bullet-point">Múltiplas opções com |</div>
                         <div class="bullet-point">Ranges [0-9], [A-Z], [a-z]</div>
-                        <div class="bullet-point">Caso padrão com "*)"</div>
-                        <div class="bullet-point">CASE vs IF - quando usar cada um</div>
-                        <div class="bullet-point">Técnicas avançadas e truques</div>
+                        <div class="bullet-point">Separadores ;;</div>
+                        <div class="bullet-point">Menus interativos elegantes</div>
                     </div>
                     <div>
                         <h3>🚀 Próximos Desafios</h3>
                         <div class="bullet-point">Loops (for, while, until)</div>
-                        <div class="bullet-point">Funções e bibliotecas</div>
-                        <div class="bullet-point">Arrays e manipulação de dados</div>
-                        <div class="bullet-point">Expressões regulares</div>
-                        <div class="bullet-point">Tratamento de sinais (trap)</div>
-                        <div class="bullet-point">Scripts com argumentos avançados</div>
-                        <div class="bullet-point">Debugging e profiling</div>
+                        <div class="bullet-point">Funções personalizadas</div>
+                        <div class="bullet-point">Arrays e listas</div>
+                        <div class="bullet-point">Getopts para argumentos</div>
+                        <div class="bullet-point">Tratamento de sinais</div>
+                        <div class="bullet-point">Scripts daemon</div>
+                        <div class="bullet-point">Projetos avançados</div>
                     </div>
                 </div>
 
                 <div style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); padding: 25px; border-radius: 15px; margin: 20px 0;">
-                    <h3>🎯 Exercícios para Casa</h3>
-                    <p><strong>1. Super Calculadora:</strong> Crie uma calculadora com operações avançadas (potência, raiz, etc.)</p>
-                    <p><strong>2. Organizador de Arquivos:</strong> Script que move arquivos para pastas baseado na extensão</p>
-                    <p><strong>3. Monitor do Sistema:</strong> Menu que mostra CPU, RAM, disco e processos</p>
-                    <p><strong>4. Backup Inteligente:</strong> Sistema de backup com diferentes estratégias</p>
+                    <h3>🎯 Exercícios Propostos</h3>
+                    <p><strong>1. Conversor de Dias:</strong> Script que converte número (1-7) para nome do dia da semana.</p>
+                    <p><strong>2. Menu de Sistema:</strong> Criar menu com opções para ver processos, espaço em disco e memória.</p>
+                    <p><strong>3. Classificador de Arquivos:</strong> Script que identifica tipo de arquivo pela extensão.</p>
+                    <p><strong>4. Verificador de Conectividade:</strong> Sistema que testa ping e interpreta códigos de saída.</p>
                 </div>
 
                 <div class="success-box center-text">
-                    <h3>🏆 Comandos CASE para Memorizar</h3>
+                    <h3>🏆 Comandos para Memorizar</h3>
                     <div class="script-box">
-case $variavel in                    <span class="comment"># Inicia análise</span><br>
-    padrão1) comandos ;;             <span class="comment"># Caso específico</span><br>
-    pad1|pad2) comandos ;;           <span class="comment"># Múltiplas opções</span><br>
-    [0-9]) comandos ;;               <span class="comment"># Range numérico</span><br>
-    [A-Z]) comandos ;;               <span class="comment"># Range maiúsculas</span><br>
-    [Ss]) comandos ;;                <span class="comment"># S ou s</span><br>
-    *.txt) comandos ;;               <span class="comment"># Termina com .txt</span><br>
-    backup_*) comandos ;;            <span class="comment"># Começa com backup_</span><br>
-    *) comandos ;;                   <span class="comment"># Qualquer outra coisa</span><br>
-esac                                 <span class="comment"># Fim da análise</span><br>
+case "$VAR" in<br>
+&nbsp;&nbsp;&nbsp;&nbsp;padrão1) comandos ;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;padrão2) comandos ;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;*) comando_padrão ;;<br>
+esac<br>
+<br>
+[0-9]          <span class="comment"># um dígito</span><br>
+[A-Z]          <span class="comment"># letra maiúscula</span><br>
+[a-z]          <span class="comment"># letra minúscula</span><br>
+sim|yes|y      <span class="comment"># múltiplas opções</span><br>
+*.txt          <span class="comment"># arquivos .txt</span><br>
+*)             <span class="comment"># qualquer coisa</span>
                     </div>
                 </div>
 
                 <div class="example-box center-text">
-                    <h3>⚡ Você Agora É um Arquiteto de Menus! ⚡</h3>
-                    <p>"Seus scripts agora são como restaurantes com cardápios organizados!"<br>
-                    Continue criando menus cada vez mais elaborados! 🍽️🚀</p>
+                    <h3>⚡ Você Agora É um Mestre dos Menus! ⚡</h3>
+                    <p>"Seus scripts agora oferecem múltiplas opções elegantemente!"<br>
+                    Continue criando interfaces cada vez mais profissionais! 🎯🚀</p>
                 </div>
 
                 <div class="info-box center-text">
                     <h3>📋 Recursos para Continuar Aprendendo</h3>
-                    <p>• Bash Advanced Scripting Guide<br>
-                    • ShellCheck (validador online)<br>
-                    • Bash Manual (man bash)<br>
-                    • Prática com projetos reais</p>
+                    <p>• Bash Pattern Matching Guide<br>
+                    • Advanced Menu Systems<br>
+                    • Bash Manual - Case Statement<br>
+                    • Projetos com interfaces completas</p>
                 </div>
 
                 <div style="background: #d1ecf1; color: #0c5460; padding: 20px; border-radius: 10px; margin: 15px 0; text-align: center;">
                     <p style="font-size: 1.1em; margin: 0;">
-                        <strong>Lembre-se:</strong> CASE é perfeito para menus e múltiplas opções,<br>
-                        IF é melhor para condições complexas!<br>
-                        <strong>Happy Menu Scripting! 🐧🎯</strong>
+                        <strong>Lembre-se:</strong> sempre termine com esac, 
+                        use ;; entre casos, e coloque * por último!<br>
+                        <strong>Happy Case Scripting! 🐧🔄</strong>
                     </p>
                 </div>
             </div>
@@ -2030,16 +1811,16 @@ esac                                 <span class="comment"># Fim da análise</sp
                 let correctAnswer = '';
                 switch(questionNum) {
                     case 1:
-                        correctAnswer = 'CASE termina com "esac" (case ao contrário).';
+                        correctAnswer = 'esac é "case" escrito ao contrário e finaliza a estrutura.';
                         break;
                     case 2:
-                        correctAnswer = '*) é o padrão que captura qualquer valor não especificado anteriormente.';
+                        correctAnswer = ';; separa cada caso na estrutura CASE.';
                         break;
                     case 3:
-                        correctAnswer = '[A-Z] aceita qualquer letra de A até Z (maiúsculas).';
+                        correctAnswer = '*) captura qualquer valor não especificado nos outros casos.';
                         break;
                     case 4:
-                        correctAnswer = '";;" marca o fim de cada caso no CASE.';
+                        correctAnswer = '[0-9] representa qualquer dígito de 0 a 9.';
                         break;
                 }
                 feedback.innerHTML = `❌ Incorreto. ${correctAnswer}`;
@@ -2078,11 +1859,11 @@ esac                                 <span class="comment"># Fim da análise</sp
             if (score === 4) {
                 resultMessage.innerHTML = '🏆 Perfeito! Você é um mestre do CASE!';
             } else if (score === 3) {
-                resultMessage.innerHTML = '🌟 Excelente! Quase um expert em menus!';
+                resultMessage.innerHTML = '🌟 Excelente! Quase um expert em estruturas!';
             } else if (score === 2) {
                 resultMessage.innerHTML = '👏 Bom trabalho! Continue praticando!';
             } else if (score === 1) {
-                resultMessage.innerHTML = '📖 Há espaço para melhorar. Revise os padrões!';
+                resultMessage.innerHTML = '📖 Há espaço para melhorar. Revise os conceitos!';
             } else {
                 resultMessage.innerHTML = '🔄 Recomendo revisar toda a aula novamente!';
             }
