@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SMTP e POP3 - Protocolos de Email</title>
+    <title>Shell Script - Comando CASE</title>
     <style>
         * {
             margin: 0;
@@ -14,7 +14,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             color: #333;
             overflow-x: hidden;
         }
@@ -54,7 +54,7 @@
             font-size: 2.8em;
             color: #2d3748;
             margin-bottom: 30px;
-            border-bottom: 4px solid #667eea;
+            border-bottom: 4px solid #1a1a2e;
             padding-bottom: 15px;
         }
 
@@ -87,7 +87,7 @@
         }
 
         .bullet-point::before {
-            content: "📧";
+            content: "⚡";
             margin-right: 15px;
             font-size: 1.2em;
         }
@@ -98,7 +98,7 @@
             padding: 25px;
             border-radius: 15px;
             margin: 20px 0;
-            border-left: 5px solid #4a5568;
+            border-left: 5px solid #1a1a2e;
         }
 
         .example-box {
@@ -110,7 +110,7 @@
             border-left: 5px solid #00b894;
         }
 
-        .config-box {
+        .terminal-box {
             background: #2d3748;
             color: #00ff41;
             padding: 25px;
@@ -122,8 +122,8 @@
             position: relative;
         }
 
-        .config-box::before {
-            content: "⚙️ Configuração";
+        .terminal-box::before {
+            content: "💻 Terminal Linux";
             position: absolute;
             top: -15px;
             left: 20px;
@@ -135,75 +135,64 @@
             font-family: 'Segoe UI', sans-serif;
         }
 
-        .windows-box {
-            background: #0078d4;
-            color: white;
+        .script-box {
+            background: #1a202c;
+            color: #00ff41;
             padding: 25px;
             border-radius: 15px;
             margin: 20px 0;
-            border-left: 5px solid #004c87;
+            border-left: 5px solid #68d391;
+            font-family: 'Courier New', monospace;
+            font-size: 1.0em;
             position: relative;
         }
 
-        .windows-box::before {
-            content: "🪟 Windows 10";
+        .script-box::before {
+            content: "📝 Script Shell";
             position: absolute;
             top: -15px;
             left: 20px;
-            background: #0078d4;
-            color: white;
+            background: #1a202c;
+            color: #68d391;
             padding: 5px 15px;
             border-radius: 8px;
             font-size: 0.9em;
+            font-family: 'Segoe UI', sans-serif;
         }
 
-        .gmail-box {
-            background: #ea4335;
-            color: white;
-            padding: 25px;
-            border-radius: 15px;
-            margin: 20px 0;
-            border-left: 5px solid #d33b2c;
-            position: relative;
+        .prompt {
+            color: #4299e1;
+            font-weight: bold;
         }
 
-        .gmail-box::before {
-            content: "📮 Gmail";
-            position: absolute;
-            top: -15px;
-            left: 20px;
-            background: #ea4335;
-            color: white;
-            padding: 5px 15px;
-            border-radius: 8px;
-            font-size: 0.9em;
+        .command {
+            color: #00ff41;
+            font-weight: bold;
         }
 
-        .outlook-box {
-            background: #0078d4;
-            color: white;
-            padding: 25px;
-            border-radius: 15px;
-            margin: 20px 0;
-            border-left: 5px solid #106ebe;
-            position: relative;
+        .output {
+            color: #e2e8f0;
+            margin-left: 0;
+            margin-top: 5px;
         }
 
-        .outlook-box::before {
-            content: "📧 Outlook";
-            position: absolute;
-            top: -15px;
-            left: 20px;
-            background: #0078d4;
-            color: white;
-            padding: 5px 15px;
-            border-radius: 8px;
-            font-size: 0.9em;
+        .variable {
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .string {
+            color: #ff6b9d;
+        }
+
+        .comment {
+            color: #68d391;
+            font-style: italic;
         }
 
         .nav-button {
             padding: 15px 30px;
-            background: #667eea;
+            background: #1a1a2e;
             color: white;
             border: none;
             border-radius: 25px;
@@ -215,7 +204,7 @@
         }
 
         .nav-button:hover {
-            background: #5a67d8;
+            background: #16213e;
             transform: translateY(-2px);
         }
 
@@ -283,7 +272,7 @@
             border-left: 4px solid #48bb78;
         }
 
-        .comparison-table {
+        .operators-table {
             background: #f8f9fa;
             border-radius: 10px;
             padding: 20px;
@@ -291,1138 +280,1685 @@
             overflow-x: auto;
         }
 
-        .comparison-table table {
+        .operators-table table {
             width: 100%;
             border-collapse: collapse;
             font-size: 1.1em;
         }
 
-        .comparison-table th,
-        .comparison-table td {
+        .operators-table th,
+        .operators-table td {
             padding: 12px;
             text-align: left;
             border-bottom: 1px solid #dee2e6;
         }
 
-        .comparison-table th {
-            background: #667eea;
+        .operators-table th {
+            background: #1a1a2e;
             color: white;
             font-weight: bold;
         }
 
-        .comparison-table tr:nth-child(even) {
+        .operators-table tr:nth-child(even) {
             background: #f2f2f2;
         }
 
-        .steps-box {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 20px;
+        /* Quiz Styles */
+        .quiz-container {
+            max-width: 100%;
             margin: 20px 0;
-            border-left: 4px solid #667eea;
         }
 
-        .step {
+        .quiz-question {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 2px solid #e2e8f0;
+        }
+
+        .quiz-question h3 {
+            color: #1a1a2e;
+            margin-bottom: 20px;
+        }
+
+        .quiz-question p {
+            font-size: 1.3em;
+            margin-bottom: 25px;
+            font-weight: bold;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .quiz-option {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
             background: white;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 8px;
-            border-left: 3px solid #667eea;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
             font-size: 1.1em;
         }
 
-        .step-number {
-            background: #667eea;
+        .quiz-option:hover {
+            border-color: #1a1a2e;
+            background: #f0f4ff;
+            transform: translateX(5px);
+        }
+
+        .quiz-option.selected {
+            border-color: #1a1a2e;
+            background: #1a1a2e;
+            color: white;
+        }
+
+        .quiz-option.correct {
+            border-color: #48bb78;
+            background: #48bb78;
+            color: white;
+        }
+
+        .quiz-option.incorrect {
+            border-color: #f56565;
+            background: #f56565;
+            color: white;
+        }
+
+        .option-letter {
+            background: #1a1a2e;
             color: white;
             width: 30px;
             height: 30px;
             border-radius: 50%;
-            display: inline-flex;
+            display: flex;
             align-items: center;
             justify-content: center;
             margin-right: 15px;
             font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .quiz-option.correct .option-letter {
+            background: #48bb78;
+        }
+
+        .quiz-option.incorrect .option-letter {
+            background: #f56565;
+        }
+
+        .quiz-feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            display: none;
+        }
+
+        .quiz-feedback.correct {
+            background: #c6f6d5;
+            color: #22543d;
+            border: 2px solid #48bb78;
+            display: block;
+        }
+
+        .quiz-feedback.incorrect {
+            background: #fed7d7;
+            color: #742a2a;
+            border: 2px solid #f56565;
+            display: block;
         }
     </style>
 </head>
 <body>
     <div class="presentation">
         <div class="slide-counter">
-            <span id="current-slide">1</span> / <span id="total-slides">10</span>
+            <span id="current-slide">1</span> / <span id="total-slides">12</span>
         </div>
 
         <!-- Slide 1: Título -->
         <div class="slide active" id="slide-1">
             <div class="content center-text">
-                <h1>📧 SMTP e POP3</h1>
-                <h2 style="border: none; color: #667eea;">Protocolos de Email e Configuração</h2>
+                <h1>🎯 Shell Script - Comando CASE</h1>
+                <h2 style="border: none; color: #1a1a2e;">Criando Menus Inteligentes</h2>
                 <div class="highlight-box large-text">
-                    <strong>Como funciona o email na internet</strong><br>
-                    Entenda os protocolos que fazem seus emails chegarem ao destino<br>
-                    Configuração prática no Cisco Packet Tracer e Windows 10
+                    <strong>case, in, esac</strong><br>
+                    Como criar menus e decisões múltiplas<br>
+                    A alternativa elegante ao IF para várias opções
                 </div>
                 
-                <div class="example-box" style="margin-top: 40px;">
-                    <p style="font-size: 1.3em; margin: 0;">
-                        📮 <strong>SMTP:</strong> Envia emails (como o carteiro)<br>
-                        📬 <strong>POP3:</strong> Recebe emails (como sua caixa de correio)
-                    </p>
+                <div class="terminal-box" style="margin-top: 40px;">
+<span class="prompt">user@linux:~$</span> <span class="command">echo "Escolha uma opção do menu!"</span>
+<div class="output">Escolha uma opção do menu!</div>
+<span class="prompt">user@linux:~$</span> <span class="command">echo "CASE = Menu inteligente! 🍽️"</span>
                 </div>
             </div>
             
             <div class="slide-navigation">
-                <span style="margin: 0 20px; font-weight: bold; color: #667eea;">Slide 1 de 10</span>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 1 de 12</span>
                 <button class="nav-button start" onclick="showSlide(2)">
                     Começar Aula ➡️
                 </button>
             </div>
         </div>
 
-        <!-- Slide 2: O que é SMTP -->
+        <!-- Slide 2: Introdução ao CASE -->
         <div class="slide" id="slide-2">
             <div class="content">
-                <h2>📮 O que é SMTP?</h2>
+                <h2>🍽️ O que é o Comando CASE?</h2>
                 
                 <div class="highlight-box">
-                    <h3>📬 Simple Mail Transfer Protocol</h3>
-                    <p>É como o serviço de correios da internet - responsável por entregar seus emails!</p>
+                    <h3>🏪 Como um Cardápio de Restaurante</h3>
+                    <p>Imagine que você está em um restaurante olhando o cardápio. O garçom pergunta: "O que você vai querer?"</p>
+                    <p><strong>Opção 1:</strong> "Hambúrguer" → Ele traz hambúrguer<br>
+                    <strong>Opção 2:</strong> "Pizza" → Ele traz pizza<br>
+                    <strong>Opção 3:</strong> "Salada" → Ele traz salada<br>
+                    <strong>Outra coisa:</strong> "Não temos esse prato"</p>
                 </div>
 
                 <div class="two-column">
                     <div>
-                        <h3>🚚 Analogia do Carteiro</h3>
-                        <div class="example-box">
-                            <p>Imagine o SMTP como um <strong>carteiro super eficiente:</strong></p>
-                            <div class="bullet-point">Você escreve uma carta (email)</div>
-                            <div class="bullet-point">Coloca no correio (servidor SMTP)</div>
-                            <div class="bullet-point">O carteiro busca a carta</div>
-                            <div class="bullet-point">Entrega na casa do destinatário</div>
-                            <div class="bullet-point">A carta chega na caixa de correio</div>
+                        <h3>🎯 Estrutura Básica do CASE</h3>
+                        <div class="script-box">
+case $variavel in<br>
+    padrão1)<br>
+        comando1<br>
+        ;;<br>
+    padrão2)<br>
+        comando2<br>
+        ;;<br>
+    *)<br>
+        comando_padrão<br>
+        ;;<br>
+esac
                         </div>
                         
-                        <h3>⚙️ Como Funciona</h3>
                         <div class="info-box">
-                            <p><strong>Porta padrão:</strong> 25 (não criptografado)<br>
-                            <strong>Porta segura:</strong> 587 (TLS/STARTTLS)<br>
-                            <strong>Porta SSL:</strong> 465 (SSL/TLS)<br>
-                            <strong>Função:</strong> Apenas enviar emails</p>
+                            <h4>📋 Como Lê-se:</h4>
+                            <p><strong>case</strong> = "analise o valor de"<br>
+                            <strong>in</strong> = "entre essas opções"<br>
+                            <strong>;;</strong> = "fim desta opção"<br>
+                            <strong>*)</strong> = "qualquer outra coisa"<br>
+                            <strong>esac</strong> = "fim da análise" (case ao contrário!)</p>
                         </div>
                     </div>
                     <div>
-                        <h3>📊 Características do SMTP</h3>
-                        <div class="steps-box">
-                            <div class="step">
-                                <span class="step-number">1</span>
-                                <strong>Unidirecional:</strong> Só envia emails
-                            </div>
-                            <div class="step">
-                                <span class="step-number">2</span>
-                                <strong>Confiável:</strong> Confirma entrega
-                            </div>
-                            <div class="step">
-                                <span class="step-number">3</span>
-                                <strong>Autenticação:</strong> Login obrigatório
-                            </div>
-                            <div class="step">
-                                <span class="step-number">4</span>
-                                <strong>Criptografia:</strong> Suporte TLS/SSL
-                            </div>
+                        <h3>🏠 Exemplo da Vida Real</h3>
+                        <div class="example-box">
+                            <p><strong>Na vida:</strong><br>
+                            🚦 "Dependendo da cor do semáforo, faça algo diferente"</p>
+                            
+                            <p><strong>No script:</strong><br>
+                            💻 "Dependendo da opção escolhida, execute comandos diferentes"</p>
                         </div>
                         
-                        <h3>🌍 Exemplos de Servidores SMTP</h3>
-                        <div class="gmail-box">
-                            <p><strong>Gmail:</strong> smtp.gmail.com:587</p>
+                        <h3>🔍 Primeiro Exemplo</h3>
+                        <div class="script-box">
+read <span class="variable">OPCAO</span><br>
+case $OPCAO in<br>
+    1)<br>
+        echo <span class="string">"Incluir arquivo"</span><br>
+        ;;<br>
+    2)<br>
+        echo <span class="string">"Remover arquivo"</span><br>
+        ;;<br>
+    *)<br>
+        echo <span class="string">"Opção inválida"</span><br>
+        ;;<br>
+esac
                         </div>
-                        <div class="outlook-box">
-                            <p><strong>Outlook:</strong> smtp-mail.outlook.com:587</p>
-                        </div>
-                        <div class="example-box">
-                            <p><strong>Yahoo:</strong> smtp.mail.yahoo.com:587<br>
-                            <strong>UOL:</strong> smtps.uol.com.br:587</p>
+                        
+                        <div class="terminal-box">
+<span class="prompt">Entrada:</span> <span class="command">1</span>
+<div class="output">Incluir arquivo</div>
                         </div>
                     </div>
                 </div>
 
                 <div class="warning-box">
-                    <h3>⚠️ Importante Saber</h3>
-                    <p><strong>SMTP não armazena emails!</strong> Ele apenas entrega. É como um carteiro que não guarda cartas em casa.<br>
-                    <strong>Sempre use portas seguras</strong> (587 ou 465) para proteger suas credenciais.</p>
+                    <h3>⚠️ Palavras-Chave Importantes</h3>
+                    <p><strong>case:</strong> inicia a estrutura de decisão<br>
+                    <strong>in:</strong> "entre estas opções"<br>
+                    <strong>;;</strong> terminador obrigatório de cada caso<br>
+                    <strong>esac:</strong> termina a estrutura (case invertido!)</p>
                 </div>
             </div>
             
             <div class="slide-navigation">
                 <button class="nav-button" onclick="showSlide(1)">⬅️ Anterior</button>
-                <span style="margin: 0 20px; font-weight: bold; color: #667eea;">Slide 2 de 10</span>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 2 de 12</span>
                 <button class="nav-button" onclick="showSlide(3)">Próximo ➡️</button>
             </div>
         </div>
 
-        <!-- Slide 3: O que é POP3 -->
+        <!-- Slide 3: Estrutura Detalhada -->
         <div class="slide" id="slide-3">
             <div class="content">
-                <h2>📬 O que é POP3?</h2>
+                <h2>🏗️ Anatomia do CASE - Como Funciona</h2>
                 
                 <div class="highlight-box">
-                    <h3>📥 Post Office Protocol version 3</h3>
-                    <p>É como sua caixa de correio pessoal - onde você busca e guarda seus emails!</p>
+                    <h3>🔍 Destrinchando Cada Parte</h3>
+                    <p>Vamos entender cada pedacinho da estrutura CASE como um mecânico desmontando um motor!</p>
+                </div>
+
+                <div class="script-box">
+#!/bin/bash<br>
+echo "Escolha uma opção:"<br>
+echo "1 - Listar arquivos"<br>
+echo "2 - Mostrar data"<br>
+echo "3 - Mostrar usuário"<br>
+read <span class="variable">ESCOLHA</span><br>
+<br>
+case <span class="variable">$ESCOLHA</span> in     <span class="comment"># ← Analisa o valor da variável ESCOLHA</span><br>
+    1)                    <span class="comment"># ← Se for "1", faça isto:</span><br>
+        echo "📁 Listando arquivos..."<br>
+        ls -la<br>
+        ;;                <span class="comment"># ← Fim deste caso</span><br>
+    2)                    <span class="comment"># ← Se for "2", faça isto:</span><br>
+        echo "📅 Data atual:"<br>
+        date<br>
+        ;;                <span class="comment"># ← Fim deste caso</span><br>
+    3)                    <span class="comment"># ← Se for "3", faça isto:</span><br>
+        echo "👤 Usuário atual:"<br>
+        whoami<br>
+        ;;                <span class="comment"># ← Fim deste caso</span><br>
+    *)                    <span class="comment"># ← Para qualquer outro valor:</span><br>
+        echo "❌ Opção inválida!"<br>
+        ;;                <span class="comment"># ← Fim deste caso</span><br>
+esac                      <span class="comment"># ← Fim da estrutura CASE</span><br>
                 </div>
 
                 <div class="two-column">
                     <div>
-                        <h3>🏠 Analogia da Caixa de Correio</h3>
-                        <div class="example-box">
-                            <p>POP3 é como uma <strong>caixa de correio tradicional:</strong></p>
-                            <div class="bullet-point">Emails ficam guardados no servidor</div>
-                            <div class="bullet-point">Você vai até a caixa (conecta)</div>
-                            <div class="bullet-point">Pega todas as cartas (baixa emails)</div>
-                            <div class="bullet-point">Leva para casa (seu computador)</div>
-                            <div class="bullet-point">A caixa fica vazia (servidor limpo)</div>
-                        </div>
-                        
-                        <h3>🔧 Configurações Típicas</h3>
-                        <div class="info-box">
-                            <p><strong>Porta padrão:</strong> 110 (não criptografado)<br>
-                            <strong>Porta segura:</strong> 995 (SSL/TLS)<br>
-                            <strong>Função:</strong> Receber/baixar emails<br>
-                            <strong>Comportamento:</strong> Download local</p>
+                        <h3>🎬 Simulação da Execução</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">./menu.sh</span>
+<div class="output">Escolha uma opção:</div>
+<div class="output">1 - Listar arquivos</div>
+<div class="output">2 - Mostrar data</div>
+<div class="output">3 - Mostrar usuário</div>
+<span class="prompt">Digite sua escolha:</span> <span class="command">2</span>
+<div class="output">📅 Data atual:</div>
+<div class="output">Qua 23 Jul 2025 14:30:15</div>
                         </div>
                     </div>
                     <div>
-                        <h3>⚡ Como Funciona o POP3</h3>
-                        <div class="steps-box">
-                            <div class="step">
-                                <span class="step-number">1</span>
-                                <strong>Conecta:</strong> Acessa servidor de email
-                            </div>
-                            <div class="step">
-                                <span class="step-number">2</span>
-                                <strong>Autentica:</strong> Login com usuário/senha
-                            </div>
-                            <div class="step">
-                                <span class="step-number">3</span>
-                                <strong>Lista:</strong> Vê emails disponíveis
-                            </div>
-                            <div class="step">
-                                <span class="step-number">4</span>
-                                <strong>Baixa:</strong> Transfere emails para o PC
-                            </div>
-                            <div class="step">
-                                <span class="step-number">5</span>
-                                <strong>Apaga:</strong> Remove do servidor (opcional)
-                            </div>
+                        <h3>🧩 Como o CASE Pensa</h3>
+                        <div class="info-box">
+                            <h4>🤔 Processo Mental do CASE:</h4>
+                            <p>1. "Vou analisar o valor de $ESCOLHA"<br>
+                            2. "É igual a '1'? Não..."<br>
+                            3. "É igual a '2'? SIM!"<br>
+                            4. "Então vou executar o bloco do '2)'"<br>
+                            5. "Encontrei ';;', fim desta opção"<br>
+                            6. "Pulo direto para 'esac' e termino"</p>
                         </div>
                         
-                        <h3>🌍 Servidores POP3 Conhecidos</h3>
-                        <div class="gmail-box">
-                            <p><strong>Gmail:</strong> pop.gmail.com:995</p>
-                        </div>
-                        <div class="outlook-box">
-                            <p><strong>Outlook:</strong> outlook.office365.com:995</p>
+                        <h3>⭐ Por que usar ";;" ?</h3>
+                        <div class="warning-box">
+                            <p>O ";;" funciona como uma parede que impede o CASE de "vazar" para o próximo caso. Sem ele, o script executaria TODOS os casos seguintes!</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="comparison-table">
-                    <h3>🆚 POP3 vs IMAP (Rápida Comparação)</h3>
-                    <table>
-                        <tr>
-                            <th>Característica</th>
-                            <th>POP3</th>
-                            <th>IMAP</th>
-                        </tr>
-                        <tr>
-                            <td><strong>Armazenamento</strong></td>
-                            <td>Local (no seu PC)</td>
-                            <td>No servidor</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Acesso múltiplos dispositivos</strong></td>
-                            <td>Difícil</td>
-                            <td>Fácil</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Uso de espaço no servidor</strong></td>
-                            <td>Pouco (limpa depois)</td>
-                            <td>Muito (mantém tudo)</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Trabalhar offline</strong></td>
-                            <td>Excelente</td>
-                            <td>Limitado</td>
-                        </tr>
-                    </table>
-                </div>
-
-                <div class="success-box">
-                    <h3>✅ Quando Usar POP3</h3>
-                    <p><strong>Ideal quando:</strong> Usa email em apenas um computador, tem pouco espaço no servidor, quer trabalhar offline, ou prefere guardar emails localmente para maior privacidade.</p>
+                <div class="example-box">
+                    <h3>🔗 Analogia com Elevador</h3>
+                    <p>O CASE é como um elevador:<br>
+                    🏢 <strong>case $ANDAR in</strong> → "Para qual andar você quer ir?"<br>
+                    🔴 <strong>1) comandos ;;</strong> → "1º andar, porta abre, você sai, porta fecha"<br>
+                    🔴 <strong>2) comandos ;;</strong> → "2º andar, porta abre, você sai, porta fecha"<br>
+                    🔴 <strong>*) comandos ;;</strong> → "Andar inválido, volta ao térreo"<br>
+                    🏢 <strong>esac</strong> → "Fim da viagem no elevador"</p>
                 </div>
             </div>
             
             <div class="slide-navigation">
                 <button class="nav-button" onclick="showSlide(2)">⬅️ Anterior</button>
-                <span style="margin: 0 20px; font-weight: bold; color: #667eea;">Slide 3 de 10</span>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 3 de 12</span>
                 <button class="nav-button" onclick="showSlide(4)">Próximo ➡️</button>
             </div>
         </div>
 
-        <!-- Slide 4: Diferenças SMTP vs POP3 -->
+        <!-- Slide 4: Padrões e Wildcards -->
         <div class="slide" id="slide-4">
             <div class="content">
-                <h2>⚖️ SMTP vs POP3 - Entenda as Diferenças</h2>
+                <h2>🎨 Padrões e Wildcards - Sendo Criativo</h2>
                 
                 <div class="highlight-box">
-                    <h3>🎯 Resumo Simples</h3>
-                    <p><strong>SMTP = Enviar emails</strong> | <strong>POP3 = Receber emails</strong><br>
-                    Eles trabalham juntos como uma dupla perfeita!</p>
+                    <h3>🕵️ CASE: Detetive de Padrões</h3>
+                    <p>O CASE não compara apenas valores exatos! Ele pode reconhecer padrões, como um detetive que identifica pistas!</p>
                 </div>
 
-                <div class="comparison-table">
+                <div class="operators-table">
                     <table>
                         <tr>
-                            <th>Aspecto</th>
-                            <th>📮 SMTP</th>
-                            <th>📬 POP3</th>
+                            <th>Padrão</th>
+                            <th>Significado</th>
+                            <th>Exemplo</th>
+                            <th>O que detecta</th>
                         </tr>
                         <tr>
-                            <td><strong>Função Principal</strong></td>
-                            <td>Enviar emails</td>
-                            <td>Receber emails</td>
+                            <td><strong>[0-9]</strong></td>
+                            <td>Qualquer dígito</td>
+                            <td>[0-9]) echo "É número" ;;</td>
+                            <td>0, 1, 2, 3... 9</td>
                         </tr>
                         <tr>
-                            <td><strong>Direção</strong></td>
-                            <td>Saída (Outgoing)</td>
-                            <td>Entrada (Incoming)</td>
+                            <td><strong>[A-Z]</strong></td>
+                            <td>Letra maiúscula</td>
+                            <td>[A-Z]) echo "Maiúscula" ;;</td>
+                            <td>A, B, C... Z</td>
                         </tr>
                         <tr>
-                            <td><strong>Porta Padrão</strong></td>
-                            <td>25, 587, 465</td>
-                            <td>110, 995</td>
+                            <td><strong>[a-z]</strong></td>
+                            <td>Letra minúscula</td>
+                            <td>[a-z]) echo "Minúscula" ;;</td>
+                            <td>a, b, c... z</td>
                         </tr>
                         <tr>
-                            <td><strong>Analogia</strong></td>
-                            <td>Carteiro que entrega</td>
-                            <td>Caixa de correio</td>
+                            <td><strong>*)</strong></td>
+                            <td>Qualquer coisa</td>
+                            <td>*) echo "Outros" ;;</td>
+                            <td>Todo o resto</td>
                         </tr>
                         <tr>
-                            <td><strong>Autenticação</strong></td>
-                            <td>Sempre necessária</td>
-                            <td>Sempre necessária</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Criptografia</strong></td>
-                            <td>TLS/SSL suportado</td>
-                            <td>SSL/TLS suportado</td>
+                            <td><strong>[Ss]</strong></td>
+                            <td>S ou s</td>
+                            <td>[Ss]) echo "Sim" ;;</td>
+                            <td>S maiúsculo ou s minúsculo</td>
                         </tr>
                     </table>
                 </div>
 
                 <div class="two-column">
                     <div>
-                        <h3>📮 Processo de Envio (SMTP)</h3>
-                        <div class="steps-box">
-                            <div class="step">
-                                <span class="step-number">1</span>
-                                Você escreve email no cliente
-                            </div>
-                            <div class="step">
-                                <span class="step-number">2</span>
-                                Cliente conecta no servidor SMTP
-                            </div>
-                            <div class="step">
-                                <span class="step-number">3</span>
-                                Autentica com usuário/senha
-                            </div>
-                            <div class="step">
-                                <span class="step-number">4</span>
-                                Envia email para o servidor
-                            </div>
-                            <div class="step">
-                                <span class="step-number">5</span>
-                                Servidor entrega ao destinatário
-                            </div>
+                        <h3>🔤 Analisador de Caracteres</h3>
+                        <div class="script-box">
+#!/bin/bash<br>
+echo "Digite um caractere:"<br>
+read <span class="variable">CHAR</span><br>
+<br>
+case <span class="variable">$CHAR</span> in<br>
+    [0-9])<br>
+        echo "🔢 É um número!"<br>
+        ;;<br>
+    [A-Z])<br>
+        echo "🔠 É letra maiúscula!"<br>
+        ;;<br>
+    [a-z])<br>
+        echo "🔡 É letra minúscula!"<br>
+        ;;<br>
+    [!@#$%*])<br>
+        echo "🔣 É um símbolo especial!"<br>
+        ;;<br>
+    *)<br>
+        echo "❓ Não sei o que é isso!"<br>
+        ;;<br>
+esac
                         </div>
                     </div>
                     <div>
-                        <h3>📬 Processo de Recebimento (POP3)</h3>
-                        <div class="steps-box">
-                            <div class="step">
-                                <span class="step-number">1</span>
-                                Cliente conecta no servidor POP3
-                            </div>
-                            <div class="step">
-                                <span class="step-number">2</span>
-                                Autentica com usuário/senha
-                            </div>
-                            <div class="step">
-                                <span class="step-number">3</span>
-                                Lista emails disponíveis
-                            </div>
-                            <div class="step">
-                                <span class="step-number">4</span>
-                                Baixa emails para o computador
-                            </div>
-                            <div class="step">
-                                <span class="step-number">5</span>
-                                Opcionalmente apaga do servidor
-                            </div>
+                        <h3>📊 Teste dos Exemplos</h3>
+                        <div class="terminal-box">
+<span class="prompt">Digite um caractere:</span> <span class="command">7</span>
+<div class="output">🔢 É um número!</div>
+<br>
+<span class="prompt">Digite um caractere:</span> <span class="command">B</span>
+<div class="output">🔠 É letra maiúscula!</div>
+<br>
+<span class="prompt">Digite um caractere:</span> <span class="command">m</span>
+<div class="output">🔡 É letra minúscula!</div>
+<br>
+<span class="prompt">Digite um caractere:</span> <span class="command">@</span>
+<div class="output">🔣 É um símbolo especial!</div>
+                        </div>
+                        
+                        <h3>🎯 Validador Sim/Não</h3>
+                        <div class="script-box">
+echo "Tem certeza? (S/N)"<br>
+read <span class="variable">RESPOSTA</span><br>
+<br>
+case <span class="variable">$RESPOSTA</span> in<br>
+    [SsYy])<br>
+        echo "✅ Confirmado!"<br>
+        ;;<br>
+    [NnNão])<br>
+        echo "❌ Cancelado!"<br>
+        ;;<br>
+    *)<br>
+        echo "🤔 Resposta inválida"<br>
+        ;;<br>
+esac
                         </div>
                     </div>
                 </div>
 
                 <div class="example-box">
-                    <h3>🏢 Exemplo Prático no Escritório</h3>
-                    <p><strong>Situação:</strong> João quer enviar um email para Maria</p>
-                    <p><strong>SMTP em ação:</strong></p>
-                    <p>1. João escreve email no Outlook</p>
-                    <p>2. Outlook conecta em smtp.empresa.com:587</p>
-                    <p>3. Envia email autenticado</p>
-                    <p>4. Servidor entrega na caixa de entrada da Maria</p>
-                    <p><strong>POP3 em ação:</strong></p>
-                    <p>1. Maria abre o Outlook</p>
-                    <p>2. Outlook conecta em pop3.empresa.com:995</p>
-                    <p>3. Baixa todos os emails novos</p>
-                    <p>4. Maria vê o email do João!</p>
+                    <h3>🎮 Classificador de Notas</h3>
+                    <div class="script-box">
+#!/bin/bash<br>
+echo "Digite sua nota (0-10):"<br>
+read <span class="variable">NOTA</span><br>
+<br>
+case <span class="variable">$NOTA</span> in<br>
+    [9-9]|10)<br>
+        echo "🏆 EXCELENTE! Parabéns!"<br>
+        ;;<br>
+    [7-8])<br>
+        echo "😊 BOM! Continue assim!"<br>
+        ;;<br>
+    [5-6])<br>
+        echo "😐 REGULAR. Pode melhorar!"<br>
+        ;;<br>
+    [0-4])<br>
+        echo "😞 INSUFICIENTE. Estude mais!"<br>
+        ;;<br>
+    *)<br>
+        echo "❌ Nota inválida! Use 0-10"<br>
+        ;;<br>
+esac
+                    </div>
                 </div>
 
-                <div class="warning-box">
-                    <h3>💡 Dica Importante</h3>
-                    <p><strong>Os dois protocolos trabalham JUNTOS!</strong> Você precisa configurar ambos em seu cliente de email para ter funcionalidade completa de envio e recebimento.</p>
+                <div class="info-box">
+                    <h3>💡 Dica dos Padrões</h3>
+                    <p>Use | (pipe) para combinar opções: <strong>[SsYy]</strong> aceita S, s, Y ou y<br>
+                    Use hífen para ranges: <strong>[0-9]</strong> aceita qualquer dígito<br>
+                    Use * como "coringa" para tudo que não foi mencionado</p>
                 </div>
             </div>
             
             <div class="slide-navigation">
                 <button class="nav-button" onclick="showSlide(3)">⬅️ Anterior</button>
-                <span style="margin: 0 20px; font-weight: bold; color: #667eea;">Slide 4 de 10</span>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 4 de 12</span>
                 <button class="nav-button" onclick="showSlide(5)">Próximo ➡️</button>
             </div>
         </div>
 
-        <!-- Slide 5: Configuração no Cisco Packet Tracer - Parte 1 -->
+        <!-- Slide 5: Exemplo Menu Completo -->
         <div class="slide" id="slide-5">
             <div class="content">
-                <h2>🌐 Configuração no Cisco Packet Tracer - Parte 1</h2>
+                <h2>🍔 Menu Completo - Sistema de Gerenciamento</h2>
                 
                 <div class="highlight-box">
-                    <h3>🎯 Preparando o Ambiente</h3>
-                    <p>Vamos criar um servidor de email completo no Packet Tracer!</p>
+                    <h3>🏪 Criando um Menu Profissional</h3>
+                    <p>Vamos criar um menu de verdade, como os que você vê em programas profissionais!</p>
+                </div>
+
+                <div class="script-box">
+#!/bin/bash<br>
+<span class="comment"># Sistema de Gerenciamento de Arquivos</span><br>
+<br>
+while true; do<br>
+    clear<br>
+    echo "=================================="<br>
+    echo "  🗂️  GERENCIADOR DE ARQUIVOS"<br>
+    echo "=================================="<br>
+    echo "1 📁 Listar arquivos"<br>
+    echo "2 📝 Criar arquivo"<br>
+    echo "3 🗑️  Remover arquivo"<br>
+    echo "4 📊 Mostrar espaço em disco"<br>
+    echo "5 👤 Informações do sistema"<br>
+    echo "q 🚪 Sair"<br>
+    echo "=================================="<br>
+    echo -n "Escolha uma opção: "<br>
+    read <span class="variable">OPCAO</span><br>
+    <br>
+    case <span class="variable">$OPCAO</span> in<br>
+        1)<br>
+            echo "📁 Listando arquivos do diretório atual..."<br>
+            ls -la --color=auto<br>
+            echo<br>
+            read -p "Pressione Enter para continuar..." <span class="variable">pause</span><br>
+            ;;<br>
+        2)<br>
+            echo -n "📝 Nome do arquivo a criar: "<br>
+            read <span class="variable">ARQUIVO</span><br>
+            touch "$ARQUIVO"<br>
+            echo "✅ Arquivo '$ARQUIVO' criado com sucesso!"<br>
+            read -p "Pressione Enter para continuar..." <span class="variable">pause</span><br>
+            ;;<br>
+        3)<br>
+            echo -n "🗑️  Nome do arquivo a remover: "<br>
+            read <span class="variable">ARQUIVO</span><br>
+            if [ -f "$ARQUIVO" ]; then<br>
+                rm "$ARQUIVO"<br>
+                echo "✅ Arquivo '$ARQUIVO' removido!"<br>
+            else<br>
+                echo "❌ Arquivo não encontrado!"<br>
+            fi<br>
+            read -p "Pressione Enter para continuar..." <span class="variable">pause</span><br>
+            ;;<br>
+        4)<br>
+            echo "📊 Espaço em disco:"<br>
+            df -h<br>
+            echo<br>
+            read -p "Pressione Enter para continuar..." <span class="variable">pause</span><br>
+            ;;<br>
+        5)<br>
+            echo "👤 Informações do sistema:"<br>
+            echo "Usuário: $(whoami)"<br>
+            echo "Data: $(date)"<br>
+            echo "Diretório: $(pwd)"<br>
+            echo "Sistema: $(uname -a)"<br>
+            echo<br>
+            read -p "Pressione Enter para continuar..." <span class="variable">pause</span><br>
+            ;;<br>
+        q|Q)<br>
+            echo "👋 Saindo... Até logo!"<br>
+            exit 0<br>
+            ;;<br>
+        *)<br>
+            echo "❌ Opção inválida! Tente novamente."<br>
+            sleep 2<br>
+            ;;<br>
+    esac<br>
+done
                 </div>
 
                 <div class="two-column">
                     <div>
-                        <h3>🏗️ Componentes Necessários</h3>
-                        <div class="steps-box">
-                            <div class="step">
-                                <span class="step-number">1</span>
-                                <strong>1 Servidor</strong> (Server-PT)
-                            </div>
-                            <div class="step">
-                                <span class="step-number">2</span>
-                                <strong>2 PCs</strong> (para testar)
-                            </div>
-                            <div class="step">
-                                <span class="step-number">3</span>
-                                <strong>1 Switch</strong> (2960)
-                            </div>
-                            <div class="step">
-                                <span class="step-number">4</span>
-                                <strong>Cabos</strong> (Straight-through)
-                            </div>
-                        </div>
-                        
-                        <h3>🔧 Configuração da Rede</h3>
-                        <div class="config-box">
-Servidor: 192.168.1.10/24<br>
-PC1: 192.168.1.20/24<br>
-PC2: 192.168.1.30/24<br>
-Gateway: 192.168.1.1
+                        <h3>🎬 Como Ficaria na Tela</h3>
+                        <div class="terminal-box">
+<div class="output">==================================</div>
+<div class="output">  🗂️  GERENCIADOR DE ARQUIVOS</div>
+<div class="output">==================================</div>
+<div class="output">1 📁 Listar arquivos</div>
+<div class="output">2 📝 Criar arquivo</div>
+<div class="output">3 🗑️  Remover arquivo</div>
+<div class="output">4 📊 Mostrar espaço em disco</div>
+<div class="output">5 👤 Informações do sistema</div>
+<div class="output">q 🚪 Sair</div>
+<div class="output">==================================</div>
+<span class="prompt">Escolha uma opção:</span> <span class="command">1</span><br>
+<div class="output">📁 Listando arquivos do diretório atual...</div>
+<div class="output">total 24</div>
+<div class="output">drwxr-xr-x 2 user user 4096 Jul 23 14:30 .</div>
+<div class="output">-rw-r--r-- 1 user user  156 Jul 23 14:25 script.sh</div>
                         </div>
                     </div>
                     <div>
-                        <h3>📋 Passo a Passo - Servidor</h3>
+                        <h3>🎯 Recursos Avançados</h3>
                         <div class="info-box">
-                            <p><strong>1. Arraste um Server-PT</strong></p>
-                            <p><strong>2. Configure IP:</strong></p>
-                            <p>• Desktop → IP Configuration</p>
-                            <p>• IP: 192.168.1.10</p>
-                            <p>• Mask: 255.255.255.0</p>
-                            <p>• Gateway: 192.168.1.1</p>
-                            <p><strong>3. Conecte ao switch</strong></p>
+                            <h4>🔧 Técnicas Usadas:</h4>
+                            <p><strong>while true:</strong> Loop infinito<br>
+                            <strong>clear:</strong> Limpa a tela<br>
+                            <strong>read -p:</strong> Mostra prompt<br>
+                            <strong>q|Q):</strong> Aceita 'q' ou 'Q'<br>
+                            <strong>exit 0:</strong> Sai do script<br>
+                            <strong>sleep 2:</strong> Pausa 2 segundos</p>
                         </div>
                         
-                        <h3>💻 Configuração dos PCs</h3>
-                        <div class="info-box">
-                            <p><strong>PC1:</strong></p>
-                            <p>• IP: 192.168.1.20</p>
-                            <p>• Mask: 255.255.255.0</p>
-                            <p>• Gateway: 192.168.1.1</p>
-                            <p><strong>PC2:</strong></p>
-                            <p>• IP: 192.168.1.30</p>
-                            <p>• Mesmas configurações</p>
+                        <h3>💡 Por que while true?</h3>
+                        <div class="example-box">
+                            <p>O <strong>while true</strong> mantém o menu funcionando continuamente, como uma máquina de refrigerante que fica sempre disponível!</p>
+                        </div>
+                        
+                        <h3>⚠️ Boa Prática</h3>
+                        <div class="warning-box">
+                            <p>Sempre inclua uma opção de saída (q) e trate opções inválidas com o padrão "*)" para evitar que o usuário fique "preso" no menu!</p>
                         </div>
                     </div>
-                </div>
-
-                <div class="example-box">
-                    <h3>🎨 Layout Sugerido da Rede</h3>
-                    <div style="text-align: center; font-family: monospace; font-size: 1.2em; background: white; padding: 20px; border-radius: 10px; margin: 10px 0;">
-                        <p>PC1 [192.168.1.20] ———┐</p>
-                        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├— Switch —— Servidor [192.168.1.10]</p>
-                        <p>PC2 [192.168.1.30] ———┘&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Email Server)</p>
-                    </div>
-                </div>
-
-                <div class="warning-box">
-                    <h3>⚠️ Importante Antes de Continuar</h3>
-                    <p><strong>Teste a conectividade!</strong> Faça ping entre os dispositivos para garantir que a rede está funcionando antes de configurar os serviços de email.</p>
-                </div>
-
-                <div class="success-box">
-                    <h3>✅ Checklist da Parte 1</h3>
-                    <p>☑️ Servidor com IP 192.168.1.10<br>
-                    ☑️ PCs com IPs corretos<br>
-                    ☑️ Todos conectados ao switch<br>
-                    ☑️ Ping funcionando entre dispositivos</p>
                 </div>
             </div>
             
             <div class="slide-navigation">
                 <button class="nav-button" onclick="showSlide(4)">⬅️ Anterior</button>
-                <span style="margin: 0 20px; font-weight: bold; color: #667eea;">Slide 5 de 10</span>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 5 de 12</span>
                 <button class="nav-button" onclick="showSlide(6)">Próximo ➡️</button>
             </div>
         </div>
 
-        <!-- Slide 6: Configuração no Cisco Packet Tracer - Parte 2 -->
+        <!-- Slide 6: Conversor de Dias -->
         <div class="slide" id="slide-6">
             <div class="content">
-                <h2>📧 Configuração no Packet Tracer - Parte 2 (Serviços)</h2>
+                <h2>📅 Conversor de Dias da Semana</h2>
                 
                 <div class="highlight-box">
-                    <h3>⚙️ Configurando SMTP e POP3</h3>
-                    <p>Agora vamos ativar os serviços de email no servidor!</p>
+                    <h3>🗓️ De Número para Nome</h3>
+                    <p>Vamos criar um conversor que transforma números em nomes dos dias, como um tradutor de calendário!</p>
                 </div>
 
                 <div class="two-column">
                     <div>
-                        <h3>📮 Configurando SMTP</h3>
-                        <div class="steps-box">
-                            <div class="step">
-                                <span class="step-number">1</span>
-                                Clique no <strong>Servidor</strong>
-                            </div>
-                            <div class="step">
-                                <span class="step-number">2</span>
-                                Vá na aba <strong>Services</strong>
-                            </div>
-                            <div class="step">
-                                <span class="step-number">3</span>
-                                Clique em <strong>EMAIL</strong>
-                            </div>
-                            <div class="step">
-                                <span class="step-number">4</span>
-                                Marque <strong>SMTP Service On</strong>
-                            </div>
-                            <div class="step">
-                                <span class="step-number">5</span>
-                                Verifique porta: <strong>25</strong>
-                            </div>
-                        </div>
-
-                        <h3>📬 Configurando POP3</h3>
-                        <div class="steps-box">
-                            <div class="step">
-                                <span class="step-number">1</span>
-                                Na mesma tela <strong>EMAIL</strong>
-                            </div>
-                            <div class="step">
-                                <span class="step-number">2</span>
-                                Marque <strong>POP3 Service On</strong>
-                            </div>
-                            <div class="step">
-                                <span class="step-number">3</span>
-                                Verifique porta: <strong>110</strong>
-                            </div>
+                        <h3>📝 Script Conversor</h3>
+                        <div class="script-box">
+#!/bin/bash<br>
+<span class="comment"># conversor.sh - Conversor de Dias</span><br>
+<br>
+echo "🗓️  CONVERSOR DE DIAS DA SEMANA"<br>
+echo "==============================="<br>
+echo "Digite o número do dia (1-7):"<br>
+echo "1=Segunda, 2=Terça, 3=Quarta"<br>
+echo "4=Quinta, 5=Sexta, 6=Sábado, 7=Domingo"<br>
+echo -n "Sua escolha: "<br>
+read <span class="variable">DIA</span><br>
+<br>
+case <span class="variable">$DIA</span> in<br>
+    1)<br>
+        echo "📊 O dia da semana é: SEGUNDA-FEIRA"<br>
+        echo "💼 Dia de trabalho!"<br>
+        ;;<br>
+    2)<br>
+        echo "📊 O dia da semana é: TERÇA-FEIRA"<br>
+        echo "💼 Dia de trabalho!"<br>
+        ;;<br>
+    3)<br>
+        echo "📊 O dia da semana é: QUARTA-FEIRA"<br>
+        echo "💼 Meio da semana!"<br>
+        ;;<br>
+    4)<br>
+        echo "📊 O dia da semana é: QUINTA-FEIRA"<br>
+        echo "💼 Quase chegando!"<br>
+        ;;<br>
+    5)<br>
+        echo "📊 O dia da semana é: SEXTA-FEIRA"<br>
+        echo "🎉 SEXTOU! Fim de semana chegando!"<br>
+        ;;<br>
+    6)<br>
+        echo "📊 O dia da semana é: SÁBADO"<br>
+        echo "🎈 Weekend! Hora de relaxar!"<br>
+        ;;<br>
+    7)<br>
+        echo "📊 O dia da semana é: DOMINGO"<br>
+        echo "😴 Dia de descanso!"<br>
+        ;;<br>
+    *)<br>
+        echo "❌ Número inválido!"<br>
+        echo "📋 Use apenas números de 1 a 7"<br>
+        echo "💡 Tente novamente!"<br>
+        ;;<br>
+esac<br>
+<br>
+echo<br>
+echo "Obrigado por usar o conversor! 🙂"
                         </div>
                     </div>
                     <div>
-                        <h3>👥 Criando Usuários de Email</h3>
-                        <div class="config-box">
-<strong>Usuário 1:</strong><br>
-Username: joao<br>
-Password: 123456<br>
-<br>
-<strong>Usuário 2:</strong><br>
-Username: maria<br>
-Password: 123456
+                        <h3>🎬 Demonstrações</h3>
+                        <div class="terminal-box">
+<span class="prompt">user@linux:~$</span> <span class="command">./conversor.sh</span>
+<div class="output">🗓️  CONVERSOR DE DIAS DA SEMANA</div>
+<div class="output">===============================</div>
+<div class="output">Digite o número do dia (1-7):</div>
+<div class="output">1=Segunda, 2=Terça, 3=Quarta</div>
+<div class="output">4=Quinta, 5=Sexta, 6=Sábado, 7=Domingo</div>
+<span class="prompt">Sua escolha:</span> <span class="command">5</span>
+<div class="output">📊 O dia da semana é: SEXTA-FEIRA</div>
+<div class="output">🎉 SEXTOU! Fim de semana chegando!</div>
+<div class="output"></div>
+<div class="output">Obrigado por usar o conversor! 🙂</div>
                         </div>
                         
-                        <h3>📋 Passos para Criar Usuários</h3>
-                        <div class="steps-box">
-                            <div class="step">
-                                <span class="step-number">1</span>
-                                No campo <strong>Username</strong>: joao
-                            </div>
-                            <div class="step">
-                                <span class="step-number">2</span>
-                                No campo <strong>Password</strong>: 123456
-                            </div>
-                            <div class="step">
-                                <span class="step-number">3</span>
-                                Clique no <strong>+</strong> para adicionar
-                            </div>
-                            <div class="step">
-                                <span class="step-number">4</span>
-                                Repita para usuário <strong>maria</strong>
-                            </div>
+                        <div class="terminal-box">
+<span class="prompt">Sua escolha:</span> <span class="command">8</span>
+<div class="output">❌ Número inválido!</div>
+<div class="output">📋 Use apenas números de 1 a 7</div>
+<div class="output">💡 Tente novamente!</div>
+                        </div>
+                        
+                        <h3>✨ Versão Melhorada</h3>
+                        <div class="script-box">
+<span class="comment"># Adicionando validação extra</span><br>
+case <span class="variable">$DIA</span> in<br>
+    [1-7])<br>
+        <span class="comment"># Array de dias</span><br>
+        DIAS=("Segunda" "Terça" "Quarta" "Quinta" "Sexta" "Sábado" "Domingo")<br>
+        echo "Dia: ${DIAS[$((DIA-1))]}"<br>
+        ;;<br>
+    [0])<br>
+        echo "❌ Não existe dia 0!"<br>
+        ;;<br>
+    [8-9]|[1-9][0-9]*)<br>
+        echo "❌ Número muito alto!"<br>
+        ;;<br>
+    *)<br>
+        echo "❌ Digite apenas números!"<br>
+        ;;<br>
+esac
                         </div>
                     </div>
                 </div>
 
                 <div class="example-box">
-                    <h3>📊 Configuração Final do Servidor</h3>
-                    <div style="background: white; padding: 15px; border-radius: 8px; margin: 10px 0;">
-                        <p><strong>✅ SMTP Service:</strong> Ativado (Porta 25)</p>
-                        <p><strong>✅ POP3 Service:</strong> Ativado (Porta 110)</p>
-                        <p><strong>✅ Usuários criados:</strong> joao e maria</p>
-                        <p><strong>✅ Domain Name:</strong> company.com (padrão)</p>
+                    <h3>🚀 Desafio Extra: Conversor Bidirecional</h3>
+                    <div class="script-box">
+#!/bin/bash<br>
+echo "Escolha: (1) Número→Dia ou (2) Dia→Número"<br>
+read <span class="variable">MODO</span><br>
+<br>
+case <span class="variable">$MODO</span> in<br>
+    1)<br>
+        echo "Digite o número (1-7):"<br>
+        read <span class="variable">NUM</span><br>
+        case <span class="variable">$NUM</span> in<br>
+            1) echo "Segunda-feira" ;;<br>
+            2) echo "Terça-feira" ;;<br>
+            *) echo "Número inválido" ;;<br>
+        esac<br>
+        ;;<br>
+    2)<br>
+        echo "Digite o dia (ex: segunda):"<br>
+        read <span class="variable">DIA_NOME</span><br>
+        case <span class="variable">$DIA_NOME</span> in<br>
+            segunda|Segunda) echo "Número: 1" ;;<br>
+            terca|Terça) echo "Número: 2" ;;<br>
+            *) echo "Dia inválido" ;;<br>
+        esac<br>
+        ;;<br>
+    *)<br>
+        echo "Modo inválido!"<br>
+        ;;<br>
+esac
                     </div>
-                </div>
-
-                <div class="info-box">
-                    <h3>🔍 Verificando a Configuração</h3>
-                    <p><strong>Status dos Serviços:</strong></p>
-                    <p>• SMTP: deve mostrar "On" com porta 25</p>
-                    <p>• POP3: deve mostrar "On" com porta 110</p>
-                    <p>• Lista de usuários deve mostrar joao e maria</p>
-                </div>
-
-                <div class="warning-box">
-                    <h3>💡 Dicas Importantes</h3>
-                    <p><strong>Senhas simples:</strong> Para teste, use senhas fáceis como "123456"<br>
-                    <strong>Domain Name:</strong> O Packet Tracer usa "company.com" por padrão<br>
-                    <strong>Portas:</strong> Use as portas padrão para facilitar</p>
-                </div>
-
-                <div class="success-box">
-                    <h3>✅ Servidor Configurado!</h3>
-                    <p>Agora seu servidor está pronto para receber e enviar emails. Na próxima etapa, vamos configurar os clientes nos PCs.</p>
                 </div>
             </div>
             
             <div class="slide-navigation">
                 <button class="nav-button" onclick="showSlide(5)">⬅️ Anterior</button>
-                <span style="margin: 0 20px; font-weight: bold; color: #667eea;">Slide 6 de 10</span>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 6 de 12</span>
                 <button class="nav-button" onclick="showSlide(7)">Próximo ➡️</button>
             </div>
         </div>
 
-        <!-- Slide 7: Testando Email no Packet Tracer -->
+        <!-- Slide 7: CASE vs IF -->
         <div class="slide" id="slide-7">
             <div class="content">
-                <h2>🧪 Testando Email no Packet Tracer</h2>
+                <h2>⚖️ CASE vs IF - Quando Usar Cada Um?</h2>
                 
                 <div class="highlight-box">
-                    <h3>📧 Configurando Cliente de Email</h3>
-                    <p>Vamos configurar os PCs para enviar e receber emails!</p>
+                    <h3>🥊 Batalha dos Titãs: CASE vs IF</h3>
+                    <p>Como escolher a ferramenta certa para cada situação? Vamos comparar!</p>
                 </div>
 
                 <div class="two-column">
                     <div>
-                        <h3>💻 Configuração no PC1 (usuário: joao)</h3>
-                        <div class="steps-box">
-                            <div class="step">
-                                <span class="step-number">1</span>
-                                Clique no <strong>PC1</strong>
-                            </div>
-                            <div class="step">
-                                <span class="step-number">2</span>
-                                Vá em <strong>Desktop → Email</strong>
-                            </div>
-                            <div class="step">
-                                <span class="step-number">3</span>
-                                Configure <strong>Incoming Mail Server</strong>
-                            </div>
-                            <div class="step">
-                                <span class="step-number">4</span>
-                                Configure <strong>Outgoing Mail Server</strong>
-                            </div>
-                            <div class="step">
-                                <span class="step-number">5</span>
-                                Insira credenciais do usuário
-                            </div>
+                        <h3>🎯 Use CASE quando...</h3>
+                        <div class="success-box">
+                            <div class="bullet-point">Você tem UMA variável e MUITAS opções</div>
+                            <div class="bullet-point">Quer criar menus</div>
+                            <div class="bullet-point">Precisa testar padrões ([0-9], [A-Z])</div>
+                            <div class="bullet-point">O código fica mais limpo</div>
+                            <div class="bullet-point">As opções são excludentes</div>
                         </div>
-
-                        <h3>⚙️ Configuração Detalhada</h3>
-                        <div class="config-box">
-<strong>Incoming Mail Server (POP3):</strong><br>
-Server: 192.168.1.10<br>
-<br>
-<strong>Outgoing Mail Server (SMTP):</strong><br>
-Server: 192.168.1.10<br>
-<br>
-<strong>User Information:</strong><br>
-Username: joao<br>
-Password: 123456
+                        
+                        <h3>📝 Exemplo: Menu com CASE</h3>
+                        <div class="script-box">
+case <span class="variable">$OPCAO</span> in<br>
+    1) echo "Incluir" ;;<br>
+    2) echo "Alterar" ;;<br>
+    3) echo "Excluir" ;;<br>
+    4) echo "Consultar" ;;<br>
+    *) echo "Inválido" ;;<br>
+esac
+                        </div>
+                        
+                        <div class="info-box">
+                            <p>✅ <strong>Limpo e organizado!</strong><br>
+                            5 linhas para 5 opções</p>
                         </div>
                     </div>
                     <div>
-                        <h3>📨 Enviando o Primeiro Email</h3>
-                        <div class="steps-box">
-                            <div class="step">
-                                <span class="step-number">1</span>
-                                Clique em <strong>Compose</strong>
-                            </div>
-                            <div class="step">
-                                <span class="step-number">2</span>
-                                <strong>To:</strong> maria@company.com
-                            </div>
-                            <div class="step">
-                                <span class="step-number">3</span>
-                                <strong>Subject:</strong> Teste de Email
-                            </div>
-                            <div class="step">
-                                <span class="step-number">4</span>
-                                Escreva uma mensagem
-                            </div>
-                            <div class="step">
-                                <span class="step-number">5</span>
-                                Clique em <strong>Send</strong>
-                            </div>
+                        <h3>🔀 Use IF quando...</h3>
+                        <div class="warning-box">
+                            <div class="bullet-point">Você tem condições complexas</div>
+                            <div class="bullet-point">Precisa comparar MÚLTIPLAS variáveis</div>
+                            <div class="bullet-point">Usa operadores (-gt, -lt, -eq)</div>
+                            <div class="bullet-point">Combina condições (AND, OR)</div>
+                            <div class="bullet-point">Testa arquivos (-f, -d, -r)</div>
                         </div>
-
-                        <h3>📬 Configurando PC2 (usuário: maria)</h3>
-                        <div class="config-box">
-<strong>Incoming Mail Server:</strong><br>
-Server: 192.168.1.10<br>
-<br>
-<strong>Outgoing Mail Server:</strong><br>
-Server: 192.168.1.10<br>
-<br>
-<strong>User Information:</strong><br>
-Username: maria<br>
-Password: 123456
+                        
+                        <h3>📝 Mesmo Menu com IF</h3>
+                        <div class="script-box">
+if [ <span class="variable">$OPCAO</span> -eq 1 ]; then<br>
+    echo "Incluir"<br>
+elif [ <span class="variable">$OPCAO</span> -eq 2 ]; then<br>
+    echo "Alterar"<br>
+elif [ <span class="variable">$OPCAO</span> -eq 3 ]; then<br>
+    echo "Excluir"<br>
+elif [ <span class="variable">$OPCAO</span> -eq 4 ]; then<br>
+    echo "Consultar"<br>
+else<br>
+    echo "Inválido"<br>
+fi
+                        </div>
+                        
+                        <div class="info-box">
+                            <p>❌ <strong>Repetitivo e verboso!</strong><br>
+                            12 linhas para 5 opções</p>
                         </div>
                     </div>
+                </div>
+
+                <div class="operators-table">
+                    <table>
+                        <tr>
+                            <th>Situação</th>
+                            <th>CASE</th>
+                            <th>IF</th>
+                            <th>Melhor Escolha</th>
+                        </tr>
+                        <tr>
+                            <td>Menu com 5 opções</td>
+                            <td>5 linhas</td>
+                            <td>12 linhas</td>
+                            <td>🏆 CASE</td>
+                        </tr>
+                        <tr>
+                            <td>Testar se idade > 18</td>
+                            <td>Não aplicável</td>
+                            <td>2 linhas</td>
+                            <td>🏆 IF</td>
+                        </tr>
+                        <tr>
+                            <td>Classificar notas A, B, C</td>
+                            <td>6 linhas</td>
+                            <td>8 linhas</td>
+                            <td>🏆 CASE</td>
+                        </tr>
+                        <tr>
+                            <td>Testar arquivo E permissão</td>
+                            <td>Difícil</td>
+                            <td>3 linhas</td>
+                            <td>🏆 IF</td>
+                        </tr>
+                        <tr>
+                            <td>Validar entrada S/N</td>
+                            <td>3 linhas</td>
+                            <td>6 linhas</td>
+                            <td>🏆 CASE</td>
+                        </tr>
+                    </table>
                 </div>
 
                 <div class="example-box">
-                    <h3>🎯 Exemplo de Email de Teste</h3>
-                    <div style="background: white; padding: 15px; border-radius: 8px; margin: 10px 0; border: 2px solid #ddd;">
-                        <p><strong>Para:</strong> maria@company.com</p>
-                        <p><strong>Assunto:</strong> Primeiro teste de email</p>
-                        <p><strong>Mensagem:</strong></p>
-                        <p style="font-style: italic; margin-left: 20px;">Olá Maria!<br><br>
-                        Este é nosso primeiro email usando SMTP e POP3.<br>
-                        Se você receber esta mensagem, nossa configuração está funcionando!<br><br>
-                        Abraços,<br>
-                        João</p>
+                    <h3>🎯 Exemplo Prático: Sistema de Login</h3>
+                    <div class="script-box">
+<span class="comment"># Para o MENU inicial, use CASE:</span><br>
+case <span class="variable">$ACAO</span> in<br>
+    "login") fazer_login ;;<br>
+    "cadastro") fazer_cadastro ;;<br>
+    "sair") exit 0 ;;<br>
+esac<br>
+<br>
+<span class="comment"># Para VALIDAÇÕES dentro do login, use IF:</span><br>
+fazer_login() {<br>
+    if [ -z "$USUARIO" ]; then<br>
+        echo "Usuário não pode estar vazio"<br>
+    elif [ ${#SENHA} -lt 8 ]; then<br>
+        echo "Senha deve ter pelo menos 8 caracteres"<br>
+    elif [ -f "/etc/passwd" -a -r "/etc/passwd" ]; then<br>
+        echo "Verificando credenciais..."<br>
+    fi<br>
+}<br>
                     </div>
                 </div>
 
-                <div class="success-box">
-                    <h3>✅ Testando Recebimento</h3>
-                    <p><strong>No PC2 (Maria):</strong></p>
-                    <p>1. Abra o programa Email</p>
-                    <p>2. Configure com os dados da maria</p>
-                    <p>3. Clique em "Receive" para baixar emails</p>
-                    <p>4. Você deve ver o email do João!</p>
-                </div>
-
                 <div class="info-box">
-                    <h3>🔍 Troubleshooting</h3>
-                    <p><strong>Email não chegou?</strong> Verifique:</p>
-                    <p>• Serviços SMTP/POP3 estão ativos no servidor</p>
-                    <p>• IPs dos servidores estão corretos</p>
-                    <p>• Usuários foram criados corretamente</p>
-                    <p>• Conectividade de rede (ping) funciona</p>
-                </div>
-
-                <div class="warning-box">
-                    <h3>💡 Lembre-se</h3>
-                    <p><strong>Endereços completos:</strong> Sempre use formato usuario@company.com<br>
-                    <strong>Receive:</strong> No POP3, você precisa clicar "Receive" para baixar emails<br>
-                    <strong>Case sensitive:</strong> Usernames são sensíveis a maiúsculas/minúsculas</p>
+                    <h3>💡 Regra de Ouro</h3>
+                    <p><strong>CASE:</strong> Uma variável, muitos valores → "Qual opção você escolhe?"<br>
+                    <strong>IF:</strong> Condições complexas → "Esta condição é verdadeira?"</p>
                 </div>
             </div>
             
             <div class="slide-navigation">
                 <button class="nav-button" onclick="showSlide(6)">⬅️ Anterior</button>
-                <span style="margin: 0 20px; font-weight: bold; color: #667eea;">Slide 7 de 10</span>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 7 de 12</span>
                 <button class="nav-button" onclick="showSlide(8)">Próximo ➡️</button>
             </div>
         </div>
 
-        <!-- Slide 8: Configuração Gmail no Windows 10 -->
+        <!-- Slide 8: Exercícios Práticos -->
         <div class="slide" id="slide-8">
             <div class="content">
-                <h2>📮 Configuração Gmail no Windows 10</h2>
+                <h2>🏋️ Exercícios Práticos - Hora de Treinar!</h2>
                 
                 <div class="highlight-box">
-                    <h3>🌐 Configurando Gmail Real</h3>
-                    <p>Vamos configurar uma conta Gmail no aplicativo Mail do Windows 10!</p>
+                    <h3>💪 Pratique para Dominar!</h3>
+                    <p>Agora que você sabe a teoria, vamos praticar com exercícios reais!</p>
                 </div>
 
                 <div class="two-column">
                     <div>
-                        <h3>🔐 Preparação da Conta Gmail</h3>
-                        <div class="warning-box" style="margin: 0;">
-                            <p><strong>⚠️ Importante:</strong> Para usar Gmail com clientes externos, você precisa:</p>
+                        <h3>🎯 Exercício 1: Calculadora</h3>
+                        <div class="example-box">
+                            <p><strong>Missão:</strong> Criar uma calculadora simples<br>
+                            <strong>Entrada:</strong> Dois números e uma operação (+, -, *, /)<br>
+                            <strong>Use CASE</strong> para escolher a operação</p>
                         </div>
-                        <div class="steps-box">
-                            <div class="step">
-                                <span class="step-number">1</span>
-                                <strong>Ativar autenticação em 2 fatores</strong>
-                            </div>
-                            <div class="step">
-                                <span class="step-number">2</span>
-                                <strong>Gerar senha de app</strong>
-                            </div>
-                            <div class="step">
-                                <span class="step-number">3</span>
-                                <strong>Usar a senha de app</strong> (não sua senha normal)
-                            </div>
+                        
+                        <div class="script-box">
+<span class="comment"># Seu código aqui:</span><br>
+echo "Digite o primeiro número:"<br>
+read <span class="variable">NUM1</span><br>
+echo "Digite a operação (+, -, *, /):"<br>
+read <span class="variable">OP</span><br>
+echo "Digite o segundo número:"<br>
+read <span class="variable">NUM2</span><br>
+<br>
+case <span class="variable">$OP</span> in<br>
+    "+")<br>
+        echo "Resultado: $((NUM1 + NUM2))"<br>
+        ;;<br>
+    <span class="comment"># Complete você!</span><br>
+    *)<br>
+        echo "Operação inválida!"<br>
+        ;;<br>
+esac
                         </div>
-
-                        <h3>🔑 Como Gerar Senha de App</h3>
-                        <div class="gmail-box">
-                            <p>1. Acesse <strong>myaccount.google.com</strong></p>
-                            <p>2. Vá em <strong>Segurança</strong></p>
-                            <p>3. Ative <strong>Verificação em 2 etapas</strong></p>
-                            <p>4. Clique em <strong>Senhas de app</strong></p>
-                            <p>5. Selecione <strong>Email</strong> → <strong>Windows</strong></p>
-                            <p>6. Copie a senha gerada</p>
+                        
+                        <h3>🔍 Exercício 2: Analisador de Arquivos</h3>
+                        <div class="example-box">
+                            <p><strong>Missão:</strong> Analisar extensões de arquivo<br>
+                            <strong>.txt</strong> → "Arquivo de texto"<br>
+                            <strong>.jpg/.png</strong> → "Imagem"<br>
+                            <strong>.pdf</strong> → "Documento PDF"</p>
                         </div>
                     </div>
                     <div>
-                        <h3>🪟 Configuração no Windows Mail</h3>
-                        <div class="steps-box">
-                            <div class="step">
-                                <span class="step-number">1</span>
-                                Abra o app <strong>Mail</strong>
-                            </div>
-                            <div class="step">
-                                <span class="step-number">2</span>
-                                Clique em <strong>Adicionar conta</strong>
-                            </div>
-                            <div class="step">
-                                <span class="step-number">3</span>
-                                Escolha <strong>Google</strong>
-                            </div>
-                            <div class="step">
-                                <span class="step-number">4</span>
-                                Digite seu <strong>email Gmail</strong>
-                            </div>
-                            <div class="step">
-                                <span class="step-number">5</span>
-                                Use a <strong>senha de app</strong>
-                            </div>
+                        <h3>🌐 Exercício 3: Ping Checker</h3>
+                        <div class="example-box">
+                            <p><strong>Missão:</strong> Testar conectividade<br>
+                            <strong>Use:</strong> comando ping<br>
+                            <strong>Analise:</strong> código de saída com CASE</p>
                         </div>
-
-                        <h3>📧 Configuração Manual (Avançada)</h3>
-                        <div class="config-box">
-<strong>SMTP (Envio):</strong><br>
-Servidor: smtp.gmail.com<br>
-Porta: 587<br>
-Segurança: STARTTLS<br>
+                        
+                        <div class="script-box">
+#!/bin/bash<br>
+echo "Digite o endereço para testar:"<br>
+read <span class="variable">HOST</span><br>
 <br>
-<strong>POP3 (Recebimento):</strong><br>
-Servidor: pop.gmail.com<br>
-Porta: 995<br>
-Segurança: SSL/TLS
+<span class="comment"># Executa ping e captura código de saída</span><br>
+ping -c 1 "$HOST" > /dev/null 2>&1<br>
+<span class="variable">RESULTADO</span>=$?<br>
+<br>
+case <span class="variable">$RESULTADO</span> in<br>
+    0)<br>
+        echo "✅ Host $HOST acessível!"<br>
+        ;;<br>
+    1)<br>
+        echo "❌ Host $HOST inacessível!"<br>
+        ;;<br>
+    *)<br>
+        echo "🔧 Erro ao tentar acessar!"<br>
+        ;;<br>
+esac
+                        </div>
+                        
+                        <h3>🎮 Exercício 4: Sistema de Notas</h3>
+                        <div class="script-box">
+<span class="comment"># Use [0-4], [5-6], [7-8], [9-9]|10</span><br>
+echo "Digite sua nota (0-10):"<br>
+read <span class="variable">NOTA</span><br>
+<br>
+case <span class="variable">$NOTA</span> in<br>
+    <span class="comment"># Complete com os ranges!</span><br>
+    [9-9]|10)<br>
+        echo "🏆 EXCELENTE!"<br>
+        ;;<br>
+    <span class="comment"># Suas opções aqui...</span><br>
+    *)<br>
+        echo "❌ Nota inválida!"<br>
+        ;;<br>
+esac
                         </div>
                     </div>
                 </div>
 
-                <div class="windows-box">
-                    <h3>🎯 Passo a Passo Detalhado</h3>
-                    <p><strong>1. Abrir Mail:</strong> Pressione Win + S, digite "Mail" e abra</p>
-                    <p><strong>2. Primeira conta:</strong> Se for primeira vez, clique "Adicionar conta"</p>
-                    <p><strong>3. Conta adicional:</strong> Menu ⚙️ → Gerenciar contas → Adicionar conta</p>
-                    <p><strong>4. Escolher Google:</strong> Na lista de provedores, selecione Google</p>
-                    <p><strong>5. Login:</strong> Digite email e senha de app (NÃO a senha normal)</p>
-                    <p><strong>6. Permissões:</strong> Autorize o acesso quando solicitado</p>
-                    <p><strong>7. Concluir:</strong> Aguarde sincronização inicial</p>
+                <div class="operators-table">
+                    <table style="font-size: 1em;">
+                        <tr>
+                            <th>Exercício</th>
+                            <th>Dificuldade</th>
+                            <th>Conceitos</th>
+                            <th>Tempo Estimado</th>
+                        </tr>
+                        <tr>
+                            <td>Calculadora</td>
+                            <td>⭐⭐</td>
+                            <td>CASE básico, aritmética</td>
+                            <td>10 minutos</td>
+                        </tr>
+                        <tr>
+                            <td>Analisador de Arquivos</td>
+                            <td>⭐⭐⭐</td>
+                            <td>Padrões de texto, wildcards</td>
+                            <td>15 minutos</td>
+                        </tr>
+                        <tr>
+                            <td>Ping Checker</td>
+                            <td>⭐⭐⭐⭐</td>
+                            <td>Exit codes, redirecionamento</td>
+                            <td>20 minutos</td>
+                        </tr>
+                        <tr>
+                            <td>Sistema de Notas</td>
+                            <td>⭐⭐</td>
+                            <td>Ranges numéricos</td>
+                            <td>10 minutos</td>
+                        </tr>
+                    </table>
                 </div>
 
                 <div class="success-box">
-                    <h3>✅ Teste de Funcionamento</h3>
-                    <p><strong>Envio:</strong> Compose um email e envie para outro endereço</p>
-                    <p><strong>Recebimento:</strong> Peça para alguém enviar email para você</p>
-                    <p><strong>Sincronização:</strong> Verifique se emails aparecem automaticamente</p>
+                    <h3>🎯 Dicas para os Exercícios</h3>
+                    <p><strong>1.</strong> Sempre teste com valores válidos E inválidos<br>
+                    <strong>2.</strong> Use o padrão "*)" para casos não previstos<br>
+                    <strong>3.</strong> Adicione mensagens amigáveis para o usuário<br>
+                    <strong>4.</strong> Teste seu script linha por linha</p>
                 </div>
 
-                <div class="info-box">
-                    <h3>🔧 Solução de Problemas</h3>
-                    <p><strong>Erro de autenticação:</strong> Verifique se usou senha de app</p>
-                    <p><strong>Não sincroniza:</strong> Verificar conexão com internet</p>
-                    <p><strong>Email não aparece:</strong> Aguardar alguns minutos ou forçar sincronização</p>
+                <div class="warning-box">
+                    <h3>⚠️ Erros Comuns para Evitar</h3>
+                    <p>• Esquecer o ";;" no final de cada caso<br>
+                    • Não incluir o caso padrão "*)"<br>
+                    • Usar aspas desnecessárias em números<br>
+                    • Esquecer o "esac" no final</p>
                 </div>
             </div>
             
             <div class="slide-navigation">
                 <button class="nav-button" onclick="showSlide(7)">⬅️ Anterior</button>
-                <span style="margin: 0 20px; font-weight: bold; color: #667eea;">Slide 8 de 10</span>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 8 de 12</span>
                 <button class="nav-button" onclick="showSlide(9)">Próximo ➡️</button>
             </div>
         </div>
 
-        <!-- Slide 9: Configuração Outlook no Windows 10 -->
+        <!-- Slide 9: CASE com Múltiplos Padrões -->
         <div class="slide" id="slide-9">
             <div class="content">
-                <h2>💼 Configuração Outlook no Windows 10</h2>
+                <h2>🎭 CASE Avançado - Múltiplos Padrões</h2>
                 
                 <div class="highlight-box">
-                    <h3>📧 Configurando Outlook.com/Hotmail</h3>
-                    <p>Configuração mais simples que Gmail - vamos ver como fazer!</p>
+                    <h3>🎪 CASE Ninja: Técnicas Avançadas</h3>
+                    <p>Agora vamos dominar as técnicas avançadas do CASE para criar scripts ainda mais inteligentes!</p>
                 </div>
 
                 <div class="two-column">
                     <div>
-                        <h3>🪟 Configuração Automática</h3>
-                        <div class="steps-box">
-                            <div class="step">
-                                <span class="step-number">1</span>
-                                Abra o app <strong>Mail</strong>
-                            </div>
-                            <div class="step">
-                                <span class="step-number">2</span>
-                                Clique <strong>Adicionar conta</strong>
-                            </div>
-                            <div class="step">
-                                <span class="step-number">3</span>
-                                Escolha <strong>Outlook.com</strong>
-                            </div>
-                            <div class="step">
-                                <span class="step-number">4</span>
-                                Digite email e senha normais
-                            </div>
-                            <div class="step">
-                                <span class="step-number">5</span>
-                                Aguarde configuração automática
-                            </div>
+                        <h3>🔗 Múltiplas Opções com "|"</h3>
+                        <div class="script-box">
+#!/bin/bash<br>
+echo "Você quer continuar? (S/N)"<br>
+read <span class="variable">RESPOSTA</span><br>
+<br>
+case <span class="variable">$RESPOSTA</span> in<br>
+    S|s|Y|y|Sim|sim|YES|yes)<br>
+        echo "✅ Continuando..."<br>
+        ;;<br>
+    N|n|Nao|nao|NO|no)<br>
+        echo "❌ Parando..."<br>
+        ;;<br>
+    *)<br>
+        echo "🤔 Resposta não entendida"<br>
+        ;;<br>
+esac
                         </div>
-
-                        <h3>🎯 Vantagens do Outlook.com</h3>
-                        <div class="success-box" style="margin: 0;">
-                            <div class="bullet-point">Configuração automática</div>
-                            <div class="bullet-point">Não precisa senha de app</div>
-                            <div class="bullet-point">Integração nativa com Windows</div>
-                            <div class="bullet-point">Sincronização rápida</div>
+                        
+                        <h3>🌟 Padrões com Wildcards</h3>
+                        <div class="script-box">
+#!/bin/bash<br>
+echo "Digite um arquivo:"<br>
+read <span class="variable">ARQUIVO</span><br>
+<br>
+case <span class="variable">$ARQUIVO</span> in<br>
+    *.txt|*.doc|*.pdf)<br>
+        echo "📄 Documento"<br>
+        ;;<br>
+    *.jpg|*.png|*.gif)<br>
+        echo "🖼️  Imagem"<br>
+        ;;<br>
+    *.mp3|*.wav|*.flac)<br>
+        echo "🎵 Arquivo de áudio"<br>
+        ;;<br>
+    *.mp4|*.avi|*.mkv)<br>
+        echo "🎬 Vídeo"<br>
+        ;;<br>
+    backup_*)<br>
+        echo "💾 Arquivo de backup"<br>
+        ;;<br>
+    temp_*|tmp_*)<br>
+        echo "🗑️  Arquivo temporário"<br>
+        ;;<br>
+    *)<br>
+        echo "❓ Tipo desconhecido"<br>
+        ;;<br>
+esac
                         </div>
                     </div>
                     <div>
-                        <h3>⚙️ Configuração Manual (se necessário)</h3>
-                        <div class="config-box">
-<strong>SMTP (Envio):</strong><br>
-Servidor: smtp-mail.outlook.com<br>
-Porta: 587<br>
-Segurança: STARTTLS<br>
+                        <h3>🧪 Testando os Padrões</h3>
+                        <div class="terminal-box">
+<span class="prompt">Digite um arquivo:</span> <span class="command">foto.jpg</span>
+<div class="output">🖼️  Imagem</div>
 <br>
-<strong>POP3 (Recebimento):</strong><br>
-Servidor: outlook.office365.com<br>
-Porta: 995<br>
-Segurança: SSL/TLS<br>
+<span class="prompt">Digite um arquivo:</span> <span class="command">backup_dados.tar</span>
+<div class="output">💾 Arquivo de backup</div>
 <br>
-<strong>IMAP (Alternativa):</strong><br>
-Servidor: outlook.office365.com<br>
-Porta: 993<br>
-Segurança: SSL/TLS
+<span class="prompt">Digite um arquivo:</span> <span class="command">temp_123.log</span>
+<div class="output">🗑️  Arquivo temporário</div>
                         </div>
-
-                        <h3>🔧 Configuração Avançada</h3>
-                        <div class="outlook-box">
-                            <p><strong>Se automático falhar:</strong></p>
-                            <p>1. Escolha "Configuração avançada"</p>
-                            <p>2. Selecione "POP, IMAP"</p>
-                            <p>3. Insira configurações manuais</p>
-                            <p>4. Teste conexão</p>
+                        
+                        <h3>📱 Validador de Entrada Avançado</h3>
+                        <div class="script-box">
+#!/bin/bash<br>
+echo "Digite uma entrada:"<br>
+read <span class="variable">ENTRADA</span><br>
+<br>
+case <span class="variable">$ENTRADA</span> in<br>
+    [0-9])<br>
+        echo "🔢 Um dígito"<br>
+        ;;<br>
+    [0-9][0-9])<br>
+        echo "🔢 Dois dígitos"<br>
+        ;;<br>
+    [0-9]*)<br>
+        echo "🔢 Número com vários dígitos"<br>
+        ;;<br>
+    [A-Z])<br>
+        echo "🔤 Uma letra maiúscula"<br>
+        ;;<br>
+    [a-z])<br>
+        echo "🔡 Uma letra minúscula"<br>
+        ;;<br>
+    [A-Za-z]*)<br>
+        echo "📝 Palavra ou texto"<br>
+        ;;<br>
+    *@*.*)<br>
+        echo "📧 Parece um email"<br>
+        ;;<br>
+    http*|ftp*)<br>
+        echo "🌐 Parece uma URL"<br>
+        ;;<br>
+    "")<br>
+        echo "🕳️  Entrada vazia"<br>
+        ;;<br>
+    *)<br>
+        echo "❓ Tipo não identificado"<br>
+        ;;<br>
+esac
                         </div>
                     </div>
                 </div>
 
                 <div class="example-box">
-                    <h3>📱 Configuração no App Mail - Completa</h3>
-                    <div style="background: white; padding: 15px; border-radius: 8px; margin: 10px 0; border: 2px solid #0078d4;">
-                        <p><strong>Nome da conta:</strong> Meu Outlook</p>
-                        <p><strong>Seu nome:</strong> Seu Nome Completo</p>
-                        <p><strong>Email:</strong> seuemail@outlook.com</p>
-                        <p><strong>Senha:</strong> sua senha normal do Outlook</p>
-                        <p><strong>Nome da conta:</strong> aparecerá na lista de contas</p>
-                        <p><strong>Baixar email de:</strong> último mês (recomendado)</p>
-                        <p><strong>Sincronizar:</strong> conforme os itens chegam</p>
+                    <h3>🎯 Sistema de Classificação de Senha</h3>
+                    <div class="script-box">
+#!/bin/bash<br>
+echo "Digite uma senha para analisar:"<br>
+read -s <span class="variable">SENHA</span>  <span class="comment"># -s oculta a digitação</span><br>
+echo  <span class="comment"># Nova linha</span><br>
+<br>
+<span class="variable">TAMANHO</span>=${#SENHA}<br>
+<br>
+case <span class="variable">$SENHA</span> in<br>
+    *[0-9]*[A-Z]*[a-z]*[!@#$%]*)<br>
+        if [ $TAMANHO -ge 12 ]; then<br>
+            echo "🔒 SENHA ULTRA FORTE!"<br>
+        else<br>
+            echo "🔒 SENHA FORTE"<br>
+        fi<br>
+        ;;<br>
+    *[0-9]*[A-Za-z]*)<br>
+        if [ $TAMANHO -ge 8 ]; then<br>
+            echo "🔑 SENHA BOA"<br>
+        else<br>
+            echo "🔑 SENHA REGULAR"<br>
+        fi<br>
+        ;;<br>
+    *[A-Za-z]*)<br>
+        echo "🔓 SENHA FRACA (só letras)"<br>
+        ;;<br>
+    *[0-9]*)<br>
+        echo "🔓 SENHA FRACA (só números)"<br>
+        ;;<br>
+    "")<br>
+        echo "❌ SENHA VAZIA!"<br>
+        ;;<br>
+    *)<br>
+        echo "🔴 SENHA MUITO FRACA"<br>
+        ;;<br>
+esac<br>
+<br>
+echo "Tamanho: $TAMANHO caracteres"
                     </div>
                 </div>
 
-                <div class="comparison-table">
-                    <h3>⚖️ Outlook vs Gmail - Facilidade de Configuração</h3>
-                    <table>
-                        <tr>
-                            <th>Aspecto</th>
-                            <th>📧 Outlook.com</th>
-                            <th>📮 Gmail</th>
-                        </tr>
-                        <tr>
-                            <td><strong>Configuração</strong></td>
-                            <td>Automática</td>
-                            <td>Manual (senha de app)</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Segurança</strong></td>
-                            <td>Senha normal</td>
-                            <td>Requer 2FA + senha app</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Facilidade</strong></td>
-                            <td>Muito fácil</td>
-                            <td>Complexa</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Tempo setup</strong></td>
-                            <td>2-3 minutos</td>
-                            <td>10-15 minutos</td>
-                        </tr>
-                    </table>
-                </div>
-
-                <div class="windows-box">
-                    <h3>💡 Dicas para Melhor Experiência</h3>
-                    <p><strong>Notificações:</strong> Configure alertas para novos emails</p>
-                    <p><strong>Assinatura:</strong> Crie assinatura personalizada</p>
-                    <p><strong>Pastas:</strong> Organize emails em pastas</p>
-                    <p><strong>Regras:</strong> Configure filtros automáticos</p>
-                    <p><strong>Offline:</strong> Defina quantos emails manter offline</p>
-                </div>
-
                 <div class="info-box">
-                    <h3>🔍 Verificando se Funciona</h3>
-                    <p><strong>1. Envie email:</strong> Para outro endereço seu</p>
-                    <p><strong>2. Receba email:</strong> Peça para alguém enviar</p>
-                    <p><strong>3. Sincronização:</strong> Verifique se atualiza automaticamente</p>
-                    <p><strong>4. Anexos:</strong> Teste enviar arquivo anexo</p>
+                    <h3>💡 Dicas dos Padrões Avançados</h3>
+                    <p><strong>*palavra*:</strong> contém "palavra" em qualquer lugar<br>
+                    <strong>palavra*:</strong> começa com "palavra"<br>
+                    <strong>*palavra:</strong> termina com "palavra"<br>
+                    <strong>[abc]:</strong> um dos caracteres a, b ou c<br>
+                    <strong>[0-9]*:</strong> começa com número, resto qualquer<br>
+                    <strong>"":</strong> string vazia (muito importante!)</p>
+                </div>
+
+                <div class="warning-box">
+                    <h3>⚠️ Ordem dos Padrões Importa!</h3>
+                    <p>O CASE testa na ordem que você escreve. Padrões mais específicos devem vir ANTES dos genéricos!<br>
+                    <strong>✅ Certo:</strong> [0-9] depois [0-9]*<br>
+                    <strong>❌ Errado:</strong> [0-9]* depois [0-9] (nunca chegará no segundo!)</p>
                 </div>
             </div>
             
             <div class="slide-navigation">
                 <button class="nav-button" onclick="showSlide(8)">⬅️ Anterior</button>
-                <span style="margin: 0 20px; font-weight: bold; color: #667eea;">Slide 9 de 10</span>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 9 de 12</span>
                 <button class="nav-button" onclick="showSlide(10)">Próximo ➡️</button>
             </div>
         </div>
 
-        <!-- Slide 10: Conclusão -->
+        <!-- Slide 10: Truques e Dicas -->
         <div class="slide" id="slide-10">
             <div class="content">
-                <h2>🎓 Parabéns! Você Domina SMTP e POP3!</h2>
+                <h2>🎩 Truques e Dicas de Mestre</h2>
                 
-                <div class="highlight-box center-text">
-                    <h3>🎯 Agora Você Sabe Como Funciona o Email!</h3>
-                    <p>Entende os protocolos por trás dos emails e sabe configurar servidores e clientes</p>
+                <div class="highlight-box">
+                    <h3>🧙‍♂️ Segredos dos Experts</h3>
+                    <p>Técnicas avançadas que transformam scripts iniciantes em soluções profissionais!</p>
                 </div>
 
                 <div class="two-column">
                     <div>
-                        <h3>📚 O que Você Aprendeu</h3>
-                        <div class="bullet-point">Conceitos de SMTP e POP3</div>
-                        <div class="bullet-point">Diferenças entre os protocolos</div>
-                        <div class="bullet-point">Configuração no Packet Tracer</div>
-                        <div class="bullet-point">Setup de Gmail no Windows</div>
-                        <div class="bullet-point">Setup de Outlook no Windows</div>
-                        <div class="bullet-point">Troubleshooting de problemas</div>
-                        <div class="bullet-point">Portas e segurança</div>
+                        <h3>🎯 CASE Aninhado (Case dentro de Case)</h3>
+                        <div class="script-box">
+#!/bin/bash<br>
+echo "Escolha categoria: (1)Comida (2)Bebida"<br>
+read <span class="variable">CATEGORIA</span><br>
+<br>
+case <span class="variable">$CATEGORIA</span> in<br>
+    1)<br>
+        echo "Tipo de comida: (a)Doce (b)Salgado"<br>
+        read <span class="variable">TIPO</span><br>
+        case <span class="variable">$TIPO</span> in<br>
+            a) echo "🍰 Doce selecionado!" ;;<br>
+            b) echo "🍕 Salgado selecionado!" ;;<br>
+            *) echo "❌ Tipo inválido" ;;<br>
+        esac<br>
+        ;;<br>
+    2)<br>
+        echo "Tipo de bebida: (a)Quente (b)Fria"<br>
+        read <span class="variable">TIPO</span><br>
+        case <span class="variable">$TIPO</span> in<br>
+            a) echo "☕ Bebida quente!" ;;<br>
+            b) echo "🧊 Bebida fria!" ;;<br>
+            *) echo "❌ Tipo inválido" ;;<br>
+        esac<br>
+        ;;<br>
+    *)<br>
+        echo "❌ Categoria inválida"<br>
+        ;;<br>
+esac
+                        </div>
+                        
+                        <h3>🔄 CASE com Funções</h3>
+                        <div class="script-box">
+#!/bin/bash<br>
+<br>
+<span class="comment"># Definindo funções</span><br>
+fazer_backup() {<br>
+    echo "🔄 Iniciando backup..."<br>
+    tar -czf backup.tar.gz *<br>
+    echo "✅ Backup concluído!"<br>
+}<br>
+<br>
+limpar_sistema() {<br>
+    echo "🧹 Limpando arquivos temporários..."<br>
+    rm -rf /tmp/*<br>
+    echo "✅ Sistema limpo!"<br>
+}<br>
+<br>
+<span class="comment"># Menu com funções</span><br>
+case <span class="variable">$1</span> in<br>
+    backup)<br>
+        fazer_backup<br>
+        ;;<br>
+    clean)<br>
+        limpar_sistema<br>
+        ;;<br>
+    *)<br>
+        echo "Uso: $0 {backup|clean}"<br>
+        ;;<br>
+esac
+                        </div>
                     </div>
                     <div>
-                        <h3>🚀 Próximos Desafios</h3>
-                        <div class="bullet-point">Protocolo IMAP avançado</div>
-                        <div class="bullet-point">Servidores de email Linux</div>
-                        <div class="bullet-point">Configuração Exchange</div>
-                        <div class="bullet-point">Certificados SSL/TLS</div>
-                        <div class="bullet-point">Anti-spam e filtros</div>
-                        <div class="bullet-point">Backup de emails</div>
-                        <div class="bullet-point">Migração de servidores</div>
-                    </div>
-                </div>
-
-                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px; border-radius: 15px; margin: 20px 0;">
-                    <h3>🎯 Exercícios Propostos</h3>
-                    <p><strong>1. Servidor Completo:</strong> Configure SMTP, POP3 e IMAP no mesmo servidor.</p>
-                    <p><strong>2. Multi-usuários:</strong> Crie 5 usuários e teste comunicação entre todos.</p>
-                    <p><strong>3. Troubleshooting:</strong> Simule problemas de conectividade e resolva.</p>
-                    <p><strong>4. Clientes Múltiplos:</strong> Configure diferentes clientes (Thunderbird, Apple Mail).</p>
-                </div>
-
-                <div class="success-box center-text">
-                    <h3>🏆 Resumo dos Protocolos</h3>
-                    <div class="config-box">
-<strong>📮 SMTP - Simple Mail Transfer Protocol</strong><br>
-• Função: Enviar emails<br>
-• Portas: 25, 587 (TLS), 465 (SSL)<br>
-• Analogia: Carteiro que entrega<br>
+                        <h3>📊 CASE com Arrays</h3>
+                        <div class="script-box">
+#!/bin/bash<br>
 <br>
-<strong>📬 POP3 - Post Office Protocol v3</strong><br>
-• Função: Receber emails<br>
-• Portas: 110, 995 (SSL)<br>
-• Analogia: Caixa de correio<br>
-• Comportamento: Download local
+<span class="comment"># Definindo arrays</span><br>
+declare -a CORES=("vermelho" "verde" "azul")<br>
+declare -a ANIMAIS=("gato" "cão" "pássaro")<br>
+<br>
+echo "Escolha: (1)Cores (2)Animais"<br>
+read <span class="variable">ESCOLHA</span><br>
+<br>
+case <span class="variable">$ESCOLHA</span> in<br>
+    1)<br>
+        echo "Cores disponíveis:"<br>
+        for i in "${CORES[@]}"; do<br>
+            echo "  🎨 $i"<br>
+        done<br>
+        ;;<br>
+    2)<br>
+        echo "Animais disponíveis:"<br>
+        for i in "${ANIMAIS[@]}"; do<br>
+            echo "  🐾 $i"<br>
+        done<br>
+        ;;<br>
+    *)<br>
+        echo "❌ Opção inválida"<br>
+        ;;<br>
+esac
+                        </div>
+                        
+                        <h3>📋 CASE com Arquivo de Configuração</h3>
+                        <div class="script-box">
+#!/bin/bash<br>
+<br>
+<span class="comment"># Lê configuração de arquivo</span><br>
+if [ -f config.txt ]; then<br>
+    <span class="variable">MODO</span>=$(cat config.txt)<br>
+else<br>
+    <span class="variable">MODO</span>="padrao"<br>
+fi<br>
+<br>
+case <span class="variable">$MODO</span> in<br>
+    "debug")<br>
+        echo "🐛 Modo DEBUG ativado"<br>
+        set -x  <span class="comment"># Mostra todos os comandos</span><br>
+        ;;<br>
+    "producao")<br>
+        echo "🚀 Modo PRODUÇÃO"<br>
+        exec 2>/dev/null  <span class="comment"># Oculta erros</span><br>
+        ;;<br>
+    "teste")<br>
+        echo "🧪 Modo TESTE"<br>
+        ;;<br>
+    *)<br>
+        echo "⚙️  Modo PADRÃO"<br>
+        ;;<br>
+esac
+                        </div>
                     </div>
                 </div>
 
-                <div class="comparison-table">
-                    <h3>📋 Checklist de Configurações</h3>
-                    <table>
-                        <tr>
-                            <th>Serviço</th>
-                            <th>Gmail</th>
-                            <th>Outlook.com</th>
-                        </tr>
-                        <tr>
-                            <td><strong>SMTP</strong></td>
-                            <td>smtp.gmail.com:587</td>
-                            <td>smtp-mail.outlook.com:587</td>
-                        </tr>
-                        <tr>
-                            <td><strong>POP3</strong></td>
-                            <td>pop.gmail.com:995</td>
-                            <td>outlook.office365.com:995</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Autenticação</strong></td>
-                            <td>Senha de app</td>
-                            <td>Senha normal</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Configuração</strong></td>
-                            <td>Manual</td>
-                            <td>Automática</td>
-                        </tr>
-                    </table>
+                <div class="example-box">
+                    <h3>🚀 Super Script: Gerenciador do Sistema</h3>
+                    <div class="script-box">
+#!/bin/bash<br>
+<br>
+<span class="comment"># Script profissional com CASE</span><br>
+<br>
+mostrar_ajuda() {<br>
+    echo "📚 USO: $0 [OPÇÃO]"<br>
+    echo "🔧 OPÇÕES:"<br>
+    echo "  info     - Informações do sistema"<br>
+    echo "  monitor  - Monitor de recursos"<br>
+    echo "  backup   - Fazer backup"<br>
+    echo "  update   - Atualizar sistema"<br>
+    echo "  help     - Mostrar esta ajuda"<br>
+}<br>
+<br>
+<span class="comment"># Verifica se tem parâmetro</span><br>
+if [ $# -eq 0 ]; then<br>
+    mostrar_ajuda<br>
+    exit 1<br>
+fi<br>
+<br>
+<span class="comment"># Processa opções</span><br>
+case <span class="variable">$1</span> in<br>
+    info|information|i)<br>
+        echo "💻 INFORMAÇÕES DO SISTEMA"<br>
+        echo "Usuário: $(whoami)"<br>
+        echo "Sistema: $(uname -a)"<br>
+        echo "Uptime: $(uptime)"<br>
+        ;;<br>
+    monitor|mon|m)<br>
+        echo "📊 MONITOR DE RECURSOS"<br>
+        echo "Memória:"<br>
+        free -h<br>
+        echo -e "\nDisco:"<br>
+        df -h<br>
+        ;;<br>
+    backup|bkp|b)<br>
+        echo "💾 FAZENDO BACKUP..."<br>
+        tar -czf backup_$(date +%Y%m%d_%H%M%S).tar.gz $HOME<br>
+        echo "✅ Backup concluído!"<br>
+        ;;<br>
+    update|upd|u)<br>
+        echo "🔄 ATUALIZANDO SISTEMA..."<br>
+        sudo apt update && sudo apt upgrade<br>
+        ;;<br>
+    help|ajuda|h|-h|--help)<br>
+        mostrar_ajuda<br>
+        ;;<br>
+    *)<br>
+        echo "❌ Opção '$1' não reconhecida"<br>
+        mostrar_ajuda<br>
+        exit 1<br>
+        ;;<br>
+esac
+                    </div>
                 </div>
 
-                <div class="example-box center-text">
-                    <h3>⚡ Você Agora É um Expert em Protocolos de Email! ⚡</h3>
-                    <p>"Seus conhecimentos permitem configurar qualquer sistema de email!"<br>
-                    Continue explorando outros protocolos de rede! 🌐📧</p>
-                </div>
-
-                <div class="info-box center-text">
-                    <h3>📋 Recursos para Continuar Aprendendo</h3>
-                    <p>• RFC 5321 (SMTP Specification)<br>
-                    • RFC 1939 (POP3 Specification)<br>
-                    • Certificações de rede (CCNA, CompTIA)<br>
-                    • Laboratórios com servidores reais</p>
-                </div>
-
-                <div style="background: #d1ecf1; color: #0c5460; padding: 20px; border-radius: 10px; margin: 15px 0; text-align: center;">
-                    <p style="font-size: 1.1em; margin: 0;">
-                        <strong>Lembre-se:</strong> SMTP envia, POP3 recebe, portas seguras sempre!<br>
-                        <strong>Happy Email Configuring! 📧🔧</strong>
-                    </p>
+                <div class="success-box">
+                    <h3>🏆 Boas Práticas Profissionais</h3>
+                    <p>✅ <strong>Sempre</strong> inclua ajuda com --help<br>
+                    ✅ <strong>Use</strong> sinônimos para opções (i|info|information)<br>
+                    ✅ <strong>Valide</strong> parâmetros antes de processar<br>
+                    ✅ <strong>Adicione</strong> emojis para interface amigável<br>
+                    ✅ <strong>Trate</strong> casos de erro com exit codes apropriados</p>
                 </div>
             </div>
             
             <div class="slide-navigation">
                 <button class="nav-button" onclick="showSlide(9)">⬅️ Anterior</button>
-                <span style="margin: 0 20px; font-weight: bold; color: #667eea;">Slide 10 de 10</span>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 10 de 12</span>
+                <button class="nav-button" onclick="showSlide(11)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 11: Quiz -->
+        <div class="slide" id="slide-11">
+            <div class="content">
+                <h2>🧠 Quiz - Teste seus Conhecimentos sobre CASE!</h2>
+                
+                <div class="quiz-container">
+                    <div class="quiz-question" id="question1">
+                        <h3>📝 Questão 1</h3>
+                        <p><strong>Como termina um bloco CASE?</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" onclick="selectOption(1, 'a', false)">
+                                <span class="option-letter">A)</span> end
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(1, 'b', false)">
+                                <span class="option-letter">B)</span> fi
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(1, 'c', true)">
+                                <span class="option-letter">C)</span> esac
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(1, 'd', false)">
+                                <span class="option-letter">D)</span> done
+                            </div>
+                        </div>
+                        <div class="quiz-feedback" id="feedback1"></div>
+                    </div>
+
+                    <div class="quiz-question" id="question2" style="display: none;">
+                        <h3>📝 Questão 2</h3>
+                        <p><strong>O que faz o padrão "*)" no CASE?</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" onclick="selectOption(2, 'a', false)">
+                                <span class="option-letter">A)</span> Multiplica valores
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(2, 'b', true)">
+                                <span class="option-letter">B)</span> Captura qualquer valor não especificado
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(2, 'c', false)">
+                                <span class="option-letter">C)</span> Só aceita asterisco
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(2, 'd', false)">
+                                <span class="option-letter">D)</span> Interrompe o script
+                            </div>
+                        </div>
+                        <div class="quiz-feedback" id="feedback2"></div>
+                    </div>
+
+                    <div class="quiz-question" id="question3" style="display: none;">
+                        <h3>📝 Questão 3</h3>
+                        <p><strong>Qual padrão aceita qualquer letra maiúscula?</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" onclick="selectOption(3, 'a', true)">
+                                <span class="option-letter">A)</span> [A-Z]
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(3, 'b', false)">
+                                <span class="option-letter">B)</span> [a-z]
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(3, 'c', false)">
+                                <span class="option-letter">C)</span> [0-9]
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(3, 'd', false)">
+                                <span class="option-letter">D)</span> [A-a]
+                            </div>
+                        </div>
+                        <div class="quiz-feedback" id="feedback3"></div>
+                    </div>
+
+                    <div class="quiz-question" id="question4" style="display: none;">
+                        <h3>📝 Questão 4</h3>
+                        <p><strong>O que deve aparecer no final de cada caso?</strong></p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" onclick="selectOption(4, 'a', false)">
+                                <span class="option-letter">A)</span> ;
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(4, 'b', true)">
+                                <span class="option-letter">B)</span> ;;
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(4, 'c', false)">
+                                <span class="option-letter">C)</span> :
+                            </div>
+                            <div class="quiz-option" onclick="selectOption(4, 'd', false)">
+                                <span class="option-letter">D)</span> end
+                            </div>
+                        </div>
+                        <div class="quiz-feedback" id="feedback4"></div>
+                    </div>
+
+                    <div id="quiz-result" style="display: none; text-align: center; margin-top: 30px;">
+                        <h3>🎉 Quiz Concluído!</h3>
+                        <div class="highlight-box">
+                            <p><strong>Sua pontuação: <span id="final-score">0</span>/4</strong></p>
+                            <p id="result-message"></p>
+                        </div>
+                        <button class="nav-button" onclick="restartQuiz()" style="margin-top: 20px;">🔄 Refazer Quiz</button>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <button class="nav-button" id="next-quiz-btn" onclick="nextQuestion()" style="display: none;">
+                        Próxima Questão ➡️
+                    </button>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(10)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 11 de 12</span>
+                <button class="nav-button" onclick="showSlide(12)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 12: Conclusão -->
+        <div class="slide" id="slide-12">
+            <div class="content">
+                <h2>🎓 Parabéns! Você Domina o Comando CASE!</h2>
+                
+                <div class="highlight-box center-text">
+                    <h3>🎯 Agora Seus Scripts Têm Múltiplas Personalidades!</h3>
+                    <p>Você aprendeu a criar menus inteligentes e decisões elegantes com CASE</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📚 O que Você Domina Agora</h3>
+                        <div class="bullet-point">Estrutura case-in-esac completa</div>
+                        <div class="bullet-point">Padrões simples e wildcards</div>
+                        <div class="bullet-point">Múltiplas opções com "|"</div>
+                        <div class="bullet-point">Ranges [0-9], [A-Z], [a-z]</div>
+                        <div class="bullet-point">Caso padrão com "*)"</div>
+                        <div class="bullet-point">CASE vs IF - quando usar cada um</div>
+                        <div class="bullet-point">Técnicas avançadas e truques</div>
+                    </div>
+                    <div>
+                        <h3>🚀 Próximos Desafios</h3>
+                        <div class="bullet-point">Loops (for, while, until)</div>
+                        <div class="bullet-point">Funções e bibliotecas</div>
+                        <div class="bullet-point">Arrays e manipulação de dados</div>
+                        <div class="bullet-point">Expressões regulares</div>
+                        <div class="bullet-point">Tratamento de sinais (trap)</div>
+                        <div class="bullet-point">Scripts com argumentos avançados</div>
+                        <div class="bullet-point">Debugging e profiling</div>
+                    </div>
+                </div>
+
+                <div style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); padding: 25px; border-radius: 15px; margin: 20px 0;">
+                    <h3>🎯 Exercícios para Casa</h3>
+                    <p><strong>1. Super Calculadora:</strong> Crie uma calculadora com operações avançadas (potência, raiz, etc.)</p>
+                    <p><strong>2. Organizador de Arquivos:</strong> Script que move arquivos para pastas baseado na extensão</p>
+                    <p><strong>3. Monitor do Sistema:</strong> Menu que mostra CPU, RAM, disco e processos</p>
+                    <p><strong>4. Backup Inteligente:</strong> Sistema de backup com diferentes estratégias</p>
+                </div>
+
+                <div class="success-box center-text">
+                    <h3>🏆 Comandos CASE para Memorizar</h3>
+                    <div class="script-box">
+case $variavel in                    <span class="comment"># Inicia análise</span><br>
+    padrão1) comandos ;;             <span class="comment"># Caso específico</span><br>
+    pad1|pad2) comandos ;;           <span class="comment"># Múltiplas opções</span><br>
+    [0-9]) comandos ;;               <span class="comment"># Range numérico</span><br>
+    [A-Z]) comandos ;;               <span class="comment"># Range maiúsculas</span><br>
+    [Ss]) comandos ;;                <span class="comment"># S ou s</span><br>
+    *.txt) comandos ;;               <span class="comment"># Termina com .txt</span><br>
+    backup_*) comandos ;;            <span class="comment"># Começa com backup_</span><br>
+    *) comandos ;;                   <span class="comment"># Qualquer outra coisa</span><br>
+esac                                 <span class="comment"># Fim da análise</span><br>
+                    </div>
+                </div>
+
+                <div class="example-box center-text">
+                    <h3>⚡ Você Agora É um Arquiteto de Menus! ⚡</h3>
+                    <p>"Seus scripts agora são como restaurantes com cardápios organizados!"<br>
+                    Continue criando menus cada vez mais elaborados! 🍽️🚀</p>
+                </div>
+
+                <div class="info-box center-text">
+                    <h3>📋 Recursos para Continuar Aprendendo</h3>
+                    <p>• Bash Advanced Scripting Guide<br>
+                    • ShellCheck (validador online)<br>
+                    • Bash Manual (man bash)<br>
+                    • Prática com projetos reais</p>
+                </div>
+
+                <div style="background: #d1ecf1; color: #0c5460; padding: 20px; border-radius: 10px; margin: 15px 0; text-align: center;">
+                    <p style="font-size: 1.1em; margin: 0;">
+                        <strong>Lembre-se:</strong> CASE é perfeito para menus e múltiplas opções,<br>
+                        IF é melhor para condições complexas!<br>
+                        <strong>Happy Menu Scripting! 🐧🎯</strong>
+                    </p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(11)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #1a1a2e;">Slide 12 de 12</span>
                 <button class="nav-button" onclick="showSlide(1)" style="background: #27ae60;">🏠 Início</button>
             </div>
         </div>
@@ -1433,7 +1969,7 @@ Segurança: SSL/TLS
         let currentSlide = 1;
         
         // Atualizar total de slides
-        document.getElementById('total-slides').textContent = '10';
+        document.getElementById('total-slides').textContent = '12';
         
         // Função para mostrar slide específico
         function showSlide(slideNumber) {
@@ -1458,10 +1994,129 @@ Segurança: SSL/TLS
         document.addEventListener('keydown', function(e) {
             if (e.key === 'ArrowLeft' && currentSlide > 1) {
                 showSlide(currentSlide - 1);
-            } else if (e.key === 'ArrowRight' && currentSlide < 10) {
+            } else if (e.key === 'ArrowRight' && currentSlide < 12) {
                 showSlide(currentSlide + 1);
             }
         });
+        
+        // Variáveis do quiz
+        let currentQuestion = 1;
+        let score = 0;
+        let quizAnswered = [false, false, false, false];
+        
+        // Função do quiz
+        function selectOption(questionNum, option, isCorrect) {
+            if (quizAnswered[questionNum - 1]) return;
+            
+            const options = document.querySelectorAll('#question' + questionNum + ' .quiz-option');
+            const feedback = document.getElementById('feedback' + questionNum);
+            
+            // Marcar todas as opções
+            options.forEach(opt => {
+                opt.style.pointerEvents = 'none';
+                if (opt.onclick.toString().includes('true')) {
+                    opt.classList.add('correct');
+                } else if (opt === event.currentTarget) {
+                    opt.classList.add(isCorrect ? 'correct' : 'incorrect');
+                }
+            });
+            
+            // Mostrar feedback
+            if (isCorrect) {
+                feedback.innerHTML = '✅ Correto! Muito bem!';
+                feedback.className = 'quiz-feedback correct';
+                score++;
+            } else {
+                let correctAnswer = '';
+                switch(questionNum) {
+                    case 1:
+                        correctAnswer = 'CASE termina com "esac" (case ao contrário).';
+                        break;
+                    case 2:
+                        correctAnswer = '*) é o padrão que captura qualquer valor não especificado anteriormente.';
+                        break;
+                    case 3:
+                        correctAnswer = '[A-Z] aceita qualquer letra de A até Z (maiúsculas).';
+                        break;
+                    case 4:
+                        correctAnswer = '";;" marca o fim de cada caso no CASE.';
+                        break;
+                }
+                feedback.innerHTML = `❌ Incorreto. ${correctAnswer}`;
+                feedback.className = 'quiz-feedback incorrect';
+            }
+            
+            quizAnswered[questionNum - 1] = true;
+            
+            // Mostrar botão para próxima questão
+            if (questionNum < 4) {
+                document.getElementById('next-quiz-btn').style.display = 'inline-block';
+            } else {
+                // Última questão - mostrar resultado
+                setTimeout(() => {
+                    showQuizResult();
+                }, 2000);
+            }
+        }
+
+        function nextQuestion() {
+            document.getElementById('question' + currentQuestion).style.display = 'none';
+            currentQuestion++;
+            document.getElementById('question' + currentQuestion).style.display = 'block';
+            document.getElementById('next-quiz-btn').style.display = 'none';
+        }
+
+        function showQuizResult() {
+            // Esconder última questão
+            document.getElementById('question4').style.display = 'none';
+            
+            // Mostrar resultado
+            document.getElementById('quiz-result').style.display = 'block';
+            document.getElementById('final-score').textContent = score;
+            
+            const resultMessage = document.getElementById('result-message');
+            if (score === 4) {
+                resultMessage.innerHTML = '🏆 Perfeito! Você é um mestre do CASE!';
+            } else if (score === 3) {
+                resultMessage.innerHTML = '🌟 Excelente! Quase um expert em menus!';
+            } else if (score === 2) {
+                resultMessage.innerHTML = '👏 Bom trabalho! Continue praticando!';
+            } else if (score === 1) {
+                resultMessage.innerHTML = '📖 Há espaço para melhorar. Revise os padrões!';
+            } else {
+                resultMessage.innerHTML = '🔄 Recomendo revisar toda a aula novamente!';
+            }
+        }
+
+        function restartQuiz() {
+            // Reset variables
+            currentQuestion = 1;
+            score = 0;
+            quizAnswered = [false, false, false, false];
+            
+            // Reset interface
+            for (let i = 1; i <= 4; i++) {
+                const question = document.getElementById('question' + i);
+                const options = question.querySelectorAll('.quiz-option');
+                const feedback = document.getElementById('feedback' + i);
+                
+                // Reset options
+                options.forEach(opt => {
+                    opt.className = 'quiz-option';
+                    opt.style.pointerEvents = 'auto';
+                });
+                
+                // Hide feedback
+                feedback.style.display = 'none';
+                
+                // Hide all questions except first
+                question.style.display = i === 1 ? 'block' : 'none';
+            }
+            
+            // Hide result and buttons
+            document.getElementById('quiz-result').style.display = 'none';
+            document.getElementById('next-quiz-btn').style.display = 'none';
+        }
     </script>
 </body>
 </html>
