@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -417,18 +418,18 @@
 <body>
     <div class="presentation">
         <div class="slide-counter">
-            <span id="current-slide">1</span> / <span id="total-slides">12</span>
+            <span id="current-slide">1</span> / <span id="total-slides">8</span>
         </div>
 
         <!-- Slide 1: Título -->
         <div class="slide active" id="slide-1">
             <div class="content center-text">
                 <h1>🔄 Shell Script - Loops WHILE</h1>
-                <h2 style="border: none; color: #5d4037;">Repetindo Enquanto a Condição For Verdadeira</h2>
+                <h2 style="border: none; color: #5d4037;">Repetindo Até a Condição Mudar</h2>
                 <div class="highlight-box large-text">
                     <strong>while, do, done</strong><br>
-                    Loops inteligentes que respondem a condições<br>
-                    Do controle básico aos loops infinitos
+                    Como um semáforo: enquanto estiver verde, continue!<br>
+                    Quando ficar vermelho, pare.
                 </div>
                 
                 <div class="terminal-box" style="margin-top: 40px;">
@@ -439,47 +440,37 @@
             </div>
             
             <div class="slide-navigation">
-                <span style="margin: 0 20px; font-weight: bold; color: #5d4037;">Slide 1 de 12</span>
+                <span style="margin: 0 20px; font-weight: bold; color: #5d4037;">Slide 1 de 8</span>
                 <button class="nav-button start" onclick="showSlide(2)">
                     Começar Aula ➡️
                 </button>
             </div>
         </div>
 
-        <!-- Slide 2: Introdução aos Loops WHILE -->
+        <!-- Slide 2: Introdução e Sintaxe -->
         <div class="slide" id="slide-2">
             <div class="content">
                 <h2>🔍 O que é um Loop WHILE?</h2>
                 
                 <div class="highlight-box">
                     <h3>🚦 Como um Semáforo Inteligente</h3>
-                    <p>Imagine o WHILE como um semáforo que:</p>
-                    <p><strong>🟢 Enquanto verde:</strong> continue passando<br>
-                    <strong>🔴 Quando vermelho:</strong> pare imediatamente<br>
-                    <strong>👀 Sempre verificando:</strong> olha a condição antes de cada volta</p>
+                    <p>O WHILE é como um semáforo que fica verificando:</p>
+                    <p><strong>🟢 Enquanto verde:</strong> continue executando<br>
+                    <strong>🔴 Quando vermelho:</strong> pare imediatamente</p>
                 </div>
 
                 <div class="two-column">
                     <div>
-                        <h3>🎯 WHILE vs FOR - Quando usar?</h3>
-                        <div class="example-box">
-                            <div class="bullet-point">FOR: "Faça isso N vezes"</div>
-                            <div class="bullet-point">WHILE: "Faça até que..."</div>
-                            <div class="bullet-point">FOR: Lista conhecida</div>
-                            <div class="bullet-point">WHILE: Condição dinâmica</div>
-                        </div>
-                        
-                        <h3>💡 Estrutura Básica</h3>
+                        <h3>📝 Estrutura Básica</h3>
                         <div class="script-box">
 while [ <span class="variable">condição</span> ]<br>
 do<br>
 &nbsp;&nbsp;&nbsp;&nbsp;comandos<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Modificar variável!</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># IMPORTANTE: mudar a condição!</span><br>
 done<br>
                         </div>
-                    </div>
-                    <div>
-                        <h3>🌟 Primeiro Exemplo</h3>
+                        
+                        <h3>🎯 Exemplo Simples</h3>
                         <div class="script-box">
 <span class="variable">contador</span>=1<br>
 
@@ -488,8 +479,11 @@ do<br>
 &nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Volta número $contador"</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">contador</span>=$(($contador + 1))<br>
 done<br>
+
+echo <span class="string">"Terminei!"</span>
                         </div>
-                        
+                    </div>
+                    <div>
                         <h3>🎬 Resultado</h3>
                         <div class="terminal-box">
 <div class="output">Volta número 1</div>
@@ -497,151 +491,41 @@ done<br>
 <div class="output">Volta número 3</div>
 <div class="output">Volta número 4</div>
 <div class="output">Volta número 5</div>
+<div class="output">Terminei!</div>
                         </div>
                         
-                        <h3>🏠 Exemplos da Vida Real</h3>
+                        <h3>🔄 Como Funciona</h3>
                         <div class="info-box">
-                            <p><strong>🔍 Aguardar arquivo aparecer</strong><br>
-                            <strong>📥 Ler entrada até "sair"</strong><br>
-                            <strong>🔄 Monitorar sistema</strong><br>
-                            <strong>⏱️ Esperar tempo específico</strong></p>
+                            <p><strong>1. Testa a condição</strong><br>
+                            <strong>2. Se verdadeira, executa comandos</strong><br>
+                            <strong>3. Volta para o teste</strong><br>
+                            <strong>4. Se falsa, sai do loop</strong></p>
                         </div>
                     </div>
                 </div>
 
                 <div class="warning-box">
-                    <h3>⚠️ Cuidado com Loop Infinito!</h3>
-                    <p>Se a condição nunca ficar falsa, o loop nunca para!<br>
-                    <strong>Sempre modifique a variável de controle dentro do loop!</strong></p>
+                    <h3>⚠️ Regra de Ouro</h3>
+                    <p><strong>Sempre modifique a variável de controle dentro do loop!</strong><br>
+                    Se não modificar, o loop nunca vai parar (loop infinito).</p>
                 </div>
             </div>
             
             <div class="slide-navigation">
                 <button class="nav-button" onclick="showSlide(1)">⬅️ Anterior</button>
-                <span style="margin: 0 20px; font-weight: bold; color: #5d4037;">Slide 2 de 12</span>
+                <span style="margin: 0 20px; font-weight: bold; color: #5d4037;">Slide 2 de 8</span>
                 <button class="nav-button" onclick="showSlide(3)">Próximo ➡️</button>
             </div>
         </div>
 
-        <!-- Slide 3: Sintaxe Básica -->
+        <!-- Slide 3: Comparadores -->
         <div class="slide" id="slide-3">
             <div class="content">
-                <h2>📝 Sintaxe e Estrutura do WHILE</h2>
+                <h2>🔢 Comparadores para Números</h2>
                 
                 <div class="highlight-box">
-                    <h3>🧩 Anatomia do Loop WHILE</h3>
-                    <p>Cada parte tem uma função específica para criar repetições controladas</p>
-                </div>
-
-                <div class="two-column">
-                    <div>
-                        <h3>🏗️ Estrutura Fundamental</h3>
-                        <div class="script-box">
-<span class="comment"># 1. Inicializar variável</span><br>
-<span class="variable">variavel</span>=<span class="string">valor_inicial</span><br>
-
-<span class="comment"># 2. Loop while</span><br>
-while [ <span class="variable">condição</span> ]<br>
-do<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># 3. Comandos a executar</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;comandos<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># 4. IMPORTANTE: modificar variável!</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">variavel</span>=<span class="string">novo_valor</span><br>
-done<br>
-                        </div>
-                        
-                        <h3>🔍 Explicando cada parte</h3>
-                        <div class="info-box">
-                            <p><strong>while:</strong> inicia o loop<br>
-                            <strong>[ condição ]:</strong> teste lógico<br>
-                            <strong>do:</strong> "execute:"<br>
-                            <strong>comandos:</strong> o que fazer<br>
-                            <strong>variavel++:</strong> modificar controle<br>
-                            <strong>done:</strong> fim do loop</p>
-                        </div>
-                    </div>
-                    <div>
-                        <h3>🎯 Exemplo Passo a Passo</h3>
-                        <div class="script-box">
-#!/bin/bash<br>
-<span class="comment"># Contador de 1 a 3</span><br>
-
-<span class="variable">num</span>=1  <span class="comment"># 1. Inicializar</span><br>
-
-while [ <span class="variable">$num</span> -le 3 ]  <span class="comment"># 2. Condição</span><br>
-do<br>
-&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Número: $num"</span>  <span class="comment"># 3. Comando</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">num</span>=$(($num + 1))  <span class="comment"># 4. Incrementar!</span><br>
-done<br>
-
-echo <span class="string">"Fim do loop!"</span>
-                        </div>
-                        
-                        <h3>🎬 Execução Detalhada</h3>
-                        <div class="terminal-box">
-<span class="comment"># 1ª volta: num=1, 1 -le 3? SIM</span>
-<div class="output">Número: 1</div>
-<span class="comment"># num vira 2</span>
-
-<span class="comment"># 2ª volta: num=2, 2 -le 3? SIM</span>
-<div class="output">Número: 2</div>
-<span class="comment"># num vira 3</span>
-
-<span class="comment"># 3ª volta: num=3, 3 -le 3? SIM</span>
-<div class="output">Número: 3</div>
-<span class="comment"># num vira 4</span>
-
-<span class="comment"># 4ª volta: num=4, 4 -le 3? NÃO - sai do loop</span>
-<div class="output">Fim do loop!</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="example-box">
-                    <h3>🎪 Exemplo com Strings</h3>
-                    <div class="script-box">
-#!/bin/bash<br>
-<span class="comment"># Loop que conta frutas</span><br>
-
-<span class="variable">resposta</span>=<span class="string">"sim"</span><br>
-<span class="variable">total</span>=0<br>
-
-while [ <span class="variable">$resposta</span> = <span class="string">"sim"</span> ]<br>
-do<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">total</span>=$(($total + 1))<br>
-&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Você tem $total frutas"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Quer mais uma fruta? (sim/não)"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;read <span class="variable">resposta</span><br>
-done<br>
-
-echo <span class="string">"Total final: $total frutas!"</span>
-                    </div>
-                </div>
-
-                <div class="success-box">
-                    <h3>🎯 As 3 Regras de Ouro</h3>
-                    <p><strong>1. Inicialize:</strong> sempre dê valor inicial à variável de controle<br>
-                    <strong>2. Teste:</strong> condição deve poder ficar falsa em algum momento<br>
-                    <strong>3. Modifique:</strong> sempre altere a variável dentro do loop!</p>
-                </div>
-            </div>
-            
-            <div class="slide-navigation">
-                <button class="nav-button" onclick="showSlide(2)">⬅️ Anterior</button>
-                <span style="margin: 0 20px; font-weight: bold; color: #5d4037;">Slide 3 de 12</span>
-                <button class="nav-button" onclick="showSlide(4)">Próximo ➡️</button>
-            </div>
-        </div>
-
-        <!-- Slide 4: Comparadores Numéricos -->
-        <div class="slide" id="slide-4">
-            <div class="content">
-                <h2>🔢 Comparadores Numéricos</h2>
-                
-                <div class="highlight-box">
-                    <h3>🎯 Os Operadores que Decidem o Destino do Loop</h3>
-                    <p>Como comparar números para controlar quando o loop deve continuar ou parar</p>
+                    <h3>🎯 Como Comparar Números no WHILE</h3>
+                    <p>Usamos operadores especiais para decidir quando parar o loop</p>
                 </div>
 
                 <div class="comparison-table">
@@ -654,37 +538,37 @@ echo <span class="string">"Total final: $total frutas!"</span>
                         </tr>
                         <tr>
                             <td><strong>-lt</strong></td>
-                            <td>less than (menor que)</td>
+                            <td>menor que</td>
                             <td>[ $num -lt 5 ]</td>
                             <td>num = 1, 2, 3, 4</td>
                         </tr>
                         <tr>
                             <td><strong>-le</strong></td>
-                            <td>less or equal (menor ou igual)</td>
+                            <td>menor ou igual</td>
                             <td>[ $num -le 5 ]</td>
                             <td>num = 1, 2, 3, 4, 5</td>
                         </tr>
                         <tr>
                             <td><strong>-gt</strong></td>
-                            <td>greater than (maior que)</td>
+                            <td>maior que</td>
                             <td>[ $num -gt 5 ]</td>
                             <td>num = 6, 7, 8, 9...</td>
                         </tr>
                         <tr>
                             <td><strong>-ge</strong></td>
-                            <td>greater or equal (maior ou igual)</td>
+                            <td>maior ou igual</td>
                             <td>[ $num -ge 5 ]</td>
                             <td>num = 5, 6, 7, 8...</td>
                         </tr>
                         <tr>
                             <td><strong>-eq</strong></td>
-                            <td>equal (igual)</td>
+                            <td>igual</td>
                             <td>[ $num -eq 5 ]</td>
                             <td>num = 5</td>
                         </tr>
                         <tr>
                             <td><strong>-ne</strong></td>
-                            <td>not equal (diferente)</td>
+                            <td>diferente</td>
                             <td>[ $num -ne 5 ]</td>
                             <td>num ≠ 5</td>
                         </tr>
@@ -693,1187 +577,541 @@ echo <span class="string">"Total final: $total frutas!"</span>
 
                 <div class="two-column">
                     <div>
-                        <h3>⬆️ Loops Crescentes</h3>
+                        <h3>⬆️ Contando para Cima</h3>
                         <div class="script-box">
-<span class="comment"># Contando de 1 até 10</span><br>
 <span class="variable">i</span>=1<br>
-while [ <span class="variable">$i</span> -le 10 ]<br>
+while [ <span class="variable">$i</span> -le 3 ]<br>
 do<br>
 &nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Subindo: $i"</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">i</span>=$(($i + 1))<br>
 done<br>
                         </div>
                         
-                        <h3>⬇️ Loops Decrescentes</h3>
+                        <div class="terminal-box">
+<div class="output">Subindo: 1</div>
+<div class="output">Subindo: 2</div>
+<div class="output">Subindo: 3</div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>⬇️ Contagem Regressiva</h3>
                         <div class="script-box">
-<span class="comment"># Contagem regressiva</span><br>
-<span class="variable">tempo</span>=5<br>
+<span class="variable">tempo</span>=3<br>
 while [ <span class="variable">$tempo</span> -gt 0 ]<br>
 do<br>
 &nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Faltam $tempo segundos"</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">tempo</span>=$(($tempo - 1))<br>
 done<br>
-echo <span class="string">"🚀 Decolagem!"</span>
+echo <span class="string">"🚀 Fim!"</span>
+                        </div>
+                        
+                        <div class="terminal-box">
+<div class="output">Faltam 3 segundos</div>
+<div class="output">Faltam 2 segundos</div>
+<div class="output">Faltam 1 segundos</div>
+<div class="output">🚀 Fim!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="success-box">
+                    <h3>💡 Dica Fácil de Lembrar</h3>
+                    <p><strong>-lt:</strong> Less Than (menor que) 📉<br>
+                    <strong>-gt:</strong> Greater Than (maior que) 📈<br>
+                    <strong>-eq:</strong> EQual (igual) ⚖️</p>
+                </div>
+            </div>
+            
+            <div class="slide-navigation">
+                <button class="nav-button" onclick="showSlide(2)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #5d4037;">Slide 3 de 8</span>
+                <button class="nav-button" onclick="showSlide(4)">Próximo ➡️</button>
+            </div>
+        </div>
+
+        <!-- Slide 4: Incrementos e Operações -->
+        <div class="slide" id="slide-4">
+            <div class="content">
+                <h2>⚡ Modificando Variáveis no Loop</h2>
+                
+                <div class="highlight-box">
+                    <h3>🧮 Como Fazer Cálculos no Shell</h3>
+                    <p>Para mudar valores de variáveis, usamos $(( ))</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>➕ Operações Básicas</h3>
+                        <div class="script-box">
+<span class="comment"># Somar 1</span><br>
+<span class="variable">numero</span>=$(($numero + 1))<br>
+
+<span class="comment"># Subtrair 1</span><br>
+<span class="variable">numero</span>=$(($numero - 1))<br>
+
+<span class="comment"># Multiplicar por 2</span><br>
+<span class="variable">numero</span>=$(($numero * 2))<br>
+
+<span class="comment"># Dividir por 2</span><br>
+<span class="variable">numero</span>=$(($numero / 2))<br>
+                        </div>
+                        
+                        <h3>🎯 Exemplo de Soma</h3>
+                        <div class="script-box">
+<span class="variable">soma</span>=0<br>
+<span class="variable">num</span>=1<br>
+
+while [ <span class="variable">$num</span> -le 5 ]<br>
+do<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">soma</span>=$(($soma + $num))<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Somando $num: total = $soma"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">num</span>=$(($num + 1))<br>
+done<br>
                         </div>
                     </div>
                     <div>
-                        <h3>🎮 Jogo de Adivinhar</h3>
-                        <div class="script-box">
-#!/bin/bash<br>
-<span class="variable">numero_secreto</span>=7<br>
-<span class="variable">palpite</span>=0<br>
-
-echo <span class="string">"🎯 Adivinhe o número (1-10)!"</span><br>
-
-while [ <span class="variable">$palpite</span> -ne <span class="variable">$numero_secreto</span> ]<br>
-do<br>
-&nbsp;&nbsp;&nbsp;&nbsp;read -p <span class="string">"Seu palpite: "</span> <span class="variable">palpite</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;if [ <span class="variable">$palpite</span> -lt <span class="variable">$numero_secreto</span> ]; then<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"📈 Muito baixo!"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;elif [ <span class="variable">$palpite</span> -gt <span class="variable">$numero_secreto</span> ]; then<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"📉 Muito alto!"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
-done<br>
-
-echo <span class="string">"🎉 Parabéns! Acertou!"</span>
+                        <h3>🎬 Resultado da Soma</h3>
+                        <div class="terminal-box">
+<div class="output">Somando 1: total = 1</div>
+<div class="output">Somando 2: total = 3</div>
+<div class="output">Somando 3: total = 6</div>
+<div class="output">Somando 4: total = 10</div>
+<div class="output">Somando 5: total = 15</div>
                         </div>
                         
-                        <h3>📊 Somador Inteligente</h3>
+                        <h3>🔢 Exemplo de Pares</h3>
                         <div class="script-box">
-<span class="variable">soma</span>=0<br>
-<span class="variable">numero</span>=1<br>
+<span class="variable">par</span>=2<br>
 
-<span class="comment"># Soma números até chegar a 50</span><br>
-while [ <span class="variable">$soma</span> -lt 50 ]<br>
+while [ <span class="variable">$par</span> -le 10 ]<br>
 do<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">soma</span>=$(($soma + $numero))<br>
-&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"$numero: soma = $soma"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">numero</span>=$(($numero + 1))<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Par: $par"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">par</span>=$(($par + 2))<br>
 done<br>
+                        </div>
+                        
+                        <div class="terminal-box">
+<div class="output">Par: 2</div>
+<div class="output">Par: 4</div>
+<div class="output">Par: 6</div>
+<div class="output">Par: 8</div>
+<div class="output">Par: 10</div>
                         </div>
                     </div>
                 </div>
 
                 <div class="warning-box">
-                    <h3>⚠️ Dicas Importantes</h3>
-                    <p><strong>Parênteses duplos:</strong> $(( )) para cálculos matemáticos<br>
-                    <strong>Colchetes:</strong> [ ] para comparações<br>
-                    <strong>Espaços obrigatórios:</strong> sempre coloque espaços ao redor de [ e ]<br>
-                    <strong>Variáveis:</strong> use $variavel nas comparações</p>
+                    <h3>⚠️ Por que $(( ))?</h3>
+                    <p><strong>$(( )):</strong> diz ao Shell "faça matemática aqui!"<br>
+                    <strong>Sem isso:</strong> o Shell trata tudo como texto, não números</p>
                 </div>
 
                 <div class="success-box">
-                    <h3>💡 Memorize Fácil</h3>
-                    <p><strong>-lt:</strong> Less Than (menor que) 📉<br>
-                    <strong>-gt:</strong> Greater Than (maior que) 📈<br>
-                    <strong>-eq:</strong> EQual (igual) ⚖️<br>
-                    <strong>-ne:</strong> Not Equal (diferente) ≠</p>
+                    <h3>💡 Operadores Matemáticos</h3>
+                    <p><strong>+:</strong> somar &nbsp;&nbsp; <strong>-:</strong> subtrair &nbsp;&nbsp; <strong>*:</strong> multiplicar &nbsp;&nbsp; <strong>/:</strong> dividir</p>
                 </div>
             </div>
             
             <div class="slide-navigation">
                 <button class="nav-button" onclick="showSlide(3)">⬅️ Anterior</button>
-                <span style="margin: 0 20px; font-weight: bold; color: #5d4037;">Slide 4 de 12</span>
+                <span style="margin: 0 20px; font-weight: bold; color: #5d4037;">Slide 4 de 8</span>
                 <button class="nav-button" onclick="showSlide(5)">Próximo ➡️</button>
             </div>
         </div>
 
-        <!-- Slide 5: Incrementos e Operações -->
+        <!-- Slide 5: While True e Controle -->
         <div class="slide" id="slide-5">
             <div class="content">
-                <h2>⚡ Incrementos e Operações Matemáticas</h2>
+                <h2>♾️ While True e Controle de Loop</h2>
                 
                 <div class="highlight-box">
-                    <h3>🧮 Como Modificar Variáveis Dentro do Loop</h3>
-                    <p>As diferentes formas de alterar valores para controlar o fluxo do loop</p>
+                    <h3>🔄 O Loop que Nunca Para</h3>
+                    <p>Como criar loops infinitos e controlá-los com break e continue</p>
                 </div>
 
                 <div class="two-column">
                     <div>
-                        <h3>➕ Formas de Incrementar</h3>
+                        <h3>♾️ While True</h3>
                         <div class="script-box">
-<span class="comment"># Método 1: Aritmética do shell</span><br>
-<span class="variable">contador</span>=$(($contador + 1))<br>
-
-<span class="comment"># Método 2: Comando let</span><br>
-let <span class="variable">contador</span>=<span class="variable">contador</span>+1<br>
-
-<span class="comment"># Método 3: Expressão aritmética</span><br>
-<span class="variable">contador</span>=$((contador + 1))<br>
-
-<span class="comment"># Método 4: Comando expr (antigo)</span><br>
-<span class="variable">contador</span>=`expr $contador + 1`<br>
-                        </div>
-                        
-                        <h3>🎯 Exemplo Básico</h3>
-                        <div class="script-box">
-<span class="variable">numero</span>=1<br>
-
-while [ <span class="variable">$numero</span> -le 5 ]<br>
-do<br>
-&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Número: $numero"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">numero</span>=$(($numero + 1))<br>
-done<br>
-                        </div>
-                    </div>
-                    <div>
-                        <h3>🔢 Operações Avançadas</h3>
-                        <div class="script-box">
-<span class="comment"># Incremento de 2 em 2</span><br>
-<span class="variable">par</span>=2<br>
-while [ <span class="variable">$par</span> -le 20 ]<br>
-do<br>
-&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Par: $par"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">par</span>=$(($par + 2))<br>
-done<br>
-
-<span class="comment"># Multiplicação</span><br>
-<span class="variable">potencia</span>=1<br>
-while [ <span class="variable">$potencia</span> -le 1000 ]<br>
-do<br>
-&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Potência de 2: $potencia"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">potencia</span>=$(($potencia * 2))<br>
-done<br>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="example-box">
-                    <h3>📈 Calculadora de Juros Compostos</h3>
-                    <div class="script-box">
-#!/bin/bash<br>
-<span class="comment"># Simulador de investimento</span><br>
-
-<span class="variable">capital_inicial</span>=1000<br>
-<span class="variable">taxa_juros</span>=5  <span class="comment"># 5% ao mês</span><br>
-<span class="variable">meses</span>=0<br>
-<span class="variable">valor_atual</span>=<span class="variable">$capital_inicial</span><br>
-
-echo <span class="string">"💰 SIMULADOR DE INVESTIMENTO"</span><br>
-echo <span class="string">"Capital inicial: R$ $capital_inicial"</span><br>
-echo <span class="string">"Taxa de juros: $taxa_juros% ao mês"</span><br>
-echo <span class="string">"Objetivo: R$ 2000"</span><br>
-echo<br>
-
-while [ <span class="variable">$valor_atual</span> -lt 2000 ]<br>
-do<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">meses</span>=$(($meses + 1))<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">juros</span>=$(($valor_atual * $taxa_juros / 100))<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">valor_atual</span>=$(($valor_atual + $juros))<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Mês $meses: R$ $valor_atual (+ R$ $juros)"</span><br>
-done<br>
-
-echo<br>
-echo <span class="string">"🎉 Objetivo alcançado em $meses meses!"</span><br>
-echo <span class="string">"Valor final: R$ $valor_atual"</span>
-                    </div>
-                </div>
-
-                <div class="example-box">
-                    <h3>🎲 Gerador de Números Aleatórios</h3>
-                    <div class="script-box">
-#!/bin/bash<br>
-<span class="comment"># Gera números até encontrar um múltiplo de 7</span><br>
-
-<span class="variable">tentativas</span>=0<br>
-<span class="variable">numero</span>=0<br>
-
-echo <span class="string">"🎲 Procurando múltiplo de 7..."</span><br>
-
-while [ $(($numero % 7)) -ne 0 ] || [ <span class="variable">$numero</span> -eq 0 ]<br>
-do<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">numero</span>=$((RANDOM % 100 + 1))  <span class="comment"># 1 a 100</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">tentativas</span>=$(($tentativas + 1))<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Tentativa $tentativas: $numero"</span><br>
-done<br>
-
-echo <span class="string">"🎉 Encontrou! $numero é múltiplo de 7"</span><br>
-echo <span class="string">"Total de tentativas: $tentativas"</span>
-                    </div>
-                </div>
-
-                <div class="info-box">
-                    <h3>💡 Operadores Matemáticos</h3>
-                    <p><strong>+:</strong> adição (numero + 1)<br>
-                    <strong>-:</strong> subtração (numero - 1)<br>
-                    <strong>*:</strong> multiplicação (numero * 2)<br>
-                    <strong>/:</strong> divisão (numero / 2)<br>
-                    <strong>%:</strong> resto da divisão (numero % 2)<br>
-                    <strong>**:</strong> potenciação (numero ** 2)</p>
-                </div>
-
-                <div class="warning-box">
-                    <h3>⚠️ Por que $(( ))?</h3>
-                    <p>Se usássemos apenas (), o Shell tentaria executar como comando!<br>
-                    <strong>$(( )):</strong> diz "isso é matemática, calcule!"<br>
-                    <strong>( ):</strong> diz "isso é comando, execute!"</p>
-                </div>
-            </div>
-            
-            <div class="slide-navigation">
-                <button class="nav-button" onclick="showSlide(4)">⬅️ Anterior</button>
-                <span style="margin: 0 20px; font-weight: bold; color: #5d4037;">Slide 5 de 12</span>
-                <button class="nav-button" onclick="showSlide(6)">Próximo ➡️</button>
-            </div>
-        </div>
-
-        <!-- Slide 6: While True e Loops Infinitos -->
-        <div class="slide" id="slide-6">
-            <div class="content">
-                <h2>♾️ While True - O Loop Infinito</h2>
-                
-                <div class="highlight-box">
-                    <h3>🔄 O Loop que Nunca Para (Por Si Só)</h3>
-                    <p>Como criar loops que continuam para sempre até que você mande parar</p>
-                </div>
-
-                <div class="two-column">
-                    <div>
-                        <h3>🎯 O que é while true?</h3>
-                        <div class="info-box">
-                            <p><strong>true:</strong> sempre verdadeiro<br>
-                            <strong>Nunca para:</strong> condição sempre OK<br>
-                            <strong>Controle manual:</strong> você decide quando sair<br>
-                            <strong>break:</strong> comando para escapar</p>
-                        </div>
-                        
-                        <h3>📝 Estrutura Básica</h3>
-                        <div class="script-box">
+<span class="comment"># Loop infinito</span><br>
 while true<br>
 do<br>
-&nbsp;&nbsp;&nbsp;&nbsp;comandos<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Digite 'sair' para parar:"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;read <span class="variable">resposta</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;if [ <span class="variable">condição_saída</span> ]; then<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break  <span class="comment"># Sair do loop</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
-done<br>
-                        </div>
-                        
-                        <h3>🚨 Exemplo de Emergência</h3>
-                        <div class="script-box">
-while true<br>
-do<br>
-&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Pressione Ctrl+C para parar!"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;sleep 1<br>
-done<br>
-                        </div>
-                    </div>
-                    <div>
-                        <h3>🎮 Menu Interativo</h3>
-                        <div class="script-box">
-while true<br>
-do<br>
-&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"=== MENU PRINCIPAL ==="</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"1) Ver data"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"2) Listar arquivos"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"3) Sair"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;echo<br>
-&nbsp;&nbsp;&nbsp;&nbsp;read -p <span class="string">"Sua escolha: "</span> <span class="variable">opcao</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;case <span class="variable">$opcao</span> in<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1) date;;  <span class="comment"># Mostra data</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2) ls;;    <span class="comment"># Lista arquivos</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3) break;; <span class="comment"># Sai do loop</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*) echo <span class="string">"Opção inválida!"</span>;;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;esac<br>
-&nbsp;&nbsp;&nbsp;&nbsp;echo<br>
-done<br>
-
-echo <span class="string">"👋 Até logo!"</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="example-box">
-                    <h3>🔍 Monitor de Sistema</h3>
-                    <div class="script-box">
-#!/bin/bash<br>
-<span class="comment"># Monitor que atualiza a cada 5 segundos</span><br>
-
-echo <span class="string">"🖥️  MONITOR DE SISTEMA"</span><br>
-echo <span class="string">"Pressione Ctrl+C para parar"</span><br>
-echo<br>
-
-while true<br>
-do<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Limpar tela</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;clear<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"📊 RELATÓRIO DO SISTEMA - $(date)"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"====================================="</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Informações do sistema</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"💻 Uptime: $(uptime -p)"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"🧠 Memória: $(free -h | grep Mem | awk '{print $3"/"$2}')"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"💾 Disco: $(df -h / | tail -1 | awk '{print $3"/"$2" ("$5" usado)"}')"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"👥 Usuários: $(who | wc -l) conectados"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"⏰ Próxima atualização em 5 segundos..."</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Aguardar 5 segundos</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;sleep 5<br>
-done<br>
-                    </div>
-                </div>
-
-                <div class="example-box">
-                    <h3>💬 Chat Bot Simples</h3>
-                    <div class="script-box">
-#!/bin/bash<br>
-<span class="comment"># Bot que conversa até você dizer "tchau"</span><br>
-
-echo <span class="string">"🤖 Bot: Olá! Digite 'tchau' para sair."</span><br>
-
-while true<br>
-do<br>
-&nbsp;&nbsp;&nbsp;&nbsp;read -p <span class="string">"Você: "</span> <span class="variable">mensagem</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Verificar se quer sair</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;if [ <span class="string">"$mensagem"</span> = <span class="string">"tchau"</span> ]; then<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"🤖 Bot: Tchau! Foi um prazer conversar!"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if [ <span class="string">"$resposta"</span> = <span class="string">"sair"</span> ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break  <span class="comment"># Sai do loop</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;fi<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Respostas do bot</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;case <span class="string">"$mensagem"</span> in<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*oi*|*olá*) echo <span class="string">"🤖 Bot: Oi! Como você está?"</span>;;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*bem*|*bom*) echo <span class="string">"🤖 Bot: Que bom! Fico feliz!"</span>;;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*nome*) echo <span class="string">"🤖 Bot: Meu nome é ShellBot!"</span>;;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*) echo <span class="string">"🤖 Bot: Interessante! Conte-me mais..."</span>;;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;esac<br>
-done<br>
-                    </div>
-                </div>
-
-                <div class="warning-box">
-                    <h3>⚠️ Cuidados com While True</h3>
-                    <p><strong>Sempre tenha uma saída:</strong> comando break ou exit<br>
-                    <strong>Ctrl+C:</strong> interrompe o script em emergência<br>
-                    <strong>Sleep:</strong> use para não sobrecarregar o sistema<br>
-                    <strong>Teste bem:</strong> certifique-se que a condição de saída funciona</p>
-                </div>
-
-                <div class="success-box">
-                    <h3>🎯 Quando Usar While True</h3>
-                    <p>• <strong>Menus interativos:</strong> usuário escolhe quando sair<br>
-                    • <strong>Monitores:</strong> observar sistema continuamente<br>
-                    • <strong>Serviços:</strong> processos que ficam rodando<br>
-                    • <strong>Games:</strong> loop principal do jogo</p>
-                </div>
-            </div>
-            
-            <div class="slide-navigation">
-                <button class="nav-button" onclick="showSlide(5)">⬅️ Anterior</button>
-                <span style="margin: 0 20px; font-weight: bold; color: #5d4037;">Slide 6 de 12</span>
-                <button class="nav-button" onclick="showSlide(7)">Próximo ➡️</button>
-            </div>
-        </div>
-
-        <!-- Slide 7: Controle de Fluxo -->
-        <div class="slide" id="slide-7">
-            <div class="content">
-                <h2>🎛️ Controle de Fluxo - Break e Continue</h2>
-                
-                <div class="highlight-box">
-                    <h3>🚦 Comandos para Controlar o Loop</h3>
-                    <p>Como interromper ou pular iterações dentro do loop conforme necessário</p>
-                </div>
-
-                <div class="two-column">
-                    <div>
-                        <h3>🛑 Comando BREAK</h3>
-                        <div class="info-box">
-                            <p><strong>break:</strong> sai do loop imediatamente<br>
-                            <strong>Para tudo:</strong> ignora o resto do código<br>
-                            <strong>Como uma saída de emergência:</strong> 🚪<br>
-                            <strong>Continua:</strong> executa código após done</p>
-                        </div>
-                        
-                        <h3>🔍 Exemplo com Break</h3>
-                        <div class="script-box">
-<span class="variable">contador</span>=1<br>
-
-while [ <span class="variable">$contador</span> -le 10 ]<br>
-do<br>
-&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Número: $contador"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Parar quando chegar no 5</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;if [ <span class="variable">$contador</span> -eq 5 ]; then<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"🛑 Parando aqui!"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break<br>
-&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">contador</span>=$(($contador + 1))<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Você disse: $resposta"</span><br>
 done<br>
 
 echo <span class="string">"Saiu do loop!"</span>
                         </div>
                         
-                        <h3>🎬 Resultado</h3>
-                        <div class="terminal-box">
-<div class="output">Número: 1</div>
-<div class="output">Número: 2</div>
-<div class="output">Número: 3</div>
-<div class="output">Número: 4</div>
-<div class="output">Número: 5</div>
-<div class="output">🛑 Parando aqui!</div>
-<div class="output">Saiu do loop!</div>
+                        <h3>🛑 Comando BREAK</h3>
+                        <div class="info-box">
+                            <p><strong>break:</strong> sai do loop na hora<br>
+                            <strong>Como:</strong> saída de emergência 🚪<br>
+                            <strong>Uso:</strong> quando encontra condição especial</p>
                         </div>
                     </div>
                     <div>
                         <h3>⏭️ Comando CONTINUE</h3>
-                        <div class="info-box">
-                            <p><strong>continue:</strong> pula para próxima iteração<br>
-                            <strong>Ignora resto:</strong> vai direto para while<br>
-                            <strong>Como pular uma música:</strong> ⏭️<br>
-                            <strong>Loop continua:</strong> não sai do loop</p>
-                        </div>
-                        
-                        <h3>🔍 Exemplo com Continue</h3>
                         <div class="script-box">
-<span class="variable">contador</span>=0<br>
+<span class="variable">num</span>=0<br>
 
-while [ <span class="variable">$contador</span> -lt 10 ]<br>
+while [ <span class="variable">$num</span> -lt 5 ]<br>
 do<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">contador</span>=$(($contador + 1))<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">num</span>=$(($num + 1))<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Pular números pares</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;if [ $(($contador % 2)) -eq 0 ]; then<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;continue  <span class="comment"># Pula para próxima</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Pular número 3</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;if [ <span class="variable">$num</span> -eq 3 ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;continue  <span class="comment"># Pula resto</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;fi<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Número ímpar: $contador"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Número: $num"</span><br>
 done<br>
                         </div>
                         
-                        <h3>🎬 Resultado</h3>
                         <div class="terminal-box">
-<div class="output">Número ímpar: 1</div>
-<div class="output">Número ímpar: 3</div>
-<div class="output">Número ímpar: 5</div>
-<div class="output">Número ímpar: 7</div>
-<div class="output">Número ímpar: 9</div>
+<div class="output">Número: 1</div>
+<div class="output">Número: 2</div>
+<div class="comment"># Pulou o 3!</div>
+<div class="output">Número: 4</div>
+<div class="output">Número: 5</div>
+                        </div>
+                        
+                        <h3>⏭️ O que é CONTINUE</h3>
+                        <div class="info-box">
+                            <p><strong>continue:</strong> pula para próxima volta<br>
+                            <strong>Como:</strong> pular música no player 🎵<br>
+                            <strong>Uso:</strong> ignorar item atual</p>
                         </div>
                     </div>
                 </div>
 
                 <div class="example-box">
-                    <h3>🔍 Processador de Arquivos Inteligente</h3>
+                    <h3>🎮 Menu Simples</h3>
                     <div class="script-box">
-#!/bin/bash<br>
-<span class="comment"># Processa arquivos, pulando os temporários e parando se encontrar erro.log</span><br>
-
-echo <span class="string">"📁 Processando arquivos..."</span><br>
-
-for <span class="variable">arquivo</span> in *<br>
-do<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Se encontrar erro.log, parar tudo</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;if [ <span class="string">"$arquivo"</span> = <span class="string">"erro.log"</span> ]; then<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"❌ Erro encontrado! Parando processamento."</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break<br>
-&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Pular arquivos temporários</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;if [[ <span class="string">"$arquivo"</span> == *.tmp ]] || [[ <span class="string">"$arquivo"</span> == *~ ]]; then<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"⏭️  Pulando arquivo temporário: $arquivo"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;continue<br>
-&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Processar arquivo normal</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;if [ -f <span class="string">"$arquivo"</span> ]; then<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"✅ Processando: $arquivo"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Aqui faria o processamento real</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
-done<br>
-
-echo <span class="string">"🏁 Processamento finalizado!"</span>
-                    </div>
-                </div>
-
-                <div class="example-box">
-                    <h3>🎯 Validador de Entrada</h3>
-                    <div class="script-box">
-#!/bin/bash<br>
-<span class="comment"># Pede número válido, pulando entradas inválidas</span><br>
-
-echo <span class="string">"🔢 Digite números de 1 a 100 (0 para sair):"</span><br>
-
 while true<br>
 do<br>
-&nbsp;&nbsp;&nbsp;&nbsp;read -p <span class="string">"Número: "</span> <span class="variable">numero</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"=== MENU ==="</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"1) Ver data"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"2) Sair"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;read -p <span class="string">"Escolha: "</span> <span class="variable">opcao</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Sair se for 0</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;if [ <span class="string">"$numero"</span> = <span class="string">"0"</span> ]; then<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"👋 Saindo..."</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;if [ <span class="string">"$opcao"</span> = <span class="string">"1"</span> ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;date<br>
+&nbsp;&nbsp;&nbsp;&nbsp;elif [ <span class="string">"$opcao"</span> = <span class="string">"2"</span> ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Tchau!"</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break<br>
+&nbsp;&nbsp;&nbsp;&nbsp;else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Opção inválida!"</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;fi<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Verificar se é um número</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;if ! [[ <span class="string">"$numero"</span> =~ ^[0-9]+$ ]]; then<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"❌ '$numero' não é um número válido!"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;continue<br>
-&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Verificar faixa</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;if [ <span class="variable">$numero</span> -lt 1 ] || [ <span class="variable">$numero</span> -gt 100 ]; then<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"❌ Número fora da faixa (1-100)!"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;continue<br>
-&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Número válido!</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"✅ Número válido: $numero"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"📊 Seu quadrado é: $(($numero * $numero))"</span><br>
 done<br>
                     </div>
                 </div>
 
-                <div class="comparison-table">
-                    <table>
-                        <tr>
-                            <th>Comando</th>
-                            <th>O que faz</th>
-                            <th>Quando usar</th>
-                        </tr>
-                        <tr>
-                            <td><strong>break</strong></td>
-                            <td>Sai do loop completamente</td>
-                            <td>Condição de parada encontrada</td>
-                        </tr>
-                        <tr>
-                            <td><strong>continue</strong></td>
-                            <td>Pula para próxima iteração</td>
-                            <td>Ignorar item atual, continuar loop</td>
-                        </tr>
-                        <tr>
-                            <td><strong>exit</strong></td>
-                            <td>Sai do script inteiro</td>
-                            <td>Erro grave, terminar tudo</td>
-                        </tr>
-                    </table>
-                </div>
-
-                <div class="success-box">
-                    <h3>💡 Dica de Memória</h3>
-                    <p><strong>break:</strong> quebra/rompe o loop 🔨<br>
-                    <strong>continue:</strong> continua para próxima volta 🔄<br>
-                    <strong>exit:</strong> sai de tudo 🚪</p>
+                <div class="warning-box">
+                    <h3>⚠️ Cuidado com While True</h3>
+                    <p>Sempre tenha uma forma de sair (break)!<br>
+                    Se esquecer, use <strong>Ctrl+C</strong> para parar o script.</p>
                 </div>
             </div>
             
             <div class="slide-navigation">
-                <button class="nav-button" onclick="showSlide(6)">⬅️ Anterior</button>
-                <span style="margin: 0 20px; font-weight: bold; color: #5d4037;">Slide 7 de 12</span>
-                <button class="nav-button" onclick="showSlide(8)">Próximo ➡️</button>
+                <button class="nav-button" onclick="showSlide(4)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #5d4037;">Slide 5 de 8</span>
+                <button class="nav-button" onclick="showSlide(6)">Próximo ➡️</button>
             </div>
         </div>
 
-        <!-- Slide 8: Lendo Entrada do Usuário -->
-        <div class="slide" id="slide-8">
+        <!-- Slide 6: Entrada do Usuário -->
+        <div class="slide" id="slide-6">
             <div class="content">
-                <h2>💬 Lendo Entrada do Usuário</h2>
+                <h2>💬 Interagindo com o Usuário</h2>
                 
                 <div class="highlight-box">
-                    <h3>🎤 Fazendo o Script Conversar com o Usuário</h3>
-                    <p>Como criar scripts interativos que respondem às escolhas do usuário</p>
+                    <h3>🎤 Fazendo o Script Conversar</h3>
+                    <p>Como usar WHILE para criar scripts que conversam com quem está usando</p>
                 </div>
 
                 <div class="two-column">
                     <div>
                         <h3>📥 Comando READ</h3>
                         <div class="script-box">
-<span class="comment"># Sintaxe básica</span><br>
-read <span class="variable">variavel</span><br>
-
-<span class="comment"># Com prompt personalizado</span><br>
-read -p <span class="string">"Digite algo: "</span> <span class="variable">variavel</span><br>
-
-<span class="comment"># Exemplo</span><br>
-echo <span class="string">"Qual seu nome?"</span><br>
+<span class="comment"># Básico</span><br>
 read <span class="variable">nome</span><br>
-echo <span class="string">"Olá, $nome!"</span><br>
-                        </div>
-                        
-                        <h3>🎯 Loop com Entrada</h3>
-                        <div class="script-box">
-<span class="variable">resposta</span>=<span class="string">"sim"</span><br>
 
+<span class="comment"># Com pergunta</span><br>
+read -p <span class="string">"Seu nome: "</span> <span class="variable">nome</span><br>
+
+<span class="comment"># Usando no WHILE</span><br>
+<span class="variable">resposta</span>=<span class="string">"sim"</span><br>
 while [ <span class="string">"$resposta"</span> = <span class="string">"sim"</span> ]<br>
 do<br>
-&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Fazendo uma tarefa..."</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Continuar? (sim/não)"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;read <span class="variable">resposta</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Fazendo algo..."</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;read -p <span class="string">"Continuar? "</span> <span class="variable">resposta</span><br>
+done<br>
+                        </div>
+                        
+                        <h3>🔢 Somador Interativo</h3>
+                        <div class="script-box">
+<span class="variable">soma</span>=0<br>
+
+while true<br>
+do<br>
+&nbsp;&nbsp;&nbsp;&nbsp;read -p <span class="string">"Digite um número (0 para sair): "</span> <span class="variable">num</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if [ <span class="string">"$num"</span> = <span class="string">"0"</span> ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break<br>
+&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">soma</span>=$(($soma + $num))<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Soma até agora: $soma"</span><br>
 done<br>
 
-echo <span class="string">"Terminado!"</span>
+echo <span class="string">"Total final: $soma"</span>
                         </div>
                     </div>
                     <div>
-                        <h3>🎮 Exemplo Interativo</h3>
+                        <h3>🎯 Adivinhação</h3>
                         <div class="script-box">
-#!/bin/bash<br>
-<span class="comment"># Jogo de perguntas</span><br>
+<span class="variable">numero_secreto</span>=7<br>
+<span class="variable">tentativas</span>=0<br>
 
-<span class="variable">pontos</span>=0<br>
-<span class="variable">pergunta</span>=1<br>
+echo <span class="string">"🎯 Adivinhe o número (1-10)!"</span><br>
 
-while [ <span class="variable">$pergunta</span> -le 3 ]<br>
+while true<br>
 do<br>
-&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"🎯 Pergunta $pergunta:"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">tentativas</span>=$(($tentativas + 1))<br>
+&nbsp;&nbsp;&nbsp;&nbsp;read -p <span class="string">"Tentativa $tentativas: "</span> <span class="variable">palpite</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;case <span class="variable">$pergunta</span> in<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1) echo <span class="string">"Qual a capital do Brasil?"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;read -p <span class="string">"Resposta: "</span> <span class="variable">resp</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if [ <span class="string">"$resp"</span> = <span class="string">"Brasília"</span> ]; then<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">pontos</span>=$(($pontos + 1))<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"✅ Correto!"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"❌ Errado!"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fi;;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Mais perguntas...</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;esac<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">pergunta</span>=$(($pergunta + 1))<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if [ <span class="variable">$palpite</span> -eq <span class="variable">$numero_secreto</span> ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"🎉 Acertou em $tentativas tentativas!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break<br>
+&nbsp;&nbsp;&nbsp;&nbsp;elif [ <span class="variable">$palpite</span> -lt <span class="variable">$numero_secreto</span> ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"📈 Muito baixo!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"📉 Muito alto!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
 done<br>
-
-echo <span class="string">"🏆 Pontuação final: $pontos/3"</span>
+                        </div>
+                        
+                        <h3>🎬 Exemplo de Execução</h3>
+                        <div class="terminal-box">
+<div class="output">🎯 Adivinhe o número (1-10)!</div>
+<div class="output">Tentativa 1: 5</div>
+<div class="output">📈 Muito baixo!</div>
+<div class="output">Tentativa 2: 8</div>
+<div class="output">📉 Muito alto!</div>
+<div class="output">Tentativa 3: 7</div>
+<div class="output">🎉 Acertou em 3 tentativas!</div>
                         </div>
                     </div>
                 </div>
 
                 <div class="example-box">
-                    <h3>🧮 Calculadora Interativa</h3>
+                    <h3>🧮 Calculadora Simples</h3>
                     <div class="script-box">
-#!/bin/bash<br>
-<span class="comment"># Calculadora que funciona até o usuário sair</span><br>
-
-echo <span class="string">"🧮 CALCULADORA SHELL"</span><br>
-echo <span class="string">"Operações: +, -, *, / (digite 'sair' para terminar)"</span><br>
+echo <span class="string">"🧮 CALCULADORA (digite 'sair' para terminar)"</span><br>
 
 while true<br>
 do<br>
-&nbsp;&nbsp;&nbsp;&nbsp;echo<br>
-&nbsp;&nbsp;&nbsp;&nbsp;read -p <span class="string">"Primeiro número (ou 'sair'): "</span> <span class="variable">num1</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;read -p <span class="string">"Primeiro número: "</span> <span class="variable">num1</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Verificar se quer sair</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;if [ <span class="string">"$num1"</span> = <span class="string">"sair"</span> ]; then<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"👋 Obrigado por usar a calculadora!"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"👋 Tchau!"</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break<br>
 &nbsp;&nbsp;&nbsp;&nbsp;fi<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;read -p <span class="string">"Operação (+, -, *, /): "</span> <span class="variable">op</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;read -p <span class="string">"Segundo número: "</span> <span class="variable">num2</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;read -p <span class="string">"Operação (+, -, *, /): "</span> <span class="variable">op</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Verificar se são números</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;if ! [[ <span class="string">"$num1"</span> =~ ^-?[0-9]+$ ]] || ! [[ <span class="string">"$num2"</span> =~ ^-?[0-9]+$ ]]; then<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"❌ Por favor, digite apenas números!"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;continue<br>
+&nbsp;&nbsp;&nbsp;&nbsp;if [ <span class="string">"$op"</span> = <span class="string">"+"</span> ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">resultado</span>=$(($num1 + $num2))<br>
+&nbsp;&nbsp;&nbsp;&nbsp;elif [ <span class="string">"$op"</span> = <span class="string">"-"</span> ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">resultado</span>=$(($num1 - $num2))<br>
+&nbsp;&nbsp;&nbsp;&nbsp;elif [ <span class="string">"$op"</span> = <span class="string">"*"</span> ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">resultado</span>=$(($num1 * $num2))<br>
+&nbsp;&nbsp;&nbsp;&nbsp;elif [ <span class="string">"$op"</span> = <span class="string">"/"</span> ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">resultado</span>=$(($num1 / $num2))<br>
 &nbsp;&nbsp;&nbsp;&nbsp;fi<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Calcular</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;case <span class="string">"$op"</span> in<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+) <span class="variable">resultado</span>=$(($num1 + $num2))<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"📊 $num1 + $num2 = $resultado"</span>;;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-) <span class="variable">resultado</span>=$(($num1 - $num2))<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"📊 $num1 - $num2 = $resultado"</span>;;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*) <span class="variable">resultado</span>=$(($num1 * $num2))<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"📊 $num1 × $num2 = $resultado"</span>;;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/) if [ <span class="variable">$num2</span> -eq 0 ]; then<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"❌ Erro: Divisão por zero!"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">resultado</span>=$(($num1 / $num2))<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"📊 $num1 ÷ $num2 = $resultado"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fi;;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*) echo <span class="string">"❌ Operação inválida!"</span>;;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;esac<br>
-done<br>
-                    </div>
-                </div>
-
-                <div class="example-box">
-                    <h3>📋 Lista de Tarefas Dinâmica</h3>
-                    <div class="script-box">
-#!/bin/bash<br>
-<span class="comment"># Lista de tarefas que cresce conforme o usuário adiciona</span><br>
-
-declare -a <span class="variable">tarefas</span>  <span class="comment"># Array para as tarefas</span><br>
-<span class="variable">contador</span>=0<br>
-
-echo <span class="string">"📋 LISTA DE TAREFAS"</span><br>
-echo <span class="string">"Digite suas tarefas (enter vazio para terminar):"</span><br>
-
-while true<br>
-do<br>
-&nbsp;&nbsp;&nbsp;&nbsp;read -p <span class="string">"Nova tarefa: "</span> <span class="variable">tarefa</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Se entrada vazia, mostrar lista e sair</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;if [ -z <span class="string">"$tarefa"</span> ]; then<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"📝 SUA LISTA DE TAREFAS:"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"========================"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if [ <span class="variable">$contador</span> -eq 0 ]; then<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"📭 Nenhuma tarefa adicionada."</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for ((<span class="variable">i</span>=0; <span class="variable">i</span><<span class="variable">contador</span>; <span class="variable">i</span>++))<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;do<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"$(($i + 1)). ${tarefas[$i]}"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;done<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Total: $contador tarefas"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break<br>
-&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Adicionar tarefa</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">tarefas</span>[<span class="variable">$contador</span>]=<span class="string">"$tarefa"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">contador</span>=$(($contador + 1))<br>
-&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"✅ Tarefa adicionada! (Total: $contador)"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"📊 Resultado: $resultado"</span><br>
 done<br>
                     </div>
                 </div>
 
                 <div class="info-box">
-                    <h3>💡 Opções do Comando READ</h3>
-                    <p><strong>read variavel:</strong> lê entrada básica<br>
-                    <strong>read -p "texto" var:</strong> com prompt personalizado<br>
-                    <strong>read -s var:</strong> entrada silenciosa (senhas)<br>
-                    <strong>read -t 10 var:</strong> timeout de 10 segundos<br>
-                    <strong>read -n 1 var:</strong> lê apenas 1 caractere</p>
-                </div>
-
-                <div class="warning-box">
-                    <h3>⚠️ Validação é Importante</h3>
-                    <p>Sempre valide a entrada do usuário!<br>
-                    • Verificar se é número quando esperado<br>
-                    • Testar valores válidos (ex: 1-10)<br>
-                    • Tratar entradas vazias<br>
-                    • Permitir saída fácil ("sair", "quit")</p>
+                    <h3>💡 Dicas para Entrada do Usuário</h3>
+                    <p>• Use <strong>read -p</strong> para mostrar pergunta<br>
+                    • Sempre valide se o usuário digitou número quando necessário<br>
+                    • Dê opção de sair fácil ("sair", "0", "q")<br>
+                    • Mostre instruções claras</p>
                 </div>
             </div>
             
             <div class="slide-navigation">
-                <button class="nav-button" onclick="showSlide(7)">⬅️ Anterior</button>
-                <span style="margin: 0 20px; font-weight: bold; color: #5d4037;">Slide 8 de 12</span>
-                <button class="nav-button" onclick="showSlide(9)">Próximo ➡️</button>
+                <button class="nav-button" onclick="showSlide(5)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #5d4037;">Slide 6 de 8</span>
+                <button class="nav-button" onclick="showSlide(7)">Próximo ➡️</button>
             </div>
         </div>
 
-        <!-- Slide 9: Exemplo Prático Completo -->
-        <div class="slide" id="slide-9">
+        <!-- Slide 7: Exemplo Prático -->
+        <div class="slide" id="slide-7">
             <div class="content">
-                <h2>🚀 Projeto Prático: Sistema de Backup Inteligente</h2>
+                <h2>🚀 Projeto Prático: Contador de Palavras</h2>
                 
                 <div class="highlight-box">
-                    <h3>💾 Script Real para Backup Automático</h3>
-                    <p>Sistema completo que monitora arquivos e faz backup quando necessário</p>
+                    <h3>📝 Script Completo com WHILE</h3>
+                    <p>Vamos criar um contador que analisa frases até o usuário parar</p>
                 </div>
 
                 <div class="example-box">
-                    <h3>📁 backup_monitor.sh</h3>
+                    <h3>📄 contador_palavras.sh</h3>
                     <div class="script-box">
 #!/bin/bash<br>
-<span class="comment"># Sistema de Backup Inteligente</span><br>
+<span class="comment"># Contador de Palavras Interativo</span><br>
 
-<span class="comment"># Configurações</span><br>
-<span class="variable">PASTA_ORIGEM</span>=<span class="string">"$HOME/documentos"</span><br>
-<span class="variable">PASTA_BACKUP</span>=<span class="string">"$HOME/backup"</span><br>
-<span class="variable">INTERVALO</span>=30  <span class="comment"># segundos</span><br>
-<span class="variable">MAX_BACKUPS</span>=5<br>
-<span class="variable">LOG_FILE</span>=<span class="string">"backup.log"</span><br>
+echo <span class="string">"📝 CONTADOR DE PALAVRAS"</span><br>
+echo <span class="string">"Digite frases para analisar (enter vazio para parar)"</span><br>
+echo <span class="string">"========================================="</span><br>
 
-echo <span class="string">"💾 SISTEMA DE BACKUP INTELIGENTE"</span><br>
-echo <span class="string">"================================="</span><br>
-echo <span class="string">"📁 Origem: $PASTA_ORIGEM"</span><br>
-echo <span class="string">"💾 Backup: $PASTA_BACKUP"</span><br>
-echo <span class="string">"⏱️  Intervalo: $INTERVALO segundos"</span><br>
-echo<br>
+<span class="variable">total_frases</span>=0<br>
+<span class="variable">total_palavras</span>=0<br>
+<span class="variable">maior_frase</span>=0<br>
 
-<span class="comment"># Função para criar diretório de backup</span><br>
-criar_estrutura() {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;if [ ! -d <span class="string">"$PASTA_BACKUP"</span> ]; then<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mkdir -p <span class="string">"$PASTA_BACKUP"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"📁 Diretório de backup criado: $PASTA_BACKUP"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
-}<br>
-
-<span class="comment"># Função para fazer log</span><br>
-fazer_log() {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">local</span> <span class="variable">mensagem</span>=<span class="string">"$1"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"$(date '+%Y-%m-%d %H:%M:%S') - $mensagem"</span> >> <span class="string">"$LOG_FILE"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"$mensagem"</span><br>
-}<br>
-
-<span class="comment"># Função para fazer backup</span><br>
-fazer_backup() {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">local</span> <span class="variable">timestamp</span>=$(date '+%Y%m%d_%H%M%S')<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">local</span> <span class="variable">nome_backup</span>=<span class="string">"backup_$timestamp"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">local</span> <span class="variable">pasta_destino</span>=<span class="string">"$PASTA_BACKUP/$nome_backup"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Verificar se pasta origem existe</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;if [ ! -d <span class="string">"$PASTA_ORIGEM"</span> ]; then<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fazer_log <span class="string">"❌ Pasta origem não encontrada: $PASTA_ORIGEM"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 1<br>
-&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Contar arquivos</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">total_arquivos</span>=$(find <span class="string">"$PASTA_ORIGEM"</span> -type f | wc -l)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;if [ <span class="variable">$total_arquivos</span> -eq 0 ]; then<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fazer_log <span class="string">"ℹ️  Pasta origem vazia, pulando backup"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 0<br>
-&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Fazer backup</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;fazer_log <span class="string">"🔄 Iniciando backup de $total_arquivos arquivos..."</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;if cp -r <span class="string">"$PASTA_ORIGEM"</span> <span class="string">"$pasta_destino"</span> 2>/dev/null; then<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">tamanho</span>=$(du -sh <span class="string">"$pasta_destino"</span> | cut -f1)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fazer_log <span class="string">"✅ Backup concluído: $nome_backup ($tamanho)"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 0<br>
-&nbsp;&nbsp;&nbsp;&nbsp;else<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fazer_log <span class="string">"❌ Erro durante o backup"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 1<br>
-&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
-}<br>
-
-<span class="comment"># Função para limpar backups antigos</span><br>
-limpar_backups_antigos() {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">total_backups</span>=$(ls -1 <span class="string">"$PASTA_BACKUP"</span> | grep "^backup_" | wc -l)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;if [ <span class="variable">$total_backups</span> -gt <span class="variable">$MAX_BACKUPS</span> ]; then<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">backups_remover</span>=$(($total_backups - $MAX_BACKUPS))<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fazer_log <span class="string">"🗑️  Removendo $backups_remover backup(s) antigo(s)..."</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Remover os mais antigos</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ls -1t <span class="string">"$PASTA_BACKUP"</span> | grep "^backup_" | tail -n <span class="variable">$backups_remover</span> | while read <span class="variable">backup_antigo</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;do<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rm -rf <span class="string">"$PASTA_BACKUP/$backup_antigo"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fazer_log <span class="string">"🗑️  Removido: $backup_antigo"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;done<br>
-&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
-}<br>
-
-<span class="comment"># Função para mostrar status</span><br>
-mostrar_status() {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">total_backups</span>=$(ls -1 <span class="string">"$PASTA_BACKUP"</span> 2>/dev/null | grep "^backup_" | wc -l)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">tamanho_total</span>=$(du -sh <span class="string">"$PASTA_BACKUP"</span> 2>/dev/null | cut -f1)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"📊 Status: $total_backups backups ($tamanho_total)"</span><br>
-}<br>
-
-<span class="comment"># Inicialização</span><br>
-criar_estrutura<br>
-fazer_log <span class="string">"🚀 Sistema de backup iniciado"</span><br>
-
-<span class="comment"># Loop principal</span><br>
-<span class="variable">ciclos</span>=0<br>
 while true<br>
 do<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">ciclos</span>=$(($ciclos + 1))<br>
-&nbsp;&nbsp;&nbsp;&nbsp;echo<br>
-&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"🔄 Ciclo $ciclos - $(date '+%H:%M:%S')"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;read -p <span class="string">"Digite uma frase: "</span> <span class="variable">frase</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Verificar se precisa fazer backup</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;if fazer_backup; then<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;limpar_backups_antigos<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Se entrada vazia, parar</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;if [ -z <span class="string">"$frase"</span> ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"📊 RELATÓRIO FINAL"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"=================="</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break<br>
 &nbsp;&nbsp;&nbsp;&nbsp;fi<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;mostrar_status<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"⏱️  Próximo backup em $INTERVALO segundos..."</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"   (Pressione Ctrl+C para parar)"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Aguardar com possibilidade de interrupção</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">contador_sleep</span>=0<br>
-&nbsp;&nbsp;&nbsp;&nbsp;while [ <span class="variable">$contador_sleep</span> -lt <span class="variable">$INTERVALO</span> ]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Contar palavras na frase</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">palavras_frase</span>=0<br>
+&nbsp;&nbsp;&nbsp;&nbsp;for <span class="variable">palavra</span> in <span class="variable">$frase</span><br>
 &nbsp;&nbsp;&nbsp;&nbsp;do<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sleep 1<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">contador_sleep</span>=$(($contador_sleep + 1))<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">palavras_frase</span>=$(($palavras_frase + 1))<br>
 &nbsp;&nbsp;&nbsp;&nbsp;done<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Atualizar estatísticas</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">total_frases</span>=$(($total_frases + 1))<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">total_palavras</span>=$(($total_palavras + $palavras_frase))<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Verificar se é a maior frase</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;if [ <span class="variable">$palavras_frase</span> -gt <span class="variable">$maior_frase</span> ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">maior_frase</span>=<span class="variable">$palavras_frase</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Mostrar resultado da frase</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"✅ Frase $total_frases: $palavras_frase palavras"</span><br>
 done<br>
 
-<span class="comment"># Esta linha nunca será executada (loop infinito)</span><br>
-fazer_log <span class="string">"🛑 Sistema de backup finalizado"</span>
+<span class="comment"># Mostrar estatísticas finais</span><br>
+if [ <span class="variable">$total_frases</span> -gt 0 ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">media</span>=$(($total_palavras / $total_frases))<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"📈 Total de frases: $total_frases"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"📝 Total de palavras: $total_palavras"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"📊 Média por frase: $media palavras"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"🏆 Maior frase: $maior_frase palavras"</span><br>
+else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"😴 Nenhuma frase foi digitada."</span><br>
+fi<br>
+
+echo <br>
+echo <span class="string">"👋 Obrigado por usar o contador!"</span>
                     </div>
                 </div>
 
                 <div class="two-column">
                     <div>
-                        <h3>🎬 Exemplo de Execução</h3>
+                        <h3>🎬 Exemplo de Uso</h3>
                         <div class="terminal-box">
-<span class="prompt">user@linux:~$</span> <span class="command">./backup_monitor.sh</span>
-<div class="output">💾 SISTEMA DE BACKUP INTELIGENTE</div>
-<div class="output">=================================</div>
-<div class="output">📁 Origem: /home/user/documentos</div>
-<div class="output">💾 Backup: /home/user/backup</div>
-<div class="output">⏱️  Intervalo: 30 segundos</div>
+<span class="prompt">user@linux:~$</span> <span class="command">./contador_palavras.sh</span>
+<div class="output">📝 CONTADOR DE PALAVRAS</div>
+<div class="output">Digite frases para analisar</div>
+<div class="output">===========================</div>
+<div class="output">Digite uma frase: Olá mundo</div>
+<div class="output">✅ Frase 1: 2 palavras</div>
+<div class="output">Digite uma frase: Shell script é muito útil</div>
+<div class="output">✅ Frase 2: 5 palavras</div>
+<div class="output">Digite uma frase: </div>
 <div class="output"></div>
-<div class="output">📁 Diretório de backup criado</div>
-<div class="output">🚀 Sistema de backup iniciado</div>
-<div class="output"></div>
-<div class="output">🔄 Ciclo 1 - 10:30:15</div>
-<div class="output">🔄 Iniciando backup de 25 arquivos...</div>
-<div class="output">✅ Backup concluído: backup_20241215_103015 (2.1M)</div>
+<div class="output">📊 RELATÓRIO FINAL</div>
+<div class="output">================</div>
+<div class="output">📈 Total de frases: 2</div>
+<div class="output">📝 Total de palavras: 7</div>
+<div class="output">📊 Média por frase: 3 palavras</div>
+<div class="output">🏆 Maior frase: 5 palavras</div>
                         </div>
                     </div>
                     <div>
-                        <h3>🔍 Loops Usados no Script</h3>
+                        <h3>🎯 O que o Script Faz</h3>
                         <div class="success-box">
-                            <p><strong>🔄 while true:</strong><br>
-                            Loop principal que nunca para</p>
-                            
-                            <p><strong>🕐 while sleep:</strong><br>
-                            Contador de tempo interrompível</p>
-                            
-                            <p><strong>📂 while read:</strong><br>
-                            Processar lista de backups antigos</p>
+                            <p>✅ Loop infinito com while true<br>
+                            ✅ Lê entrada do usuário<br>
+                            ✅ Para quando entrada vazia<br>
+                            ✅ Conta palavras em cada frase<br>
+                            ✅ Atualiza estatísticas<br>
+                            ✅ Mostra relatório final</p>
                         </div>
                         
-                        <h3>✨ Recursos Implementados</h3>
-                        <div class="example-box">
-                            <p>✅ Monitoramento contínuo<br>
-                            ✅ Backup automático<br>
-                            ✅ Limpeza de backups antigos<br>
-                            ✅ Log detalhado de atividades<br>
-                            ✅ Status em tempo real<br>
-                            ✅ Tratamento de erros<br>
-                            ✅ Interrupção segura</p>
+                        <h3>🔧 Conceitos Usados</h3>
+                        <div class="info-box">
+                            <p><strong>while true:</strong> loop principal<br>
+                            <strong>read -p:</strong> entrada do usuário<br>
+                            <strong>[ -z "$var" ]:</strong> testa se vazio<br>
+                            <strong>break:</strong> sai do loop<br>
+                            <strong>$(( )):</strong> cálculos matemáticos<br>
+                            <strong>[ $a -gt $b ]:</strong> comparações</p>
                         </div>
                     </div>
                 </div>
 
                 <div class="warning-box">
                     <h3>💡 Melhorias Possíveis</h3>
-                    <p><strong>📧 Notificações:</strong> Enviar email quando backup falha<br>
-                    <strong>🔄 Backup incremental:</strong> Copiar apenas arquivos modificados<br>
-                    <strong>📊 Interface web:</strong> Monitorar via navegador<br>
-                    <strong>☁️ Cloud backup:</strong> Enviar para serviços na nuvem</p>
+                    <p>• Contar caracteres além de palavras<br>
+                    • Salvar histórico em arquivo<br>
+                    • Analisar palavras mais usadas<br>
+                    • Detectar palavras especiais</p>
                 </div>
             </div>
             
             <div class="slide-navigation">
-                <button class="nav-button" onclick="showSlide(8)">⬅️ Anterior</button>
-                <span style="margin: 0 20px; font-weight: bold; color: #5d4037;">Slide 9 de 12</span>
-                <button class="nav-button" onclick="showSlide(10)">Próximo ➡️</button>
+                <button class="nav-button" onclick="showSlide(6)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #5d4037;">Slide 7 de 8</span>
+                <button class="nav-button" onclick="showSlide(8)">Próximo ➡️</button>
             </div>
         </div>
 
-        <!-- Slide 10: Dicas e Boas Práticas -->
-        <div class="slide" id="slide-10">
+        <!-- Slide 8: Quiz e Conclusão -->
+        <div class="slide" id="slide-8">
             <div class="content">
-                <h2>💡 Dicas e Boas Práticas</h2>
-                
-                <div class="highlight-box">
-                    <h3>🏆 Como Escrever Loops WHILE Profissionais</h3>
-                    <p>Técnicas para criar loops eficientes, seguros e robustos</p>
-                </div>
-
-                <div class="two-column">
-                    <div>
-                        <h3>✅ Boas Práticas</h3>
-                        <div class="success-box">
-                            <h4>🔄 1. Sempre tenha uma saída</h4>
-                            <div class="script-box">
-<span class="comment"># ❌ Perigoso - pode não parar nunca</span><br>
-while [ $x -gt 0 ]<br>
-do<br>
-&nbsp;&nbsp;&nbsp;&nbsp;echo $x<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Esqueceu de modificar $x!</span><br>
-done<br>
-
-<span class="comment"># ✅ Seguro - sempre modifica a condição</span><br>
-while [ $x -gt 0 ]<br>
-do<br>
-&nbsp;&nbsp;&nbsp;&nbsp;echo $x<br>
-&nbsp;&nbsp;&nbsp;&nbsp;x=$(($x - 1))  <span class="comment"># Garante que vai parar</span><br>
-done<br>
-                            </div>
-                            
-                            <h4>🛡️ 2. Valide entradas do usuário</h4>
-                            <div class="script-box">
-<span class="comment"># ✅ Sempre verificar se é número</span><br>
-while true<br>
-do<br>
-&nbsp;&nbsp;&nbsp;&nbsp;read -p <span class="string">"Digite um número: "</span> num<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;if [[ $num =~ ^[0-9]+$ ]]; then<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break  <span class="comment"># Número válido</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;else<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"❌ Digite apenas números!"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
-done<br>
-                            </div>
-                        </div>
-                        
-                        <h3>⚡ Performance</h3>
-                        <div class="info-box">
-                            <p><strong>🔍 Sleep:</strong> Use em loops infinitos<br>
-                            <strong>📊 Contadores:</strong> Evite recalcular dentro do loop<br>
-                            <strong>🎯 Condições:</strong> Coloque as mais prováveis primeiro</p>
-                        </div>
-                    </div>
-                    <div>
-                        <h3>⚠️ Armadilhas Comuns</h3>
-                        <div class="warning-box">
-                            <h4>🕳️ 1. Loop infinito por erro</h4>
-                            <div class="script-box">
-<span class="comment"># ❌ Problema: condição nunca muda</span><br>
-x=10<br>
-while [ $x -gt 0 ]<br>
-do<br>
-&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Processando..."</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Esqueceu: x=$(($x - 1))</span><br>
-done<br>
-
-<span class="comment"># ✅ Solução: sempre modifique a variável</span><br>
-x=10<br>
-while [ $x -gt 0 ]<br>
-do<br>
-&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"Processando $x"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;x=$(($x - 1))  <span class="comment"># OBRIGATÓRIO!</span><br>
-done<br>
-                            </div>
-                            
-                            <h4>💥 2. Comparação com string vazia</h4>
-                            <div class="script-box">
-<span class="comment"># ❌ Perigoso: se $resposta estiver vazia</span><br>
-while [ $resposta = <span class="string">"sim"</span> ]<br>
-
-<span class="comment"># ✅ Seguro: sempre entre aspas</span><br>
-while [ <span class="string">"$resposta"</span> = <span class="string">"sim"</span> ]<br>
-
-<span class="comment"># ✅ Ainda melhor: teste se existe</span><br>
-while [ -n <span class="string">"$resposta"</span> ] && [ <span class="string">"$resposta"</span> = <span class="string">"sim"</span> ]<br>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="example-box">
-                    <h3>🎯 Template de Loop Robusto</h3>
-                    <div class="script-box">
-#!/bin/bash<br>
-<span class="comment"># Template para loops while seguros</span><br>
-
-<span class="comment"># Configurações e validações iniciais</span><br>
-<span class="variable">MAX_TENTATIVAS</span>=10<br>
-<span class="variable">tentativas</span>=0<br>
-<span class="variable">sucesso</span>=false<br>
-
-<span class="comment"># Verificações iniciais</span><br>
-if [ $# -eq 0 ]; then<br>
-&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"❌ Uso: $0 <arquivo>"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;exit 1<br>
-fi<br>
-
-echo <span class="string">"🔄 Iniciando processamento..."</span><br>
-
-<span class="comment"># Loop principal com condições múltiplas</span><br>
-while [ $tentativas -lt $MAX_TENTATIVAS ] && [ $sucesso = false ]<br>
-do<br>
-&nbsp;&nbsp;&nbsp;&nbsp;tentativas=$(($tentativas + 1))<br>
-&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"📄 Tentativa $tentativas de $MAX_TENTATIVAS"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Simular processamento</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;if processar_arquivo <span class="string">"$1"</span>; then<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"✅ Sucesso na tentativa $tentativas!"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sucesso=true<br>
-&nbsp;&nbsp;&nbsp;&nbsp;else<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"❌ Falha na tentativa $tentativas"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Aguardar antes de tentar novamente</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if [ $tentativas -lt $MAX_TENTATIVAS ]; then<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"⏱️  Aguardando 2 segundos..."</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sleep 2<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
-&nbsp;&nbsp;&nbsp;&nbsp;fi<br>
-done<br>
-
-<span class="comment"># Relatório final</span><br>
-if [ $sucesso = true ]; then<br>
-&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"🎉 Processamento concluído com sucesso!"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;exit 0<br>
-else<br>
-&nbsp;&nbsp;&nbsp;&nbsp;echo <span class="string">"💥 Falha após $MAX_TENTATIVAS tentativas"</span><br>
-&nbsp;&nbsp;&nbsp;&nbsp;exit 1<br>
-fi<br>
-                    </div>
-                </div>
-
-                <div class="success-box">
-                    <h3>🎯 Checklist do Loop WHILE Perfeito</h3>
-                    <p>✅ Inicializar variáveis de controle<br>
-                    ✅ Condição que pode ficar falsa<br>
-                    ✅ Modificar variáveis dentro do loop<br>
-                    ✅ Validar entradas do usuário<br>
-                    ✅ Tratamento de erros<br>
-                    ✅ Saídas de emergência (break/exit)<br>
-                    ✅ Feedback para o usuário<br>
-                    ✅ Logs quando apropriado</p>
-                </div>
-
-                <div class="comparison-table">
-                    <table>
-                        <tr>
-                            <th>Situação</th>
-                            <th>Use WHILE quando</th>
-                            <th>Use FOR quando</th>
-                        </tr>
-                        <tr>
-                            <td>Número de iterações</td>
-                            <td>Desconhecido/variável</td>
-                            <td>Conhecido/fixo</td>
-                        </tr>
-                        <tr>
-                            <td>Condição de parada</td>
-                            <td>Depende de resultado</td>
-                            <td>Lista fixa de itens</td>
-                        </tr>
-                        <tr>
-                            <td>Entrada do usuário</td>
-                            <td>Ideal para menus</td>
-                            <td>Não recomendado</td>
-                        </tr>
-                        <tr>
-                            <td>Monitoramento</td>
-                            <td>Perfeito para while true</td>
-                            <td>Não apropriado</td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-            
-            <div class="slide-navigation">
-                <button class="nav-button" onclick="showSlide(9)">⬅️ Anterior</button>
-                <span style="margin: 0 20px; font-weight: bold; color: #5d4037;">Slide 10 de 12</span>
-                <button class="nav-button" onclick="showSlide(11)">Próximo ➡️</button>
-            </div>
-        </div>
-
-        <!-- Slide 11: Quiz -->
-        <div class="slide" id="slide-11">
-            <div class="content">
-                <h2>🧠 Quiz - Teste seus Conhecimentos!</h2>
+                <h2>🧠 Quiz Final</h2>
                 
                 <div class="quiz-container">
                     <div class="quiz-question" id="question1">
                         <h3>📝 Questão 1</h3>
-                        <p><strong>Qual palavra termina um loop WHILE no Shell Script?</strong></p>
+                        <p><strong>Qual palavra termina um loop WHILE?</strong></p>
                         <div class="quiz-options">
                             <div class="quiz-option" onclick="selectOption(1, 'a', false)">
                                 <span class="option-letter">A)</span> end
                             </div>
-                            <div class="quiz-option" onclick="selectOption(1, 'b', false)">
-                                <span class="option-letter">B)</span> fi
+                            <div class="quiz-option" onclick="selectOption(1, 'b', true)">
+                                <span class="option-letter">B)</span> done
                             </div>
-                            <div class="quiz-option" onclick="selectOption(1, 'c', true)">
-                                <span class="option-letter">C)</span> done
-                            </div>
-                            <div class="quiz-option" onclick="selectOption(1, 'd', false)">
-                                <span class="option-letter">D)</span> while
+                            <div class="quiz-option" onclick="selectOption(1, 'c', false)">
+                                <span class="option-letter">C)</span> fi
                             </div>
                         </div>
                         <div class="quiz-feedback" id="feedback1"></div>
@@ -1881,19 +1119,16 @@ fi<br>
 
                     <div class="quiz-question" id="question2" style="display: none;">
                         <h3>📝 Questão 2</h3>
-                        <p><strong>O que significa o operador -le em uma condição?</strong></p>
+                        <p><strong>O que significa -le em uma condição?</strong></p>
                         <div class="quiz-options">
                             <div class="quiz-option" onclick="selectOption(2, 'a', true)">
-                                <span class="option-letter">A)</span> less or equal (menor ou igual)
+                                <span class="option-letter">A)</span> menor ou igual
                             </div>
-							<div class="quiz-option" onclick="selectOption(2, 'b', false)">
-                                <span class="option-letter">B)</span> less than (menor que)
+                            <div class="quiz-option" onclick="selectOption(2, 'b', false)">
+                                <span class="option-letter">B)</span> maior que
                             </div>
                             <div class="quiz-option" onclick="selectOption(2, 'c', false)">
-                                <span class="option-letter">C)</span> equal (igual)
-                            </div>
-                            <div class="quiz-option" onclick="selectOption(2, 'd', false)">
-                                <span class="option-letter">D)</span> not equal (diferente)
+                                <span class="option-letter">C)</span> igual
                             </div>
                         </div>
                         <div class="quiz-feedback" id="feedback2"></div>
@@ -1901,48 +1136,25 @@ fi<br>
 
                     <div class="quiz-question" id="question3" style="display: none;">
                         <h3>📝 Questão 3</h3>
-                        <p><strong>O que acontece quando você usa "while true"?</strong></p>
+                        <p><strong>O que faz o comando "break"?</strong></p>
                         <div class="quiz-options">
-                            <div class="quiz-option" onclick="selectOption(3, 'a', false)">
-                                <span class="option-letter">A)</span> O loop executa apenas uma vez
+                            <div class="quiz-option" onclick="selectOption(3, 'a', true)">
+                                <span class="option-letter">A)</span> Sai do loop imediatamente
                             </div>
-                            <div class="quiz-option" onclick="selectOption(3, 'b', true)">
-                                <span class="option-letter">B)</span> O loop executa infinitamente até ser interrompido
+                            <div class="quiz-option" onclick="selectOption(3, 'b', false)">
+                                <span class="option-letter">B)</span> Pula para próxima volta
                             </div>
                             <div class="quiz-option" onclick="selectOption(3, 'c', false)">
-                                <span class="option-letter">C)</span> O loop nunca executa
-                            </div>
-                            <div class="quiz-option" onclick="selectOption(3, 'd', false)">
-                                <span class="option-letter">D)</span> O loop executa 10 vezes
+                                <span class="option-letter">C)</span> Reinicia o loop
                             </div>
                         </div>
                         <div class="quiz-feedback" id="feedback3"></div>
                     </div>
 
-                    <div class="quiz-question" id="question4" style="display: none;">
-                        <h3>📝 Questão 4</h3>
-                        <p><strong>Por que usamos $(( )) para incrementar variáveis?</strong></p>
-                        <div class="quiz-options">
-                            <div class="quiz-option" onclick="selectOption(4, 'a', true)">
-                                <span class="option-letter">A)</span> Para fazer cálculos matemáticos
-                            </div>
-                            <div class="quiz-option" onclick="selectOption(4, 'b', false)">
-                                <span class="option-letter">B)</span> Para executar comandos
-                            </div>
-                            <div class="quiz-option" onclick="selectOption(4, 'c', false)">
-                                <span class="option-letter">C)</span> Para criar variáveis
-                            </div>
-                            <div class="quiz-option" onclick="selectOption(4, 'd', false)">
-                                <span class="option-letter">D)</span> Para comparar valores
-                            </div>
-                        </div>
-                        <div class="quiz-feedback" id="feedback4"></div>
-                    </div>
-
                     <div id="quiz-result" style="display: none; text-align: center; margin-top: 30px;">
                         <h3>🎉 Quiz Concluído!</h3>
                         <div class="highlight-box">
-                            <p><strong>Sua pontuação: <span id="final-score">0</span>/4</strong></p>
+                            <p><strong>Sua pontuação: <span id="final-score">0</span>/3</strong></p>
                             <p id="result-message"></p>
                         </div>
                         <button class="nav-button" onclick="restartQuiz()" style="margin-top: 20px;">🔄 Refazer Quiz</button>
@@ -1954,95 +1166,50 @@ fi<br>
                         Próxima Questão ➡️
                     </button>
                 </div>
-            </div>
-            
-            <div class="slide-navigation">
-                <button class="nav-button" onclick="showSlide(10)">⬅️ Anterior</button>
-                <span style="margin: 0 20px; font-weight: bold; color: #5d4037;">Slide 11 de 12</span>
-                <button class="nav-button" onclick="showSlide(12)">Próximo ➡️</button>
-            </div>
-        </div>
 
-        <!-- Slide 12: Conclusão -->
-        <div class="slide" id="slide-12">
-            <div class="content">
-                <h2>🎓 Parabéns! Você Domina os Loops WHILE!</h2>
-                
-                <div class="highlight-box center-text">
-                    <h3>🎯 Agora Você Pode Criar Scripts Inteligentes!</h3>
-                    <p>Você aprendeu a criar loops que respondem às condições e fazem decisões</p>
-                </div>
-
-                <div class="two-column">
-                    <div>
-                        <h3>📚 O que Você Domina Agora</h3>
-                        <div class="bullet-point">Sintaxe básica do WHILE</div>
-                        <div class="bullet-point">Comparadores numéricos (-lt, -le, -gt, -ge, -eq, -ne)</div>
-                        <div class="bullet-point">Incrementos e operações matemáticas</div>
-                        <div class="bullet-point">While true e loops infinitos</div>
-                        <div class="bullet-point">Comandos break e continue</div>
-                        <div class="bullet-point">Entrada interativa do usuário</div>
-                        <div class="bullet-point">Validação e tratamento de erros</div>
-                        <div class="bullet-point">Boas práticas e segurança</div>
+                <div id="conclusion" style="display: none;">
+                    <h2>🎓 Parabéns! Você Domina Loops WHILE!</h2>
+                    
+                    <div class="highlight-box center-text">
+                        <h3>🎯 O que Você Aprendeu</h3>
+                        <p>Agora você sabe criar scripts que repetem ações baseadas em condições!</p>
                     </div>
-                    <div>
-                        <h3>🚀 Próximos Desafios</h3>
-                        <div class="bullet-point">Loops UNTIL</div>
-                        <div class="bullet-point">Loops aninhados (while dentro de while)</div>
-                        <div class="bullet-point">Scripts de monitoramento</div>
-                        <div class="bullet-point">Sistemas interativos complexos</div>
-                        <div class="bullet-point">Integração com bancos de dados</div>
-                        <div class="bullet-point">Scripts daemon (serviços)</div>
-                        <div class="bullet-point">Automação avançada de sistema</div>
+
+                    <div class="two-column">
+                        <div>
+                            <h3>✅ Você Domina</h3>
+                            <div class="bullet-point">Sintaxe do WHILE</div>
+                            <div class="bullet-point">Comparadores (-lt, -le, -gt, -ge)</div>
+                            <div class="bullet-point">Incrementar variáveis</div>
+                            <div class="bullet-point">While true e break</div>
+                            <div class="bullet-point">Entrada do usuário</div>
+                        </div>
+                        <div>
+                            <h3>🚀 Próximos Passos</h3>
+                            <div class="bullet-point">Loops aninhados</div>
+                            <div class="bullet-point">Processamento de arquivos</div>
+                            <div class="bullet-point">Scripts de monitoramento</div>
+                            <div class="bullet-point">Automação avançada</div>
+                        </div>
                     </div>
-                </div>
 
-                <div style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); padding: 25px; border-radius: 15px; margin: 20px 0;">
-                    <h3>🎯 Exercícios Propostos</h3>
-                    <p><strong>1. Monitor de Disco:</strong> Script que alerta quando o disco fica cheio (acima de 80%).</p>
-                    <p><strong>2. Gerador de Senhas:</strong> Menu que gera senhas com diferentes critérios até o usuário sair.</p>
-                    <p><strong>3. Log Analyzer:</strong> Monitora arquivo de log e conta erros/warnings em tempo real.</p>
-                    <p><strong>4. Sistema de Login:</strong> Permite 3 tentativas de login, bloqueando após falhas.</p>
-                </div>
-
-                <div class="success-box center-text">
-                    <h3>🏆 Comandos para Memorizar</h3>
-                    <div class="script-box">
-while [ condição ]; do comandos; done         <span class="comment"># Básico</span><br>
-while [ $x -le 10 ]; do echo $x; x=$((x+1)); done <span class="comment"># Contador</span><br>
-while true; do comandos; done                 <span class="comment"># Infinito</span><br>
-while read linha; do echo $linha; done        <span class="comment"># Lendo arquivo</span><br>
-read -p "Prompt: " var                        <span class="comment"># Entrada usuário</span><br>
-if [ condição ]; then break; fi               <span class="comment"># Saída do loop</span>
+                    <div class="success-box center-text">
+                        <h3>💡 Lembre-se Sempre</h3>
+                        <p><strong>1. Inicialize variáveis</strong><br>
+                        <strong>2. Modifique no loop</strong><br>
+                        <strong>3. Tenha uma saída</strong></p>
                     </div>
-                </div>
 
-                <div class="example-box center-text">
-                    <h3>⚡ Você Agora É um Mestre dos Loops Condicionais! ⚡</h3>
-                    <p>"Scripts que pensam e respondem às situações!"<br>
-                    Continue criando automações inteligentes! 🧠🔄</p>
-                </div>
-
-                <div class="info-box center-text">
-                    <h3>📋 Recursos para Continuar Aprendendo</h3>
-                    <p>• Advanced Shell Scripting Techniques<br>
-                    • Interactive Script Development<br>
-                    • System Monitoring with Bash<br>
-                    • Error Handling Best Practices</p>
-                </div>
-
-                <div style="background: #d1ecf1; color: #0c5460; padding: 20px; border-radius: 10px; margin: 15px 0; text-align: center;">
-                    <p style="font-size: 1.1em; margin: 0;">
-                        <strong>Lembre-se:</strong> sempre inicialize variáveis, 
-                        modifique a condição dentro do loop, e valide entradas!<br>
-                        <strong>Happy While Looping! 🐧🔄</strong>
-                    </p>
+                    <div class="example-box center-text">
+                        <h3>🎉 Você é um Expert em WHILE Loops!</h3>
+                        <p>Continue praticando e criando scripts cada vez mais úteis!</p>
+                    </div>
                 </div>
             </div>
             
             <div class="slide-navigation">
-                <button class="nav-button" onclick="showSlide(11)">⬅️ Anterior</button>
-                <span style="margin: 0 20px; font-weight: bold; color: #5d4037;">Slide 12 de 12</span>
+                <button class="nav-button" onclick="showSlide(7)">⬅️ Anterior</button>
+                <span style="margin: 0 20px; font-weight: bold; color: #5d4037;">Slide 8 de 8</span>
                 <button class="nav-button" onclick="showSlide(1)" style="background: #ff6f00;">🏠 Início</button>
             </div>
         </div>
@@ -2053,7 +1220,7 @@ if [ condição ]; then break; fi               <span class="comment"># Saída d
         let currentSlide = 1;
         
         // Atualizar total de slides
-        document.getElementById('total-slides').textContent = '12';
+        document.getElementById('total-slides').textContent = '8';
         
         // Função para mostrar slide específico
         function showSlide(slideNumber) {
@@ -2078,7 +1245,7 @@ if [ condição ]; then break; fi               <span class="comment"># Saída d
         document.addEventListener('keydown', function(e) {
             if (e.key === 'ArrowLeft' && currentSlide > 1) {
                 showSlide(currentSlide - 1);
-            } else if (e.key === 'ArrowRight' && currentSlide < 12) {
+            } else if (e.key === 'ArrowRight' && currentSlide < 8) {
                 showSlide(currentSlide + 1);
             }
         });
@@ -2086,7 +1253,7 @@ if [ condição ]; then break; fi               <span class="comment"># Saída d
         // Variáveis do quiz
         let currentQuestion = 1;
         let score = 0;
-        let quizAnswered = [false, false, false, false];
+        let quizAnswered = [false, false, false];
         
         // Função do quiz
         function selectOption(questionNum, option, isCorrect) {
@@ -2108,22 +1275,21 @@ if [ condição ]; then break; fi               <span class="comment"># Saída d
             // Mostrar feedback
             if (isCorrect) {
                 feedback.className = 'quiz-feedback correct';
-                feedback.textContent = '✅ Correto! Excelente!';
+                feedback.textContent = '✅ Correto! Muito bem!';
                 score++;
             } else {
                 feedback.className = 'quiz-feedback incorrect';
                 switch(questionNum) {
                     case 1: feedback.textContent = '❌ Incorreto. A palavra "done" finaliza loops WHILE.'; break;
-                    case 2: feedback.textContent = '❌ Incorreto. -le significa "less or equal" (menor ou igual).'; break;
-                    case 3: feedback.textContent = '❌ Incorreto. "while true" cria um loop infinito que precisa ser interrompido.'; break;
-                    case 4: feedback.textContent = '❌ Incorreto. $(( )) é usado para operações matemáticas no shell.'; break;
+                    case 2: feedback.textContent = '❌ Incorreto. -le significa "menor ou igual".'; break;
+                    case 3: feedback.textContent = '❌ Incorreto. "break" sai do loop imediatamente.'; break;
                 }
             }
             
             quizAnswered[questionNum - 1] = true;
             
             // Mostrar botão para próxima pergunta ou resultado
-            if (questionNum < 4) {
+            if (questionNum < 3) {
                 document.getElementById('next-quiz-btn').style.display = 'inline-block';
             } else {
                 showQuizResult();
@@ -2138,33 +1304,34 @@ if [ condição ]; then break; fi               <span class="comment"># Saída d
         }
         
         function showQuizResult() {
-            document.getElementById('question4').style.display = 'none';
+            document.getElementById('question3').style.display = 'none';
             document.getElementById('quiz-result').style.display = 'block';
             document.getElementById('final-score').textContent = score;
             
             const resultMessage = document.getElementById('result-message');
-            if (score === 4) {
-                resultMessage.textContent = '🏆 Perfeito! Você domina completamente os loops WHILE!';
+            if (score === 3) {
+                resultMessage.textContent = '🏆 Perfeito! Você domina loops WHILE!';
                 resultMessage.style.color = '#22543d';
-            } else if (score >= 3) {
-                resultMessage.textContent = '🎉 Muito bom! Você entende bem os conceitos!';
-                resultMessage.style.color = '#22543d';
+                setTimeout(() => {
+                    document.getElementById('quiz-result').style.display = 'none';
+                    document.getElementById('conclusion').style.display = 'block';
+                }, 2000);
             } else if (score >= 2) {
-                resultMessage.textContent = '👍 Bom trabalho! Revise alguns conceitos para melhorar.';
-                resultMessage.style.color = '#856404';
+                resultMessage.textContent = '👍 Muito bom! Continue praticando!';
+                resultMessage.style.color = '#22543d';
             } else {
-                resultMessage.textContent = '📚 Continue estudando! Pratique mais com loops WHILE.';
-                resultMessage.style.color = '#742a2a';
+                resultMessage.textContent = '📚 Revise os conceitos e tente novamente!';
+                resultMessage.style.color = '#856404';
             }
         }
         
         function restartQuiz() {
             currentQuestion = 1;
             score = 0;
-            quizAnswered = [false, false, false, false];
+            quizAnswered = [false, false, false];
             
             // Resetar todas as questões
-            for (let i = 1; i <= 4; i++) {
+            for (let i = 1; i <= 3; i++) {
                 document.getElementById('question' + i).style.display = i === 1 ? 'block' : 'none';
                 document.getElementById('feedback' + i).style.display = 'none';
                 
@@ -2176,6 +1343,7 @@ if [ condição ]; then break; fi               <span class="comment"># Saída d
             }
             
             document.getElementById('quiz-result').style.display = 'none';
+            document.getElementById('conclusion').style.display = 'none';
             document.getElementById('next-quiz-btn').style.display = 'none';
         }
     </script>
