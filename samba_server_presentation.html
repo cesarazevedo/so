@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Servidor de Arquivos SAMBA</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .presentation {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide {
+            min-height: 100vh;
+            padding: 60px 40px;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            background: white;
+            margin: 20px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        .slide h1 {
+            font-size: 3.5em;
+            color: #4a5568;
+            text-align: center;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .slide h2 {
+            font-size: 2.8em;
+            color: #2d3748;
+            margin-bottom: 30px;
+            border-bottom: 4px solid #667eea;
+            padding-bottom: 15px;
+        }
+
+        .slide h3 {
+            font-size: 2.2em;
+            color: #4a5568;
+            margin: 25px 0 15px 0;
+        }
+
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        .bullet-point {
+            display: flex;
+            align-items: flex-start;
+            margin: 15px 0;
+            font-size: 1.3em;
+            line-height: 1.5;
+        }
+
+        .bullet-point::before {
+            content: "📂";
+            margin-right: 15px;
+            font-size: 1.2em;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #4c51bf;
+        }
+
+        .example-box {
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #2c5aa0;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #c53030;
+        }
+
+        .step-box {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #2f855a;
+        }
+
+        .terminal-box {
+            background: #2d3748;
+            color: #00ff00;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #00ff00;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+        }
+
+        .yaml-box {
+            background: #2d3748;
+            color: #ffd700;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #ffd700;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            padding: 15px 25px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .nav-btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .nav-btn:disabled {
+            background: #a0a0a0;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(255,255,255,0.9);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #4a5568;
+            z-index: 1000;
+        }
+
+        .center-text {
+            text-align: center;
+        }
+
+        .large-text {
+            font-size: 1.4em;
+            line-height: 1.6;
+        }
+
+        .command-example {
+            background: #2d3748;
+            color: #00ff41;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            border-left: 4px solid #00ff41;
+        }
+
+        .ip-example {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: monospace;
+            font-size: 1.1em;
+        }
+
+        .step-number {
+            background: #667eea;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin: 0 auto 20px;
+        }
+
+        .grid-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 20px 0;
+        }
+
+        .step-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid #e2e8f0;
+            text-align: center;
+        }
+
+        .analogy-box {
+            background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #c05621;
+        }
+
+        .important-note {
+            background: #fff5f5;
+            border: 2px solid #fc8181;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #742a2a;
+        }
+
+        .success-box {
+            background: #f0fff4;
+            border: 2px solid #68d391;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #22543d;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">10</span>
+        </div>
+
+        <!-- Slide 1: Título -->
+        <div class="slide active">
+            <div class="content center-text">
+                <h1>📂 Servidor de Arquivos SAMBA</h1>
+                <h2 style="border: none; color: #667eea;">Interoperabilidade Windows/Linux</h2>
+                <div class="highlight-box large-text">
+                    <strong>Tutorial Prático Passo a Passo</strong><br>
+                    Instalar e configurar um servidor de arquivos<br>
+                    Compartilhamento entre sistemas diferentes
+                </div>
+                
+                <div class="example-box" style="margin-top: 40px;">
+                    <h3>🎯 Objetivos da Aula</h3>
+                    <p style="font-size: 1.3em; margin: 10px 0;">
+                        <strong>✅ Compreender a utilidade de um servidor de arquivos</strong><br>
+                        <strong>⚙️ Instalar e configurar o SAMBA</strong><br>
+                        Compartilhar arquivos entre Windows e Linux
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: O que é SAMBA -->
+        <div class="slide">
+            <div class="content">
+                <h2>🤔 O que é SAMBA?</h2>
+                
+                <div class="analogy-box center-text">
+                    <h3>🌉 Analogia Simples</h3>
+                    <p style="font-size: 1.3em;">
+                        SAMBA é como uma ponte entre dois países<br>
+                        Permite que Windows e Linux "conversem" e compartilhem arquivos!
+                    </p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🔄 Server Message Block</h3>
+                        <div class="bullet-point">Software de código aberto</div>
+                        <div class="bullet-point">Interoperabilidade Windows/Linux</div>
+                        <div class="bullet-point">Servidor de arquivos e impressão</div>
+                        <div class="bullet-point">Protocolo SMB/CIFS</div>
+                        
+                        <div class="example-box">
+                            <h4>🏢 Como funciona</h4>
+                            <p>Windows conecta → Acessa pasta Linux<br>
+                            "Parece um drive local do Windows!"</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>📌 Principais Vantagens</h3>
+                        <div class="bullet-point">Solução gratuita e de código aberto</div>
+                        <div class="bullet-point">Facilita comunicação entre SOs</div>
+                        <div class="bullet-point">Controle de acesso e permissões</div>
+                        <div class="bullet-point">Compatibilidade total com Windows</div>
+                        
+                        <div class="step-box">
+                            <h4>🖥️ Cenário típico</h4>
+                            <p>Empresa com Windows e Linux<br>
+                            Todos acessam arquivos do mesmo servidor!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <h3>🎯 Quando Usar SAMBA?</h3>
+                    <div class="bullet-point">Ambientes mistos Windows/Linux</div>
+                    <div class="bullet-point">Compartilhamento de arquivos centralizados</div>
+                    <div class="bullet-point">Backup e armazenamento comum</div>
+                    <div class="bullet-point">Colaboração entre equipes</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Características do SAMBA -->
+        <div class="slide">
+            <div class="content">
+                <h2>⚙️ Características do SAMBA</h2>
+                
+                <div class="highlight-box">
+                    <h3>🛠️ Servidor de Arquivos Multiplataforma</h3>
+                    <p style="font-size: 1.3em;">
+                        SAMBA implementa o protocolo SMB no Linux<br>
+                        Oferece total compatibilidade com redes Windows
+                    </p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📋 Funcionalidades</h3>
+                        <div class="bullet-point">Compartilhamento de arquivos</div>
+                        <div class="bullet-point">Compartilhamento de impressoras</div>
+                        <div class="bullet-point">Autenticação de usuários</div>
+                        <div class="bullet-point">Controle de permissões</div>
+                        
+                        <h3>📁 Arquivos Importantes</h3>
+                        <div class="terminal-box">
+/etc/samba/smb.conf<br>
+/var/log/samba/<br>
+/etc/samba/smbpasswd
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🔧 Tipos de Compartilhamento</h3>
+                        <div class="bullet-point">Público (sem autenticação)</div>
+                        <div class="bullet-point">Privado (com usuário/senha)</div>
+                        <div class="bullet-point">Somente leitura</div>
+                        <div class="bullet-point">Leitura e escrita</div>
+                        
+                        <div class="analogy-box">
+                            <h4>🏪 Analogia</h4>
+                            <p>É como uma loja com diferentes áreas:<br>
+                            algumas públicas, outras só para funcionários!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h3>⚠️ Importante</h3>
+                    <p>Configure sempre as permissões adequadas para manter a segurança dos arquivos!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Preparação -->
+        <div class="slide">
+            <div class="content">
+                <h2>🚀 Preparação</h2>
+                
+                <div class="step-box center-text">
+                    <h3>📋 Antes de Começar</h3>
+                    <p>Vamos preparar o ambiente para instalar o SAMBA</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📋 Configuração que vamos criar</h3>
+                        <div class="bullet-point">Servidor: INFO4</div>
+                        <div class="bullet-point">Pasta public: leitura/escrita</div>
+                        <div class="bullet-point">Pasta guest: somente leitura</div>
+                        <div class="bullet-point">Usuário: samba (senha: samba)</div>
+                        
+                        <div class="ip-example">
+                            <strong>Compartilhamentos que vamos criar:</strong><br>
+                            [public] → /home/info4/public<br>
+                            [guest] → /home/info4/guest<br>
+                            Acesso: \\192.168.0.1<br>
+                            Usuário: samba / Senha: samba
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🔍 Requisitos</h3>
+                        <div class="bullet-point">Ubuntu Server instalado</div>
+                        <div class="bullet-point">Duas interfaces de rede</div>
+                        <div class="bullet-point">Acesso root (sudo)</div>
+                        <div class="bullet-point">Cliente Windows para teste</div>
+                        
+                        <div class="command-example">
+# Verificar sistema<br>
+hostname<br><br>
+# Ver espaço em disco<br>
+df -h<br><br>
+# Testar conectividade<br>
+ping 8.8.8.8
+                        </div>
+                    </div>
+                </div>
+
+                <div class="important-note">
+                    <h3>⚠️ Cuidados Importantes</h3>
+                    <div class="bullet-point">Desative temporariamente a 2ª interface durante instalação</div>
+                    <div class="bullet-point">Certifique-se de ter permissões administrativas</div>
+                    <div class="bullet-point">Tenha uma máquina Windows para testar</div>
+                    <div class="bullet-point">Anote as configurações que iremos usar</div>
+                </div>
+
+                <div class="analogy-box center-text">
+                    <h3>🎯 Próximos Passos</h3>
+                    <p>Vamos seguir o mesmo padrão: desativar interface, instalar,<br>
+                    configurar e testar o compartilhamento!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Passos 1-2 -->
+        <div class="slide">
+            <div class="content">
+                <h2>🔧 Passos 1-2: Preparação e Atualização</h2>
+                
+                <div class="grid-steps">
+                    <div class="step-card">
+                        <div class="step-number">1</div>
+                        <h3>Desativar Interface</h3>
+                        <p>Desabilite temporariamente a <strong>Placa de Rede 2</strong> no VirtualBox</p>
+                        <div class="warning-box">
+                            <p>⚠️ Mesmo procedimento dos tutoriais anteriores<br>
+                            Evita conflitos durante a instalação!</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step-card">
+                        <div class="step-number">2</div>
+                        <h3>Atualizar Repositórios</h3>
+                        <div class="command-example">
+sudo apt-get update
+                        </div>
+                        <p>Sincronizar lista de pacotes disponíveis</p>
+                    </div>
+                </div>
+
+                <div class="step-box">
+                    <h3>🎯 Por que seguir este padrão?</h3>
+                    <p>É uma boa prática sempre desativar interfaces não essenciais durante instalações de serviços de rede para evitar conflitos e problemas inesperados.</p>
+                </div>
+
+                <div class="terminal-box">
+                    <h3>✅ Resultado Esperado do Update</h3>
+info4@info4:~$ sudo apt-get update<br>
+Hit:1 http://br.archive.ubuntu.com/ubuntu focal InRelease<br>
+Get:2 http://br.archive.ubuntu.com/ubuntu focal-updates InRelease<br>
+Get:3 http://br.archive.ubuntu.com/ubuntu focal-backports InRelease<br>
+Get:4 http://br.archive.ubuntu.com/ubuntu focal-security InRelease<br>
+...obtidos 9997 kB em 8s (1292 kB/s)<br>
+Lendo listas de pacotes... Pronto
+                </div>
+
+                <div class="analogy-box center-text">
+                    <h3>💡 Analogia</h3>
+                    <p>É como organizar a mesa antes de começar a cozinhar:<br>
+                    preparamos o ambiente para trabalhar sem interferências!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Passos 3-4 -->
+        <div class="slide">
+            <div class="content">
+                <h2>📦 Passos 3-4: Instalação e Reativação</h2>
+                
+                <div class="grid-steps">
+                    <div class="step-card">
+                        <div class="step-number">3</div>
+                        <h3>Instalar SAMBA</h3>
+                        <div class="command-example">
+sudo apt-get install samba
+                        </div>
+                        <p>Pressione 's' quando solicitado e aguarde a instalação</p>
+                    </div>
+                    
+                    <div class="step-card">
+                        <div class="step-number">4</div>
+                        <h3>Reativar Interface</h3>
+                        <p>Reative a <strong>Placa de Rede 2</strong> no VirtualBox</p>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>📋 O que acontece na instalação?</h3>
+                    <div class="bullet-point">Download do pacote samba e dependências</div>
+                    <div class="bullet-point">Criação do arquivo smb.conf</div>
+                    <div class="bullet-point">Instalação de bibliotecas necessárias</div>
+                    <div class="bullet-point">Configuração inicial do serviço</div>
+                </div>
+
+                <div class="terminal-box">
+                    <h3>✅ Final da Instalação</h3>
+Done.<br>
+Instalando samba (2:4.13.17~dfsx-0ubuntu1.20.04.1) ...<br>
+adding group `sambashare' (GID 119) ...<br>
+Done.<br>
+Samba is not being run as an AD Domain Controller: Masking samba-ad-dc.service<br>
+Please ignore the following error about deb-systemd-helper when not running systemd.<br>
+Created symlink /etc/systemd/system/multi-user.target.wants/smbd.service<br>
+Created symlink /etc/systemd/system/multi-user.target.wants/nmbd.service
+                </div>
+
+                <div class="warning-box">
+                    <h3>⚠️ Observação</h3>
+                    <p>É normal aparecer algumas mensagens durante a instalação. O importante é que termine sem erros fatais.</p>
+                </div>
+
+                <div class="analogy-box center-text">
+                    <h3>💡 Analogia</h3>
+                    <p>É como montar uma ponte: instalamos a estrutura principal<br>
+                    e agora precisamos configurar como ela vai funcionar!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Passos 5-6 -->
+        <div class="slide">
+            <div class="content">
+                <h2>📝 Passos 5-6: Backup e Configuração</h2>
+                
+                <div class="grid-steps">
+                    <div class="step-card">
+                        <div class="step-number">5</div>
+                        <h3>Fazer Backup</h3>
+                        <div class="command-example">
+sudo mv /etc/samba/smb.conf /etc/samba/smb.conf.bkp
+                        </div>
+                        <p>Salvar o arquivo original</p>
+                    </div>
+                    
+                    <div class="step-card">
+                        <div class="step-number">6</div>
+                        <h3>Criar Nova Configuração</h3>
+                        <div class="command-example">
+sudo vim /etc/samba/smb.conf
+                        </div>
+                        <p>Criar arquivo "do zero"</p>
+                    </div>
+                </div>
+
+                <div class="yaml-box">
+                    <h3>📄 Conteúdo do Arquivo /etc/samba/smb.conf</h3>
+[global]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;netbios name = INFO4<br>
+&nbsp;&nbsp;&nbsp;&nbsp;server string = Servidor de Arquivos<br>
+&nbsp;&nbsp;&nbsp;&nbsp;security = user<br>
+&nbsp;&nbsp;&nbsp;&nbsp;map to guest = Bad User<br>
+&nbsp;&nbsp;&nbsp;&nbsp;log file = /var/log/samba/samba-log-%m<br><br>
+[public]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;path = /home/info4/public<br>
+&nbsp;&nbsp;&nbsp;&nbsp;read only = no<br>
+&nbsp;&nbsp;&nbsp;&nbsp;browseable = yes<br>
+&nbsp;&nbsp;&nbsp;&nbsp;available = yes<br><br>
+[guest]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;path = /home/info4/guest<br>
+&nbsp;&nbsp;&nbsp;&nbsp;read only = yes
+                </div>
+
+                <div class="example-box">
+                    <h3>📖 Explicação da Configuração</h3>
+                    <div class="bullet-point"><strong>[global]:</strong> Configurações gerais do servidor</div>
+                    <div class="bullet-point"><strong>netbios name:</strong> Nome do servidor na rede</div>
+                    <div class="bullet-point"><strong>security = user:</strong> Autenticação por usuário</div>
+                    <div class="bullet-point"><strong>[public]:</strong> Pasta com leitura e escrita</div>
+                    <div class="bullet-point"><strong>[guest]:</strong> Pasta apenas leitura</div>
+                </div>
+
+                <div class="important-note">
+                    <h3>💾 Salvando no vim</h3>
+                    <p>Pressione <strong>ESC</strong>, digite <strong>:x</strong> e pressione <strong>ENTER</strong></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Passos 7-8 -->
+        <div class="slide">
+            <div class="content">
+                <h2>🔍 Passos 7-8: Verificação e Criação de Pastas</h2>
+                
+                <div class="grid-steps">
+                    <div class="step-card">
+                        <div class="step-number">7</div>
+                        <h3>Verificar Configuração</h3>
+                        <div class="command-example">testparm -s</div>
+                        <p>Testar se não há erros no smb.conf</p>
+                    </div>
+                    
+                    <div class="step-card">
+                        <div class="step-number">8</div>
+                        <h3>Criar Pastas</h3>
+                        <div class="command-example">mkdir /home/info4/public /home/info4/guest</div>
+                        <p>Criar os diretórios compartilhados</p>
+                    </div>
+                </div>
+
+                <div class="step-box">
+                    <h3>✅ Resultado do testparm</h3>
+                    <div class="terminal-box">
+info4@info4:~$ testparm -s<br>
+Load smb config files from /etc/samba/smb.conf<br>
+Loaded services file OK.<br>
+Weak crypto is allowed<br>
+Server role: ROLE_STANDALONE<br><br>
+# Global parameters<br>
+[global]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;log file = /var/log/samba/samba-log-%m<br>
+&nbsp;&nbsp;&nbsp;&nbsp;map to guest = Bad User<br>
+&nbsp;&nbsp;&nbsp;&nbsp;security = USER<br>
+&nbsp;&nbsp;&nbsp;&nbsp;server string = Servidor de Arquivos<br><br>
+[public]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;browseable = No<br>
+&nbsp;&nbsp;&nbsp;&nbsp;path = /home/info4/public<br>
+&nbsp;&nbsp;&nbsp;&nbsp;read only = No<br><br>
+[guest]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;path = /home/info4/guest
+                    </div>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🎯 O que o testparm faz?</h3>
+                        <div class="bullet-point">Verifica sintaxe do arquivo</div>
+                        <div class="bullet-point">Mostra configuração ativa</div>
+                        <div class="bullet-point">Detecta erros de digitação</div>
+                        <div class="bullet-point">Confirma parâmetros válidos</div>
+                    </div>
+                    <div>
+                        <h3>📁 Estrutura de Pastas</h3>
+                        <div class="command-example">
+/home/info4/<br>
+├── public/  (leitura/escrita)<br>
+└── guest/   (apenas leitura)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="success-box center-text">
+                    <h3>🎉 Configuração Validada!</h3>
+                    <p>Se o testparm não mostrar erros, a configuração está correta<br>
+                    e podemos prosseguir para os próximos passos.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Passos 9-10 -->
+        <div class="slide">
+            <div class="content">
+                <h2>👤 Passos 9-10: Usuário e Permissões</h2>
+                
+                <div class="grid-steps">
+                    <div class="step-card">
+                        <div class="step-number">9</div>
+                        <h3>Criar Usuário</h3>
+                        <div class="command-example">
+sudo useradd samba<br><br>
+sudo smbpasswd -a samba
+                        </div>
+                        <p>Usuário: samba, Senha: samba</p>
+                    </div>
+                    
+                    <div class="step-card">
+                        <div class="step-number">10</div>
+                        <h3>Ajustar Permissões</h3>
+                        <div class="command-example">
+chmod 777 public/ guest/
+                        </div>
+                        <p>Dar permissões totais às pastas</p>
+                    </div>
+                </div>
+
+                <div class="step-box">
+                    <h3>👤 Criação do Usuário SAMBA</h3>
+                    <div class="terminal-box">
+info4@info4:~$ sudo useradd samba<br>
+[sudo] password for info4:<br>
+info4@info4:~$ sudo smbpasswd -a samba<br>
+Unknown parameter encountered: "worgroup"<br>
+Ignoring unknown parameter "worgroup"<br>
+New SMB password: <br>
+Retype new SMB password:<br>
+Added user samba.
+                    </div>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🔐 Sistema de Autenticação</h3>
+                        <div class="bullet-point">useradd cria usuário do sistema</div>
+                        <div class="bullet-point">smbpasswd cria senha para SAMBA</div>
+                        <div class="bullet-point">Usuário pode acessar via rede</div>
+                        <div class="bullet-point">Senha é criptografada</div>
+                    </div>
+                    <div>
+                        <h3>📂 Permissões das Pastas</h3>
+                        <div class="bullet-point">777 = leitura, escrita e execução</div>
+                        <div class="bullet-point">Para todos os usuários</div>
+                        <div class="bullet-point">Necessário para funcionamento</div>
+                        <div class="bullet-point">Em produção, use permissões mais restritivas</div>
+                    </div>
+                </div>
+
+                <div class="success-box center-text">
+                    <h3>🎉 Configuração Completa!</h3>
+                    <p>Agora vamos acessar os compartilhamentos<br>
+                    a partir de uma máquina Windows!</p>
+                </div>
+
+                <div class="analogy-box center-text">
+                    <h3>💡 Analogia</h3>
+                    <p>É como criar um usuário em um hotel:<br>
+                    agora ele tem credenciais para acessar os quartos!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Resolução de Problemas e Comandos Úteis -->
+        <div class="slide">
+            <div class="content">
+                <h2>🛠️ Resolução de Problemas</h2>
+                
+                <div class="warning-box center-text">
+                    <h3>🆘 E se algo der errado?</h3>
+                    <p>Comandos úteis para controlar e diagnosticar o SAMBA</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🔧 Comandos de Controle</h3>
+                        
+                        <div class="command-example">
+# Reiniciar serviço<br>
+sudo systemctl restart smbd<br><br>
+# Verificar status<br>
+sudo systemctl status smbd<br><br>
+# Iniciar serviço<br>
+sudo systemctl start smbd<br><br>
+# Parar serviço<br>
+sudo systemctl stop smbd
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🔍 Comandos de Diagnóstico</h3>
+                        
+                        <div class="command-example">
+# Testar configuração<br>
+testparm -s<br><br>
+# Ver usuários SAMBA<br>
+sudo pdbedit -L<br><br>
+# Ver logs<br>
+tail -f /var/log/samba/log.smbd<br><br>
+# Recarregar configuração<br>
+sudo systemctl reload smbd
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-box">
+                    <h3>🖥️ Acessando do Windows</h3>
+                    <div class="bullet-point"><strong>Passo 1:</strong> Habilitar logons de convidado (gpedit.msc)</div>
+                    <div class="bullet-point"><strong>Passo 2:</strong> Executar \\192.168.0.1 no Windows</div>
+                    <div class="bullet-point"><strong>Passo 3:</strong> Usar credenciais: samba/samba</div>
+                    <div class="bullet-point"><strong>Resultado:</strong> Ver pastas public e guest</div>
+                </div>
+
+                <div class="important-note">
+                    <h3>❌ Problemas Comuns</h3>
+                    <div class="bullet-point"><strong>Erro de sintaxe:</strong> Verificar com testparm -s</div>
+                    <div class="bullet-point"><strong>Acesso negado:</strong> Verificar permissões das pastas</div>
+                    <div class="bullet-point"><strong>Usuário não funciona:</strong> Recriar com smbpasswd -a</div>
+                    <div class="bullet-point"><strong>Windows não encontra:</strong> Verificar IP e rede</div>
+                </div>
+
+                <div class="highlight-box">
+                    <h3>💡 Comandos Extras</h3>
+                    <div class="bullet-point"><strong>Encerrar sessões Windows:</strong> net use * /d /y</div>
+                    <div class="bullet-point"><strong>Ver conexões ativas:</strong> sudo smbstatus</div>
+                    <div class="bullet-point"><strong>Alterar senha usuário:</strong> sudo smbpasswd samba</div>
+                    <div class="bullet-point"><strong>Remover usuário:</strong> sudo smbpasswd -x samba</div>
+                </div>
+
+                <div class="analogy-box center-text">
+                    <h3>🎯 Conclusão</h3>
+                    <p>SAMBA é como uma ponte universal:<br>
+                    conecta diferentes sistemas operacionais de forma transparente!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">⬅️ Anterior</button>
+            <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Próximo ➡️</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('total-slides').textContent = totalSlides;
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.classList.toggle('active', i === index);
+            });
+            
+            document.getElementById('current-slide').textContent = index + 1;
+            document.getElementById('prevBtn').disabled = index === 0;
+            document.getElementById('nextBtn').disabled = index === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            const newSlide = currentSlide + direction;
+            if (newSlide >= 0 && newSlide < totalSlides) {
+                currentSlide = newSlide;
+                showSlide(currentSlide);
+            }
+        }
+
+        // Navegação por teclado
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+            if (e.key === 'Home') {
+                currentSlide = 0;
+                showSlide(currentSlide);
+            }
+            if (e.key === 'End') {
+                currentSlide = totalSlides - 1;
+                showSlide(currentSlide);
+            }
+        });
+
+        // Inicializar
+        showSlide(0);
+    </script>
+</body>
+</html>
