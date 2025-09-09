@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Servidor DHCP - ISC-DHCP-SERVER</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .presentation {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide {
+            min-height: 100vh;
+            padding: 60px 40px;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            background: white;
+            margin: 20px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        .slide h1 {
+            font-size: 3.5em;
+            color: #4a5568;
+            text-align: center;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .slide h2 {
+            font-size: 2.8em;
+            color: #2d3748;
+            margin-bottom: 30px;
+            border-bottom: 4px solid #667eea;
+            padding-bottom: 15px;
+        }
+
+        .slide h3 {
+            font-size: 2.2em;
+            color: #4a5568;
+            margin: 25px 0 15px 0;
+        }
+
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        .bullet-point {
+            display: flex;
+            align-items: flex-start;
+            margin: 15px 0;
+            font-size: 1.3em;
+            line-height: 1.5;
+        }
+
+        .bullet-point::before {
+            content: "🌐";
+            margin-right: 15px;
+            font-size: 1.2em;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #4c51bf;
+        }
+
+        .example-box {
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #2c5aa0;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #c53030;
+        }
+
+        .step-box {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #2f855a;
+        }
+
+        .terminal-box {
+            background: #2d3748;
+            color: #00ff00;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #00ff00;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+        }
+
+        .yaml-box {
+            background: #2d3748;
+            color: #ffd700;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #ffd700;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            padding: 15px 25px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .nav-btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .nav-btn:disabled {
+            background: #a0a0a0;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(255,255,255,0.9);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #4a5568;
+            z-index: 1000;
+        }
+
+        .center-text {
+            text-align: center;
+        }
+
+        .large-text {
+            font-size: 1.4em;
+            line-height: 1.6;
+        }
+
+        .command-example {
+            background: #2d3748;
+            color: #00ff41;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            border-left: 4px solid #00ff41;
+        }
+
+        .ip-example {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: monospace;
+            font-size: 1.1em;
+        }
+
+        .step-number {
+            background: #667eea;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin: 0 auto 20px;
+        }
+
+        .grid-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 20px 0;
+        }
+
+        .step-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid #e2e8f0;
+            text-align: center;
+        }
+
+        .analogy-box {
+            background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #c05621;
+        }
+
+        .important-note {
+            background: #fff5f5;
+            border: 2px solid #fc8181;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #742a2a;
+        }
+
+        .success-box {
+            background: #f0fff4;
+            border: 2px solid #68d391;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #22543d;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">9</span>
+        </div>
+
+        <!-- Slide 1: Título -->
+        <div class="slide active">
+            <div class="content center-text">
+                <h1>🌐 Servidor DHCP</h1>
+                <h2 style="border: none; color: #667eea;">ISC-DHCP-SERVER no Ubuntu</h2>
+                <div class="highlight-box large-text">
+                    <strong>Tutorial Prático Passo a Passo</strong><br>
+                    Instalar e configurar um servidor DHCP<br>
+                    Método seguro e confiável
+                </div>
+                
+                <div class="example-box" style="margin-top: 40px;">
+                    <h3>🎯 Objetivos da Aula</h3>
+                    <p style="font-size: 1.3em; margin: 10px 0;">
+                        <strong>✅ Compreender a utilidade de um servidor DHCP</strong><br>
+                        <strong>⚙️ Instalar e configurar o ISC-DHCP-SERVER</strong><br>
+                        Configurar distribuição automática de IPs
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: O que é DHCP -->
+        <div class="slide">
+            <div class="content">
+                <h2>🤔 O que é DHCP?</h2>
+                
+                <div class="analogy-box center-text">
+                    <h3>🏨 Analogia Simples</h3>
+                    <p style="font-size: 1.3em;">
+                        DHCP é como um recepcionista de hotel<br>
+                        Distribui "quartos" (IPs) automaticamente para os "hóspedes" (dispositivos)!
+                    </p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🔄 Dynamic Host Configuration Protocol</h3>
+                        <div class="bullet-point">Distribui IPs automaticamente</div>
+                        <div class="bullet-point">Configura gateway e DNS</div>
+                        <div class="bullet-point">Gerencia tempo de concessão</div>
+                        <div class="bullet-point">Evita conflitos de IP</div>
+                        
+                        <div class="example-box">
+                            <h4>📱 Como funciona</h4>
+                            <p>Cliente conecta → Pede IP → DHCP responde<br>
+                            "Aqui está seu IP: 192.168.0.15"</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>📌 Vantagens do DHCP</h3>
+                        <div class="bullet-point">Configuração automática</div>
+                        <div class="bullet-point">Gerenciamento centralizado</div>
+                        <div class="bullet-point">Reduz erros manuais</div>
+                        <div class="bullet-point">Facilita administração</div>
+                        
+                        <div class="step-box">
+                            <h4>🏢 Cenário típico</h4>
+                            <p>Empresa com 100 computadores<br>
+                            Todos recebem IP automaticamente!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <h3>🎯 Quando Usar Servidor DHCP?</h3>
+                    <div class="bullet-point">Redes empresariais</div>
+                    <div class="bullet-point">Laboratórios de informática</div>
+                    <div class="bullet-point">Redes Wi-Fi</div>
+                    <div class="bullet-point">Ambientes com muitos dispositivos</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: ISC-DHCP-SERVER -->
+        <div class="slide">
+            <div class="content">
+                <h2>⚙️ ISC-DHCP-SERVER</h2>
+                
+                <div class="highlight-box">
+                    <h3>🛠️ Servidor DHCP Mais Usado no Linux</h3>
+                    <p style="font-size: 1.3em;">
+                        ISC-DHCP-SERVER é o servidor DHCP padrão<br>
+                        Robusto, confiável e altamente configurável
+                    </p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📋 Características</h3>
+                        <div class="bullet-point">Código aberto e gratuito</div>
+                        <div class="bullet-point">Suporte a múltiplas redes</div>
+                        <div class="bullet-point">Configuração flexível</div>
+                        <div class="bullet-point">Log detalhado</div>
+                        
+                        <h3>📁 Arquivos Importantes</h3>
+                        <div class="terminal-box">
+/etc/dhcp/dhcpd.conf<br>
+/etc/default/isc-dhcp-server<br>
+/var/lib/dhcp/dhcpd.leases
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🔧 Funcionalidades</h3>
+                        <div class="bullet-point">Reserva de IPs específicos</div>
+                        <div class="bullet-point">Configuração de DNS</div>
+                        <div class="bullet-point">Controle de tempo de concessão</div>
+                        <div class="bullet-point">Suporte a VLANs</div>
+                        
+                        <div class="analogy-box">
+                            <h4>🎛️ Analogia</h4>
+                            <p>É como um sistema de reservas de hotel:<br>
+                            controla quem recebe qual "quarto" e por quanto tempo!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h3>⚠️ Importante</h3>
+                    <p>Apenas UM servidor DHCP por rede para evitar conflitos!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Preparação -->
+        <div class="slide">
+            <div class="content">
+                <h2>🚀 Preparação</h2>
+                
+                <div class="step-box center-text">
+                    <h3>📋 Antes de Começar</h3>
+                    <p>Vamos preparar o ambiente e verificar requisitos</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📋 Informações da Rede</h3>
+                        <div class="bullet-point">Rede: 192.168.0.0/24</div>
+                        <div class="bullet-point">Range de IPs: .2 a .100</div>
+                        <div class="bullet-point">Gateway: 192.168.0.254</div>
+                        <div class="bullet-point">DNS: 192.168.0.1, 8.8.8.8</div>
+                        
+                        <div class="ip-example">
+                            <strong>Configuração que vamos usar:</strong><br>
+                            Rede: 192.168.0.0/24<br>
+                            IPs: 192.168.0.2 a 192.168.0.100<br>
+                            Gateway: 192.168.0.254<br>
+                            DNS: 192.168.0.1, 8.8.8.8<br>
+                            Domínio: mydomain.example
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🔍 Requisitos</h3>
+                        <div class="bullet-point">Ubuntu Server instalado</div>
+                        <div class="bullet-point">Duas interfaces de rede</div>
+                        <div class="bullet-point">Acesso root (sudo)</div>
+                        <div class="bullet-point">Conexão com internet</div>
+                        
+                        <div class="command-example">
+# Verificar interfaces de rede<br>
+ip link show<br><br>
+# Ver configuração atual<br>
+ip address<br><br>
+# Testar conectividade<br>
+ping 8.8.8.8
+                        </div>
+                    </div>
+                </div>
+
+                <div class="important-note">
+                    <h3>⚠️ Cuidados Importantes</h3>
+                    <div class="bullet-point">Certifique-se de ter 2 interfaces de rede configuradas</div>
+                    <div class="bullet-point">A segunda interface será usada para o DHCP</div>
+                    <div class="bullet-point">Tenha acesso físico ao servidor</div>
+                    <div class="bullet-point">Faça backup das configurações atuais</div>
+                </div>
+
+                <div class="analogy-box center-text">
+                    <h3>🎯 Próximos Passos</h3>
+                    <p>Vamos começar desativando temporariamente a segunda placa de rede<br>
+                    para evitar conflitos durante a instalação!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Passos 1-2 -->
+        <div class="slide">
+            <div class="content">
+                <h2>🔧 Passos 1-2: Preparação e Atualização</h2>
+                
+                <div class="grid-steps">
+                    <div class="step-card">
+                        <div class="step-number">1</div>
+                        <h3>Desativar Interface</h3>
+                        <p>Clique no ícone de rede e desative temporariamente a <strong>placa de rede 02</strong></p>
+                        <div class="warning-box">
+                            <p>⚠️ Desative apenas a 2ª interface<br>
+                            Mantenha a principal ativa!</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step-card">
+                        <div class="step-number">2</div>
+                        <h3>Atualizar Sistema</h3>
+                        <div class="command-example">
+sudo apt-get update
+                        </div>
+                        <p>Sincronizar repositórios do Ubuntu</p>
+                    </div>
+                </div>
+
+                <div class="step-box">
+                    <h3>🎯 Por que desativar a interface?</h3>
+                    <p>Evitar conflitos durante a instalação do servidor DHCP. A segunda interface será reativada após a instalação do pacote.</p>
+                </div>
+
+                <div class="terminal-box">
+                    <h3>✅ Resultado Esperado do Update</h3>
+info4@info4:~$ sudo apt-get update<br>
+Hit:1 http://br.archive.ubuntu.com/ubuntu focal InRelease<br>
+Get:2 http://br.archive.ubuntu.com/ubuntu focal-updates InRelease<br>
+Get:3 http://br.archive.ubuntu.com/ubuntu focal-backports InRelease<br>
+Get:4 http://br.archive.ubuntu.com/ubuntu focal-security InRelease<br>
+...aguarde o processo de atualização...
+                </div>
+
+                <div class="analogy-box center-text">
+                    <h3>💡 Analogia</h3>
+                    <p>É como desligar uma tomada antes de fazer manutenção elétrica:<br>
+                    evita problemas e conflitos durante o trabalho!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Passos 3-4 -->
+        <div class="slide">
+            <div class="content">
+                <h2>📦 Passos 3-4: Instalação e Reativação</h2>
+                
+                <div class="grid-steps">
+                    <div class="step-card">
+                        <div class="step-number">3</div>
+                        <h3>Instalar DHCP Server</h3>
+                        <div class="command-example">
+sudo apt-get install isc-dhcp-server
+                        </div>
+                        <p>Instalar o servidor DHCP</p>
+                    </div>
+                    
+                    <div class="step-card">
+                        <div class="step-number">4</div>
+                        <h3>Reativar Interface</h3>
+                        <p>Reative a <strong>2ª interface de rede</strong> que foi desabilitada no passo 1</p>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>📋 O que acontece na instalação?</h3>
+                    <div class="bullet-point">Download do pacote isc-dhcp-server</div>
+                    <div class="bullet-point">Criação dos arquivos de configuração</div>
+                    <div class="bullet-point">Instalação das dependências</div>
+                    <div class="bullet-point">Configuração do serviço systemd</div>
+                </div>
+
+                <div class="warning-box">
+                    <h3>⚠️ Observação Importante</h3>
+                    <p>O serviço pode falhar ao iniciar automaticamente após a instalação. Isso é normal!<br>
+                    Precisamos configurá-lo primeiro antes de iniciá-lo.</p>
+                </div>
+
+                <div class="step-box">
+                    <h3>✅ Arquivos Criados</h3>
+                    <div class="bullet-point"><strong>/etc/dhcp/dhcpd.conf:</strong> Configuração principal</div>
+                    <div class="bullet-point"><strong>/etc/default/isc-dhcp-server:</strong> Interface a usar</div>
+                    <div class="bullet-point"><strong>/var/lib/dhcp/dhcpd.leases:</strong> Concessões ativas</div>
+                </div>
+
+                <div class="analogy-box center-text">
+                    <h3>💡 Analogia</h3>
+                    <p>É como instalar uma central telefônica:<br>
+                    o equipamento está instalado, agora precisa ser configurado!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Passos 5-6 -->
+        <div class="slide">
+            <div class="content">
+                <h2>📝 Passos 5-6: Backup e Configuração</h2>
+                
+                <div class="grid-steps">
+                    <div class="step-card">
+                        <div class="step-number">5</div>
+                        <h3>Fazer Backup</h3>
+                        <div class="command-example">
+sudo mv /etc/dhcp/dhcpd.conf /etc/dhcp/dhcpd.conf.bkp
+                        </div>
+                        <p>Fazer backup do arquivo original</p>
+                    </div>
+                    
+                    <div class="step-card">
+                        <div class="step-number">6</div>
+                        <h3>Criar Configuração</h3>
+                        <div class="command-example">
+sudo vim /etc/dhcp/dhcpd.conf
+                        </div>
+                        <p>Criar novo arquivo de configuração</p>
+                    </div>
+                </div>
+
+                <div class="yaml-box">
+                    <h3>📄 Conteúdo do Arquivo /etc/dhcp/dhcpd.conf</h3>
+default-lease-time 600;<br>
+max-lease-time 7200;<br><br>
+subnet 192.168.0.0 netmask 255.255.255.0 {<br>
+&nbsp;&nbsp;range 192.168.0.2 192.168.0.100;<br>
+&nbsp;&nbsp;option routers 192.168.0.254;<br>
+&nbsp;&nbsp;option domain-name-servers 192.168.0.1, 8.8.8.8;<br>
+&nbsp;&nbsp;option domain-name "mydomain.example";<br>
+}<br><br>
+authoritative;
+                </div>
+
+                <div class="example-box">
+                    <h3>📖 Explicação da Configuração</h3>
+                    <div class="bullet-point"><strong>default-lease-time:</strong> Tempo padrão de concessão (10 min)</div>
+                    <div class="bullet-point"><strong>max-lease-time:</strong> Tempo máximo de concessão (2 horas)</div>
+                    <div class="bullet-point"><strong>range:</strong> Faixa de IPs para distribuir</div>
+                    <div class="bullet-point"><strong>routers:</strong> Gateway padrão da rede</div>
+                    <div class="bullet-point"><strong>domain-name-servers:</strong> Servidores DNS</div>
+                    <div class="bullet-point"><strong>authoritative:</strong> Este é o servidor oficial</div>
+                </div>
+
+                <div class="important-note">
+                    <h3>💾 Salvando no vim</h3>
+                    <p>Pressione <strong>ESC</strong>, digite <strong>:wq</strong> e pressione <strong>ENTER</strong></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Passos 7-9 -->
+        <div class="slide">
+            <div class="content">
+                <h2>🚀 Passos 7-9: Verificação e Inicialização</h2>
+                
+                <div class="grid-steps">
+                    <div class="step-card">
+                        <div class="step-number">7</div>
+                        <h3>Verificar Configuração</h3>
+                        <div class="command-example">dhcpd -t</div>
+                        <p>Verificar se não há erros</p>
+                    </div>
+                    
+                    <div class="step-card">
+                        <div class="step-number">8</div>
+                        <h3>Configurar Interface</h3>
+                        <div class="command-example">sudo vim /etc/default/isc-dhcp-server</div>
+                        <p>Definir interface a usar</p>
+                    </div>
+                    
+                    <div class="step-card">
+                        <div class="step-number">9</div>
+                        <h3>Iniciar Serviço</h3>
+                        <div class="command-example">sudo systemctl restart isc-dhcp-server</div>
+                        <p>Reiniciar e verificar status</p>
+                    </div>
+                </div>
+
+                <div class="step-box">
+                    <h3>📋 Configuração da Interface</h3>
+                    <p>No arquivo <strong>/etc/default/isc-dhcp-server</strong>, configure:</p>
+                    <div class="terminal-box">
+INTERFACESv4="enp0s8"<br>
+INTERFACESv6=""
+                    </div>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>✅ Verificação OK</h3>
+                        <div class="terminal-box">
+info4@info4:~$ dhcpd -t<br>
+Internet Systems Consortium DHCP Server 4.4.1<br>
+Copyright 2004-2018 Internet Systems Consortium.<br>
+All rights reserved.<br>
+Config file: /etc/dhcp/dhcpd.conf<br>
+Database file: /var/lib/dhcp/dhcpd.leases<br>
+PID file: /var/run/dhcpd.pid
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🔧 Comandos Úteis</h3>
+                        <div class="command-example">
+# Verificar status<br>
+sudo systemctl status isc-dhcp-server<br><br>
+# Ver concessões ativas<br>
+cat /var/lib/dhcp/dhcpd.leases<br><br>
+# Parar serviço<br>
+sudo systemctl stop isc-dhcp-server
+                        </div>
+                    </div>
+                </div>
+
+                <div class="success-box center-text">
+                    <h3>🎉 Parabéns!</h3>
+                    <p>Se chegou até aqui, seu servidor DHCP está funcionando!<br>
+                    Os clientes da rede já podem receber IPs automaticamente.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Resolução de Problemas -->
+        <div class="slide">
+            <div class="content">
+                <h2>🛠️ Resolução de Problemas</h2>
+                
+                <div class="warning-box center-text">
+                    <h3>🆘 E se algo der errado?</h3>
+                    <p>Comandos úteis para diagnosticar e resolver problemas</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>❌ Problemas Comuns</h3>
+                        
+                        <div class="important-note">
+                            <h4>1. Serviço não inicia</h4>
+                            <div class="bullet-point">Verificar sintaxe: <code>dhcpd -t</code></div>
+                            <div class="bullet-point">Conferir interface configurada</div>
+                            <div class="bullet-point">Verificar logs: <code>journalctl -u isc-dhcp-server</code></div>
+                        </div>
+                        
+                        <div class="important-note">
+                            <h4>2. Clientes não recebem IP</h4>
+                            <div class="bullet-point">Verificar se serviço está rodando</div>
+                            <div class="bullet-point">Checar firewall</div>
+                            <div class="bullet-point">Confirmar configuração da rede</div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🔧 Comandos de Diagnóstico</h3>
+                        
+                        <div class="command-example">
+# Status do serviço<br>
+sudo systemctl status isc-dhcp-server<br><br>
+# Logs do serviço<br>
+sudo journalctl -u isc-dhcp-server -f<br><br>
+# Testar configuração<br>
+sudo dhcpd -t -cf /etc/dhcp/dhcpd.conf<br><br>
+# Ver concessões<br>
+sudo cat /var/lib/dhcp/dhcpd.leases
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-box">
+                    <h3>📋 Checklist de Verificação</h3>
+                    <div class="bullet-point">✅ Configuração sem erros de sintaxe</div>
+                    <div class="bullet-point">✅ Interface correta configurada</div>
+                    <div class="bullet-point">✅ Serviço rodando sem erros</div>
+                    <div class="bullet-point">✅ Range de IPs disponível</div>
+                    <div class="bullet-point">✅ Firewall não bloqueando DHCP (porta 67/68)</div>
+                </div>
+
+                <div class="highlight-box">
+                    <h3>💡 Principais Configurações</h3>
+                    <div class="bullet-point"><strong>Tempo de concessão:</strong> Ajuste conforme necessidade</div>
+                    <div class="bullet-point"><strong>Range de IPs:</strong> Deixe alguns IPs reservados</div>
+                    <div class="bullet-point"><strong>DNS servers:</strong> Configure servidores confiáveis</div>
+                    <div class="bullet-point"><strong>Gateway:</strong> Deve ser o roteador da rede</div>
+                </div>
+
+                <div class="analogy-box center-text">
+                    <h3>🎯 Conclusão</h3>
+                    <p>Servidor DHCP é como um distribuidor automático:<br>
+                    uma vez configurado, funciona sozinho distribuindo IPs para toda a rede!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">⬅️ Anterior</button>
+            <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Próximo ➡️</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('total-slides').textContent = totalSlides;
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.classList.toggle('active', i === index);
+            });
+            
+            document.getElementById('current-slide').textContent = index + 1;
+            document.getElementById('prevBtn').disabled = index === 0;
+            document.getElementById('nextBtn').disabled = index === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            const newSlide = currentSlide + direction;
+            if (newSlide >= 0 && newSlide < totalSlides) {
+                currentSlide = newSlide;
+                showSlide(currentSlide);
+            }
+        }
+
+        // Navegação por teclado
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+            if (e.key === 'Home') {
+                currentSlide = 0;
+                showSlide(currentSlide);
+            }
+            if (e.key === 'End') {
+                currentSlide = totalSlides - 1;
+                showSlide(currentSlide);
+            }
+        });
+
+        // Inicializar
+        showSlide(0);
+    </script>
+</body>
+</html>
