@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Servidor Web Apache</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .presentation {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide {
+            min-height: 100vh;
+            padding: 60px 40px;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            background: white;
+            margin: 20px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        .slide h1 {
+            font-size: 3.5em;
+            color: #4a5568;
+            text-align: center;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .slide h2 {
+            font-size: 2.8em;
+            color: #2d3748;
+            margin-bottom: 30px;
+            border-bottom: 4px solid #667eea;
+            padding-bottom: 15px;
+        }
+
+        .slide h3 {
+            font-size: 2.2em;
+            color: #4a5568;
+            margin: 25px 0 15px 0;
+        }
+
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        .bullet-point {
+            display: flex;
+            align-items: flex-start;
+            margin: 15px 0;
+            font-size: 1.3em;
+            line-height: 1.5;
+        }
+
+        .bullet-point::before {
+            content: "🌐";
+            margin-right: 15px;
+            font-size: 1.2em;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #4c51bf;
+        }
+
+        .example-box {
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #2c5aa0;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #c53030;
+        }
+
+        .step-box {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #2f855a;
+        }
+
+        .terminal-box {
+            background: #2d3748;
+            color: #00ff00;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #00ff00;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+        }
+
+        .code-box {
+            background: #2d3748;
+            color: #ffd700;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #ffd700;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            padding: 15px 25px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .nav-btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .nav-btn:disabled {
+            background: #a0a0a0;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(255,255,255,0.9);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #4a5568;
+            z-index: 1000;
+        }
+
+        .center-text {
+            text-align: center;
+        }
+
+        .large-text {
+            font-size: 1.4em;
+            line-height: 1.6;
+        }
+
+        .command-example {
+            background: #2d3748;
+            color: #00ff41;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            border-left: 4px solid #00ff41;
+        }
+
+        .step-number {
+            background: #667eea;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin: 0 auto 20px;
+        }
+
+        .grid-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 20px 0;
+        }
+
+        .step-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid #e2e8f0;
+            text-align: center;
+        }
+
+        .analogy-box {
+            background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #c05621;
+        }
+
+        .important-note {
+            background: #fff5f5;
+            border: 2px solid #fc8181;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #742a2a;
+        }
+
+        .success-box {
+            background: #f0fff4;
+            border: 2px solid #68d391;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #22543d;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">10</span>
+        </div>
+
+        <!-- Slide 1: Título -->
+        <div class="slide active">
+            <div class="content center-text">
+                <h1>🌐 Servidor Web Apache</h1>
+                <h2 style="border: none; color: #667eea;">Hospedagem de Sites com Virtual Hosts</h2>
+                <div class="highlight-box large-text">
+                    <strong>Tutorial Prático Passo a Passo</strong><br>
+                    Instalar e configurar o Apache Web Server<br>
+                    Criar sites acessíveis pela internet
+                </div>
+                
+                <div class="example-box" style="margin-top: 40px;">
+                    <h3>🎯 Objetivos da Aula</h3>
+                    <p style="font-size: 1.3em; margin: 10px 0;">
+                        <strong>✅ Compreender a utilidade de um servidor Web</strong><br>
+                        <strong>⚙️ Instalar e configurar o Apache</strong><br>
+                        Criar e gerenciar Virtual Hosts
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: O que é um Servidor Web -->
+        <div class="slide">
+            <div class="content">
+                <h2>🤔 O que é um Servidor Web?</h2>
+                
+                <div class="analogy-box center-text">
+                    <h3>🏪 Analogia Simples</h3>
+                    <p style="font-size: 1.3em;">
+                        Um servidor web é como uma biblioteca gigante!<br>
+                        Quando você acessa um site, é como pedir um livro emprestado.<br>
+                        O servidor encontra o livro (página) e entrega para você!
+                    </p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🌍 Como Funciona</h3>
+                        <div class="bullet-point">Você digita um endereço (URL)</div>
+                        <div class="bullet-point">Navegador faz um pedido ao servidor</div>
+                        <div class="bullet-point">Servidor busca os arquivos HTML</div>
+                        <div class="bullet-point">Navegador exibe a página</div>
+                        
+                        <div class="example-box">
+                            <h4>📱 Exemplo do Dia a Dia</h4>
+                            <p>Você acessa www.google.com<br>
+                            O servidor do Google te envia a página de busca!<br>
+                            Tudo acontece em milésimos de segundo!</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🔥 Por que Apache?</h3>
+                        <div class="bullet-point">Servidor web mais usado no mundo</div>
+                        <div class="bullet-point">Gratuito e código aberto</div>
+                        <div class="bullet-point">Muito estável e confiável</div>
+                        <div class="bullet-point">Fácil de configurar</div>
+                        
+                        <div class="step-box">
+                            <h4>💡 Curiosidade</h4>
+                            <p>Apache roda em mais de 30% dos sites do mundo!<br>
+                            Empresas grandes como Apple e Adobe usam Apache.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <h3>🎯 O que vamos aprender?</h3>
+                    <div class="bullet-point">Instalar o Apache no Ubuntu</div>
+                    <div class="bullet-point">Criar múltiplos sites na mesma máquina</div>
+                    <div class="bullet-point">Configurar Virtual Hosts</div>
+                    <div class="bullet-point">Testar o funcionamento</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Virtual Hosts -->
+        <div class="slide">
+            <div class="content">
+                <h2>🏢 O que são Virtual Hosts?</h2>
+                
+                <div class="analogy-box center-text">
+                    <h3>🏘️ Analogia do Prédio</h3>
+                    <p style="font-size: 1.3em;">
+                        Imagine um prédio (servidor) com vários apartamentos!<br>
+                        Cada apartamento é um site diferente.<br>
+                        Mesmo endereço do prédio, mas cada porta leva a um lugar diferente!
+                    </p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🎭 Como Funciona</h3>
+                        <div class="bullet-point">Um servidor = Vários sites</div>
+                        <div class="bullet-point">Cada site em sua própria "pasta"</div>
+                        <div class="bullet-point">Apache direciona visitantes</div>
+                        <div class="bullet-point">Economiza recursos!</div>
+                        
+                        <div class="example-box">
+                            <h4>🌐 Exemplo Prático</h4>
+                            <p><strong>informatica.joaocamara</strong> → Site 1<br>
+                            <strong>eletro.joaocamara</strong> → Site 2<br>
+                            Mesma máquina, sites diferentes!</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>⚙️ Estrutura no Apache</h3>
+                        <div class="terminal-box">
+/var/www/<br>
+├── informatica.joaocamara/<br>
+│   └── public_html/<br>
+│       └── index.html<br>
+├── eletro.joaocamara/<br>
+│   └── public_html/<br>
+│       └── index.html
+                        </div>
+                        
+                        <div class="step-box">
+                            <h4>📌 Importante</h4>
+                            <p>Cada Virtual Host tem:<br>
+                            • Seu próprio diretório<br>
+                            • Arquivo de configuração<br>
+                            • Páginas HTML independentes</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="success-box">
+                    <h3>✅ Vantagens dos Virtual Hosts</h3>
+                    <div class="bullet-point">Hospedar múltiplos sites em um servidor</div>
+                    <div class="bullet-point">Economia de hardware</div>
+                    <div class="bullet-point">Fácil gerenciamento</div>
+                    <div class="bullet-point">Isolamento entre sites</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Preparação (Passos 1-2) -->
+        <div class="slide">
+            <div class="content">
+                <h2>🚀 Preparação: Passos 1-2</h2>
+                
+                <div class="step-box center-text">
+                    <h3>📋 Antes de Começar</h3>
+                    <p>Vamos preparar o ambiente para instalar o Apache</p>
+                </div>
+
+                <div class="grid-steps">
+                    <div class="step-card">
+                        <div class="step-number">1</div>
+                        <h3>Desativar Interface</h3>
+                        <p>Desabilite temporariamente a <strong>Placa de Rede 2</strong> no VirtualBox</p>
+                        <div class="warning-box">
+                            <p>⚠️ Mesmo procedimento das aulas anteriores!<br>
+                            Evita problemas durante a instalação.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step-card">
+                        <div class="step-number">2</div>
+                        <h3>Atualizar Sistema</h3>
+                        <div class="command-example">
+sudo apt-get update
+                        </div>
+                        <p>Atualiza a lista de pacotes disponíveis</p>
+                    </div>
+                </div>
+
+                <div class="terminal-box">
+                    <h3>✅ Resultado Esperado</h3>
+info4@info4:~$ sudo apt-get update<br>
+Hit:1 http://br.archive.ubuntu.com/ubuntu focal InRelease<br>
+Get:2 http://br.archive.ubuntu.com/ubuntu focal-updates InRelease<br>
+Get:3 http://br.archive.ubuntu.com/ubuntu focal-backports InRelease<br>
+Get:4 http://br.archive.ubuntu.com/ubuntu focal-security InRelease<br>
+Lendo listas de pacotes... Pronto
+                </div>
+
+                <div class="analogy-box center-text">
+                    <h3>💡 Analogia</h3>
+                    <p>É como verificar o catálogo da loja antes de comprar:<br>
+                    garantimos que temos a lista mais recente de produtos disponíveis!</p>
+                </div>
+
+                <div class="important-note">
+                    <h3>🎯 Próximo Passo</h3>
+                    <p>Com o sistema atualizado, agora vamos instalar o Apache!<br>
+                    É um processo simples e rápido.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Instalação (Passos 3-4) -->
+        <div class="slide">
+            <div class="content">
+                <h2>📦 Instalação: Passos 3-4</h2>
+                
+                <div class="grid-steps">
+                    <div class="step-card">
+                        <div class="step-number">3</div>
+                        <h3>Instalar Apache</h3>
+                        <div class="command-example">
+sudo apt-get install apache2
+                        </div>
+                        <p>Pressione <strong>S</strong> quando perguntado<br>
+                        Aguarde a conclusão da instalação</p>
+                    </div>
+                    
+                    <div class="step-card">
+                        <div class="step-number">4</div>
+                        <h3>Reativar Interface</h3>
+                        <p>Reative a <strong>Placa de Rede 2</strong> no VirtualBox</p>
+                        <p style="margin-top: 15px;">Clique com botão direito no ícone de rede e marque a segunda conexão</p>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>📋 O que é instalado?</h3>
+                    <div class="bullet-point">Servidor Apache2</div>
+                    <div class="bullet-point">Bibliotecas necessárias</div>
+                    <div class="bullet-point">Arquivos de configuração</div>
+                    <div class="bullet-point">Serviços automáticos</div>
+                </div>
+
+                <div class="terminal-box">
+                    <h3>✅ Mensagens Finais da Instalação</h3>
+Enabling site 000-default.<br>
+Created symlink /etc/systemd/system/multi-user.target.wants/apache2.service<br>
+→ /lib/systemd/system/apache2.service.<br>
+Processing triggers for ufw (0.36-6ubuntu1) ...<br>
+Processing triggers for systemd (245.4-4ubuntu3.17) ...<br>
+Processing triggers for man-db (2.9.1-1) ...<br>
+Processing triggers for libc-bin (2.31-0ubuntu9.9) ...
+                </div>
+
+                <div class="success-box center-text">
+                    <h3>🎉 Apache Instalado!</h3>
+                    <p>O servidor já está rodando e pronto para uso!<br>
+                    Agora vamos criar a estrutura para nossos sites.</p>
+                </div>
+
+                <div class="analogy-box center-text">
+                    <h3>💡 Analogia</h3>
+                    <p>É como construir a estrutura de uma loja:<br>
+                    o prédio está pronto, agora vamos organizar as prateleiras!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Estrutura de Diretórios (Passos 5-7) -->
+        <div class="slide">
+            <div class="content">
+                <h2>📁 Criando a Estrutura: Passos 5-7</h2>
+                
+                <div class="grid-steps">
+                    <div class="step-card">
+                        <div class="step-number">5</div>
+                        <h3>Criar Diretório</h3>
+                        <div class="command-example">
+sudo mkdir -p /var/www/informatica.joaocamara/public_html
+                        </div>
+                    </div>
+                    
+                    <div class="step-card">
+                        <div class="step-number">6</div>
+                        <h3>Mudar Proprietário</h3>
+                        <div class="command-example">
+sudo chown -R $USER:$USER /var/www/informatica.joaocamara/public_html/
+                        </div>
+                    </div>
+                    
+                    <div class="step-card">
+                        <div class="step-number">7</div>
+                        <h3>Ajustar Permissões</h3>
+                        <div class="command-example">
+sudo chmod -R 755 /var/www
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>🔍 Entendendo os Comandos</h3>
+                    <div class="bullet-point"><strong>mkdir -p:</strong> Cria o diretório e subdiretórios</div>
+                    <div class="bullet-point"><strong>chown -R:</strong> Muda o dono da pasta recursivamente</div>
+                    <div class="bullet-point"><strong>chmod 755:</strong> Define permissões de leitura e execução</div>
+                    <div class="bullet-point"><strong>$USER:</strong> Variável com seu nome de usuário</div>
+                </div>
+
+                <div class="analogy-box">
+                    <h3>🏗️ Analogia</h3>
+                    <p><strong>Passo 5:</strong> Construir as salas da casa<br>
+                    <strong>Passo 6:</strong> Você vira o dono da casa<br>
+                    <strong>Passo 7:</strong> Definir quem pode entrar em cada cômodo</p>
+                </div>
+
+                <div class="terminal-box">
+                    <h3>📂 Estrutura Criada</h3>
+/var/www/<br>
+└── informatica.joaocamara/<br>
+    └── public_html/<br>
+        (aqui vão os arquivos HTML)
+                </div>
+
+                <div class="important-note">
+                    <h3>⚠️ Por que essas permissões?</h3>
+                    <p><strong>755</strong> significa:<br>
+                    • Dono: leitura, escrita e execução (7)<br>
+                    • Grupo: leitura e execução (5)<br>
+                    • Outros: leitura e execução (5)<br><br>
+                    Isso permite que o Apache leia e sirva os arquivos!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Criando Página HTML (Passo 8) -->
+        <div class="slide">
+            <div class="content">
+                <h2>📝 Criando a Página: Passo 8</h2>
+                
+                <div class="step-card">
+                    <div class="step-number">8</div>
+                    <h3>Criar index.html</h3>
+                    <div class="command-example">
+sudo vim /var/www/informatica.joaocamara/public_html/index.html
+                    </div>
+                </div>
+
+                <div class="code-box">
+                    <h3>📄 Conteúdo do Arquivo HTML</h3>
+&lt;html&gt;<br>
+&lt;head&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;title&gt;Bem vindo ao site informatica.joaocamara!&lt;/title&gt;<br>
+&lt;/head&gt;<br>
+&lt;body bgcolor=gray&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;h1&gt;Sucesso! O site informatica.joaocamara está no ar!&lt;/h1&gt;<br>
+&lt;/body&gt;<br>
+&lt;/html&gt;
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📖 Entendendo o HTML</h3>
+                        <div class="bullet-point"><strong>&lt;html&gt;:</strong> Início do documento</div>
+                        <div class="bullet-point"><strong>&lt;head&gt;:</strong> Informações da página</div>
+                        <div class="bullet-point"><strong>&lt;title&gt;:</strong> Título na aba do navegador</div>
+                        <div class="bullet-point"><strong>&lt;body&gt;:</strong> Conteúdo visível</div>
+                        <div class="bullet-point"><strong>&lt;h1&gt;:</strong> Título principal</div>
+                    </div>
+                    <div>
+                        <h3>💾 Salvando no vim</h3>
+                        <div class="step-box">
+                            <p><strong>1.</strong> Pressione <strong>ESC</strong><br>
+                            <strong>2.</strong> Digite <strong>:x</strong><br>
+                            <strong>3.</strong> Pressione <strong>ENTER</strong></p>
+                        </div>
+                        
+                        <div class="example-box">
+                            <h4>💡 Dica</h4>
+                            <p>Você também pode usar:<br>
+                            <strong>:wq</strong> (write + quit)<br>
+                            ou <strong>:x</strong> (exit salvando)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="analogy-box center-text">
+                    <h3>📚 Analogia</h3>
+                    <p>Criar uma página HTML é como escrever um livro:<br>
+                    O &lt;head&gt; é a capa com título,<br>
+                    O &lt;body&gt; é o conteúdo que as pessoas vão ler!</p>
+                </div>
+
+                <div class="success-box">
+                    <h3>✅ Página Criada!</h3>
+                    <p>Agora temos nosso primeiro site pronto!<br>
+                    Próximo passo: configurar o Apache para servir esta página.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Configurando Virtual Host (Passo 9) -->
+        <div class="slide">
+            <div class="content">
+                <h2>⚙️ Configurando Virtual Host: Passo 9</h2>
+                
+                <div class="step-card">
+                    <div class="step-number">9</div>
+                    <h3>Criar Arquivo de Configuração</h3>
+                    <div class="command-example">
+sudo vim /etc/apache2/sites-available/informatica.joaocamara.conf
+                    </div>
+                </div>
+
+                <div class="code-box">
+                    <h3>📄 Conteúdo do Arquivo .conf</h3>
+&lt;VirtualHost *:80&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ServerAdmin admin@informatica.joaocamara<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ServerName informatica.joaocamara<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ServerAlias www.informatica.joaocamara<br>
+&nbsp;&nbsp;&nbsp;&nbsp;DocumentRoot /var/www/informatica.joaocamara/public_html<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ErrorLog ${APACHE_LOG_DIR}/error.log<br>
+&nbsp;&nbsp;&nbsp;&nbsp;CustomLog ${APACHE_LOG_DIR}/access.log combined<br>
+&lt;/VirtualHost&gt;
+                </div>
+
+                <div class="example-box">
+                    <h3>🔍 Explicação da Configuração</h3>
+                    <div class="bullet-point"><strong>&lt;VirtualHost *:80&gt;:</strong> Escuta na porta 80 (HTTP)</div>
+                    <div class="bullet-point"><strong>ServerAdmin:</strong> Email do administrador</div>
+                    <div class="bullet-point"><strong>ServerName:</strong> Nome principal do site</div>
+                    <div class="bullet-point"><strong>ServerAlias:</strong> Nome alternativo (com www)</div>
+                    <div class="bullet-point"><strong>DocumentRoot:</strong> Onde estão os arquivos HTML</div>
+                    <div class="bullet-point"><strong>ErrorLog:</strong> Arquivo de erros</div>
+                    <div class="bullet-point"><strong>CustomLog:</strong> Arquivo de acessos</div>
+                </div>
+
+                <div class="analogy-box center-text">
+                    <h3>🏢 Analogia</h3>
+                    <p>É como o cadastro de um apartamento:<br>
+                    Define quem é o síndico (ServerAdmin),<br>
+                    qual é o endereço (ServerName),<br>
+                    e onde fica o apartamento (DocumentRoot)!</p>
+                </div>
+
+                <div class="warning-box">
+                    <h3>🔌 Porta Alternativa</h3>
+                    <p>Para usar outra porta além da 80, adicione no início:<br>
+                    <strong>Listen 700</strong><br>
+                    E mude para: <strong>&lt;VirtualHost *:700&gt;</strong></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Ativando e Testando (Passos 10-11) -->
+        <div class="slide">
+            <div class="content">
+                <h2>🚀 Ativando e Testando: Passos 10-11</h2>
+                
+                <div class="grid-steps">
+                    <div class="step-card">
+                        <div class="step-number">10</div>
+                        <h3>Ativar o Site</h3>
+                        <div class="command-example">
+sudo a2ensite informatica.joaocamara.conf<br><br>
+sudo a2dissite 000-default.conf<br><br>
+sudo systemctl restart apache2.service
+                        </div>
+                    </div>
+                    
+                    <div class="step-card">
+                        <div class="step-number">11</div>
+                        <h3>Testar no Navegador</h3>
+                        <p>No Windows, abra o navegador e digite:</p>
+                        <div class="command-example">
+http://192.168.0.1
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>🔍 O que cada comando faz?</h3>
+                    <div class="bullet-point"><strong>a2ensite:</strong> Ativa um site (enable site)</div>
+                    <div class="bullet-point"><strong>a2dissite:</strong> Desativa um site (disable site)</div>
+                    <div class="bullet-point"><strong>systemctl restart:</strong> Reinicia o Apache</div>
+                </div>
+
+                <div class="success-box center-text">
+                    <h3>🎉 Site no Ar!</h3>
+                    <p style="font-size: 1.3em;">Se tudo deu certo, você verá:<br>
+                    <strong>"Sucesso! O site informatica.joaocamara está no ar!"</strong></p>
+                </div>
+
+                <div class="analogy-box">
+                    <h3>💡 Analogia Final</h3>
+                    <p><strong>a2ensite:</strong> Ligar a luz do apartamento<br>
+                    <strong>a2dissite:</strong> Apagar a luz do apartamento padrão<br>
+                    <strong>restart:</strong> Reiniciar o sistema elétrico do prédio<br>
+                    <strong>Testar:</strong> Tocar a campainha para ver se alguém atende!</p>
+                </div>
+
+                <div class="terminal-box">
+                    <h3>✅ Mensagem de Sucesso</h3>
+info4@info4:~$ sudo a2ensite informatica.joaocamara.conf<br>
+Enabling site informatica.joaocamara.<br>
+To activate the new configuration, you need to run:<br>
+&nbsp;&nbsp;systemctl reload apache2<br>
+info4@info4:~$
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Comandos Úteis e Troubleshooting -->
+        <div class="slide">
+            <div class="content">
+                <h2>🛠️ Comandos Úteis e Resolução de Problemas</h2>
+                
+                <div class="two-column">
+                    <div>
+                        <h3>🔧 Controle do Apache</h3>
+                        <div class="command-example">
+# Iniciar serviço<br>
+sudo service apache2 start<br><br>
+# Parar serviço<br>
+sudo service apache2 stop<br><br>
+# Reiniciar serviço<br>
+sudo systemctl restart apache2<br><br>
+# Ver status<br>
+sudo systemctl status apache2
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🔍 Diagnóstico de Erros</h3>
+                        <div class="command-example">
+# Testar sintaxe dos arquivos<br>
+sudo apache2ctl -t<br><br>
+# Ver virtual hosts<br>
+apache2ctl -S<br><br>
+# Ver logs de erro<br>
+tail -f /var/log/apache2/error.log<br><br>
+# Ver logs de acesso<br>
+tail -f /var/log/apache2/access.log
+                        </div>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h3>❌ Problemas Comuns</h3>
+                    <div class="bullet-point"><strong>Erro de sintaxe:</strong> Use apache2ctl -t para verificar</div>
+                    <div class="bullet-point"><strong>Porta ocupada:</strong> Verifique se algo está rodando na porta 80</div>
+                    <div class="bullet-point"><strong>Permissões negadas:</strong> Verifique chmod 755 nas pastas</div>
+                    <div class="bullet-point"><strong>Página não carrega:</strong> Confira o IP do servidor</div>
+                </div>
+
+                <div class="step-box">
+                    <h3>📂 Arquivos Importantes</h3>
+                    <div class="bullet-point"><strong>/etc/apache2/apache2.conf:</strong> Configuração principal</div>
+                    <div class="bullet-point"><strong>/etc/apache2/sites-available/:</strong> Sites disponíveis</div>
+                    <div class="bullet-point"><strong>/etc/apache2/sites-enabled/:</strong> Sites ativos</div>
+                    <div class="bullet-point"><strong>/var/www/:</strong> Diretório dos sites</div>
+                    <div class="bullet-point"><strong>/var/log/apache2/:</strong> Logs do Apache</div>
+                </div>
+
+                <div class="example-box">
+                    <h3>💡 Dicas Extras</h3>
+                    <div class="bullet-point">Use <strong>a2enmod</strong> para ativar módulos</div>
+                    <div class="bullet-point">Use <strong>a2dismod</strong> para desativar módulos</div>
+                    <div class="bullet-point">Sempre teste com <strong>apache2ctl -t</strong> antes de reiniciar</div>
+                    <div class="bullet-point">Consulte os logs para debugar problemas</div>
+                </div>
+
+                <div class="highlight-box center-text">
+                    <h3>🎓 Parabéns!</h3>
+                    <p style="font-size: 1.3em;">
+                        Você aprendeu a instalar e configurar o Apache!<br>
+                        Agora você pode hospedar seus próprios sites!<br><br>
+                        <strong>Continue praticando e explorando! 🚀</strong>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">⬅️ Anterior</button>
+            <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Próximo ➡️</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('total-slides').textContent = totalSlides;
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.classList.toggle('active', i === index);
+            });
+            
+            document.getElementById('current-slide').textContent = index + 1;
+            document.getElementById('prevBtn').disabled = index === 0;
+            document.getElementById('nextBtn').disabled = index === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            const newSlide = currentSlide + direction;
+            if (newSlide >= 0 && newSlide < totalSlides) {
+                currentSlide = newSlide;
+                showSlide(currentSlide);
+            }
+        }
+
+        // Navegação por teclado
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+            if (e.key === 'Home') {
+                currentSlide = 0;
+                showSlide(currentSlide);
+            }
+            if (e.key === 'End') {
+                currentSlide = totalSlides - 1;
+                showSlide(currentSlide);
+            }
+        });
+
+        // Inicializar
+        showSlide(0);
+    </script>
+</body>
+</html>
