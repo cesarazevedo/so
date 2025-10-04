@@ -663,6 +663,36 @@ sudo vim /var/www/informatica.joaocamara/public_html/index.html
             <div class="content">
                 <h2>⚙️ Configurando Virtual Host: Passo 9</h2>
                 
+                <!-- NOVA SEÇÃO: Introdução -->
+                <div class="intro-box">
+                    <h3>📚 O que é um Virtual Host?</h3>
+                    <p>
+                        Um <strong>Virtual Host</strong> é uma configuração que permite ter <strong>vários sites</strong> 
+                        rodando no <strong>mesmo servidor Apache</strong>. Cada site tem seu próprio domínio, 
+                        pasta e configurações independentes.
+                    </p>
+                </div>
+
+                <div class="analogy-box">
+                    <h3>🏢 Analogia Simples</h3>
+                    <p>
+                        Imagine um <strong>prédio comercial</strong> (servidor Apache):<br><br>
+                        🏪 <strong>Loja 1:</strong> informatica.joaocamara (porta 80)<br>
+                        🔌 <strong>Loja 2:</strong> eletro.joaocamara (porta 700)<br><br>
+                        Cada loja tem sua própria entrada, produtos e responsável,<br>
+                        mas todas estão no <strong>mesmo prédio</strong>!
+                    </p>
+                </div>
+
+                <div class="info-box">
+                    <h3>🔧 Como Funciona?</h3>
+                    <div class="bullet-point">✅ Você cria um <strong>arquivo .conf</strong> para cada site</div>
+                    <div class="bullet-point">✅ Define o <strong>nome do domínio</strong> (ServerName)</div>
+                    <div class="bullet-point">✅ Indica a <strong>pasta dos arquivos</strong> (DocumentRoot)</div>
+                    <div class="bullet-point">✅ Apache direciona visitantes para o site correto automaticamente!</div>
+                </div>
+
+                <!-- Passo 9 -->
                 <div class="step-card">
                     <div class="step-number">9</div>
                     <h3>Criar Arquivo de Configuração</h3>
@@ -703,36 +733,40 @@ sudo vim /etc/apache2/sites-available/informatica.joaocamara.conf
                 </div>
 
                 <div class="warning-box">
-    <h3>🔌 Porta Alternativa</h3>
-    <p>
-        Para usar outra porta além da 80, adicione no início do novo arquivo de VirtuaHost:<br>
-        <strong>Listen 700</strong><br>
-        E mude para: <strong>&lt;VirtualHost *:700&gt;</strong>
-    </p>
-</div>
-<div class="code-box">
-    <h3>📄 Conteúdo do Arquivo .conf (Porta 700)</h3>
-    Listen 700 <br>
-    &lt;VirtualHost *:700&gt;<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;ServerAdmin admin@eletro.joaocamara<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;ServerName eletro.joaocamara<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;ServerAlias www.eletro.joaocamara<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;DocumentRoot /var/www/eletro.joaocamara/public_html<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;ErrorLog ${APACHE_LOG_DIR}/error.log<br>
-    &nbsp;&nbsp;&nbsp;&nbsp;CustomLog ${APACHE_LOG_DIR}/access.log combined<br>
-    &lt;/VirtualHost&gt;
-</div>
-<div class="example-box">
-    <h3>🔍 Explicação da Configuração</h3>
-    <div class="bullet-point"><strong>Listen 700:</strong> Abre a porta 700 para receber conexões</div>
-    <div class="bullet-point"><strong>&lt;VirtualHost *:700&gt;:</strong> Escuta na porta 700 (porta customizada)</div>
-    <div class="bullet-point"><strong>ServerAdmin:</strong> Email do administrador (admin@eletro.joaocamara)</div>
-    <div class="bullet-point"><strong>ServerName:</strong> Nome principal do site (eletro.joaocamara)</div>
-    <div class="bullet-point"><strong>ServerAlias:</strong> Nome alternativo com www (www.eletro.joaocamara)</div>
-    <div class="bullet-point"><strong>DocumentRoot:</strong> Onde estão os arquivos HTML (/var/www/eletro.joaocamara/public_html)</div>
-    <div class="bullet-point"><strong>ErrorLog:</strong> Arquivo de erros do site</div>
-    <div class="bullet-point"><strong>CustomLog:</strong> Arquivo de acessos e logs</div>
-</div>
+                    <h3>🔌 Porta Alternativa</h3>
+                    <p>
+                        Para usar outra porta além da 80, adicione no início do novo arquivo de VirtualHost:<br>
+                        <strong>Listen 700</strong><br>
+                        E mude para: <strong>&lt;VirtualHost *:700&gt;</strong>
+                    </p>
+                </div>
+
+                <div class="code-box">
+                    <h3>📄 Conteúdo do Arquivo .conf (Porta 700)</h3>
+                    Listen 700 <br>
+                    &lt;VirtualHost *:700&gt;<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;ServerAdmin admin@eletro.joaocamara<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;ServerName eletro.joaocamara<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;ServerAlias www.eletro.joaocamara<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;DocumentRoot /var/www/eletro.joaocamara/public_html<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;ErrorLog ${APACHE_LOG_DIR}/error.log<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;CustomLog ${APACHE_LOG_DIR}/access.log combined<br>
+                    &lt;/VirtualHost&gt;
+                </div>
+
+                <div class="example-box">
+                    <h3>🔍 Explicação da Configuração</h3>
+                    <div class="bullet-point"><strong>Listen 700:</strong> Abre a porta 700 para receber conexões</div>
+                    <div class="bullet-point"><strong>&lt;VirtualHost *:700&gt;:</strong> Escuta na porta 700 (porta customizada)</div>
+                    <div class="bullet-point"><strong>ServerAdmin:</strong> Email do administrador (admin@eletro.joaocamara)</div>
+                    <div class="bullet-point"><strong>ServerName:</strong> Nome principal do site (eletro.joaocamara)</div>
+                    <div class="bullet-point"><strong>ServerAlias:</strong> Nome alternativo com www (www.eletro.joaocamara)</div>
+                    <div class="bullet-point"><strong>DocumentRoot:</strong> Onde estão os arquivos HTML (/var/www/eletro.joaocamara/public_html)</div>
+                    <div class="bullet-point"><strong>ErrorLog:</strong> Arquivo de erros do site</div>
+                    <div class="bullet-point"><strong>CustomLog:</strong> Arquivo de acessos e logs</div>
+                </div>
+            </div>
+        </div>
             </div>
         </div>
 
