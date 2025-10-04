@@ -722,6 +722,17 @@ sudo vim /etc/apache2/sites-available/informatica.joaocamara.conf
     &nbsp;&nbsp;&nbsp;&nbsp;CustomLog ${APACHE_LOG_DIR}/access.log combined<br>
     &lt;/VirtualHost&gt;
 </div>
+<div class="example-box">
+    <h3>🔍 Explicação da Configuração</h3>
+    <div class="bullet-point"><strong>Listen 700:</strong> Abre a porta 700 para receber conexões</div>
+    <div class="bullet-point"><strong>&lt;VirtualHost *:700&gt;:</strong> Escuta na porta 700 (porta customizada)</div>
+    <div class="bullet-point"><strong>ServerAdmin:</strong> Email do administrador (admin@eletro.joaocamara)</div>
+    <div class="bullet-point"><strong>ServerName:</strong> Nome principal do site (eletro.joaocamara)</div>
+    <div class="bullet-point"><strong>ServerAlias:</strong> Nome alternativo com www (www.eletro.joaocamara)</div>
+    <div class="bullet-point"><strong>DocumentRoot:</strong> Onde estão os arquivos HTML (/var/www/eletro.joaocamara/public_html)</div>
+    <div class="bullet-point"><strong>ErrorLog:</strong> Arquivo de erros do site</div>
+    <div class="bullet-point"><strong>CustomLog:</strong> Arquivo de acessos e logs</div>
+</div>
             </div>
         </div>
 
