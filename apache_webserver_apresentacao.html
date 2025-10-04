@@ -711,16 +711,16 @@ sudo vim /etc/apache2/sites-available/informatica.joaocamara.conf
     </p>
 </div>
 <div class="code-box">
-Listen 700
-&lt;VirtualHost *:700&gt;
-    ServerAdmin admin@eletro.joaocamara
-    ServerName eletro.joaocamara
-    ServerAlias www.eletro.joaocamara
-    DocumentRoot /var/www/eletro.joaocamara/public_html
+Listen 700 <br>
+&lt;VirtualHost *:700&gt;<br>
+    ServerAdmin admin@eletro.joaocamara<br>
+    ServerName eletro.joaocamara <br>
+    ServerAlias www.eletro.joaocamara <br>
+    DocumentRoot /var/www/eletro.joaocamara/public_html <br>
 
-    ErrorLog ${APACHE_LOG_DIR}/error.log
-    CustomLog ${APACHE_LOG_DIR}/access.log combined
-&lt;/VirtualHost&gt;
+    ErrorLog ${APACHE_LOG_DIR}/error.log <br>
+    CustomLog ${APACHE_LOG_DIR}/access.log combined<br>
+&lt;/VirtualHost&gt;<br>
 </div>
 
             </div>
