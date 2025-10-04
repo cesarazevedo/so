@@ -727,9 +727,18 @@ sudo vim /etc/apache2/sites-available/informatica.joaocamara.conf
                 <div class="warning-box">
                     <h3>🔌 Porta Alternativa</h3>
                     <p>
-                        Para usar outra porta além da 80, adicione no início do novo arquivo de VirtualHost:<br>
-                        <strong>Listen 700</strong><br>
-                        E mude para: <strong>&lt;VirtualHost *:700&gt;</strong>
+                        <strong>Por que usar outra porta?</strong><br>
+                        A porta 80 é a padrão para sites. Portas customizadas são úteis para organizar vários serviços 
+                        ou criar ambientes de teste no mesmo servidor.
+                    </p>
+                    <p>
+                        <strong>Como configurar:</strong><br>
+                        1️⃣ Adicione <strong>Listen 700</strong> no início do arquivo (abre a porta no servidor)<br>
+                        2️⃣ Mude para <strong>&lt;VirtualHost *:700&gt;</strong> (configura o site nessa porta)
+                    </p>
+                    <p>
+                        <strong>⚠️ Importante:</strong> Para acessar, use <code>http://eletro.joaocamara:700</code><br>
+                        Sem o <strong>:700</strong>, o navegador tentará a porta 80 (padrão).
                     </p>
                 </div>
 
