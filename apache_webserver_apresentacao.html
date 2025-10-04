@@ -705,7 +705,7 @@ sudo vim /etc/apache2/sites-available/informatica.joaocamara.conf
                 <div class="warning-box">
     <h3>🔌 Porta Alternativa</h3>
     <p>
-        Para usar outra porta além da 80, adicione no início do arquivo:<br>
+        Para usar outra porta além da 80, adicione no início do novo arquivo de VirtuaHost:<br>
         <strong>Listen 700</strong><br>
         E mude para: <strong>&lt;VirtualHost *:700&gt;</strong>
     </p>
@@ -713,10 +713,10 @@ sudo vim /etc/apache2/sites-available/informatica.joaocamara.conf
 <div class="code-box">
 Listen 700 <br>
 &lt;VirtualHost *:700&gt;<br>
-    ServerAdmin admin@eletro.joaocamara<br>
-    ServerName eletro.joaocamara <br>
-    ServerAlias www.eletro.joaocamara <br>
-    DocumentRoot /var/www/eletro.joaocamara/public_html <br>
+&nbsp;&nbsp;&nbsp;&nbsp;ServerAdmin admin@eletro.joaocamara<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ServerName eletro.joaocamara <br>
+&nbsp;&nbsp;&nbsp;&nbsp;ServerAlias www.eletro.joaocamara <br>
+&nbsp;&nbsp;&nbsp;&nbsp;DocumentRoot /var/www/eletro.joaocamara/public_html <br>
 
     ErrorLog ${APACHE_LOG_DIR}/error.log <br>
     CustomLog ${APACHE_LOG_DIR}/access.log combined<br>
