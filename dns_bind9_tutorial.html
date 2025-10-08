@@ -1,0 +1,1815 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Servidor DNS - BIND9</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .presentation {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide {
+            min-height: 100vh;
+            padding: 60px 40px;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            background: white;
+            margin: 20px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        .slide h1 {
+            font-size: 3.5em;
+            color: #4a5568;
+            text-align: center;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .slide h2 {
+            font-size: 2.8em;
+            color: #2d3748;
+            margin-bottom: 30px;
+            border-bottom: 4px solid #667eea;
+            padding-bottom: 15px;
+        }
+
+        .slide h3 {
+            font-size: 2.2em;
+            color: #4a5568;
+            margin: 25px 0 15px 0;
+        }
+
+        .slide h4 {
+            font-size: 1.6em;
+            color: #2d3748;
+            margin: 15px 0 10px 0;
+        }
+
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        .bullet-point {
+            display: flex;
+            align-items: flex-start;
+            margin: 15px 0;
+            font-size: 1.3em;
+            line-height: 1.5;
+        }
+
+        .bullet-point::before {
+            content: "🌐";
+            margin-right: 15px;
+            font-size: 1.2em;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #4c51bf;
+        }
+
+        .example-box {
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #2c5aa0;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #c53030;
+        }
+
+        .step-box {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #2f855a;
+        }
+
+        .terminal-box {
+            background: #2d3748;
+            color: #00ff00;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #00ff00;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+        }
+
+        .code-box {
+            background: #2d3748;
+            color: #ffd700;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #ffd700;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            padding: 15px 25px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .nav-btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .nav-btn:disabled {
+            background: #a0a0a0;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(255,255,255,0.9);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #4a5568;
+            z-index: 1000;
+        }
+
+        .center-text {
+            text-align: center;
+        }
+
+        .large-text {
+            font-size: 1.4em;
+            line-height: 1.6;
+        }
+
+        .command-example {
+            background: #2d3748;
+            color: #00ff41;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            border-left: 4px solid #00ff41;
+        }
+
+        .step-number {
+            background: #667eea;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin: 0 auto 20px;
+        }
+
+        .grid-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 20px 0;
+        }
+
+        .step-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid #e2e8f0;
+            text-align: center;
+        }
+
+        .analogy-box {
+            background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #c05621;
+        }
+
+        .important-note {
+            background: #fff5f5;
+            border: 2px solid #fc8181;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #742a2a;
+        }
+
+        .success-box {
+            background: #f0fff4;
+            border: 2px solid #68d391;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #22543d;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #90cdf4 0%, #63b3ed 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #3182ce;
+        }
+
+        /* Quiz Styles */
+        .quiz-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .question-box {
+            background: #f7fafc;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 2px solid #e2e8f0;
+        }
+
+        .question-text {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 20px;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .option {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #e2e8f0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.2em;
+        }
+
+        .option:hover {
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+
+        .option.selected {
+            border-color: #667eea;
+            background: #edf2f7;
+        }
+
+        .option.correct {
+            border-color: #48bb78;
+            background: #f0fff4;
+        }
+
+        .option.incorrect {
+            border-color: #f56565;
+            background: #fff5f5;
+        }
+
+        .quiz-btn {
+            padding: 15px 30px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-btn:hover {
+            background: #5a67d8;
+        }
+
+        .quiz-btn:disabled {
+            background: #a0a0a0;
+            cursor: not-allowed;
+        }
+
+        .quiz-result {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 1.5em;
+            margin: 20px 0;
+        }
+
+        .quiz-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">17</span>
+        </div>
+
+        <!-- Slide 1: Título -->
+        <div class="slide active">
+            <div class="content center-text">
+                <h1>🌐 Servidor DNS - BIND9</h1>
+                <h2 style="border: none; color: #667eea;">Tutorial de Instalação e Configuração</h2>
+                <div class="highlight-box large-text">
+                    <strong>Aprenda a Configurar seu Próprio Servidor DNS</strong><br>
+                    Sistema de Nomes de Domínio com BIND9<br>
+                    Passo a passo completo e prático
+                </div>
+                
+                <div class="example-box" style="margin-top: 40px;">
+                    <h3>🎯 Objetivos da Aula</h3>
+                    <p style="font-size: 1.3em; margin: 10px 0;">
+                        <strong>✅ Compreender a utilidade de um servidor DNS</strong><br>
+                        <strong>⚙️ Instalar e configurar o BIND9</strong><br>
+                        <strong>🧪 Testar a resolução de nomes</strong><br>
+                        <strong>🌐 Criar registros DNS funcionais</strong>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: O que é DNS -->
+        <div class="slide">
+            <div class="content">
+                <h2>🤔 O que é um Servidor DNS?</h2>
+                
+                <div class="analogy-box center-text">
+                    <h3>📖 Analogia Simples</h3>
+                    <p style="font-size: 1.3em;">
+                        Um servidor DNS é como um <strong>catálogo online</strong> que associa<br>
+                        nomes de sites a números de identificação únicos na internet!<br><br>
+                        Imagine que cada site tem seu próprio número (IP),<br>
+                        e o servidor DNS traduz o nome para o número automaticamente.
+                    </p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🌍 Como Funciona</h3>
+                        <div class="bullet-point">Você digita um nome (site.com.br)</div>
+                        <div class="bullet-point">DNS traduz para número (151.101.129.121)</div>
+                        <div class="bullet-point">Navegador se conecta ao IP</div>
+                        <div class="bullet-point">Site carrega na sua tela!</div>
+                        
+                        <div class="example-box">
+                            <h4>📱 Exemplo Prático</h4>
+                            <p>Você digita: <strong>www.google.com</strong><br>
+                            DNS traduz para: <strong>142.250.185.46</strong><br>
+                            Tudo acontece em milésimos de segundo!</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🔥 Por que Usar DNS?</h3>
+                        <div class="bullet-point">Impossível decorar todos os IPs</div>
+                        <div class="bullet-point">Nomes são fáceis de lembrar</div>
+                        <div class="bullet-point">IPs podem mudar, nomes não</div>
+                        <div class="bullet-point">Facilita navegação na internet</div>
+                        
+                        <div class="step-box">
+                            <h4>💡 Sem DNS</h4>
+                            <p>Seria como uma agenda telefônica<br>
+                            onde você só tem números,<br>
+                            sem os nomes das pessoas!<br>
+                            Impossível de usar!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="terminal-box center-text">
+                    <h3>🔍 Visualização</h3>
+                    <p style="font-size: 1.3em;">
+                        VOCÊ → www.ifrn.edu.br → DNS → 200.10.10.50 → SERVIDOR
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: O que é BIND -->
+        <div class="slide">
+            <div class="content">
+                <h2>📦 O que é BIND9?</h2>
+                
+                <div class="highlight-box center-text">
+                    <h3>🏆 O Servidor DNS Mais Usado do Mundo</h3>
+                    <p style="font-size: 1.3em;">
+                        <strong>BIND</strong> = Berkeley Internet Name Domain<br>
+                        O servidor DNS mais comum para o protocolo DNS na Internet
+                    </p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>✨ Características</h3>
+                        <div class="bullet-point">Amplamente usado em sistemas Unix</div>
+                        <div class="bullet-point">Padrão de facto para servidores DNS</div>
+                        <div class="bullet-point">Gratuito e código aberto</div>
+                        <div class="bullet-point">Muito estável e confiável</div>
+                        <div class="bullet-point">Suporta DNSSEC (segurança)</div>
+                        
+                        <div class="info-box">
+                            <h4>🌐 História</h4>
+                            <p>Desenvolvido pela Universidade de Berkeley<br>
+                            Mantido pelo ISC (Internet Systems Consortium)<br>
+                            Usado por milhões de servidores</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🎯 O que Vamos Fazer</h3>
+                        <div class="step-box">
+                            <h4>📋 Nosso Projeto</h4>
+                            <p><strong>1.</strong> Instalar BIND9 no Ubuntu<br>
+                            <strong>2.</strong> Configurar zona DNS<br>
+                            <strong>3.</strong> Criar registros (A, CNAME)<br>
+                            <strong>4.</strong> Testar resolução de nomes<br>
+                            <strong>5.</strong> Acessar pelo navegador</p>
+                        </div>
+                        
+                        <div class="example-box">
+                            <h4>🌐 Domínio do Exemplo</h4>
+                            <p>Vamos criar:<br>
+                            <strong>informatica.joaocamara</strong><br>
+                            Com subdomínios:<br>
+                            • www<br>
+                            • curso<br>
+                            • outrohost</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="analogy-box">
+                    <h3>💡 Analogia</h3>
+                    <p style="font-size: 1.3em;">
+                        Se a internet fosse uma cidade,<br>
+                        o BIND seria o <strong>sistema de endereçamento</strong>:<br>
+                        Ele sabe onde cada "casa" (site) está localizada!
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Preparação (Passos 1-2) -->
+        <div class="slide">
+            <div class="content">
+                <h2>🚀 Preparação: Passos 1-2</h2>
+                
+                <div class="step-box center-text">
+                    <h3>📋 Antes de Instalar</h3>
+                    <p>Vamos preparar o ambiente para a instalação do BIND9</p>
+                </div>
+
+                <div class="grid-steps">
+                    <div class="step-card">
+                        <div class="step-number">1</div>
+                        <h3>Desabilitar Interface</h3>
+                        <p>Desabilite temporariamente a <strong>Placa de Rede 2</strong> no VirtualBox</p>
+                        <div class="warning-box">
+                            <p>⚠️ Clique com botão direito no ícone de rede<br>
+                            e desmarque "Conectar Placa de Rede 2"<br><br>
+                            Isso evita problemas durante a instalação!</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step-card">
+                        <div class="step-number">2</div>
+                        <h3>Atualizar Sistema</h3>
+                        <div class="command-example">
+sudo apt-get update
+                        </div>
+                        <p>Atualiza a lista de pacotes disponíveis<br>
+                        nos repositórios do Ubuntu</p>
+                    </div>
+                </div>
+
+                <div class="terminal-box">
+                    <h3>✅ Saída Esperada do Comando</h3>
+info4@info4:~$ sudo apt-get update<br>
+Hit:1 http://br.archive.ubuntu.com/ubuntu focal InRelease<br>
+Get:2 http://br.archive.ubuntu.com/ubuntu focal-updates InRelease [114 kB]<br>
+Get:3 http://br.archive.ubuntu.com/ubuntu focal-backports InRelease [108 kB]<br>
+Get:4 http://br.archive.ubuntu.com/ubuntu focal-security InRelease [114 kB]<br>
+Lendo listas de pacotes... Pronto
+                </div>
+
+                <div class="analogy-box center-text">
+                    <h3>💡 Analogia</h3>
+                    <p style="font-size: 1.3em;">
+                        <strong>Passo 1:</strong> Desligar o telefone antes de mexer nos fios<br>
+                        <strong>Passo 2:</strong> Verificar o catálogo da loja antes de comprar<br><br>
+                        Garantimos que temos a lista mais recente de programas!
+                    </p>
+                </div>
+
+                <div class="important-note">
+                    <h3>🎯 Próximo Passo</h3>
+                    <p style="font-size: 1.2em;">
+                        Com o sistema atualizado, agora vamos instalar o BIND9!<br>
+                        É um processo simples e automatizado.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Instalação (Passos 3-4) -->
+        <div class="slide">
+            <div class="content">
+                <h2>📦 Instalação: Passos 3-4</h2>
+                
+                <div class="grid-steps">
+                    <div class="step-card">
+                        <div class="step-number">3</div>
+                        <h3>Instalar BIND9</h3>
+                        <div class="command-example">
+sudo apt-get install bind9
+                        </div>
+                        <p>Pressione <strong>S</strong> quando perguntado<br>
+                        Aguarde a conclusão da instalação</p>
+                    </div>
+                    
+                    <div class="step-card">
+                        <div class="step-number">4</div>
+                        <h3>Reativar Interface</h3>
+                        <p>Reative a <strong>Placa de Rede 2</strong> no VirtualBox</p>
+                        <p style="margin-top: 15px;">Clique com botão direito no ícone de rede<br>
+                        e marque "Conectar Placa de Rede 2"</p>
+                    </div>
+                </div>
+
+                <div class="terminal-box">
+                    <h3>📋 Durante a Instalação</h3>
+info4@info4:~$ sudo apt-get install bind9<br>
+[sudo] password for info4:<br>
+A ler as listas de pacotes... Pronto<br>
+A construir árvore de dependências<br>
+A ler a informação de estado... Pronto<br>
+The following additional packages will be installed:<br>
+  bind9-utils dns-root-data python3-ply<br>
+Pacotes sugeridos:<br>
+  bind-doc resolvconf python-ply-doc<br>
+Serão instalados os seguintes NOVOS pacotes:<br>
+  bind9 bind9-utils dns-root-data python3-ply<br>
+0 pacotes actualizados, 4 pacotes novos instalados, 0 a remover e 11 não actualizados.<br>
+É necessário obter 457 kB de arquivos.<br>
+Após esta operação, serão utilizados 1927 kB adicionais de espaço em disco.<br>
+Deseja continuar? [S/n] _
+                </div>
+
+                <div class="terminal-box">
+                    <h3>✅ Mensagens Finais da Instalação</h3>
+A instalar python3-ply (3.11-3ubuntu0.1) ...<br>
+A instalar dns-root-data (2019052802) ...<br>
+A instalar bind9-utils (1:9.16.1-0ubuntu2.11) ...<br>
+A instalar bind9 (1:9.16.1-0ubuntu2.11) ...<br>
+Adding group `bind' (GID 122) ...<br>
+Done.<br>
+Adding system user `bind' (UID 114) ...<br>
+Adding new user `bind' (UID 114) with group `bind' ...<br>
+Not creating home directory `/var/cache/bind'.<br>
+wrote key file "/etc/bind/rndc.key"<br>
+named-resolvconf.service is a disabled or a static unit, not starting it.<br>
+Created symlink /etc/systemd/system/multi-user.target.wants/bind9.service<br>
+→ /lib/systemd/system/bind9.service.<br>
+A processar 'triggers' para systemd (245.4-4ubuntu3.18) ...<br>
+A processar 'triggers' para man-db (2.9.1-1) ...<br>
+A processar 'triggers' para ufw (0.36-6ubuntu1) ...<br>
+A processar 'triggers' para libc-bin (2.31-0ubuntu9.9) ...
+                </div>
+
+                <div class="success-box center-text">
+                    <h3>🎉 BIND9 Instalado com Sucesso!</h3>
+                    <p style="font-size: 1.3em;">
+                        O servidor DNS já está instalado e rodando!<br>
+                        Agora vamos configurá-lo para funcionar com nosso domínio.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Verificação (Passo 5) -->
+        <div class="slide">
+            <div class="content">
+                <h2>✅ Verificação: Passo 5</h2>
+                
+                <div class="step-card">
+                    <div class="step-number">5</div>
+                    <h3>Verificar Status do BIND9</h3>
+                    <div class="command-example">
+systemctl status bind9.service
+                    </div>
+                    <p>Confirma que o serviço está rodando corretamente</p>
+                </div>
+
+                <div class="terminal-box">
+                    <h3>✅ Saída Esperada</h3>
+info4@info4:~$ systemctl status bind9.service<br>
+● <span style="color: #00ff00;">named.service - BIND Domain Name Server</span><br>
+&nbsp;&nbsp;&nbsp;Loaded: loaded (/lib/systemd/system/named.service; enabled; vendor preset: enabled)<br>
+&nbsp;&nbsp;&nbsp;Active: <strong style="color: #00ff00;">active (running)</strong> since Tue 2023-11-28 17:24:36 UTC; 1min 5s ago<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Docs: man:named(8)<br>
+&nbsp;&nbsp;Main PID: 2252 (named)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Tasks: 14 (limit: 1048)<br>
+&nbsp;&nbsp;&nbsp;Memory: 34.1M<br>
+&nbsp;&nbsp;&nbsp;CGroup: /system.slice/named.service<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─2252 /usr/sbin/named -f -u bind<br><br>
+<span style="color: #808080;">Pressione 'q' para sair</span>
+                </div>
+
+                <div class="two-column">
+                    <div class="success-box">
+                        <h3>✅ O que Verificar</h3>
+                        <div class="bullet-point"><strong>Active:</strong> deve estar "active (running)"</div>
+                        <div class="bullet-point"><strong>Loaded:</strong> deve estar "enabled"</div>
+                        <div class="bullet-point"><strong>PID:</strong> número do processo rodando</div>
+                        <div class="bullet-point"><strong>Nenhum erro</strong> nas mensagens</div>
+                    </div>
+                    
+                    <div class="warning-box">
+                        <h3>⚠️ Se não estiver rodando</h3>
+                        <p>Execute os comandos:</p>
+                        <div class="command-example">
+# Iniciar o serviço<br>
+sudo systemctl start bind9<br><br>
+# Verificar novamente<br>
+systemctl status bind9
+                        </div>
+                    </div>
+                </div>
+
+                <div class="analogy-box center-text">
+                    <h3>💡 Analogia</h3>
+                    <p style="font-size: 1.3em;">
+                        É como verificar se o motor do carro está ligado<br>
+                        antes de começar a dirigir!<br>
+                        O BIND precisa estar "active (running)" para funcionar.
+                    </p>
+                </div>
+
+                <div class="important-note">
+                    <h3>🎯 Próximos Passos</h3>
+                    <p style="font-size: 1.2em;">
+                        Com o BIND9 rodando, agora vamos editar os arquivos de configuração!<br>
+                        É aqui que a mágica acontece.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Configuração Principal (Passos 6-7) -->
+        <div class="slide">
+            <div class="content">
+                <h2>⚙️ Configuração Principal: Passos 6-7</h2>
+                
+                <div class="step-card">
+                    <div class="step-number">6</div>
+                    <h3>Editar Arquivo Principal</h3>
+                    <div class="command-example">
+sudo vim /etc/bind/named.conf
+                    </div>
+                    <p>Este é o arquivo de configuração principal do BIND</p>
+                </div>
+
+                <div class="info-box">
+                    <h3>📁 Estrutura de Arquivos do BIND</h3>
+                    <p style="font-size: 1.2em;">
+                        <strong>/etc/bind/</strong> contém todos os arquivos de configuração<br>
+                        <strong>named.conf</strong> é o arquivo principal que inclui os outros
+                    </p>
+                </div>
+
+                <div class="step-card" style="margin-top: 20px;">
+                    <div class="step-number">7</div>
+                    <h3>Modificar Configuração</h3>
+                    <p>Vamos comentar a zona padrão e incluir nossa zona personalizada</p>
+                </div>
+
+                <div class="two-column">
+                    <div class="warning-box">
+                        <h4>❌ ANTES (original)</h4>
+                        <div class="code-box">
+include "/etc/bind/named.conf.options";<br>
+include "/etc/bind/named.conf.local";<br>
+include "/etc/bind/named.conf.default-zones";
+                        </div>
+                    </div>
+                    
+                    <div class="success-box">
+                        <h4>✅ DEPOIS (modificado)</h4>
+                        <div class="code-box">
+include "/etc/bind/named.conf.options";<br>
+include "/etc/bind/named.conf.local";<br>
+<span style="color: #808080;">//include "/etc/bind/named.conf.default-zones";</span><br>
+<strong style="color: #00ff00;">include "/etc/bind/named.conf.my-zones";</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>🔍 O que Fizemos</h3>
+                    <div class="bullet-point"><strong>1.</strong> Comentamos a linha da zona padrão (com //)</div>
+                    <div class="bullet-point"><strong>2.</strong> Adicionamos referência ao nosso arquivo de zonas</div>
+                    <div class="bullet-point"><strong>3.</strong> Agora o BIND vai ler nossas configurações!</div>
+                </div>
+
+                <div class="step-box">
+                    <h3>💾 Salvando no vim</h3>
+                    <p style="font-size: 1.3em;">
+                        <strong>1.</strong> Pressione <strong>ESC</strong><br>
+                        <strong>2.</strong> Digite <strong>:wq</strong> ou <strong>:x</strong><br>
+                        <strong>3.</strong> Pressione <strong>ENTER</strong>
+                    </p>
+                </div>
+
+                <div class="analogy-box">
+                    <h3>💡 Analogia</h3>
+                    <p style="font-size: 1.3em;">
+                        É como modificar o índice de um livro:<br>
+                        Removemos o capítulo padrão e adicionamos nosso próprio capítulo!
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Configuração de Opções (Passo 8) -->
+        <div class="slide">
+            <div class="content">
+                <h2>🔧 Configuração de Opções: Passo 8</h2>
+                
+                <div class="step-card">
+                    <div class="step-number">8</div>
+                    <h3>Editar Opções do BIND</h3>
+                    <div class="command-example">
+sudo vim /etc/bind/named.conf.options
+                    </div>
+                    <p>Permite consultas de clientes da rede local</p>
+                </div>
+
+                <div class="warning-box">
+                    <h3>⚠️ Por que Editar Este Arquivo?</h3>
+                    <p style="font-size: 1.2em;">
+                        Por padrão, o BIND só responde para localhost (127.0.0.1)<br>
+                        Precisamos permitir que outras máquinas da rede também consultem!
+                    </p>
+                </div>
+
+                <div class="code-box">
+                    <h3>📝 Configuração a Adicionar</h3>
+options {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;directory "/var/cache/bind";<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<strong style="color: #00ff00;">listen-on port 53{localhost;192.168.0.0/24;};</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<strong style="color: #00ff00;">allow-query {localhost;192.168.0.0/24;};</strong><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<strong style="color: #00ff00;">recursion no;</strong><br><br>
+&nbsp;&nbsp;&nbsp;&nbsp;dnssec-validation auto;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;listen-on-v6 { any; };<br>
+};
+                </div>
+
+                <div class="example-box">
+                    <h3>🔍 Explicação das Diretivas</h3>
+                    <div class="bullet-point"><strong>listen-on:</strong> Define em quais interfaces e IPs o BIND escuta</div>
+                    <div class="bullet-point"><strong>allow-query:</strong> Quem pode fazer consultas DNS</div>
+                    <div class="bullet-point"><strong>recursion no:</strong> Não faz consultas recursivas (mais seguro)</div>
+                    <div class="bullet-point"><strong>192.168.0.0/24:</strong> Permite toda a rede 192.168.0.x</div>
+                </div>
+
+                <div class="two-column">
+                    <div class="info-box">
+                        <h4>🌐 O que é 192.168.0.0/24?</h4>
+                        <p>É a notação CIDR que representa<br>
+                        todos os IPs de <strong>192.168.0.1</strong><br>
+                        até <strong>192.168.0.254</strong><br><br>
+                        Ou seja, toda a sua rede local!</p>
+                    </div>
+                    
+                    <div class="success-box">
+                        <h4>✅ Resultado</h4>
+                        <p>Agora qualquer computador<br>
+                        na rede 192.168.0.x<br>
+                        pode consultar nosso DNS!<br><br>
+                        Perfeito para ambiente local!</p>
+                    </div>
+                </div>
+
+                <div class="analogy-box">
+                    <h3>💡 Analogia</h3>
+                    <p style="font-size: 1.3em;">
+                        É como abrir a porta de uma loja:<br>
+                        <strong>Antes:</strong> Só você (localhost) podia entrar<br>
+                        <strong>Depois:</strong> Toda a vizinhança (rede local) pode entrar!
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Criação de Zona (Passo 9) -->
+        <div class="slide">
+            <div class="content">
+                <h2>📄 Criação da Zona: Passo 9</h2>
+                
+                <div class="step-card">
+                    <div class="step-number">9</div>
+                    <h3>Criar Arquivo de Zonas</h3>
+                    <div class="command-example">
+sudo vim /etc/bind/named.conf.my-zones
+                    </div>
+                    <p>Define as zonas DNS que nosso servidor vai gerenciar</p>
+                </div>
+
+                <div class="info-box">
+                    <h3>🗂️ O que é uma Zona DNS?</h3>
+                    <p style="font-size: 1.2em;">
+                        Uma zona é um <strong>domínio completo</strong> que você gerencia.<br>
+                        Exemplo: <strong>informatica.joaocamara</strong><br><br>
+                        Cada zona tem um arquivo com todos os registros (A, CNAME, etc)
+                    </p>
+                </div>
+
+                <div class="code-box">
+                    <h3>📝 Conteúdo do Arquivo</h3>
+zone "informatica.joaocamara" IN {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;type master;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;file "informatica.joaocamara.zone";<br>
+};
+                </div>
+
+                <div class="example-box">
+                    <h3>🔍 Explicação da Configuração</h3>
+                    <div class="bullet-point"><strong>zone "informatica.joaocamara":</strong> Nome do domínio</div>
+                    <div class="bullet-point"><strong>IN:</strong> Internet (classe da zona)</div>
+                    <div class="bullet-point"><strong>type master:</strong> Este é o servidor principal (autoritativo)</div>
+                    <div class="bullet-point"><strong>file:</strong> Arquivo que contém os registros da zona</div>
+                </div>
+
+                <div class="two-column">
+                    <div class="step-box">
+                        <h4>🎯 Tipos de Servidor</h4>
+                        <p><strong>Master (Principal):</strong><br>
+                        Servidor autoritativo que contém<br>
+                        os dados originais da zona<br><br>
+                        <strong>Slave (Secundário):</strong><br>
+                        Servidor que copia dados do master<br>
+                        para redundância</p>
+                    </div>
+                    
+                    <div class="warning-box">
+                        <h4>⚠️ Atenção ao Nome</h4>
+                        <p>O arquivo da zona será criado em:<br>
+                        <strong>/var/cache/bind/</strong><br>
+                        informatica.joaocamara.zone<br><br>
+                        O caminho é relativo ao<br>
+                        diretório definido em options!</p>
+                    </div>
+                </div>
+
+                <div class="analogy-box">
+                    <h3>💡 Analogia</h3>
+                    <p style="font-size: 1.3em;">
+                        É como criar uma <strong>certidão de nascimento</strong> de um domínio:<br>
+                        Dizemos "este domínio existe e está sob nossa responsabilidade"!<br>
+                        Agora vamos preencher os detalhes (registros) desse domínio.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Arquivo de Zona (Passo 10) -->
+        <div class="slide">
+            <div class="content">
+                <h2>🗂️ Arquivo de Zona: Passo 10</h2>
+                
+                <div class="step-card">
+                    <div class="step-number">10</div>
+                    <h3>Criar Registros DNS</h3>
+                    <div class="command-example">
+sudo vim /var/cache/bind/informatica.joaocamara.zone
+                    </div>
+                    <p>Este arquivo contém todos os registros da zona</p>
+                </div>
+
+                <div class="code-box">
+                    <h3>📝 Conteúdo Completo do Arquivo</h3>
+$TTL 86400<br>
+@ IN SOA informatica.joaocamara. root.informatica.joaocamara. (<br>
+&nbsp;&nbsp;&nbsp;&nbsp;2016043008&nbsp;&nbsp;&nbsp;; serial<br>
+&nbsp;&nbsp;&nbsp;&nbsp;3600&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;; refresh<br>
+&nbsp;&nbsp;&nbsp;&nbsp;900&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;; retry<br>
+&nbsp;&nbsp;&nbsp;&nbsp;604800&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;; expire<br>
+&nbsp;&nbsp;&nbsp;&nbsp;86400&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;; negative cache TTL<br>
+)<br>
+@ IN NS www<br>
+www IN A 192.168.0.1<br>
+outrohost IN A 192.168.0.2<br>
+curso IN CNAME www
+                </div>
+
+                <div class="highlight-box">
+                    <h3>🔍 Entendendo Cada Linha</h3>
+                    
+                    <div class="step-box" style="margin: 15px 0;">
+                        <h4>$TTL 86400</h4>
+                        <p>Time To Live = 86400 segundos (24 horas)<br>
+                        Tempo que o cliente armazena a resposta em cache</p>
+                    </div>
+
+                    <div class="step-box" style="margin: 15px 0;">
+                        <h4>@ IN SOA ...</h4>
+                        <p><strong>SOA</strong> = Start of Authority<br>
+                        Informações sobre o servidor autoritativo da zona<br>
+                        <strong>@</strong> = representa o nome da própria zona</p>
+                    </div>
+
+                    <div class="step-box" style="margin: 15px 0;">
+                        <h4>serial: 2016043008</h4>
+                        <p>Número de versão do arquivo (formato: YYYYMMDDNN)<br>
+                        <strong>Importante:</strong> Sempre incremente ao modificar!<br>
+                        Servidores secundários usam isso para detectar mudanças</p>
+                    </div>
+
+                    <div class="step-box" style="margin: 15px 0;">
+                        <h4>refresh: 3600</h4>
+                        <p>Tempo (segundos) que servidor secundário aguarda<br>
+                        entre verificações de atualizações</p>
+                    </div>
+
+                    <div class="step-box" style="margin: 15px 0;">
+                        <h4>retry: 900</h4>
+                        <p>Tempo que servidor secundário aguarda para tentar<br>
+                        novamente se não conseguir contatar o principal</p>
+                    </div>
+
+                    <div class="step-box" style="margin: 15px 0;">
+                        <h4>expire: 604800</h4>
+                        <p>Tempo máximo (7 dias) que servidor secundário<br>
+                        mantém os dados sem conseguir atualizar</p>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>📋 Registros Criados</h3>
+                    <div class="bullet-point"><strong>@ IN NS www:</strong> www é o servidor de nomes da zona</div>
+                    <div class="bullet-point"><strong>www IN A 192.168.0.1:</strong> www aponta para IP .1</div>
+                    <div class="bullet-point"><strong>outrohost IN A 192.168.0.2:</strong> outrohost aponta para IP .2</div>
+                    <div class="bullet-point"><strong>curso IN CNAME www:</strong> curso é um apelido para www</div>
+                </div>
+
+                <div class="warning-box">
+                    <h3>⚠️ Importante</h3>
+                    <p style="font-size: 1.2em;">
+                        <strong>Sempre incremente o serial ao modificar!</strong><br>
+                        Se você modificar um registro, mude:<br>
+                        2016043008 → 2016043009<br><br>
+                        Caso contrário, servidores secundários não verão a mudança!
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Validação (Passos 11-12) -->
+        <div class="slide">
+            <div class="content">
+                <h2>✅ Validação: Passos 11-12</h2>
+                
+                <div class="warning-box center-text">
+                    <h3>⚠️ Antes de Reiniciar, SEMPRE Valide!</h3>
+                    <p style="font-size: 1.3em;">
+                        Erros de sintaxe podem derrubar o DNS completamente.<br>
+                        Vamos testar antes!
+                    </p>
+                </div>
+
+                <div class="grid-steps">
+                    <div class="step-card">
+                        <div class="step-number">11</div>
+                        <h3>Validar Configuração</h3>
+                        <div class="command-example">
+named-checkconf
+                        </div>
+                        <p>Valida todos os arquivos<br>
+                        de configuração do BIND</p>
+                    </div>
+                    
+                    <div class="step-card">
+                        <div class="step-number">12</div>
+                        <h3>Validar Zona</h3>
+                        <div class="command-example">
+named-checkzone informatica.joaocamara /var/cache/bind/informatica.joaocamara.zone
+                        </div>
+                        <p>Valida o arquivo de zona<br>
+                        específico</p>
+                    </div>
+                </div>
+
+                <div class="two-column">
+                    <div class="success-box">
+                        <h3>✅ Passo 11: Saída Esperada</h3>
+                        <div class="terminal-box">
+info4@info4:~$ named-checkconf<br>
+info4@info4:~$_
+                        </div>
+                        <p><strong>Nenhuma mensagem = sucesso!</strong><br>
+                        Se não aparecer nada, está tudo OK!</p>
+                    </div>
+                    
+                    <div class="success-box">
+                        <h3>✅ Passo 12: Saída Esperada</h3>
+                        <div class="terminal-box">
+info4@info4:~$ named-checkzone informatica.joaocamara /var/cache/bind/informatica.joaocamara.zone<br>
+zone informatica.joaocamara/IN: loaded serial 2016043008<br>
+<span style="color: #00ff00;">OK</span><br>
+info4@info4:~$_
+                        </div>
+                        <p><strong>Mensagem "OK" = perfeito!</strong><br>
+                        A zona foi carregada com sucesso!</p>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h3>❌ Se Aparecer Erro</h3>
+                    <p style="font-size: 1.2em;">
+                        <strong>Erros comuns:</strong><br><br>
+                        • <strong>syntax error:</strong> Erro de digitação no arquivo<br>
+                        • <strong>missing semicolon:</strong> Faltou ponto e vírgula<br>
+                        • <strong>unknown RR type:</strong> Tipo de registro inválido<br>
+                        • <strong>bad owner name:</strong> Nome de domínio inválido<br><br>
+                        <strong>Solução:</strong> Revise o arquivo indicado na mensagem de erro!
+                    </p>
+                </div>
+
+                <div class="analogy-box">
+                    <h3>💡 Analogia</h3>
+                    <p style="font-size: 1.3em;">
+                        É como revisar um texto antes de publicar:<br>
+                        <strong>named-checkconf:</strong> Verifica se o índice está correto<br>
+                        <strong>named-checkzone:</strong> Verifica se o capítulo está bem escrito<br><br>
+                        Melhor corrigir antes de "publicar" (reiniciar o serviço)!
+                    </p>
+                </div>
+
+                <div class="important-note">
+                    <h3>🎯 Próximo Passo</h3>
+                    <p style="font-size: 1.2em;">
+                        Com tudo validado, agora vamos configurar o cliente<br>
+                        para usar nosso novo servidor DNS!
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 12: Configuração do Cliente (Passo 13) -->
+        <div class="slide">
+            <div class="content">
+                <h2>🖥️ Configuração do Cliente: Passo 13</h2>
+                
+                <div class="step-card">
+                    <div class="step-number">13</div>
+                    <h3>Configurar DNS no Linux</h3>
+                    <div class="command-example">
+sudo vim /etc/resolv.conf
+                    </div>
+                    <p>Informa ao sistema qual DNS usar</p>
+                </div>
+
+                <div class="info-box">
+                    <h3>📄 O que é resolv.conf?</h3>
+                    <p style="font-size: 1.2em;">
+                        É o arquivo que define quais servidores DNS<br>
+                        seu sistema Linux vai consultar.<br><br>
+                        Toda vez que você acessa um site,<br>
+                        o sistema consulta os servidores listados aqui!
+                    </p>
+                </div>
+
+                <div class="two-column">
+                    <div class="warning-box">
+                        <h4>❌ ANTES (exemplo)</h4>
+                        <div class="code-box">
+nameserver 8.8.8.8<br>
+nameserver 8.8.4.4
+                        </div>
+                        <p>Estava usando o DNS do Google</p>
+                    </div>
+                    
+                    <div class="success-box">
+                        <h4>✅ DEPOIS (nosso DNS)</h4>
+                        <div class="code-box">
+nameserver 192.168.0.1
+                        </div>
+                        <p>Agora usa nosso servidor local!</p>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>🔍 Entendendo a Configuração</h3>
+                    <div class="bullet-point"><strong>nameserver:</strong> Define um servidor DNS</div>
+                    <div class="bullet-point"><strong>192.168.0.1:</strong> IP do nosso servidor BIND</div>
+                    <div class="bullet-point">Pode ter múltiplos nameservers (backup)</div>
+                    <div class="bullet-point">Sistema tenta na ordem listada</div>
+                </div>
+
+                <div class="step-box">
+                    <h3>💡 Configuração Recomendada</h3>
+                    <div class="code-box">
+nameserver 192.168.0.1<br>
+nameserver 8.8.8.8
+                    </div>
+                    <p style="font-size: 1.2em;">
+                        <strong>Primeira linha:</strong> Nosso DNS local (mais rápido)<br>
+                        <strong>Segunda linha:</strong> DNS do Google (backup)<br><br>
+                        Se o nosso falhar, usa o Google automaticamente!
+                    </p>
+                </div>
+
+                <div class="analogy-box">
+                    <h3>💡 Analogia</h3>
+                    <p style="font-size: 1.3em;">
+                        É como programar o GPS do carro:<br>
+                        <strong>Antes:</strong> "Pergunte sempre ao GPS da Google"<br>
+                        <strong>Depois:</strong> "Pergunte ao meu GPS local primeiro"<br><br>
+                        Mais rápido porque está na sua própria rede!
+                    </p>
+                </div>
+
+                <div class="warning-box">
+                    <h3>⚠️ Observação</h3>
+                    <p style="font-size: 1.2em;">
+                        Em algumas distribuições Linux, o arquivo<br>
+                        <strong>/etc/resolv.conf</strong> é gerenciado automaticamente.<br><br>
+                        Se suas mudanças não persistirem após reiniciar,<br>
+                        você pode precisar configurar via NetworkManager<br>
+                        ou editar <strong>/etc/systemd/resolved.conf</strong>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 13: Reiniciar e Testar (Passos 14-16) -->
+        <div class="slide">
+            <div class="content">
+                <h2>🚀 Reiniciar e Testar: Passos 14-16</h2>
+                
+                <div class="step-card">
+                    <div class="step-number">14</div>
+                    <h3>Reiniciar o BIND9</h3>
+                    <div class="command-example">
+sudo systemctl restart bind9.service
+                    </div>
+                    <p>Aplica todas as configurações que fizemos</p>
+                </div>
+
+                <div class="success-box center-text">
+                    <h3>🎉 Servidor DNS Configurado!</h3>
+                    <p style="font-size: 1.3em;">
+                        Agora vamos testar do cliente Windows
+                    </p>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number">15</div>
+                    <h3>Abrir Prompt de Comando no Windows</h3>
+                    <p>Iniciar → Digite "cmd" → Prompt de Comando</p>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number">16</div>
+                    <h3>Testar com nslookup</h3>
+                    <p>Vamos verificar os 3 registros que criamos!</p>
+                </div>
+
+                <div class="terminal-box">
+                    <h3>✅ Teste 1: www.informatica.joaocamara</h3>
+C:\Users\info3&gt; nslookup www.informatica.joaocamara<br>
+Servidor:  UnKnown<br>
+Address:  192.168.0.1<br><br>
+Nome:    www.informatica.joaocamara<br>
+Address:  192.168.0.1
+                </div>
+
+                <div class="terminal-box">
+                    <h3>✅ Teste 2: outrohost.informatica.joaocamara</h3>
+C:\Users\info3&gt; nslookup outrohost.informatica.joaocamara<br>
+Servidor:  UnKnown<br>
+Address:  192.168.0.1<br><br>
+Nome:    outrohost.informatica.joaocamara<br>
+Address:  192.168.0.2
+                </div>
+
+                <div class="terminal-box">
+                    <h3>✅ Teste 3: curso.informatica.joaocamara</h3>
+C:\Users\info3&gt; nslookup curso.informatica.joaocamara<br>
+Servidor:  UnKnown<br>
+Address:  192.168.0.1<br><br>
+Nome:    www.informatica.joaocamara<br>
+Address:  192.168.0.1<br>
+Aliases:  curso.informatica.joaocamara
+                </div>
+
+                <div class="success-box">
+                    <h3>🎉 Todos os Registros Funcionando!</h3>
+                    <div class="bullet-point"><strong>www:</strong> Resolvido para 192.168.0.1 ✅</div>
+                    <div class="bullet-point"><strong>outrohost:</strong> Resolvido para 192.168.0.2 ✅</div>
+                    <div class="bullet-point"><strong>curso:</strong> Alias (CNAME) para www ✅</div>
+                </div>
+
+                <div class="analogy-box">
+                    <h3>💡 O que Acabou de Acontecer?</h3>
+                    <p style="font-size: 1.3em;">
+                        <strong>1.</strong> Você perguntou: "Qual o IP desse nome?"<br>
+                        <strong>2.</strong> Windows consultou o servidor 192.168.0.1<br>
+                        <strong>3.</strong> Nosso BIND procurou no arquivo .zone<br>
+                        <strong>4.</strong> BIND respondeu com o IP correto!<br><br>
+                        Nosso DNS está funcionando perfeitamente! 🚀
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 14: Configurar Navegador (Passos 17-19) -->
+        <div class="slide">
+            <div class="content">
+                <h2>🌐 Configurar Navegador: Passos 17-19</h2>
+                
+                <div class="warning-box center-text">
+                    <h3>⚠️ Ajuste de Segurança Necessário</h3>
+                    <p style="font-size: 1.3em;">
+                        Para acessar sites locais (sem certificado SSL),<br>
+                        precisamos ajustar as configurações do Edge
+                    </p>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number">17</div>
+                    <h3>Abrir Opções da Internet</h3>
+                    <p>Menu Iniciar → Digite "Opções da Internet" → Clique no ícone</p>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number">18</div>
+                    <h3>Clicar na Aba Segurança</h3>
+                    <p>Na janela que abrir, clique na aba "Segurança"</p>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number">19</div>
+                    <h3>Ajustar Nível de Segurança</h3>
+                    <p>Selecione a zona "Internet" e mova o controle para <strong>Médio</strong><br>
+                    Clique em OK para salvar</p>
+                </div>
+
+                <div class="info-box">
+                    <h3>🔍 Por que Fazer Isso?</h3>
+                    <p style="font-size: 1.2em;">
+                        Sites locais geralmente não têm certificado SSL (HTTPS)<br>
+                        O nível de segurança "Alto" bloqueia o acesso<br>
+                        O nível "Médio" permite acessar sites HTTP locais<br><br>
+                        <strong>Nota:</strong> Isso só afeta a máquina virtual de testes!
+                    </p>
+                </div>
+
+                <div class="warning-box">
+                    <h3>⚠️ Importante</h3>
+                    <p style="font-size: 1.2em;">
+                        Esta configuração é apenas para <strong>ambiente de testes</strong>!<br><br>
+                        Em produção, você deve:<br>
+                        • Usar certificados SSL válidos<br>
+                        • Configurar HTTPS corretamente<br>
+                        • Manter a segurança em nível alto
+                    </p>
+                </div>
+
+                <div class="analogy-box">
+                    <h3>💡 Analogia</h3>
+                    <p style="font-size: 1.3em;">
+                        É como ajustar o nível de segurança de uma porta:<br>
+                        <strong>Alto:</strong> Só entra quem tem chave especial (SSL)<br>
+                        <strong>Médio:</strong> Permite visitantes conhecidos (rede local)<br><br>
+                        Para nossos testes locais, o nível médio é suficiente!
+                    </p>
+                </div>
+
+                <div class="important-note">
+                    <h3>🎯 Próximo Passo</h3>
+                    <p style="font-size: 1.2em;">
+                        Com tudo configurado, vamos finalmente<br>
+                        acessar nosso site no navegador!
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 15: Teste Final (Passo 20) -->
+        <div class="slide">
+            <div class="content">
+                <h2>🎉 Teste Final: Passo 20</h2>
+                
+                <div class="step-card center-text">
+                    <div class="step-number">20</div>
+                    <h3>Acessar o Site no Navegador</h3>
+                    <p style="font-size: 1.3em;">
+                        No Windows, abra o navegador e digite:<br>
+                        <strong style="font-size: 1.5em; color: #667eea;">
+                            http://www.informatica.joaocamara
+                        </strong>
+                    </p>
+                </div>
+
+                <div class="success-box center-text" style="margin: 40px 0;">
+                    <h3 style="font-size: 2.5em;">🎊 SUCESSO! 🎊</h3>
+                    <p style="font-size: 1.5em;">
+                        Se você ver a página web,<br>
+                        <strong>SEU SERVIDOR DNS ESTÁ FUNCIONANDO!</strong>
+                    </p>
+                </div>
+
+                <div class="highlight-box">
+                    <h3>✅ O que Você Acabou de Construir</h3>
+                    <div class="bullet-point">Um servidor DNS completo e funcional</div>
+                    <div class="bullet-point">Zona DNS personalizada (informatica.joaocamara)</div>
+                    <div class="bullet-point">Registros A para resolução de nomes</div>
+                    <div class="bullet-point">Registro CNAME para criar apelidos</div>
+                    <div class="bullet-point">Sistema que traduz nomes em IPs automaticamente!</div>
+                </div>
+
+                <div class="two-column">
+                    <div class="example-box">
+                        <h4>🌐 Domínios que Funcionam</h4>
+                        <p style="font-size: 1.2em;">
+                            <strong>http://www.informatica.joaocamara</strong><br>
+                            → Acessa 192.168.0.1<br><br>
+                            <strong>http://curso.informatica.joaocamara</strong><br>
+                            → Também acessa 192.168.0.1 (CNAME)<br><br>
+                            <strong>http://outrohost.informatica.joaocamara</strong><br>
+                            → Acessa 192.168.0.2
+                        </p>
+                    </div>
+                    
+                    <div class="info-box">
+                        <h4>🔄 O Processo Completo</h4>
+                        <p style="font-size: 1.2em;">
+                            <strong>1.</strong> Você digita o nome no navegador<br>
+                            <strong>2.</strong> Windows consulta 192.168.0.1 (DNS)<br>
+                            <strong>3.</strong> BIND procura na zona .zone<br>
+                            <strong>4.</strong> BIND retorna o IP<br>
+                            <strong>5.</strong> Navegador conecta ao IP<br>
+                            <strong>6.</strong> Apache serve a página!
+                        </p>
+                    </div>
+                </div>
+
+                <div class="analogy-box">
+                    <h3>🎓 Parabéns!</h3>
+                    <p style="font-size: 1.4em;">
+                        Você construiu um dos <strong>pilares fundamentais da internet</strong>!<br><br>
+                        O DNS é essencial para que a web funcione.<br>
+                        Sem ele, teríamos que decorar bilhões de endereços IP!<br><br>
+                        Agora você entende como sites como <strong>google.com</strong><br>
+                        são encontrados na internet! 🚀
+                    </p>
+                </div>
+
+                <div class="warning-box">
+                    <h3>💡 Dica Extra</h3>
+                    <p style="font-size: 1.2em;">
+                        Você pode adicionar quantos registros quiser!<br>
+                        Basta editar o arquivo <strong>.zone</strong>,<br>
+                        incrementar o <strong>serial</strong>,<br>
+                        validar com <strong>named-checkzone</strong>,<br>
+                        e reiniciar o serviço!
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 16: Comandos Úteis e Troubleshooting -->
+        <div class="slide">
+            <div class="content">
+                <h2>🛠️ Comandos Úteis e Troubleshooting</h2>
+                
+                <div class="two-column">
+                    <div>
+                        <h3>🔧 Controle do BIND9</h3>
+                        <div class="terminal-box">
+# Iniciar serviço<br>
+sudo systemctl start bind9<br><br>
+# Parar serviço<br>
+sudo systemctl stop bind9<br><br>
+# Reiniciar serviço<br>
+sudo systemctl restart bind9<br><br>
+# Ver status<br>
+systemctl status bind9<br><br>
+# Recarregar (sem parar)<br>
+sudo systemctl reload bind9
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🔍 Diagnóstico</h3>
+                        <div class="terminal-box">
+# Validar configuração<br>
+named-checkconf<br><br>
+# Validar zona<br>
+named-checkzone nome arquivo<br><br>
+# Ver logs<br>
+tail -f /var/log/syslog | grep named<br><br>
+# Testar consulta<br>
+nslookup dominio<br>
+dig dominio<br><br>
+# Limpar cache DNS<br>
+sudo systemd-resolve --flush-caches
+                        </div>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h3>❌ Problemas Comuns</h3>
+                    <div class="bullet-point"><strong>Erro de sintaxe:</strong> Use named-checkconf e named-checkzone</div>
+                    <div class="bullet-point"><strong>Porta 53 ocupada:</strong> Outro processo usando a porta</div>
+                    <div class="bullet-point"><strong>Permissões negadas:</strong> Verifique proprietário dos arquivos</div>
+                    <div class="bullet-point"><strong>Não resolve nomes:</strong> Verifique /etc/resolv.conf</div>
+                    <div class="bullet-point"><strong>Serial não incrementado:</strong> Mudanças não são aplicadas</div>
+                </div>
+
+                <div class="step-box">
+                    <h3>📂 Arquivos Importantes</h3>
+                    <div class="bullet-point"><strong>/etc/bind/named.conf:</strong> Configuração principal</div>
+                    <div class="bullet-point"><strong>/etc/bind/named.conf.options:</strong> Opções do servidor</div>
+                    <div class="bullet-point"><strong>/etc/bind/named.conf.my-zones:</strong> Suas zonas</div>
+                    <div class="bullet-point"><strong>/var/cache/bind/*.zone:</strong> Arquivos de zona</div>
+                    <div class="bullet-point"><strong>/etc/resolv.conf:</strong> DNS do cliente</div>
+                    <div class="bullet-point"><strong>/var/log/syslog:</strong> Logs do sistema</div>
+                </div>
+
+                <div class="example-box">
+                    <h3>💡 Dicas Finais</h3>
+                    <div class="bullet-point">Sempre incremente o serial ao modificar zonas</div>
+                    <div class="bullet-point">Use TTL adequado (3600s = 1 hora é bom para testes)</div>
+                    <div class="bullet-point">Valide SEMPRE antes de reiniciar o serviço</div>
+                    <div class="bullet-point">Mantenha backups dos arquivos de zona</div>
+                    <div class="bullet-point">Monitore os logs regularmente</div>
+                    <div class="bullet-point">Documente suas configurações</div>
+                </div>
+
+                <div class="highlight-box center-text">
+                    <h3>🎓 Você Dominou o DNS!</h3>
+                    <p style="font-size: 1.3em;">
+                        Agora você sabe como configurar um servidor DNS do zero!<br>
+                        Continue praticando e explorando! 🚀
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 17: Quiz Interativo -->
+        <div class="slide">
+            <div class="content">
+                <h2>🎯 Quiz Interativo sobre DNS</h2>
+                
+                <div class="quiz-container">
+                    <div class="highlight-box center-text">
+                        <h3>🧠 Teste Seus Conhecimentos!</h3>
+                        <p style="font-size: 1.3em;">
+                            5 questões para avaliar o que você aprendeu
+                        </p>
+                    </div>
+
+                    <div id="quiz-questions">
+                        <!-- As questões serão inseridas aqui pelo JavaScript -->
+                    </div>
+
+                    <div class="quiz-buttons">
+                        <button class="quiz-btn" id="check-btn" onclick="checkAnswers()" disabled>
+                            Verificar Respostas
+                        </button>
+                        <button class="quiz-btn" id="retry-btn" onclick="resetQuiz()" style="display:none;">
+                            Refazer Quiz
+                        </button>
+                    </div>
+
+                    <div id="quiz-result" style="display:none;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">⬅️ Anterior</button>
+            <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Próximo ➡️</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('total-slides').textContent = totalSlides;
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.classList.toggle('active', i === index);
+            });
+            
+            document.getElementById('current-slide').textContent = index + 1;
+            document.getElementById('prevBtn').disabled = index === 0;
+            document.getElementById('nextBtn').disabled = index === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            const newSlide = currentSlide + direction;
+            if (newSlide >= 0 && newSlide < totalSlides) {
+                currentSlide = newSlide;
+                showSlide(currentSlide);
+            }
+        }
+
+        // Navegação por teclado
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+            if (e.key === 'Home') {
+                currentSlide = 0;
+                showSlide(currentSlide);
+            }
+            if (e.key === 'End') {
+                currentSlide = totalSlides - 1;
+                showSlide(currentSlide);
+            }
+        });
+
+        // Quiz
+        const quizData = [
+            {
+                question: "Qual é a principal função do DNS?",
+                options: [
+                    "Criptografar dados na internet",
+                    "Traduzir nomes de domínio em endereços IP",
+                    "Armazenar páginas web em cache",
+                    "Proteger contra ataques DDoS"
+                ],
+                correct: 1
+            },
+            {
+                question: "O que significa BIND?",
+                options: [
+                    "Basic Internet Name Directory",
+                    "Berkeley Internet Name Domain",
+                    "Browser Integrated Network Database",
+                    "Binary Internet Navigation Domain"
+                ],
+                correct: 1
+            },
+            {
+                question: "Qual comando valida a configuração do BIND antes de reiniciar o serviço?",
+                options: [
+                    "bind-check",
+                    "dns-validate",
+                    "named-checkconf",
+                    "systemctl validate bind9"
+                ],
+                correct: 2
+            },
+            {
+                question: "O que é um registro CNAME?",
+                options: [
+                    "Define o servidor de email do domínio",
+                    "Cria um apelido (alias) para outro domínio",
+                    "Especifica o endereço IPv6",
+                    "Armazena informações de certificado SSL"
+                ],
+                correct: 1
+            },
+            {
+                question: "Por que é importante incrementar o serial no arquivo de zona?",
+                options: [
+                    "Para aumentar a velocidade do DNS",
+                    "Para melhorar a segurança",
+                    "Para que servidores secundários detectem as mudanças",
+                    "Para permitir mais registros na zona"
+                ],
+                correct: 2
+            }
+        ];
+
+        let userAnswers = [];
+        let quizCompleted = false;
+
+        // Função para embaralhar array (Fisher-Yates)
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        function initQuiz() {
+            const container = document.getElementById('quiz-questions');
+            container.innerHTML = '';
+            userAnswers = new Array(quizData.length).fill(null);
+
+            quizData.forEach((q, qIndex) => {
+                const questionBox = document.createElement('div');
+                questionBox.className = 'question-box';
+                
+                const questionText = document.createElement('div');
+                questionText.className = 'question-text';
+                questionText.textContent = `${qIndex + 1}. ${q.question}`;
+                questionBox.appendChild(questionText);
+
+                const optionsContainer = document.createElement('div');
+                optionsContainer.className = 'options';
+
+                // Criar array de opções com seus índices originais
+                const optionsWithIndex = q.options.map((opt, idx) => ({ text: opt, originalIndex: idx }));
+                
+                // Embaralhar as opções
+                const shuffledOptions = shuffleArray(optionsWithIndex);
+
+                shuffledOptions.forEach((optObj, optIndex) => {
+                    const option = document.createElement('div');
+                    option.className = 'option';
+                    option.textContent = optObj.text;
+                    option.dataset.questionIndex = qIndex;
+                    option.dataset.originalIndex = optObj.originalIndex;
+                    
+                    option.addEventListener('click', function() {
+                        if (!quizCompleted) {
+                            // Remover seleção anterior
+                            const siblings = this.parentElement.children;
+                            for (let sibling of siblings) {
+                                sibling.classList.remove('selected');
+                            }
+                            
+                            // Adicionar seleção atual
+                            this.classList.add('selected');
+                            userAnswers[qIndex] = parseInt(this.dataset.originalIndex);
+                            
+                            // Habilitar botão de verificar se todas as perguntas foram respondidas
+                            if (userAnswers.every(a => a !== null)) {
+                                document.getElementById('check-btn').disabled = false;
+                            }
+                        }
+                    });
+                    
+                    optionsContainer.appendChild(option);
+                });
+
+                questionBox.appendChild(optionsContainer);
+                container.appendChild(questionBox);
+            });
+        }
+
+        function checkAnswers() {
+            quizCompleted = true;
+            let score = 0;
+
+            quizData.forEach((q, qIndex) => {
+                const options = document.querySelectorAll(`[data-question-index="${qIndex}"]`);
+                options.forEach(option => {
+                    const originalIndex = parseInt(option.dataset.originalIndex);
+                    
+                    if (originalIndex === q.correct) {
+                        option.classList.add('correct');
+                    }
+                    
+                    if (userAnswers[qIndex] === originalIndex) {
+                        if (originalIndex === q.correct) {
+                            score++;
+                        } else {
+                            option.classList.add('incorrect');
+                        }
+                    }
+                    
+                    option.style.pointerEvents = 'none';
+                });
+            });
+
+            const percentage = (score / quizData.length) * 100;
+            const resultDiv = document.getElementById('quiz-result');
+            resultDiv.style.display = 'block';
+            
+            let message = '';
+            let emoji = '';
+            
+            if (percentage === 100) {
+                message = 'Perfeito! Você dominou o DNS!';
+                emoji = '🏆';
+            } else if (percentage >= 80) {
+                message = 'Muito bem! Você entendeu o conteúdo!';
+                emoji = '🎉';
+            } else if (percentage >= 60) {
+                message = 'Bom trabalho! Revise alguns conceitos.';
+                emoji = '👍';
+            } else {
+                message = 'Continue estudando! Você vai conseguir!';
+                emoji = '📚';
+            }
+            
+            resultDiv.innerHTML = `
+                <div class="quiz-result">
+                    ${emoji}<br>
+                    <strong>Sua pontuação: ${score}/${quizData.length}</strong><br>
+                    ${percentage.toFixed(0)}%<br>
+                    ${message}
+                </div>
+            `;
+            
+            document.getElementById('check-btn').style.display = 'none';
+            document.getElementById('retry-btn').style.display = 'inline-block';
+        }
+
+        function resetQuiz() {
+            quizCompleted = false;
+            document.getElementById('quiz-result').style.display = 'none';
+            document.getElementById('check-btn').style.display = 'inline-block';
+            document.getElementById('check-btn').disabled = true;
+            document.getElementById('retry-btn').style.display = 'none';
+            initQuiz();
+        }
+
+        // Inicializar
+        showSlide(0);
+        initQuiz();
+    </script>
+</body>
+</html>
