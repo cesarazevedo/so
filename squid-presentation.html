@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Servidor Proxy SQUID</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .presentation {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide {
+            min-height: 100vh;
+            padding: 60px 40px;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            background: white;
+            margin: 20px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        .slide h1 {
+            font-size: 3.5em;
+            color: #4a5568;
+            text-align: center;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .slide h2 {
+            font-size: 2.8em;
+            color: #2d3748;
+            margin-bottom: 30px;
+            border-bottom: 4px solid #667eea;
+            padding-bottom: 15px;
+        }
+
+        .slide h3 {
+            font-size: 2.2em;
+            color: #4a5568;
+            margin: 25px 0 15px 0;
+        }
+
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        .bullet-point {
+            display: flex;
+            align-items: flex-start;
+            margin: 15px 0;
+            font-size: 1.3em;
+            line-height: 1.5;
+        }
+
+        .bullet-point::before {
+            content: "🔐";
+            margin-right: 15px;
+            font-size: 1.2em;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #4c51bf;
+        }
+
+        .example-box {
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #2c5aa0;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #c53030;
+        }
+
+        .step-box {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #2f855a;
+        }
+
+        .terminal-box {
+            background: #2d3748;
+            color: #00ff00;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #00ff00;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+        }
+
+        .code-box {
+            background: #2d3748;
+            color: #ffd700;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #ffd700;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            padding: 15px 25px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .nav-btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .nav-btn:disabled {
+            background: #a0a0a0;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(255,255,255,0.9);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #4a5568;
+            z-index: 1000;
+        }
+
+        .center-text {
+            text-align: center;
+        }
+
+        .large-text {
+            font-size: 1.4em;
+            line-height: 1.6;
+        }
+
+        .command-example {
+            background: #2d3748;
+            color: #00ff41;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            border-left: 4px solid #00ff41;
+        }
+
+        .step-number {
+            background: #667eea;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin: 0 auto 20px;
+        }
+
+        .grid-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 20px 0;
+        }
+
+        .step-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid #e2e8f0;
+            text-align: center;
+        }
+
+        .analogy-box {
+            background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #c05621;
+        }
+
+        .important-note {
+            background: #fff5f5;
+            border: 2px solid #fc8181;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #742a2a;
+        }
+
+        .success-box {
+            background: #f0fff4;
+            border: 2px solid #68d391;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #22543d;
+        }
+
+        .info-box {
+            background: #e6fffa;
+            border: 2px solid #4fd1c5;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #234e52;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">12</span>
+        </div>
+
+        <!-- Slide 1: Título -->
+        <div class="slide active">
+            <div class="content center-text">
+                <h1>🔐 Servidor Proxy SQUID</h1>
+                <h2 style="border: none; color: #667eea;">Controle e Monitoramento de Acesso à Internet</h2>
+                <div class="highlight-box large-text">
+                    <strong>Tutorial Prático Passo a Passo</strong><br>
+                    Instalar e configurar o SQUID Proxy Server<br>
+                    Controlar e filtrar o acesso à Internet
+                </div>
+                
+                <div class="example-box" style="margin-top: 40px;">
+                    <h3>🎯 Objetivos da Aula</h3>
+                    <p style="font-size: 1.3em; margin: 10px 0;">
+                        <strong>✅ Compreender a utilidade de um servidor Proxy</strong><br>
+                        <strong>⚙️ Instalar e configurar o SQUID</strong><br>
+                        Criar regras de controle de acesso
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: O que é um Servidor Proxy -->
+        <div class="slide">
+            <div class="content">
+                <h2>🤔 O que é um Servidor Proxy?</h2>
+                
+                <div class="analogy-box center-text">
+                    <h3>🚪 Analogia Simples</h3>
+                    <p style="font-size: 1.3em;">
+                        Um servidor proxy é como um porteiro de um prédio!<br>
+                        Toda pessoa que quer entrar ou sair passa por ele primeiro.<br>
+                        Ele verifica identidades, anota quem passa e pode bloquear pessoas indesejadas!
+                    </p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🌍 Como Funciona</h3>
+                        <div class="bullet-point">Você faz uma requisição à Internet</div>
+                        <div class="bullet-point">A requisição passa pelo proxy</div>
+                        <div class="bullet-point">Proxy verifica se é permitido</div>
+                        <div class="bullet-point">Se permitido, busca o conteúdo</div>
+                        <div class="bullet-point">Entrega o conteúdo para você</div>
+                        
+                        <div class="example-box">
+                            <h4>📱 Exemplo do Dia a Dia</h4>
+                            <p>Você tenta acessar facebook.com<br>
+                            O proxy verifica se está bloqueado<br>
+                            Se sim, bloqueia o acesso<br>
+                            Se não, permite e registra o acesso!</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🔥 Por que SQUID?</h3>
+                        <div class="bullet-point">Proxy mais popular do mundo</div>
+                        <div class="bullet-point">Gratuito e código aberto</div>
+                        <div class="bullet-point">Muito estável e rápido</div>
+                        <div class="bullet-point">Cache de páginas</div>
+                        <div class="bullet-point">Controle de acesso avançado</div>
+                        
+                        <div class="step-box">
+                            <h4>💡 Curiosidade</h4>
+                            <p>SQUID vem de "Internet Object Cache"<br>
+                            É usado por grandes empresas e provedores<br>
+                            Pode economizar muita banda de Internet!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <h3>🎯 Principais Usos do Proxy</h3>
+                    <div class="bullet-point">Privacidade - oculta seu IP real</div>
+                    <div class="bullet-point">Segurança - filtra conteúdo malicioso</div>
+                    <div class="bullet-point">Cache - acelera acesso repetido</div>
+                    <div class="bullet-point">Controle - bloqueia sites indesejados</div>
+                    <div class="bullet-point">Monitoramento - registra todos os acessos</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Vantagens e Funcionalidades -->
+        <div class="slide">
+            <div class="content">
+                <h2>⭐ Vantagens e Funcionalidades</h2>
+                
+                <div class="two-column">
+                    <div>
+                        <h3>🛡️ Segurança e Controle</h3>
+                        <div class="bullet-point">Bloquear sites inadequados</div>
+                        <div class="bullet-point">Filtrar conteúdo malicioso</div>
+                        <div class="bullet-point">Controlar horários de acesso</div>
+                        <div class="bullet-point">Monitorar atividades</div>
+                        
+                        <div class="example-box">
+                            <h4>🏢 Exemplo Empresarial</h4>
+                            <p>Uma escola pode:<br>
+                            • Bloquear redes sociais<br>
+                            • Permitir apenas sites educacionais<br>
+                            • Registrar todos os acessos<br>
+                            • Economizar banda de Internet</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>⚡ Performance e Economia</h3>
+                        <div class="bullet-point">Cache de páginas frequentes</div>
+                        <div class="bullet-point">Economia de banda</div>
+                        <div class="bullet-point">Acesso mais rápido</div>
+                        <div class="bullet-point">Controle de largura de banda</div>
+                        
+                        <div class="step-box">
+                            <h4>💰 Economia Real</h4>
+                            <p>Com cache eficiente:<br>
+                            • 30-50% menos tráfego externo<br>
+                            • Páginas carregam mais rápido<br>
+                            • Menos custos com link de Internet</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="analogy-box center-text">
+                    <h3>📚 Analogia do Cache</h3>
+                    <p style="font-size: 1.3em;">
+                        Imagine uma biblioteca (proxy) com fotocópias de livros populares!<br>
+                        Quando alguém pede um livro já copiado, a biblioteca entrega a cópia rapidamente.<br>
+                        Não precisa ir buscar o livro original toda vez!<br>
+                        Isso economiza tempo e recursos!
+                    </p>
+                </div>
+
+                <div class="success-box">
+                    <h3>✅ O que vamos aprender?</h3>
+                    <div class="bullet-point">Instalar o SQUID no Ubuntu</div>
+                    <div class="bullet-point">Configurar regras de acesso (ACLs)</div>
+                    <div class="bullet-point">Bloquear sites específicos</div>
+                    <div class="bullet-point">Configurar clientes Windows</div>
+                    <div class="bullet-point">Monitorar e controlar o serviço</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Preparação (Passos 1-2) -->
+        <div class="slide">
+            <div class="content">
+                <h2>🚀 Preparação: Passos 1-2</h2>
+                
+                <div class="step-box center-text">
+                    <h3>📋 Antes de Começar</h3>
+                    <p>Vamos preparar o ambiente para instalar o SQUID</p>
+                </div>
+
+                <div class="grid-steps">
+                    <div class="step-card">
+                        <div class="step-number">1</div>
+                        <h3>Desativar Interface</h3>
+                        <p>Desabilite temporariamente a <strong>Placa de Rede 2</strong> no VirtualBox</p>
+                        <div class="warning-box">
+                            <p>⚠️ Mesmo procedimento das aulas anteriores!<br>
+                            Clique com botão direito no ícone de rede e<br>
+                            desmarque a segunda conexão.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step-card">
+                        <div class="step-number">2</div>
+                        <h3>Atualizar Sistema</h3>
+                        <div class="command-example">
+sudo apt-get update
+                        </div>
+                        <p>Atualiza a lista de pacotes disponíveis</p>
+                    </div>
+                </div>
+
+                <div class="terminal-box">
+                    <h3>✅ Resultado Esperado</h3>
+info4@info4:~$ sudo apt-get update<br>
+Hit:1 http://br.archive.ubuntu.com/ubuntu focal InRelease<br>
+Get:2 http://br.archive.ubuntu.com/ubuntu focal-updates InRelease<br>
+Get:3 http://br.archive.ubuntu.com/ubuntu focal-backports InRelease<br>
+Get:4 http://br.archive.ubuntu.com/ubuntu focal-security InRelease<br>
+Lendo listas de pacotes... Pronto
+                </div>
+
+                <div class="analogy-box center-text">
+                    <h3>💡 Analogia</h3>
+                    <p>É como verificar o catálogo da loja antes de comprar:<br>
+                    garantimos que temos a lista mais recente de produtos disponíveis!</p>
+                </div>
+
+                <div class="important-note">
+                    <h3>🎯 Próximo Passo</h3>
+                    <p>Com o sistema atualizado, agora vamos instalar o SQUID!<br>
+                    É um processo simples e rápido.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Instalação (Passos 3-4) -->
+        <div class="slide">
+            <div class="content">
+                <h2>📦 Instalação: Passos 3-4</h2>
+                
+                <div class="grid-steps">
+                    <div class="step-card">
+                        <div class="step-number">3</div>
+                        <h3>Instalar SQUID</h3>
+                        <div class="command-example">
+sudo apt-get install squid
+                        </div>
+                        <p>Pressione <strong>S</strong> quando perguntado<br>
+                        Aguarde a conclusão da instalação</p>
+                    </div>
+                    
+                    <div class="step-card">
+                        <div class="step-number">4</div>
+                        <h3>Reativar Interface</h3>
+                        <p>Reative a <strong>Placa de Rede 2</strong> no VirtualBox</p>
+                        <p style="margin-top: 15px;">Clique com botão direito no ícone de rede e<br>
+                        marque <strong>Conectar Placa de Rede 2</strong></p>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>📋 O que é instalado?</h3>
+                    <div class="bullet-point">Servidor SQUID Proxy</div>
+                    <div class="bullet-point">Bibliotecas necessárias</div>
+                    <div class="bullet-point">Arquivos de configuração</div>
+                    <div class="bullet-point">Serviços automáticos</div>
+                    <div class="bullet-point">Sistema de cache</div>
+                </div>
+
+                <div class="terminal-box">
+                    <h3>✅ Mensagens Finais da Instalação</h3>
+Processing triggers for systemd (245.4-4ubuntu3.17) ...<br>
+Processing triggers for man-db (2.9.1-1) ...<br>
+Processing triggers for libc-bin (2.31-0ubuntu9.9) ...<br>
+Created symlink /etc/systemd/system/multi-user.target.wants/squid.service<br>
+→ /lib/systemd/system/squid.service
+                </div>
+
+                <div class="success-box center-text">
+                    <h3>🎉 SQUID Instalado!</h3>
+                    <p>O servidor proxy já está instalado e será iniciado automaticamente!<br>
+                    Agora vamos verificar se está funcionando.</p>
+                </div>
+
+                <div class="analogy-box center-text">
+                    <h3>💡 Analogia</h3>
+                    <p>É como contratar um porteiro para seu prédio:<br>
+                    ele já está no posto, agora vamos dar as instruções de quem pode entrar!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Verificando o Serviço (Passo 5) -->
+        <div class="slide">
+            <div class="content">
+                <h2>✅ Verificando o Serviço: Passo 5</h2>
+                
+                <div class="step-card">
+                    <div class="step-number">5</div>
+                    <h3>Verificar Status do SQUID</h3>
+                    <div class="command-example">
+sudo systemctl status squid
+                    </div>
+                    <p>Verifica se o SQUID está sendo executado</p>
+                </div>
+
+                <div class="terminal-box">
+                    <h3>✅ Resultado Esperado</h3>
+● squid.service - Squid Web Proxy Server<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Loaded: loaded (/lib/systemd/system/squid.service; enabled; vendor preset: enabled)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Active: <span style="color: #00ff00;">active (running)</span> since Mon 2024-01-15 10:30:45 -03; 2min 15s ago<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Docs: man:squid(8)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Main PID: 12345 (squid)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Tasks: 3 (limit: 4915)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Memory: 15.2M<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CGroup: /system.slice/squid.service<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─12345 /usr/sbin/squid --foreground -sYC<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─12347 (squid-1) --kid squid-1 --foreground -sYC<br><br>
+<span style="color: #ffff00;">Pressione 'q' para sair</span>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🔍 Entendendo o Status</h3>
+                        <div class="bullet-point"><strong>Active (running):</strong> Serviço funcionando</div>
+                        <div class="bullet-point"><strong>Enabled:</strong> Inicia com o sistema</div>
+                        <div class="bullet-point"><strong>Main PID:</strong> Número do processo</div>
+                        <div class="bullet-point"><strong>Memory:</strong> Memória usada</div>
+                    </div>
+                    <div>
+                        <h3>⚠️ Se Estiver Inativo</h3>
+                        <div class="warning-box">
+                            <p>Se aparecer <strong>"inactive (dead)"</strong>,<br>
+                            o serviço não iniciou automaticamente.<br><br>
+                            <strong>Inicie manualmente com:</strong></p>
+                        </div>
+                        <div class="command-example">
+sudo systemctl start squid
+                        </div>
+                        <div class="step-box">
+                            <p>Depois verifique novamente:<br>
+                            <strong>sudo systemctl status squid</strong></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="success-box">
+                    <h3>✅ SQUID Funcionando!</h3>
+                    <p>Se você vê "active (running)", tudo está certo!<br>
+                    Agora vamos configurar as rotas de rede.</p>
+                </div>
+
+                <div class="analogy-box center-text">
+                    <h3>💡 Analogia</h3>
+                    <p>É como verificar se o porteiro está no posto de trabalho:<br>
+                    se estiver "active", ele está lá pronto para controlar quem entra e sai!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Configuração de Rotas (Passo 6) -->
+        <div class="slide">
+            <div class="content">
+                <h2>🔀 Configuração de Rotas: Passo 6</h2>
+                
+                <div class="step-card">
+                    <div class="step-number">6</div>
+                    <h3>Alterar Rota Padrão para Internet</h3>
+                    <div class="command-example">
+sudo ip route del default<br>
+sudo ip route add default via 10.0.2.2
+                    </div>
+                </div>
+
+                <div class="analogy-box center-text">
+                    <h3>🛣️ Analogia das Rodovias</h3>
+                    <p style="font-size: 1.3em;">
+                        É como mudar a rodovia principal da cidade!<br>
+                        Antes: tráfego ia pela estrada local (enp0s8)<br>
+                        Agora: tráfego vai pela rodovia expressa (enp0s3)<br>
+                        Isso garante que a Internet funcione corretamente!
+                    </p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🔍 Entendendo os Comandos</h3>
+                        <div class="bullet-point"><strong>ip route del default:</strong> Remove rota padrão atual</div>
+                        <div class="bullet-point"><strong>ip route add default:</strong> Adiciona nova rota</div>
+                        <div class="bullet-point"><strong>via 10.0.2.2:</strong> Gateway (portão de saída)</div>
+                        
+                        <div class="example-box">
+                            <h4>🌐 Por que fazer isso?</h4>
+                            <p>O Ubuntu estava direcionando<br>
+                            o tráfego para enp0s8 (rede interna)<br><br>
+                            Precisamos direcionar para enp0s3<br>
+                            (que tem acesso à Internet real)</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>📡 Estrutura de Rede</h3>
+                        <div class="terminal-box">
+<strong>enp0s3:</strong> NAT (Internet)<br>
+└─ 10.0.2.15/24<br>
+└─ Gateway: 10.0.2.2<br>
+└─ ✅ Tem acesso à Internet<br><br>
+<strong>enp0s8:</strong> Rede Interna<br>
+└─ 192.168.0.1/24<br>
+└─ ❌ Sem acesso direto à Internet<br>
+└─ Conecta clientes Windows
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <h3>💡 Como Funciona o Fluxo</h3>
+                    <p><strong>1.</strong> Cliente Windows faz requisição → enp0s8 (192.168.0.1)<br>
+                    <strong>2.</strong> SQUID recebe e processa a requisição<br>
+                    <strong>3.</strong> SQUID busca na Internet via enp0s3 (10.0.2.15)<br>
+                    <strong>4.</strong> Gateway 10.0.2.2 encaminha para Internet real<br>
+                    <strong>5.</strong> Resposta volta pelo mesmo caminho</p>
+                </div>
+
+                <div class="success-box">
+                    <h3>✅ Rota Configurada!</h3>
+                    <p>Agora o servidor tem acesso correto à Internet!<br>
+                    Próximo passo: configurar as regras do SQUID.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Arquivo de Configuração (Passos 7-8) -->
+        <div class="slide">
+            <div class="content">
+                <h2>⚙️ Configuração do SQUID: Passos 7-8</h2>
+                
+                <div class="step-card">
+                    <div class="step-number">7</div>
+                    <h3>Abrir Arquivo de Configuração</h3>
+                    <div class="command-example">
+sudo vim /etc/squid/squid.conf
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number">8</div>
+                    <h3>Localizar Seção de ACLs</h3>
+                    <div class="command-example">
+No vim, pressione: /<br>
+Digite: INSERT YOUR<br>
+Pressione: ENTER
+                    </div>
+                    <p>Isso leva você direto para a seção de regras</p>
+                </div>
+
+                <div class="warning-box">
+                    <h3>⚠️ Sobre o Arquivo squid.conf</h3>
+                    <p>• É um arquivo MUITO LONGO (milhares de linhas)<br>
+                    • Maioria das linhas começa com # (comentários)<br>
+                    • Não precisa ler tudo, só a parte que vamos editar<br>
+                    • Use a busca (/) para encontrar a seção correta</p>
+                </div>
+
+                <div class="analogy-box center-text">
+                    <h3>📚 Analogia</h3>
+                    <p>O arquivo squid.conf é como um manual gigante de instruções!<br>
+                    A maioria das páginas são explicações (comentários com #)<br>
+                    Vamos direto ao capítulo que nos interessa:<br>
+                    <strong>"INSERT YOUR OWN RULE(S) HERE"</strong></p>
+                </div>
+
+                <div class="terminal-box">
+                    <h3>📍 Seção que Vamos Encontrar</h3>
+# INSERT YOUR OWN RULE(S) HERE TO ALLOW ACCESS FROM YOUR CLIENTS<br>
+#<br>
+# Example rule allowing access from your local networks.<br>
+# Adapt localnet in the ACL section to list your (internal) IP networks<br>
+# from where browsing should be allowed
+                </div>
+
+                <div class="success-box">
+                    <h3>✅ Próximo Passo</h3>
+                    <p>Agora que encontramos o lugar certo,<br>
+                    vamos adicionar nossas regras de bloqueio!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: ACLs e Regras (Passo 9) -->
+        <div class="slide">
+            <div class="content">
+                <h2>📜 Criando Regras ACL: Passo 9</h2>
+                
+                <div class="info-box">
+                    <h3>🔐 O que são ACLs?</h3>
+                    <p><strong>ACL = Access Control List (Lista de Controle de Acesso)</strong><br><br>
+                    São regras que definem:<br>
+                    • Quem pode acessar<br>
+                    • O que pode ser acessado<br>
+                    • Quando pode acessar<br>
+                    • Como deve ser tratado</p>
+                </div>
+
+                <div class="code-box">
+                    <h3>📄 Sintaxe de uma ACL</h3>
+acl <strong style="color: #00ff00;">nome</strong> <strong style="color: #ffd700;">tipo</strong> <strong style="color: #ff6b6b;">definição</strong><br><br>
+Exemplo:<br>
+acl <strong style="color: #00ff00;">block</strong> <strong style="color: #ffd700;">dstdomain</strong> <strong style="color: #ff6b6b;">"/etc/squid/block.txt"</strong>
+                </div>
+
+                <div class="code-box">
+                    <h3>✏️ Regras a Adicionar</h3>
+# Criar ACL chamada "block" com lista de sites bloqueados<br>
+acl block dstdomain "/etc/squid/block.txt"<br><br>
+# Bloquear acesso aos sites da lista<br>
+http_access deny block<br><br>
+# Permitir acesso aos demais sites<br>
+http_access allow localnet
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🔍 Linha por Linha</h3>
+                        <div class="example-box">
+                            <p><strong>acl block dstdomain</strong><br>
+                            Define uma lista chamada "block"<br>
+                            Tipo: dstdomain (domínios de destino)</p>
+                            
+                            <p style="margin-top: 15px;"><strong>http_access deny block</strong><br>
+                            Nega acesso HTTP aos domínios da lista "block"</p>
+                            
+                            <p style="margin-top: 15px;"><strong>http_access allow localnet</strong><br>
+                            Permite acesso aos outros sites<br>
+                            localnet = rede local</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🎯 Ordem Importa!</h3>
+                        <div class="warning-box">
+                            <p><strong>1º</strong> - Define a ACL (block)<br>
+                            <strong>2º</strong> - Nega sites bloqueados<br>
+                            <strong>3º</strong> - Permite os demais<br><br>
+                            Se inverter a ordem,<br>
+                            o bloqueio não funciona!</p>
+                        </div>
+                        
+                        <div class="step-box">
+                            <h4>💾 Salvar</h4>
+                            <p>Após adicionar as linhas:<br>
+                            <strong>ESC</strong> → <strong>:x</strong> → <strong>ENTER</strong></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="analogy-box center-text">
+                    <h3>🚦 Analogia do Semáforo</h3>
+                    <p>As ACLs são como regras de trânsito:<br>
+                    <strong>🔴 DENY block:</strong> "Vermelho para quem está na lista negra"<br>
+                    <strong>🟢 ALLOW localnet:</strong> "Verde para todos os outros"<br>
+                    A ordem importa: primeiro paramos quem não pode, depois liberamos os demais!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Arquivo de Bloqueio (Passo 10) -->
+        <div class="slide">
+            <div class="content">
+                <h2>🚫 Criando Lista de Bloqueio: Passo 10</h2>
+                
+                <div class="step-card">
+                    <div class="step-number">10</div>
+                    <h3>Criar Arquivo block.txt</h3>
+                    <div class="command-example">
+sudo vim /etc/squid/block.txt
+                    </div>
+                </div>
+
+                <div class="code-box">
+                    <h3>📄 Conteúdo do Arquivo block.txt</h3>
+.facebook.com<br>
+.instagram.com<br>
+.twitter.com<br>
+.tiktok.com<br>
+.youtube.com
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🔍 Entendendo o Formato</h3>
+                        <div class="example-box">
+                            <p><strong>.facebook.com</strong><br>
+                            O ponto inicial bloqueia:<br>
+                            • facebook.com<br>
+                            • www.facebook.com<br>
+                            • m.facebook.com<br>
+                            • qualquer.facebook.com</p>
+                            
+                            <p style="margin-top: 15px;"><strong>Sem o ponto:</strong><br>
+                            facebook.com → só bloqueia exato<br>
+                            <strong>Com o ponto:</strong><br>
+                            .facebook.com → bloqueia tudo</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>➕ Adicionar Mais Sites</h3>
+                        <div class="terminal-box">
+Você pode adicionar:<br><br>
+.netflix.com<br>
+.globo.com<br>
+.uol.com.br<br>
+.reddit.com<br>
+.9gag.com<br><br>
+Um domínio por linha!
+                        </div>
+                        
+                        <div class="step-box">
+                            <h4>💾 Salvar</h4>
+                            <p><strong>ESC</strong> → <strong>:x</strong> → <strong>ENTER</strong></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h3>⚠️ Atenção aos Detalhes</h3>
+                    <p>• Sempre use <strong>minúsculas</strong><br>
+                    • <strong>Não</strong> coloque http:// ou https://<br>
+                    • <strong>Um domínio por linha</strong><br>
+                    • O ponto inicial <strong>.</strong> é importante<br>
+                    • Não deixe linhas em branco no final</p>
+                </div>
+
+                <div class="analogy-box center-text">
+                    <h3>📋 Analogia da Lista Negra</h3>
+                    <p>É como criar uma lista de pessoas que não podem entrar na festa!<br>
+                    Cada nome na lista será barrado na porta pelo segurança (SQUID).<br>
+                    O ponto inicial é como dizer: "essa pessoa e toda a família dela!"</p>
+                </div>
+
+                <div class="success-box">
+                    <h3>✅ Lista Criada!</h3>
+                    <p>Agora temos nossa lista de sites bloqueados!<br>
+                    Próximo passo: reiniciar o SQUID para aplicar as mudanças.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Aplicar Configurações e Testar (Passos 11-14) -->
+        <div class="slide">
+            <div class="content">
+                <h2>🚀 Aplicar e Testar: Passos 11-14</h2>
+                
+                <div class="step-card">
+                    <div class="step-number">11</div>
+                    <h3>Reiniciar SQUID</h3>
+                    <div class="command-example">
+sudo systemctl restart squid
+                    </div>
+                    <p>Aplica todas as configurações feitas</p>
+                </div>
+
+                <div class="grid-steps">
+                    <div class="step-card">
+                        <div class="step-number">12</div>
+                        <h3>Configurar Cliente Windows</h3>
+                        <p><strong>1.</strong> Abra o menu Iniciar<br>
+                        <strong>2.</strong> Digite: <strong>proxy</strong><br>
+                        <strong>3.</strong> Clique em: <strong>"Alterar configurações de proxy"</strong></p>
+                    </div>
+                    
+                    <div class="step-card">
+                        <div class="step-number">13</div>
+                        <h3>Configurar Proxy Manual</h3>
+                        <p>✅ Marque: <strong>Usar um servidor proxy</strong><br><br>
+                        <strong>Endereço:</strong> 192.168.0.1<br>
+                        <strong>Porta:</strong> 3128<br><br>
+                        Clique em <strong>Salvar</strong></p>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>🔍 Entendendo a Configuração</h3>
+                    <div class="bullet-point"><strong>192.168.0.1:</strong> IP do servidor Ubuntu (SQUID)</div>
+                    <div class="bullet-point"><strong>3128:</strong> Porta padrão do SQUID</div>
+                    <div class="bullet-point">Todo tráfego do Windows passará pelo proxy</div>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number">14</div>
+                    <h3>Testar no Navegador</h3>
+                    <div class="two-column">
+                        <div>
+                            <h4>✅ Sites Permitidos</h4>
+                            <div class="success-box">
+                                <p>Tente acessar:<br>
+                                • google.com<br>
+                                • wikipedia.org<br>
+                                • github.com<br><br>
+                                <strong>Deve funcionar normalmente!</strong></p>
+                            </div>
+                        </div>
+                        <div>
+                            <h4>🚫 Sites Bloqueados</h4>
+                            <div class="warning-box">
+                                <p>Tente acessar:<br>
+                                • facebook.com<br>
+                                • instagram.com<br>
+                                • youtube.com<br><br>
+                                <strong>Deve ser bloqueado!</strong></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="terminal-box center-text">
+                    <h3>🚫 Mensagem de Bloqueio</h3>
+                    <p style="font-size: 1.5em; color: #ff6b6b;">ERROR</p>
+                    <p>The requested URL could not be retrieved</p>
+                    <p style="margin-top: 10px;">Access Denied</p>
+                    <p style="margin-top: 10px; font-size: 0.9em;">Generated by squid/4.10</p>
+                </div>
+
+                <div class="success-box center-text">
+                    <h3>🎉 Proxy Funcionando!</h3>
+                    <p>Se sites permitidos abrem e bloqueados são negados,<br>
+                    <strong>está tudo funcionando perfeitamente!</strong></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 12: Comandos Úteis -->
+        <div class="slide">
+            <div class="content">
+                <h2>🛠️ Comandos Úteis e Troubleshooting</h2>
+                
+                <div class="two-column">
+                    <div>
+                        <h3>🔧 Controle do SQUID</h3>
+                        <div class="command-example">
+# Iniciar serviço<br>
+sudo systemctl start squid<br><br>
+# Parar serviço<br>
+sudo systemctl stop squid<br><br>
+# Reiniciar serviço<br>
+sudo systemctl restart squid<br><br>
+# Ver status<br>
+sudo systemctl status squid
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🔍 Diagnóstico</h3>
+                        <div class="command-example">
+# Testar configuração<br>
+sudo squid -k parse<br><br>
+# Ver logs de acesso<br>
+sudo tail -f /var/log/squid/access.log<br><br>
+# Ver logs de erro<br>
+sudo tail -f /var/log/squid/cache.log<br><br>
+# Recarregar sem parar<br>
+sudo squid -k reconfigure
+                        </div>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h3>❌ Problemas Comuns</h3>
+                    <div class="bullet-point"><strong>Erro de sintaxe:</strong> Use squid -k parse para verificar</div>
+                    <div class="bullet-point"><strong>Porta 3128 ocupada:</strong> Outro serviço usando a porta</div>
+                    <div class="bullet-point"><strong>Sites não bloqueiam:</strong> Verifique ordem das ACLs</div>
+                    <div class="bullet-point"><strong>Cliente não navega:</strong> Confira IP e porta 3128</div>
+                    <div class="bullet-point"><strong>Rota não funciona:</strong> Verifique ip route del/add default</div>
+                </div>
+
+                <div class="step-box">
+                    <h3>📂 Arquivos Importantes</h3>
+                    <div class="bullet-point"><strong>/etc/squid/squid.conf:</strong> Configuração principal</div>
+                    <div class="bullet-point"><strong>/etc/squid/block.txt:</strong> Lista de bloqueio</div>
+                    <div class="bullet-point"><strong>/var/log/squid/access.log:</strong> Log de acessos</div>
+                    <div class="bullet-point"><strong>/var/log/squid/cache.log:</strong> Log de cache/erros</div>
+                </div>
+
+                <div class="example-box">
+                    <h3>💡 Dicas Avançadas</h3>
+                    <div class="bullet-point">Use <strong>squid -z</strong> para inicializar cache</div>
+                    <div class="bullet-point">Logs crescem rápido - configure rotação</div>
+                    <div class="bullet-point">Monitore com <strong>squidclient mgr:info</strong></div>
+                    <div class="bullet-point">ACLs por horário: <strong>time</strong></div>
+                    <div class="bullet-point">Bloqueio por IP: <strong>src</strong></div>
+                </div>
+
+                <div class="info-box">
+                    <h3>🎓 Tipos de ACL Disponíveis</h3>
+                    <p><strong>src:</strong> IP de origem (cliente)<br>
+                    <strong>dst:</strong> IP de destino<br>
+                    <strong>dstdomain:</strong> Domínio de destino<br>
+                    <strong>url_regex:</strong> Expressão regular na URL<br>
+                    <strong>time:</strong> Horário e dia da semana<br>
+                    <strong>port:</strong> Porta de destino<br>
+                    <strong>method:</strong> Método HTTP (GET, POST, etc)</p>
+                </div>
+
+                <div class="highlight-box center-text">
+                    <h3>🎓 Parabéns!</h3>
+                    <p style="font-size: 1.3em;">
+                        Você aprendeu a instalar e configurar o SQUID Proxy!<br>
+                        Agora você pode controlar e monitorar o acesso à Internet!<br><br>
+                        <strong>Continue praticando e explorando! 🚀</strong>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">⬅️ Anterior</button>
+            <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Próximo ➡️</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('total-slides').textContent = totalSlides;
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.classList.toggle('active', i === index);
+            });
+            
+            document.getElementById('current-slide').textContent = index + 1;
+            document.getElementById('prevBtn').disabled = index === 0;
+            document.getElementById('nextBtn').disabled = index === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            const newSlide = currentSlide + direction;
+            if (newSlide >= 0 && newSlide < totalSlides) {
+                currentSlide = newSlide;
+                showSlide(currentSlide);
+            }
+        }
+
+        // Navegação por teclado
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+            if (e.key === 'Home') {
+                currentSlide = 0;
+                showSlide(currentSlide);
+            }
+            if (e.key === 'End') {
+                currentSlide = totalSlides - 1;
+                showSlide(currentSlide);
+            }
+        });
+
+        // Inicializar
+        showSlide(0);
+    </script>
+</body>
+</html>
