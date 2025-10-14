@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webmin - Interface de Gerenciamento</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .presentation {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide {
+            min-height: 100vh;
+            padding: 60px 40px;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            background: white;
+            margin: 20px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        .slide h1 {
+            font-size: 3.5em;
+            color: #4a5568;
+            text-align: center;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .slide h2 {
+            font-size: 2.8em;
+            color: #2d3748;
+            margin-bottom: 30px;
+            border-bottom: 4px solid #667eea;
+            padding-bottom: 15px;
+        }
+
+        .slide h3 {
+            font-size: 2.2em;
+            color: #4a5568;
+            margin: 25px 0 15px 0;
+        }
+
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        .bullet-point {
+            display: flex;
+            align-items: flex-start;
+            margin: 15px 0;
+            font-size: 1.3em;
+            line-height: 1.5;
+        }
+
+        .bullet-point::before {
+            content: "🖥️";
+            margin-right: 15px;
+            font-size: 1.2em;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #4c51bf;
+        }
+
+        .example-box {
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #2c5aa0;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #c53030;
+        }
+
+        .step-box {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #2f855a;
+        }
+
+        .terminal-box {
+            background: #2d3748;
+            color: #00ff00;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #00ff00;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+        }
+
+        .code-box {
+            background: #2d3748;
+            color: #ffd700;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #ffd700;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            padding: 15px 25px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .nav-btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .nav-btn:disabled {
+            background: #a0a0a0;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(255,255,255,0.9);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #4a5568;
+            z-index: 1000;
+        }
+
+        .center-text {
+            text-align: center;
+        }
+
+        .large-text {
+            font-size: 1.4em;
+            line-height: 1.6;
+        }
+
+        .command-example {
+            background: #2d3748;
+            color: #00ff41;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            border-left: 4px solid #00ff41;
+        }
+
+        .step-number {
+            background: #667eea;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin: 0 auto 20px;
+        }
+
+        .grid-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 20px 0;
+        }
+
+        .step-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid #e2e8f0;
+            text-align: center;
+        }
+
+        .analogy-box {
+            background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #c05621;
+        }
+
+        .important-note {
+            background: #fff5f5;
+            border: 2px solid #fc8181;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #742a2a;
+        }
+
+        .success-box {
+            background: #f0fff4;
+            border: 2px solid #68d391;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #22543d;
+        }
+
+        .info-box {
+            background: #e6fffa;
+            border: 2px solid #4fd1c5;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #234e52;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">10</span>
+        </div>
+
+        <!-- Slide 1: Título -->
+        <div class="slide active">
+            <div class="content center-text">
+                <h1>🖥️ Webmin</h1>
+                <h2 style="border: none; color: #667eea;">Interface de Gerenciamento Web para Servidores Linux</h2>
+                <div class="highlight-box large-text">
+                    <strong>Tutorial Prático Passo a Passo</strong><br>
+                    Instalar e configurar o Webmin<br>
+                    Gerenciar seu servidor de forma visual
+                </div>
+                
+                <div class="example-box" style="margin-top: 40px;">
+                    <h3>🎯 Objetivos da Aula</h3>
+                    <p style="font-size: 1.3em; margin: 10px 0;">
+                        <strong>✅ Compreender a utilidade do Webmin</strong><br>
+                        <strong>⚙️ Instalar e configurar o Webmin</strong><br>
+                        Acessar interface web de administração
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: O que é o Webmin -->
+        <div class="slide">
+            <div class="content">
+                <h2>🤔 O que é o Webmin?</h2>
+                
+                <div class="analogy-box center-text">
+                    <h3>🎛️ Analogia Simples</h3>
+                    <p style="font-size: 1.3em;">
+                        O Webmin é como um painel de controle visual para seu servidor!<br>
+                        Em vez de digitar comandos no terminal escuro,<br>
+                        você clica em botões e menus numa interface bonita e colorida!
+                    </p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🌍 Como Funciona</h3>
+                        <div class="bullet-point">Você acessa pelo navegador</div>
+                        <div class="bullet-point">Interface gráfica intuitiva</div>
+                        <div class="bullet-point">Clica em menus e opções</div>
+                        <div class="bullet-point">Webmin executa os comandos</div>
+                        <div class="bullet-point">Tudo fica mais fácil!</div>
+                        
+                        <div class="example-box">
+                            <h4>📱 Exemplo do Dia a Dia</h4>
+                            <p>Precisa criar um usuário?<br>
+                            Sem Webmin: vários comandos no terminal<br>
+                            Com Webmin: preenche um formulário<br>
+                            Clica em "Criar" e pronto!</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🔥 Por que Webmin?</h3>
+                        <div class="bullet-point">Ferramenta mais popular</div>
+                        <div class="bullet-point">Gratuito e código aberto</div>
+                        <div class="bullet-point">Interface amigável</div>
+                        <div class="bullet-point">Gerencia diversos serviços</div>
+                        <div class="bullet-point">Acesso de qualquer lugar</div>
+                        
+                        <div class="step-box">
+                            <h4>💡 Curiosidade</h4>
+                            <p>Webmin foi criado por Jamie Cameron<br>
+                            É usado por milhões de administradores<br>
+                            Facilita muito a vida de quem gerencia servidores!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <h3>🎯 Principais Usos do Webmin</h3>
+                    <div class="bullet-point">Gerenciar usuários e grupos</div>
+                    <div class="bullet-point">Configurar serviços (Apache, DNS, etc)</div>
+                    <div class="bullet-point">Monitorar sistema</div>
+                    <div class="bullet-point">Ver logs e processos</div>
+                    <div class="bullet-point">Fazer backups e restaurações</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Vantagens e Funcionalidades -->
+        <div class="slide">
+            <div class="content">
+                <h2>⭐ Vantagens e Funcionalidades</h2>
+                
+                <div class="two-column">
+                    <div>
+                        <h3>🛡️ Facilidade e Praticidade</h3>
+                        <div class="bullet-point">Não precisa decorar comandos</div>
+                        <div class="bullet-point">Interface visual intuitiva</div>
+                        <div class="bullet-point">Acesso remoto seguro</div>
+                        <div class="bullet-point">Documentação integrada</div>
+                        
+                        <div class="example-box">
+                            <h4>🏢 Exemplo Empresarial</h4>
+                            <p>Uma empresa pode:<br>
+                            • Gerenciar servidor remotamente<br>
+                            • Criar usuários facilmente<br>
+                            • Configurar serviços visualmente<br>
+                            • Monitorar recursos do sistema</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>⚡ Produtividade e Controle</h3>
+                        <div class="bullet-point">Configurações mais rápidas</div>
+                        <div class="bullet-point">Menos erros de digitação</div>
+                        <div class="bullet-point">Múltiplos módulos</div>
+                        <div class="bullet-point">Gerenciamento centralizado</div>
+                        
+                        <div class="step-box">
+                            <h4>💰 Economia de Tempo</h4>
+                            <p>Com interface gráfica:<br>
+                            • 50-70% mais rápido que terminal<br>
+                            • Menos erros de configuração<br>
+                            • Mais produtividade no dia a dia</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="analogy-box center-text">
+                    <h3>📚 Analogia do Carro</h3>
+                    <p style="font-size: 1.3em;">
+                        Terminal = Carro manual (precisa saber trocar marchas)<br>
+                        Webmin = Carro automático (só acelera e freia)<br>
+                        Os dois chegam no mesmo lugar, mas um é muito mais fácil!
+                    </p>
+                </div>
+
+                <div class="success-box">
+                    <h3>✅ O que vamos aprender?</h3>
+                    <div class="bullet-point">Instalar o Webmin no Ubuntu</div>
+                    <div class="bullet-point">Configurar repositórios e chaves</div>
+                    <div class="bullet-point">Acessar pela interface web</div>
+                    <div class="bullet-point">Navegar pelo painel de controle</div>
+                    <div class="bullet-point">Controlar o serviço Webmin</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Preparação (Passos 1-2) -->
+        <div class="slide">
+            <div class="content">
+                <h2>🚀 Preparação: Passos 1-2</h2>
+                
+                <div class="step-box center-text">
+                    <h3>📋 Antes de Começar</h3>
+                    <p>Vamos preparar o ambiente para instalar o Webmin</p>
+                </div>
+
+                <div class="grid-steps">
+                    <div class="step-card">
+                        <div class="step-number">1</div>
+                        <h3>Desativar Interface</h3>
+                        <p>Desabilite temporariamente a <strong>Placa de Rede 2</strong> no VirtualBox</p>
+                        <div class="warning-box">
+                            <p>⚠️ Mesmo procedimento das aulas anteriores!<br>
+                            Clique com botão direito no ícone de rede e<br>
+                            desmarque a segunda conexão.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="step-card">
+                        <div class="step-number">2</div>
+                        <h3>Adicionar Repositórios</h3>
+                        <div class="command-example">
+echo "deb http://download.webmin.com/download/repository sarge contrib" | sudo tee -a /etc/apt/sources.list
+                        </div>
+                        <div class="command-example">
+echo "deb http://webmin.mirror.somersettechsolutions.co.uk/repository sarge contrib" | sudo tee -a /etc/apt/sources.list
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <h3>🔍 O que são repositórios?</h3>
+                    <p>Repositórios são "lojas de aplicativos" para Linux!<br>
+                    Estamos dizendo ao Ubuntu onde encontrar o Webmin.<br>
+                    Adicionamos dois endereços para ter redundância!</p>
+                </div>
+
+                <div class="analogy-box center-text">
+                    <h3>💡 Analogia</h3>
+                    <p>É como adicionar novos endereços na lista de lojas favoritas!<br>
+                    Agora o Ubuntu sabe onde "comprar" o Webmin.</p>
+                </div>
+
+                <div class="important-note">
+                    <h3>🎯 Próximo Passo</h3>
+                    <p>Com os repositórios adicionados, agora vamos instalar a chave de segurança!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Instalação (Passos 3-5) -->
+        <div class="slide">
+            <div class="content">
+                <h2>📦 Instalação: Passos 3-5</h2>
+                
+                <div class="grid-steps">
+                    <div class="step-card">
+                        <div class="step-number">3</div>
+                        <h3>Instalar Chave GPG</h3>
+                        <div class="command-example">
+wget -q http://www.webmin.com/jcameron-key.asc -O- | sudo apt-key add -
+                        </div>
+                        <p>Chave de segurança que valida o Webmin</p>
+                    </div>
+                    
+                    <div class="step-card">
+                        <div class="step-number">4</div>
+                        <h3>Atualizar Sistema</h3>
+                        <div class="command-example">
+sudo apt-get update
+                        </div>
+                        <p>Atualiza lista de pacotes disponíveis</p>
+                    </div>
+
+                    <div class="step-card">
+                        <div class="step-number">5</div>
+                        <h3>Instalar Webmin</h3>
+                        <div class="command-example">
+sudo apt-get install webmin apt-transport-https
+                        </div>
+                        <p>Pressione <strong>S</strong> quando perguntado</p>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h3>📋 O que é instalado?</h3>
+                    <div class="bullet-point">Servidor Webmin</div>
+                    <div class="bullet-point">Módulos de gerenciamento</div>
+                    <div class="bullet-point">Interface web</div>
+                    <div class="bullet-point">Bibliotecas Perl necessárias</div>
+                    <div class="bullet-point">Serviço automático</div>
+                </div>
+
+                <div class="terminal-box">
+                    <h3>✅ Mensagens Finais da Instalação</h3>
+Webmin install complete. You can now login to<br>
+https://info4:10000/ as root with your root password,<br>
+or as any user who can use sudo to run commands as root.<br><br>
+Created symlink /etc/systemd/system/multi-user.target.wants/webmin.service
+                </div>
+
+                <div class="success-box center-text">
+                    <h3>🎉 Webmin Instalado!</h3>
+                    <p>O servidor de gerenciamento já está instalado e rodando!<br>
+                    Agora vamos reativar a interface de rede.</p>
+                </div>
+
+                <div class="analogy-box center-text">
+                    <h3>💡 Analogia</h3>
+                    <p>É como instalar um painel de controle no seu carro:<br>
+                    agora você tem uma interface visual para controlar tudo!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Reativar Interface (Passo 6) -->
+        <div class="slide">
+            <div class="content">
+                <h2>🔌 Reativar Interface: Passo 6</h2>
+                
+                <div class="step-card">
+                    <div class="step-number">6</div>
+                    <h3>Reativar Interface</h3>
+                    <p>Reative a <strong>Placa de Rede 2</strong> no VirtualBox</p>
+                    <p style="margin-top: 15px;">Clique com botão direito no ícone de rede e<br>
+                    marque <strong>Conectar Placa de Rede 2</strong></p>
+                </div>
+
+                <div class="success-box center-text">
+                    <h3>✅ Interface Reativada!</h3>
+                    <p>Agora a conexão está completa!<br>
+                    Podemos verificar o status do serviço.</p>
+                </div>
+
+                <div class="analogy-box center-text">
+                    <h3>💡 Analogia</h3>
+                    <p>É como reconectar um cabo que foi desligado temporariamente:<br>
+                    agora tudo está funcionando e conectado novamente!</p>
+                </div>
+
+                <div class="important-note">
+                    <h3>🎯 Próximo Passo</h3>
+                    <p>Com ambas as interfaces ativas,<br>
+                    vamos verificar se o Webmin está rodando corretamente.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Verificando o Serviço (Passo 7) -->
+        <div class="slide">
+            <div class="content">
+                <h2>✅ Verificando o Serviço: Passo 7</h2>
+                
+                <div class="step-card">
+                    <div class="step-number">7</div>
+                    <h3>Verificar Status do Webmin</h3>
+                    <div class="command-example">
+sudo systemctl status webmin.service
+                    </div>
+                    <p>Verifica se o Webmin está sendo executado</p>
+                </div>
+
+                <div class="terminal-box">
+                    <h3>✅ Resultado Esperado</h3>
+● webmin.service - Webmin server daemon<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Loaded: loaded (/lib/systemd/system/webmin.service; enabled)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Active: <span style="color: #00ff00;">active (running)</span> since Mon 2024-01-15 10:45:30 -03<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Main PID: 15678 (miniserv.pl)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Memory: 38.2M<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CGroup: /system.slice/webmin.service<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─15678 /usr/bin/perl /usr/share/webmin/miniserv.pl<br><br>
+<span style="color: #ffff00;">Pressione 'q' para sair</span>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🔍 Entendendo o Status</h3>
+                        <div class="bullet-point"><strong>Active (running):</strong> Serviço funcionando</div>
+                        <div class="bullet-point"><strong>Enabled:</strong> Inicia com o sistema</div>
+                        <div class="bullet-point"><strong>Main PID:</strong> Número do processo</div>
+                        <div class="bullet-point"><strong>Memory:</strong> Memória usada</div>
+                    </div>
+                    <div>
+                        <h3>⚠️ Se Estiver Inativo</h3>
+                        <div class="warning-box">
+                            <p>Se aparecer <strong>"inactive (dead)"</strong>,<br>
+                            o serviço não iniciou automaticamente.<br><br>
+                            <strong>Inicie manualmente com:</strong></p>
+                        </div>
+                        <div class="command-example">
+sudo systemctl start webmin.service
+                        </div>
+                        <div class="step-box">
+                            <p>Depois verifique novamente:<br>
+                            <strong>sudo systemctl status webmin.service</strong></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="success-box">
+                    <h3>✅ Webmin Funcionando!</h3>
+                    <p>Se você vê "active (running)", tudo está certo!<br>
+                    Agora vamos acessar a interface web.</p>
+                </div>
+
+                <div class="analogy-box center-text">
+                    <h3>💡 Analogia</h3>
+                    <p>É como verificar se o painel de controle está ligado:<br>
+                    se estiver "active", está tudo pronto para usar!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Acessando o Webmin (Passo 8) -->
+        <div class="slide">
+            <div class="content">
+                <h2>🌐 Acessando o Webmin: Passo 8</h2>
+                
+                <div class="step-card">
+                    <div class="step-number">8</div>
+                    <h3>Acessar via Navegador</h3>
+                    <p>No Windows, abra o navegador e digite:</p>
+                    <div class="terminal-box center-text" style="font-size: 1.5em; margin: 20px 0;">
+https://192.168.0.1:10000
+                    </div>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🔍 Entendendo o Endereço</h3>
+                        <div class="example-box">
+                            <p><strong>https://</strong><br>
+                            Conexão segura (criptografada)<br><br>
+                            
+                            <strong>192.168.0.1</strong><br>
+                            IP do servidor Ubuntu<br><br>
+                            
+                            <strong>:10000</strong><br>
+                            Porta do Webmin</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>⚠️ Aviso de Segurança</h3>
+                        <div class="warning-box">
+                            <p>O navegador vai mostrar:<br>
+                            <strong>"Sua conexão não é privada"</strong><br><br>
+                            
+                            Isso é NORMAL!<br>
+                            Clique em <strong>"Avançado"</strong><br>
+                            depois<br>
+                            <strong>"Continuar para 192.168.0.1"</strong></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <h3>🔐 Fazer Login</h3>
+                    <p style="font-size: 1.3em; text-align: center;">
+                        <strong>Usuário:</strong> info4<br>
+                        <strong>Senha:</strong> info4<br><br>
+                        (Mesmas credenciais do Ubuntu)
+                    </p>
+                </div>
+
+                <div class="success-box center-text">
+                    <h3>🎉 Bem-vindo ao Webmin!</h3>
+                    <p>Você está agora na interface de gerenciamento!<br>
+                    Pode controlar todo o servidor pelo navegador.</p>
+                </div>
+
+                <div class="analogy-box center-text">
+                    <h3>💡 Analogia</h3>
+                    <p>É como entrar na cabine de comando de uma nave espacial:<br>
+                    todos os controles estão à sua disposição numa interface visual!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Interface do Webmin -->
+        <div class="slide">
+            <div class="content">
+                <h2>🎨 Explorando a Interface</h2>
+                
+                <div class="two-column">
+                    <div>
+                        <h3>📂 Categorias Principais</h3>
+                        <div class="highlight-box">
+                            <p><strong>🖥️ Sistema</strong><br>
+                            Usuários, logs, processos<br><br>
+                            
+                            <strong>📡 Servidores</strong><br>
+                            Apache, DNS, DHCP<br><br>
+                            
+                            <strong>🌐 Rede</strong><br>
+                            Interfaces, firewall<br><br>
+                            
+                            <strong>💾 Hardware</strong><br>
+                            Discos, partições</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🎯 Tarefas Comuns</h3>
+                        <div class="example-box">
+                            <p><strong>Criar usuário:</strong><br>
+                            Sistema → Usuários e Grupos<br><br>
+                            
+                            <strong>Ver processos:</strong><br>
+                            Sistema → Processos<br><br>
+                            
+                            <strong>Configurar Apache:</strong><br>
+                            Servidores → Apache<br><br>
+                            
+                            <strong>Ver logs:</strong><br>
+                            Sistema → Logs do Sistema</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="analogy-box center-text">
+                    <h3>🏪 Analogia do Shopping</h3>
+                    <p style="font-size: 1.3em;">
+                        O Webmin é como um shopping de administração!<br>
+                        Cada categoria é uma loja diferente.<br>
+                        Você vai à loja certa para fazer o que precisa!
+                    </p>
+                </div>
+
+                <div class="warning-box">
+                    <h3>⚠️ Cuidado ao Modificar</h3>
+                    <p>O Webmin é poderoso!<br>
+                    Mudanças incorretas podem afetar o sistema.<br>
+                    Leia com atenção antes de salvar alterações!</p>
+                </div>
+
+                <div class="success-box">
+                    <h3>✅ Parabéns!</h3>
+                    <p>Você instalou e configurou o Webmin!<br>
+                    Agora pode gerenciar seu servidor visualmente! 🎉</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Comandos Úteis -->
+        <div class="slide">
+            <div class="content">
+                <h2>🛠️ Comandos Úteis e Troubleshooting</h2>
+                
+                <div class="two-column">
+                    <div>
+                        <h3>🔧 Controle do Webmin</h3>
+                        <div class="command-example">
+# Iniciar serviço<br>
+sudo systemctl start webmin.service<br><br>
+# Parar serviço<br>
+sudo systemctl stop webmin.service<br><br>
+# Reiniciar serviço<br>
+sudo systemctl restart webmin.service<br><br>
+# Ver status<br>
+sudo systemctl status webmin.service
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🔍 Informações Úteis</h3>
+                        <div class="command-example">
+# Porta padrão<br>
+10000<br><br>
+# Arquivo de configuração<br>
+/etc/webmin/miniserv.conf<br><br>
+# Logs do Webmin<br>
+/var/webmin/miniserv.log<br><br>
+# Diretório de instalação<br>
+/usr/share/webmin/
+                        </div>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h3>❌ Problemas Comuns</h3>
+                    <div class="bullet-point"><strong>Não carrega no navegador:</strong> Verifique se serviço está rodando</div>
+                    <div class="bullet-point"><strong>Porta 10000 ocupada:</strong> Outro serviço usando a porta</div>
+                    <div class="bullet-point"><strong>Erro de certificado:</strong> Normal, clique em "Avançado" e continue</div>
+                    <div class="bullet-point"><strong>Login não funciona:</strong> Use usuário do Ubuntu</div>
+                    <div class="bullet-point"><strong>Acesso negado:</strong> Usuário precisa ter permissões sudo</div>
+                </div>
+
+                <div class="step-box">
+                    <h3>📂 Arquivos Importantes</h3>
+                    <div class="bullet-point"><strong>/etc/webmin/miniserv.conf:</strong> Configuração do servidor</div>
+                    <div class="bullet-point"><strong>/etc/webmin/config:</strong> Configurações gerais</div>
+                    <div class="bullet-point"><strong>/var/webmin/:</strong> Logs e sessões</div>
+                    <div class="bullet-point"><strong>/usr/share/webmin/:</strong> Módulos do Webmin</div>
+                </div>
+
+                <div class="example-box">
+                    <h3>💡 Dicas Úteis</h3>
+                    <div class="bullet-point">Adicione aos favoritos: https://192.168.0.1:10000</div>
+                    <div class="bullet-point">Explore os módulos disponíveis</div>
+                    <div class="bullet-point">Leia a documentação integrada</div>
+                    <div class="bullet-point">Faça backup antes de mudanças grandes</div>
+                    <div class="bullet-point">Use com cuidado - tem poder total!</div>
+                </div>
+
+                <div class="info-box">
+                    <h3>🎓 Módulos Úteis</h3>
+                    <p><strong>Webmin → Configuração do Webmin:</strong> Personalizar interface<br>
+                    <strong>Sistema → Usuários e Grupos:</strong> Gerenciar usuários<br>
+                    <strong>Sistema → Logs do Sistema:</strong> Ver logs<br>
+                    <strong>Servidores → Servidor Web Apache:</strong> Configurar Apache<br>
+                    <strong>Outros → Gerenciador de Arquivos:</strong> Navegar arquivos<br>
+                    <strong>Outros → Linha de Comando:</strong> Terminal no navegador</p>
+                </div>
+
+                <div class="highlight-box center-text">
+                    <h3>🎓 Parabéns!</h3>
+                    <p style="font-size: 1.3em;">
+                        Você aprendeu a instalar e usar o Webmin!<br>
+                        Agora você pode administrar seu servidor visualmente!<br><br>
+                        <strong>Continue praticando e explorando! 🚀</strong>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">⬅️ Anterior</button>
+            <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Próximo ➡️</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('total-slides').textContent = totalSlides;
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.classList.toggle('active', i === index);
+            });
+            
+            document.getElementById('current-slide').textContent = index + 1;
+            document.getElementById('prevBtn').disabled = index === 0;
+            document.getElementById('nextBtn').disabled = index === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            const newSlide = currentSlide + direction;
+            if (newSlide >= 0 && newSlide < totalSlides) {
+                currentSlide = newSlide;
+                showSlide(currentSlide);
+            }
+        }
+
+        // Navegação por teclado
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+            if (e.key === 'Home') {
+                currentSlide = 0;
+                showSlide(currentSlide);
+            }
+            if (e.key === 'End') {
+                currentSlide = totalSlides - 1;
+                showSlide(currentSlide);
+            }
+        });
+
+        // Inicializar
+        showSlide(0);
+    </script>
+</body>
+</html>
