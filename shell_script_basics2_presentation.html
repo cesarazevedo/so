@@ -1268,6 +1268,10 @@ echo 'Texto $VAR'            <span class="comment"># aspas simples</span>
                 
                 // Atualizar contador
                 document.getElementById('current-slide').textContent = slideNumber;
+                window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+        });
             }
         }
         
