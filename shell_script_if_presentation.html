@@ -1692,6 +1692,10 @@ if [ condição ]; then comando; fi              <span class="comment"># IF em u
                 
                 // Atualizar contador
                 document.getElementById('current-slide').textContent = slideNumber;
+				window.scrollTo({
+            	top: 0,
+            	behavior: 'smooth'
+        });
             }
         }
         
