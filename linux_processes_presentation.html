@@ -1280,7 +1280,12 @@ user  9012 12.4  8.2 java</div>
                 
                 // Atualizar contador
                 document.getElementById('current-slide').textContent = slideNumber;
+                    window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
             }
+            
         }
         
         // Navegação por teclado
