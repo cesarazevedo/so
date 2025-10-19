@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projeto Final - Infraestrutura de Rede Completa</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .presentation {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide {
+            min-height: 100vh;
+            padding: 60px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            background: white;
+            margin: 20px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .slide h1 {
+            font-size: 3.5em;
+            color: #4a5568;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .slide h2 {
+            font-size: 2.5em;
+            color: #2d3748;
+            margin-bottom: 25px;
+            border-bottom: 4px solid #667eea;
+            padding-bottom: 15px;
+        }
+
+        .slide h3 {
+            font-size: 2em;
+            color: #4a5568;
+            margin: 20px 0 15px 0;
+        }
+
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .project-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .project-header h1 {
+            color: white;
+            font-size: 4em;
+            margin-bottom: 15px;
+        }
+
+        .project-header p {
+            font-size: 1.5em;
+            opacity: 0.95;
+        }
+
+        .objective-box {
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border-left: 5px solid #2c5aa0;
+        }
+
+        .objective-box h3 {
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .objective-box p {
+            font-size: 1.3em;
+            line-height: 1.6;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .service-card {
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            border-radius: 15px;
+            padding: 25px;
+            border-left: 5px solid #667eea;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .service-card h4 {
+            color: #2d3748;
+            font-size: 1.4em;
+            margin-bottom: 10px;
+        }
+
+        .service-card p {
+            color: #4a5568;
+            font-size: 1.1em;
+            line-height: 1.5;
+        }
+
+        .service-card.dhcp { border-left-color: #f6ad55; }
+        .service-card.samba { border-left-color: #fc8181; }
+        .service-card.bind { border-left-color: #68d391; }
+        .service-card.apache { border-left-color: #4299e1; }
+        .service-card.squid { border-left-color: #9f7aea; }
+        .service-card.webmin { border-left-color: #ed64a6; }
+
+        .requirements-box {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border-left: 5px solid #2f855a;
+        }
+
+        .requirements-box h3 {
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .requirement-item {
+            display: flex;
+            align-items: flex-start;
+            margin: 15px 0;
+            font-size: 1.2em;
+            line-height: 1.5;
+        }
+
+        .requirement-item::before {
+            content: "✅";
+            margin-right: 15px;
+            font-size: 1.2em;
+        }
+
+        .deliverables-box {
+            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border-left: 5px solid #c53030;
+        }
+
+        .deliverables-box h3 {
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .deliverable-item {
+            display: flex;
+            align-items: flex-start;
+            margin: 15px 0;
+            font-size: 1.2em;
+            line-height: 1.5;
+        }
+
+        .deliverable-item::before {
+            content: "📋";
+            margin-right: 15px;
+            font-size: 1.2em;
+        }
+
+        .topology-box {
+            background: #2d3748;
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border: 3px solid #667eea;
+        }
+
+        .topology-box h3 {
+            color: #67e8f9;
+            margin-bottom: 20px;
+        }
+
+        .topology-item {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border-left: 4px solid #38bdf8;
+        }
+
+        .topology-item strong {
+            color: #67e8f9;
+        }
+
+        .evaluation-box {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: #78350f;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border-left: 5px solid #92400e;
+        }
+
+        .evaluation-box h3 {
+            color: #78350f;
+            margin-bottom: 20px;
+        }
+
+        .evaluation-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 12px 0;
+            font-size: 1.2em;
+            background: rgba(255,255,255,0.3);
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .evaluation-item strong {
+            color: #78350f;
+        }
+
+        .points {
+            background: #78350f;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #c53030;
+        }
+
+        .success-box {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 25px 0;
+            text-align: center;
+        }
+
+        .success-box h2 {
+            color: white;
+            border: none;
+            margin-bottom: 15px;
+        }
+
+        .success-box p {
+            font-size: 1.3em;
+            line-height: 1.6;
+        }
+
+        .deadline-box {
+            background: linear-gradient(135deg, #9f7aea 0%, #805ad5 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            text-align: center;
+            border: 3px solid #6b46c1;
+        }
+
+        .deadline-box h3 {
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .deadline-box p {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .integration-diagram {
+            background: #f7fafc;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border: 3px solid #cbd5e0;
+        }
+
+        .integration-diagram h3 {
+            text-align: center;
+            color: #2d3748;
+            margin-bottom: 25px;
+        }
+
+        .diagram-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .flow-item {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .flow-arrow {
+            text-align: center;
+            font-size: 2em;
+            color: #667eea;
+        }
+
+        @media (max-width: 1200px) {
+            .services-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .slide h1 {
+                font-size: 2.5em;
+            }
+            
+            .project-header h1 {
+                font-size: 2.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide">
+            <div class="content">
+                <!-- Cabeçalho do Projeto -->
+                <div class="project-header">
+                    <h1>🚀 PROJETO FINAL</h1>
+                    <p>Infraestrutura de Rede Completa com Serviços Integrados</p>
+                    <p style="font-size: 1.2em; margin-top: 15px;">3º Bimestre • Sistemas Operacionais de Redes</p>
+                </div>
+
+                <!-- Objetivo -->
+                <div class="objective-box">
+                    <h3>🎯 Objetivo do Projeto</h3>
+                    <p>
+                        Criar uma <strong>infraestrutura de rede completa e funcional</strong> integrando TODOS os serviços 
+                        aprendidos no bimestre: DHCP, SAMBA, BIND9, Apache, SQUID e Webmin. 
+                        O projeto simula um <strong>ambiente corporativo real</strong> onde os serviços trabalham juntos 
+                        de forma integrada e organizada.
+                    </p>
+                </div>
+
+                <!-- Grid de Serviços -->
+                <h2>🔧 Serviços a Integrar</h2>
+                <div class="services-grid">
+                    <div class="service-card dhcp">
+                        <h4>🌐 DHCP Server</h4>
+                        <p>Distribuição automática de IPs para os clientes da rede</p>
+                    </div>
+                    <div class="service-card samba">
+                        <h4>📂 SAMBA</h4>
+                        <p>Compartilhamento de arquivos entre Windows e Linux</p>
+                    </div>
+                    <div class="service-card bind">
+                        <h4>🔍 BIND9 (DNS)</h4>
+                        <p>Resolução de nomes de domínio personalizada</p>
+                    </div>
+                    <div class="service-card apache">
+                        <h4>🌍 Apache</h4>
+                        <p>Servidor web hospedando sites locais</p>
+                    </div>
+                    <div class="service-card squid">
+                        <h4>🔐 SQUID</h4>
+                        <p>Controle e monitoramento de acesso à internet</p>
+                    </div>
+                    <div class="service-card webmin">
+                        <h4>🖥️ Webmin</h4>
+                        <p>Interface de gerenciamento visual de tudo</p>
+                    </div>
+                </div>
+
+                <!-- Requisitos -->
+                <div class="requirements-box">
+                    <h3>📋 Requisitos Obrigatórios</h3>
+                    <div class="requirement-item">Todos os 6 serviços instalados e funcionando</div>
+                    <div class="requirement-item">Serviços integrados (não isolados)</div>
+                    <div class="requirement-item">Configuração de rede adequada (IPs, DNS, etc)</div>
+                    <div class="requirement-item">Documentação clara de cada serviço</div>
+                    <div class="requirement-item">Testes comprovando funcionamento</div>
+                    <div class="requirement-item">Apresentação explicando a arquitetura</div>
+                </div>
+
+                <!-- Configurações Obrigatórias -->
+                <div class="warning-box" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); border-left-color: #92400e;">
+                    <h3>⚠️ CONFIGURAÇÕES OBRIGATÓRIAS - LEIA COM ATENÇÃO!</h3>
+                    <div class="requirement-item" style="font-size: 1.3em; font-weight: bold;">
+                        <strong>IP do Servidor:</strong> 192.168.10.<span style="background: #fbbf24; color: #78350f; padding: 3px 8px; border-radius: 5px;">X</span> 
+                        onde X = número do seu PC (ver etiqueta)
+                    </div>
+                    <div class="requirement-item" style="font-size: 1.3em; font-weight: bold;">
+                        <strong>Domínio:</strong> <span style="background: #fbbf24; color: #78350f; padding: 3px 8px; border-radius: 5px;">NOME.SOBRENOME</span> 
+                        (use SEU nome! ex: joao.teixeira)
+                    </div>
+                    <div class="requirement-item">
+                        <strong>Exemplos:</strong><br>
+                        • PC 5 → IP: 192.168.10.5 | Domínio: maria.silva<br>
+                        • PC 12 → IP: 192.168.10.12 | Domínio: pedro.santos<br>
+                        • PC 20 → IP: 192.168.10.20 | Domínio: ana.costa
+                    </div>
+                </div>
+
+                <!-- Topologia Sugerida -->
+                <div class="topology-box">
+                    <h3>🗺️ Topologia de Rede Sugerida</h3>
+                    <div class="topology-item">
+                        <strong>Servidor Ubuntu:</strong> 192.168.10.X/24 (IP estático)<br>
+                        ⚠️ <strong>X = número do seu computador</strong> (ver etiqueta atrás do monitor ou no gabinete)<br>
+                        Hospeda DHCP, DNS, Apache, SQUID, SAMBA e Webmin
+                    </div>
+                    <div class="topology-item">
+                        <strong>Clientes Windows:</strong> Recebem IP via DHCP (192.168.10.100-200)<br>
+                        Acessam compartilhamentos SAMBA, navegam pela internet via SQUID
+                    </div>
+                    <div class="topology-item">
+                        <strong>Clientes Linux:</strong> Recebem IP via DHCP<br>
+                        Testam resolução DNS, acessam sites via Apache
+                    </div>
+                    <div class="topology-item">
+                        <strong>Domínio Local:</strong> <span style="background: #fbbf24; color: #78350f; padding: 5px 10px; border-radius: 5px; font-weight: bold;">NOME.SOBRENOME</span><br>
+                        ⚠️ <strong>USE SEU NOME!</strong> Exemplo: <strong>joao.teixeira</strong>, <strong>maria.silva</strong>, <strong>pedro.santos</strong><br>
+                        Configurado no BIND9 para resolver nomes internos
+                    </div>
+                </div>
+
+                <!-- Integração -->
+                <div class="integration-diagram">
+                    <h3>🔗 Como os Serviços se Integram</h3>
+                    <div class="diagram-flow">
+                        <div class="flow-item">1. Cliente liga na rede</div>
+                        <div class="flow-arrow">⬇️</div>
+                        <div class="flow-item">2. DHCP distribui IP automaticamente (192.168.10.100-200)</div>
+                        <div class="flow-arrow">⬇️</div>
+                        <div class="flow-item">3. DNS resolve nomes (www.NOME.SOBRENOME → 192.168.10.X)</div>
+                        <div class="flow-arrow">⬇️</div>
+                        <div class="flow-item">4. Apache serve sites acessíveis pelo nome</div>
+                        <div class="flow-arrow">⬇️</div>
+                        <div class="flow-item">5. SQUID controla acesso à internet</div>
+                        <div class="flow-arrow">⬇️</div>
+                        <div class="flow-item">6. SAMBA compartilha arquivos entre sistemas</div>
+                        <div class="flow-arrow">⬇️</div>
+                        <div class="flow-item">7. Webmin gerencia tudo via interface web</div>
+                    </div>
+                </div>
+
+                <!-- Entregáveis -->
+                <div class="deliverables-box">
+                    <h3>📦 O que Entregar</h3>
+                    <div class="deliverable-item">
+                        <strong>1. Máquina Virtual configurada</strong> com todos os serviços funcionando
+                    </div>
+                    <div class="deliverable-item">
+                        <strong>2. Documentação técnica</strong> (PDF ou Google Docs) explicando cada configuração
+                    </div>
+                    <div class="deliverable-item">
+                        <strong>3. Prints de tela</strong> comprovando funcionamento de cada serviço
+                    </div>
+                    <div class="deliverable-item">
+                        <strong>4. Diagrama de rede</strong> mostrando como tudo está conectado
+                    </div>
+                    <div class="deliverable-item">
+                        <strong>5. Apresentação</strong> de 10-15 minutos explicando o projeto
+                    </div>
+                    <div class="deliverable-item">
+                        <strong>6. Demonstração ao vivo</strong> de 2-3 serviços funcionando
+                    </div>
+                </div>
+
+                <!-- Critérios de Avaliação -->
+                <div class="evaluation-box">
+                    <h3>⭐ Critérios de Avaliação (10,0 pontos)</h3>
+                    <div class="evaluation-item">
+                        <span><strong>Funcionamento dos serviços</strong> - Todos instalados e operacionais</span>
+                        <span class="points">3,0</span>
+                    </div>
+                    <div class="evaluation-item">
+                        <span><strong>Integração</strong> - Serviços trabalham juntos de forma coerente</span>
+                        <span class="points">2,0</span>
+                    </div>
+                    <div class="evaluation-item">
+                        <span><strong>Documentação</strong> - Clara, completa e bem organizada</span>
+                        <span class="points">2,0</span>
+                    </div>
+                    <div class="evaluation-item">
+                        <span><strong>Apresentação</strong> - Explicação clara e domínio do conteúdo</span>
+                        <span class="points">2,0</span>
+                    </div>
+                    <div class="evaluation-item">
+                        <span><strong>Criatividade</strong> - Soluções inovadoras e diferenciadas</span>
+                        <span class="points">1,0</span>
+                    </div>
+                </div>
+
+                <!-- Prazo -->
+                <div class="deadline-box">
+                    <h3>⏰ Prazo de Entrega</h3>
+                    <p>📅 07 de Novembro de 2025</p>
+                    <p style="font-size: 1.2em; margin-top: 10px;">Apresentação em sala de aula</p>
+                </div>
+
+                <!-- Dicas -->
+                <div class="warning-box">
+                    <h3>💡 Dicas Importantes</h3>
+                    <div class="requirement-item">Comece configurando o básico (IP, rede) antes dos serviços</div>
+                    <div class="requirement-item">Teste cada serviço individualmente antes de integrá-los</div>
+                    <div class="requirement-item">Documente conforme avança - não deixe para o final!</div>
+                    <div class="requirement-item">Use o Webmin para facilitar configurações</div>
+                    <div class="requirement-item">Peça ajuda quando precisar - trabalho em grupo permitido!</div>
+                    <div class="requirement-item">Faça backups da VM antes de mudanças grandes</div>
+                </div>
+
+                <!-- Mensagem Final -->
+                <div class="success-box">
+                    <h2>🎓 Mensagem Final</h2>
+                    <p>
+                        Este projeto é a <strong>culminação</strong> de tudo que você aprendeu no 3º bimestre!<br>
+                        É sua chance de mostrar que domina a criação de uma <strong>infraestrutura de rede completa</strong>.<br><br>
+                        Trabalhe com dedicação, seja criativo e mostre seu conhecimento!<br><br>
+                        <strong style="font-size: 1.3em;">Você consegue! 🚀💪</strong>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
