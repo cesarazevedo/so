@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -84,6 +85,62 @@
         .project-header p {
             font-size: 1.5em;
             opacity: 0.95;
+        }
+
+        /* DESTAQUE PARA O TEMPLATE */
+        .template-download-box {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 35px;
+            border-radius: 20px;
+            margin: 40px 0;
+            border: 5px solid #047857;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(16, 185, 129, 0.4);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 15px 35px rgba(16, 185, 129, 0.4); }
+            50% { transform: scale(1.02); box-shadow: 0 20px 45px rgba(16, 185, 129, 0.6); }
+        }
+
+        .template-download-box h3 {
+            color: white;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .template-download-box p {
+            font-size: 1.4em;
+            line-height: 1.8;
+            margin-bottom: 25px;
+        }
+
+        .download-button {
+            display: inline-block;
+            background: white;
+            color: #059669;
+            padding: 20px 50px;
+            font-size: 1.5em;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            margin-top: 15px;
+        }
+
+        .download-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+            background: #f0fdf4;
+        }
+
+        .download-button::before {
+            content: "⬇️ ";
+            font-size: 1.2em;
         }
 
         .objective-box {
@@ -196,176 +253,182 @@
         }
 
         .deliverable-item::before {
-            content: "📋";
+            content: "📦";
             margin-right: 15px;
             font-size: 1.2em;
         }
 
-        .topology-box {
-            background: #2d3748;
+        .warning-box {
+            background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
             color: white;
             padding: 30px;
             border-radius: 15px;
             margin: 25px 0;
-            border: 3px solid #667eea;
+            border-left: 5px solid #9c4221;
+        }
+
+        .warning-box h3 {
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .topology-box {
+            background: linear-gradient(135deg, #805ad5 0%, #6b46c1 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border-left: 5px solid #553c9a;
         }
 
         .topology-box h3 {
-            color: #67e8f9;
+            color: white;
             margin-bottom: 20px;
         }
 
         .topology-item {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
             padding: 15px;
-            margin: 10px 0;
             border-radius: 10px;
-            border-left: 4px solid #38bdf8;
+            margin: 15px 0;
+            font-size: 1.2em;
+            line-height: 1.6;
         }
 
-        .topology-item strong {
-            color: #67e8f9;
-        }
-
-        .evaluation-box {
-            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-            color: #78350f;
+        .integration-diagram {
+            background: linear-gradient(135deg, #38b2ac 0%, #319795 100%);
+            color: white;
             padding: 30px;
             border-radius: 15px;
             margin: 25px 0;
-            border-left: 5px solid #92400e;
+        }
+
+        .integration-diagram h3 {
+            color: white;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .diagram-flow {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .flow-item {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 20px 30px;
+            border-radius: 12px;
+            font-size: 1.2em;
+            font-weight: 500;
+            text-align: center;
+            width: 80%;
+            margin: 10px 0;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .flow-arrow {
+            font-size: 2em;
+            margin: 5px 0;
+        }
+
+        .evaluation-box {
+            background: linear-gradient(135deg, #9f7aea 0%, #805ad5 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 25px 0;
         }
 
         .evaluation-box h3 {
-            color: #78350f;
-            margin-bottom: 20px;
+            color: white;
+            margin-bottom: 25px;
         }
 
         .evaluation-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin: 12px 0;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
             font-size: 1.2em;
-            background: rgba(255,255,255,0.3);
-            padding: 12px;
-            border-radius: 8px;
-        }
-
-        .evaluation-item strong {
-            color: #78350f;
         }
 
         .points {
-            background: #78350f;
-            color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
+            background: white;
+            color: #805ad5;
+            padding: 8px 20px;
+            border-radius: 8px;
             font-weight: bold;
+            font-size: 1.3em;
         }
 
-        .warning-box {
+        .deadline-box {
             background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
             color: white;
-            padding: 25px;
+            padding: 40px;
             border-radius: 15px;
-            margin: 20px 0;
-            border-left: 5px solid #c53030;
+            text-align: center;
+            font-size: 1.5em;
+            margin: 25px 0;
+            border: 4px solid #c53030;
+        }
+
+        .deadline-box h3 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 2em;
         }
 
         .success-box {
             background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
             color: white;
-            padding: 30px;
-            border-radius: 15px;
-            margin: 25px 0;
+            padding: 40px;
+            border-radius: 20px;
             text-align: center;
+            margin: 40px 0;
+            border: 4px solid #2f855a;
         }
 
         .success-box h2 {
             color: white;
             border: none;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         .success-box p {
             font-size: 1.3em;
-            line-height: 1.6;
-        }
-
-        .deadline-box {
-            background: linear-gradient(135deg, #9f7aea 0%, #805ad5 100%);
-            color: white;
-            padding: 25px;
-            border-radius: 15px;
-            margin: 20px 0;
-            text-align: center;
-            border: 3px solid #6b46c1;
-        }
-
-        .deadline-box h3 {
-            color: white;
-            margin-bottom: 10px;
-        }
-
-        .deadline-box p {
-            font-size: 1.5em;
-            font-weight: bold;
-        }
-
-        .integration-diagram {
-            background: #f7fafc;
-            padding: 30px;
-            border-radius: 15px;
-            margin: 25px 0;
-            border: 3px solid #cbd5e0;
-        }
-
-        .integration-diagram h3 {
-            text-align: center;
-            color: #2d3748;
-            margin-bottom: 25px;
-        }
-
-        .diagram-flow {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .flow-item {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            font-size: 1.2em;
-            font-weight: bold;
-        }
-
-        .flow-arrow {
-            text-align: center;
-            font-size: 2em;
-            color: #667eea;
-        }
-
-        @media (max-width: 1200px) {
-            .services-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
+            line-height: 1.8;
         }
 
         @media (max-width: 768px) {
             .services-grid {
                 grid-template-columns: 1fr;
             }
-            
+
             .slide h1 {
                 font-size: 2.5em;
             }
-            
+
             .project-header h1 {
                 font-size: 2.5em;
+            }
+
+            .flow-item {
+                width: 95%;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+
+            .slide {
+                margin: 0;
+                page-break-after: always;
             }
         }
     </style>
@@ -376,19 +439,37 @@
             <div class="content">
                 <!-- Cabeçalho do Projeto -->
                 <div class="project-header">
-                    <h1>🚀 PROJETO FINAL</h1>
-                    <p>Infraestrutura de Rede Completa com Serviços Integrados</p>
-                    <p style="font-size: 1.2em; margin-top: 15px;">3º Bimestre • Sistemas Operacionais de Redes</p>
+                    <h1>🌐 Projeto Final</h1>
+                    <p>Infraestrutura de Rede Completa</p>
+                    <p style="font-size: 1.2em; margin-top: 10px;">3º Bimestre - Redes de Computadores</p>
+                </div>
+
+                <!-- SEÇÃO DESTACADA DO TEMPLATE -->
+                <div class="template-download-box">
+                    <h3>🎁 TEMPLATE DA MÁQUINA VIRTUAL</h3>
+                    <p>
+                        <strong>Para facilitar seu trabalho, disponibilizamos um template base!</strong><br>
+                        É uma máquina virtual Ubuntu já configurada para você começar o projeto.<br><br>
+                        📌 <strong>Baixe aqui e comece seu projeto agora mesmo!</strong>
+                    </p>
+                    <a href="https://drive.google.com/drive/folders/0BzPRpm74M1IuaDdxQzdQNmxIeGM?resourcekey=0-L1hrEabQr4zniDFpKzxS2Q&usp=sharing" 
+                       target="_blank" 
+                       class="download-button">
+                        BAIXAR TEMPLATE DA VM
+                    </a>
+                    <p style="font-size: 1.1em; margin-top: 25px; opacity: 0.95;">
+                        💡 O template já vem com o Ubuntu instalado e otimizado.<br>
+                        Você vai configurar todos os serviços nele!
+                    </p>
                 </div>
 
                 <!-- Objetivo -->
                 <div class="objective-box">
                     <h3>🎯 Objetivo do Projeto</h3>
                     <p>
-                        Criar uma <strong>infraestrutura de rede completa e funcional</strong> integrando TODOS os serviços 
-                        aprendidos no bimestre: DHCP, SAMBA, BIND9, Apache, SQUID e Webmin. 
-                        O projeto simula um <strong>ambiente corporativo real</strong> onde os serviços trabalham juntos 
-                        de forma integrada e organizada.
+                        Criar uma <strong>infraestrutura de rede completa e funcional</strong> em uma máquina virtual Ubuntu,
+                        integrando <strong>6 serviços essenciais</strong> que trabalham juntos de forma harmônica. 
+                        É como montar um mini datacenter!
                     </p>
                 </div>
 
@@ -552,7 +633,8 @@
                 <!-- Dicas -->
                 <div class="warning-box">
                     <h3>💡 Dicas Importantes</h3>
-                    <div class="requirement-item">Comece configurando o básico (IP, rede) antes dos serviços</div>
+                    <div class="requirement-item">Comece baixando o template da VM (link no início da página!)</div>
+                    <div class="requirement-item">Configure o básico (IP, rede) antes dos serviços</div>
                     <div class="requirement-item">Teste cada serviço individualmente antes de integrá-los</div>
                     <div class="requirement-item">Documente conforme avança - não deixe para o final!</div>
                     <div class="requirement-item">Use o Webmin para facilitar configurações</div>
