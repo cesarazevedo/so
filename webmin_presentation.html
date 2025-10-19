@@ -871,6 +871,10 @@ sudo systemctl status webmin.service
             slides.forEach((slide, i) => {
                 slide.classList.toggle('active', i === index);
             });
+            window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
             
             document.getElementById('current-slide').textContent = index + 1;
             document.getElementById('prevBtn').disabled = index === 0;
