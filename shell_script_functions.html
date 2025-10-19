@@ -646,6 +646,10 @@ source cpu_info.sh<br>
                 
                 // Atualizar contador
                 document.getElementById('current-slide').textContent = slideNumber;
+                    window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
             }
         }
         
