@@ -1238,6 +1238,10 @@ echo <span class="string">"👋 Obrigado por usar o contador!"</span>
                 
                 // Atualizar contador
                 document.getElementById('current-slide').textContent = slideNumber;
+                window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
             }
         }
         
