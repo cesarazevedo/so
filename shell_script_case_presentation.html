@@ -1768,6 +1768,10 @@ sim|yes|y      <span class="comment"># múltiplas opções</span><br>
                 
                 // Atualizar contador
                 document.getElementById('current-slide').textContent = slideNumber;
+                    window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
             }
         }
         
