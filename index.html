@@ -5,7 +5,111 @@
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Apostila Virtual da disciplina Fundamentos de Sistemas Operacionais e Sistemas Operacionais de Redes</title>
       <style>
-         
+
+         /* NOVO: Estilos do Cronograma com Botão */
+.cronograma-container {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 20px;
+    margin: 30px 0;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.cronograma-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    padding: 12px 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1em;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    margin: 0 auto;
+    display: inline-flex;
+}
+
+.cronograma-toggle:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.cronograma-toggle .arrow {
+    transition: transform 0.3s ease;
+}
+
+.cronograma-toggle.active .arrow {
+    transform: rotate(180deg);
+}
+
+.cronograma-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease;
+}
+
+.cronograma-content.show {
+    max-height: 5000px;
+    margin-top: 20px;
+}
+
+.cronograma-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.cronograma-table th {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 12px 8px;
+    text-align: center;
+    font-size: 0.9em;
+    border: 1px solid #ddd;
+}
+
+.cronograma-table td {
+    padding: 10px 8px;
+    border: 1px solid #ddd;
+    font-size: 0.85em;
+    vertical-align: top;
+}
+
+/* Células verdes = conteúdo ministrado */
+.cronograma-table tr.ministrado {
+    background-color: #4ade80;
+}
+
+.cronograma-table tr.ministrado td {
+    background-color: #4ade80;
+    color: #1e3a1e;
+}
+
+/* Células brancas = não ministrado */
+.cronograma-table tr.pendente {
+    background-color: white;
+}
+
+.cronograma-table tr.pendente td {
+    background-color: white;
+}
+
+.cronograma-table td:first-child {
+    text-align: center;
+    font-weight: bold;
+}
+
+.cronograma-table td:nth-child(2) {
+    text-align: center;
+}
+
+.cronograma-table td:nth-child(3) {
+    text-align: center;
+}
         /* Cronograma Semanal */
 .weekly-schedule {
     background: rgba(255, 255, 255, 0.95);
@@ -632,6 +736,94 @@
                   </div>
                </div>
             </div>
+            <!-- NOVO: Cronograma com Botão Mostrar/Ocultar -->
+<div class="cronograma-container">
+   <div style="text-align: center;">
+      <button class="cronograma-toggle" onclick="toggleCronograma()">
+         <span>📅 Ver Cronograma Detalhado</span>
+         <span class="arrow">▼</span>
+      </button>
+   </div>
+   
+   <div class="cronograma-content" id="cronogramaContent">
+      <table class="cronograma-table">
+         <thead>
+            <tr>
+               <th>Semana</th>
+               <th>Aulas</th>
+               <th>Data</th>
+               <th>Tema da aula</th>
+               <th>Tópicos</th>
+               <th>Observação/atividade</th>
+            </tr>
+         </thead>
+         <tbody>
+            <!-- Semana 1 - MINISTRADO (verde) -->
+            <tr class="ministrado">
+               <td rowspan="2">1</td>
+               <td>2</td>
+               <td>22/2</td>
+               <td>Apresentação da disciplina/<br>Sistemas Operacionais/<br>Introdução ao Linux</td>
+               <td>Disciplina: objetivos, metodologia, avaliações, drive; rotina e prática profissional, dúvidas; dinâmica de grupo</td>
+               <td>dinâmica de grupo</td>
+            </tr>
+            <tr class="ministrado">
+               <td>2</td>
+               <td>23/2</td>
+               <td>Princípios básicos de um SO</td>
+               <td>Elaboração e apresentação de um <em>pitch</em> sobre distribuição Linux</td>
+               <td>5 pontos</td>
+            </tr>
+
+            <!-- Semana 2 - MINISTRADO (verde) -->
+            <tr class="ministrado">
+               <td rowspan="2">2</td>
+               <td>2</td>
+               <td>29/2</td>
+               <td>Ubuntu Linux/Virtual Box</td>
+               <td>Revisão; Conceito de Virtualização: conceitos, tipos, conhecendo o VirtualBox; Ubuntu: histórico, obtendo o Ubuntu, Instalando o Ubuntu</td>
+               <td></td>
+            </tr>
+            <tr class="ministrado">
+               <td>2</td>
+               <td>1/3</td>
+               <td>Estrutura de diretórios/manipulação de diretórios</td>
+               <td>Revisão; Estrutura de diretórios; Manipulando diretórios</td>
+               <td></td>
+            </tr>
+
+            <!-- Semana 3 - PENDENTE (branco) -->
+            <tr class="pendente">
+               <td rowspan="2">3</td>
+               <td>2</td>
+               <td>7/3</td>
+               <td>Manipulação de arquivos</td>
+               <td>* Revisão<br>* conclusão do exercício anterior<br>* Comandos para manipulação de arquivos, cat, tac, rm, cp, mv<br>* Exercícios</td>
+               <td></td>
+            </tr>
+            <tr class="pendente">
+               <td>2</td>
+               <td>8/3</td>
+               <td>Manipulação de arquivos e diretórios</td>
+               <td>Formulário</td>
+               <td>15 pontos</td>
+            </tr>
+
+            <!-- Adicione mais semanas aqui... -->
+         </tbody>
+      </table>
+      
+      <div style="margin-top: 20px; padding: 15px; background: #e0f2fe; border-radius: 10px; text-align: center;">
+         <p style="color: #0c4a6e; font-weight: 600;">
+            <span style="display: inline-block; width: 20px; height: 20px; background: #4ade80; border-radius: 4px; margin-right: 8px; vertical-align: middle;"></span>
+            Verde = Conteúdo já ministrado
+            <span style="margin: 0 20px;">|</span>
+            <span style="display: inline-block; width: 20px; height: 20px; background: white; border: 2px solid #ddd; border-radius: 4px; margin-right: 8px; vertical-align: middle;"></span>
+            Branco = Aguardando
+         </p>
+      </div>
+   </div>
+</div>
             <div class="chapters-grid">
                <!-- Capítulo 1 - Introdução ao Linux -->
                <a href="intro_so.html" class="chapter-card intro completed">
@@ -1167,6 +1359,21 @@
                  document.querySelector('.progress-fill').style.width = '50%';
              }, 1000);
          });
+         // Função para mostrar/ocultar o cronograma
+function toggleCronograma() {
+    const content = document.getElementById('cronogramaContent');
+    const button = document.querySelector('.cronograma-toggle');
+    const buttonText = button.querySelector('span:first-child');
+    
+    content.classList.toggle('show');
+    button.classList.toggle('active');
+    
+    if (content.classList.contains('show')) {
+        buttonText.textContent = '📅 Ocultar Cronograma';
+    } else {
+        buttonText.textContent = '📅 Ver Cronograma Detalhado';
+    }
+}
       </script>
    </body>
 </html>
