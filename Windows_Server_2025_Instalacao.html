@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instalação do Windows Server 2025</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .presentation {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide {
+            min-height: 100vh;
+            padding: 60px 40px;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            background: white;
+            margin: 20px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        .slide h1 {
+            font-size: 3.5em;
+            color: #4a5568;
+            text-align: center;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .slide h2 {
+            font-size: 2.8em;
+            color: #2d3748;
+            margin-bottom: 30px;
+            border-bottom: 4px solid #667eea;
+            padding-bottom: 15px;
+        }
+
+        .slide h3 {
+            font-size: 2.2em;
+            color: #4a5568;
+            margin: 25px 0 15px 0;
+        }
+
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        .bullet-point {
+            display: flex;
+            align-items: flex-start;
+            margin: 15px 0;
+            font-size: 1.3em;
+            line-height: 1.5;
+        }
+
+        .bullet-point::before {
+            content: "⚙️";
+            margin-right: 15px;
+            font-size: 1.2em;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #4c51bf;
+        }
+
+        .example-box {
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #2c5aa0;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #c53030;
+        }
+
+        .step-box {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #2f855a;
+        }
+
+        .terminal-box {
+            background: #2d3748;
+            color: #00ff00;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #00ff00;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            padding: 15px 25px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .nav-btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .nav-btn:disabled {
+            background: #a0a0a0;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(255,255,255,0.9);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #4a5568;
+            z-index: 1000;
+        }
+
+        .center-text {
+            text-align: center;
+        }
+
+        .large-text {
+            font-size: 1.4em;
+            line-height: 1.6;
+        }
+
+        .command-example {
+            background: #2d3748;
+            color: #00ff41;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            border-left: 4px solid #00ff41;
+        }
+
+        .step-number {
+            background: #667eea;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin: 0 auto 20px;
+        }
+
+        .grid-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 20px 0;
+        }
+
+        .step-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid #e2e8f0;
+            text-align: center;
+        }
+
+        .analogy-box {
+            background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #c05621;
+        }
+
+        .important-note {
+            background: #fff5f5;
+            border: 2px solid #fc8181;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #742a2a;
+        }
+
+        .success-box {
+            background: #f0fff4;
+            border: 2px solid #68d391;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #22543d;
+        }
+
+        .image-box {
+            background: #f8f9fa;
+            border: 2px solid #e2e8f0;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            color: #718096;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">7</span>
+        </div>
+
+        <!-- Slide 1: Título -->
+        <div class="slide active">
+            <div class="content center-text">
+                <h1>🖥️ Windows Server 2025</h1>
+                <h2 style="border: none; color: #667eea;">Instalação e Configuração Iniciais</h2>
+                <div class="highlight-box large-text">
+                    <strong>Tutorial Prático Passo a Passo</strong><br>
+                    Configure seu primeiro servidor Windows 2025<br>
+                    De forma simples e profissional
+                </div>
+                
+                <div class="example-box" style="margin-top: 40px;">
+                    <h3>🎯 Objetivo da Aula</h3>
+                    <p style="font-size: 1.3em; margin: 10px 0;">
+                        <strong>Instalar e configurar Windows Server 2025</strong><br>
+                        Desde a criação da máquina virtual até o primeiro acesso
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: Requisitos e Configuração -->
+        <div class="slide">
+            <div class="content">
+                <h2>🖥️ Configuração da Máquina Virtual</h2>
+                
+                <div class="highlight-box center-text">
+                    <h3>⚙️ Especificações Exatas</h3>
+                    <p style="font-size: 1.3em;">
+                        Configure exatamente assim para o curso
+                    </p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>💾 Hardware</h3>
+                        <div class="command-example" style="font-size: 1.2em;">
+Processador: 2 núcleos<br>
+RAM: 4 GB (4096 MB)<br>
+Disco: 60 GB (dinâmico)<br>
+Tipo: SATA
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🌐 Placas de Rede</h3>
+                        <div class="command-example" style="font-size: 1.2em;">
+Adaptador 1: NAT<br>
+Adaptador 2: Rede Interna
+                        </div>
+                    </div>
+                </div>
+
+                <div class="important-note">
+                    <h3>⚠️ IMPORTANTE - NÃO ESQUEÇA!</h3>
+                    <div class="bullet-point">Duas placas de rede: NAT + Rede Interna</div>
+                    <div class="bullet-point">4 GB de RAM (não menos!)</div>
+                    <div class="bullet-point">2 núcleos de processador</div>
+                    <div class="bullet-point">Idioma de instalação: Inglês (English - United States)</div>
+                </div>
+
+                <div class="analogy-box center-text">
+                    <h3>💡 Por que Duas Placas de Rede?</h3>
+                    <p>NAT = Acesso à internet<br>
+                    Rede Interna = Comunicação com outras VMs</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Criando a Máquina Virtual -->
+        <div class="slide">
+            <div class="content">
+                <h2>🔧 Passo 1: Criar Máquina Virtual</h2>
+                
+                <div class="step-number">1</div>
+                
+                <div class="step-box">
+                    <h3>🎯 O Que Fazer</h3>
+                    <p>Crie uma nova máquina virtual no VirtualBox com as configurações exatas</p>
+                </div>
+
+                <div class="command-example" style="font-size: 1.2em;">
+1. Clique em "Novo" no VirtualBox<br>
+2. Configure conforme slide anterior<br>
+3. Defina as 2 placas de rede<br>
+4. Conecte a ISO do Windows Server 2025
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📝 Configurações Básicas</h3>
+                        <div class="command-example">
+Nome: Windows-Server-2025<br>
+Tipo: Microsoft Windows<br>
+Versão: Windows 2022+ (2025)
+                        </div>
+                    </div>
+                    <div>
+                        <h3>💾 Armazenamento</h3>
+                        <div class="command-example">
+Controlador: SATA<br>
+Tipo: VDI<br>
+Alocação: Dinâmica<br>
+Tamanho: 60 GB
+                        </div>
+                    </div>
+                </div>
+
+                <div class="important-note">
+                    <h3>⚠️ Configurações de Rede OBRIGATÓRIAS</h3>
+                    <div class="bullet-point">Adaptador 1: NAT (internet)</div>
+                    <div class="bullet-point">Adaptador 2: Rede Interna</div>
+                    <div class="bullet-point">ISO anexada à unidade óptica</div>
+                </div>
+
+                <div class="success-box center-text">
+                    <h3>✅ Pronto!</h3>
+                    <p>Máquina criada com 4 GB RAM e 2 núcleos.<br>
+                    Agora clique em "Iniciar"</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Instalação Básica -->
+        <div class="slide">
+            <div class="content">
+                <h2>⚡ Passo 2: Iniciar e Instalar</h2>
+                
+                <div class="step-number">2</div>
+                
+                <div class="step-box">
+                    <h3>🎯 O Que Fazer</h3>
+                    <p>Ligar a VM e seguir o assistente de instalação</p>
+                </div>
+
+                <div class="grid-steps">
+                    <div class="step-card">
+                        <h4>1️⃣ Iniciar VM</h4>
+                        <p>Clique em "Start"<br>
+                        Aguarde carregar</p>
+                    </div>
+                    
+                    <div class="step-card">
+                        <h4>2️⃣ Idioma</h4>
+                        <p>English<br>
+                        (United States)</p>
+                    </div>
+
+                    <div class="step-card">
+                        <h4>3️⃣ Instalar Agora</h4>
+                        <p>Clique em<br>
+                        "Install Now"</p>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h3>⚠️ Idioma de Instalação</h3>
+                    <p><strong>SELECIONE: English (United States)</strong></p>
+                    <p>Este é o idioma correto para o curso</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🔧 Tipo de Instalação</h3>
+                        <div class="bullet-point">Custom (Recomendado)</div>
+                        <div class="bullet-point">Limpa e controlada</div>
+                        <div class="bullet-point">Clique em "Next"</div>
+                    </div>
+                    <div>
+                        <h3>💾 Seleção de Disco</h3>
+                        <div class="bullet-point">Escolha o disco criado</div>
+                        <div class="bullet-point">Clique em "Next"</div>
+                        <div class="bullet-point">Aguarde 15-20 minutos</div>
+                    </div>
+                </div>
+
+                <div class="success-box center-text">
+                    <h3>✅ Primeira Reinicialização</h3>
+                    <p>O sistema vai reiniciar automaticamente.<br>
+                    Deixe completar sem interrupção.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Configuração do Administrador -->
+        <div class="slide">
+            <div class="content">
+                <h2>🔐 Passo 3: Criar Conta Administrator</h2>
+                
+                <div class="step-number">3</div>
+                
+                <div class="step-box">
+                    <h3>🎯 O Que Fazer</h3>
+                    <p>Defina a senha do administrador conforme o curso</p>
+                </div>
+
+                <div class="highlight-box center-text" style="font-size: 1.4em;">
+                    <h3>🔐 Senha do Administrator</h3>
+                    <p style="font-size: 1.5em; margin: 20px 0;">
+                        <strong>Info4jc</strong>
+                    </p>
+                    <p>(Exatamente assim, com maiúsculas)</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📝 Como Fazer</h3>
+                        <div class="bullet-point">Clique em "Customize settings"</div>
+                        <div class="bullet-point">Username: Administrator</div>
+                        <div class="bullet-point">Digite a senha</div>
+                        <div class="bullet-point">Confirme a senha</div>
+                    </div>
+                    <div>
+                        <h3>✅ Confirmação</h3>
+                        <div class="bullet-point">Clique em "Finish"</div>
+                        <div class="bullet-point">Aguarde processar</div>
+                        <div class="bullet-point">Sistema vai reiniciar</div>
+                    </div>
+                </div>
+
+                <div class="command-example" style="font-size: 1.3em;">
+SENHA: Info4jc
+                </div>
+
+                <div class="warning-box">
+                    <h3>⚠️ IMPORTANTE!</h3>
+                    <p>Use EXATAMENTE a senha: <strong>Info4jc</strong></p>
+                    <p>Se errar, terá que reinstalar!</p>
+                </div>
+
+                <div class="success-box center-text">
+                    <h3>✅ Pronto!</h3>
+                    <p>Após definir a senha,<br>
+                    clique em "Finish" e aguarde.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Network Discovery -->
+        <div class="slide">
+            <div class="content">
+                <h2>🌐 Passo 4: Network Discovery</h2>
+                
+                <div class="step-number">4</div>
+                
+                <div class="step-box">
+                    <h3>🎯 O Que Fazer</h3>
+                    <p>Responda sobre descoberta de rede</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>❓ Pergunta</h3>
+                        <p style="font-size: 1.3em; margin: 20px 0;">
+                            "Do you want to allow your PC to be discoverable<br>
+                            by other PCs and devices on this network?"
+                        </p>
+                    </div>
+                    <div>
+                        <h3>✅ Resposta Correta</h3>
+                        <p style="font-size: 1.3em; margin: 20px 0;">
+                            <strong>Clique em "Yes"</strong>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="success-box center-text">
+                    <h3>✅ Próxima Etapa</h3>
+                    <p>Após responder "Yes",<br>
+                    o servidor estará pronto!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Conclusão -->
+        <div class="slide">
+            <div class="content">
+                <h2>🎉 Conclusão</h2>
+                
+                <div class="success-box center-text">
+                    <h3>✅ Windows Server 2025 Instalado!</h3>
+                    <p style="font-size: 1.4em;">
+                        Sua máquina virtual está<br>
+                        totalmente pronta para uso!
+                    </p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📋 Configuração Realizada</h3>
+                        <div class="command-example">
+✓ 4 GB RAM<br>
+✓ 2 Processadores<br>
+✓ 60 GB Disco<br>
+✓ 2 Placas de Rede<br>
+✓ Inglês (US)<br>
+✓ Senha: Info4jc
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🎯 Acesso</h3>
+                        <div class="command-example">
+User: Administrator<br>
+Password: Info4jc<br><br>
+Servidor pronto para<br>
+próximos passos!
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight-box center-text">
+                    <h3>🚀 Parabéns!</h3>
+                    <p>Você completou com sucesso a instalação<br>
+                    do Windows Server 2025!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">⬅️ Anterior</button>
+            <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Próximo ➡️</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('total-slides').textContent = totalSlides;
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.classList.toggle('active', i === index);
+            });
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+            
+            document.getElementById('current-slide').textContent = index + 1;
+            document.getElementById('prevBtn').disabled = index === 0;
+            document.getElementById('nextBtn').disabled = index === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            const newSlide = currentSlide + direction;
+            if (newSlide >= 0 && newSlide < totalSlides) {
+                currentSlide = newSlide;
+                showSlide(currentSlide);
+            }
+        }
+
+        // Navegação por teclado
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+            if (e.key === 'Home') {
+                currentSlide = 0;
+                showSlide(currentSlide);
+            }
+            if (e.key === 'End') {
+                currentSlide = totalSlides - 1;
+                showSlide(currentSlide);
+            }
+        });
+
+        // Inicializar
+        showSlide(0);
+    </script>
+</body>
+</html>
