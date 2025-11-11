@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuração de Nome e IP Estático - Windows Server 2025</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .presentation {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide {
+            min-height: 100vh;
+            padding: 60px 40px;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            background: white;
+            margin: 20px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        .slide h1 {
+            font-size: 3.5em;
+            color: #4a5568;
+            text-align: center;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .slide h2 {
+            font-size: 2.8em;
+            color: #2d3748;
+            margin-bottom: 30px;
+            border-bottom: 4px solid #667eea;
+            padding-bottom: 15px;
+        }
+
+        .slide h3 {
+            font-size: 2.2em;
+            color: #4a5568;
+            margin: 25px 0 15px 0;
+        }
+
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        .bullet-point {
+            display: flex;
+            align-items: flex-start;
+            margin: 15px 0;
+            font-size: 1.3em;
+            line-height: 1.5;
+        }
+
+        .bullet-point::before {
+            content: "➡️";
+            margin-right: 15px;
+            font-size: 1.2em;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #4c51bf;
+        }
+
+        .example-box {
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #2c5aa0;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #c53030;
+        }
+
+        .step-box {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #2f855a;
+        }
+
+        .analogy-box {
+            background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #c05621;
+        }
+
+        .important-note {
+            background: #fff5f5;
+            border: 2px solid #fc8181;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #742a2a;
+        }
+
+        .success-box {
+            background: #f0fff4;
+            border: 2px solid #68d391;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #22543d;
+        }
+
+        .command-example {
+            background: #2d3748;
+            color: #00ff41;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            border-left: 4px solid #00ff41;
+            font-size: 1.1em;
+        }
+
+        .step-number {
+            background: #667eea;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin: 0 auto 20px;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            padding: 15px 25px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .nav-btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .nav-btn:disabled {
+            background: #a0a0a0;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(255,255,255,0.9);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #4a5568;
+            z-index: 1000;
+        }
+
+        .center-text {
+            text-align: center;
+        }
+
+        .large-text {
+            font-size: 1.4em;
+            line-height: 1.6;
+        }
+
+        .grid-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 20px 0;
+        }
+
+        .step-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid #e2e8f0;
+            text-align: center;
+        }
+
+        .network-config {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: monospace;
+            font-size: 1.1em;
+            color: #2d3748;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">11</span>
+        </div>
+
+        <!-- Slide 1: Título -->
+        <div class="slide active">
+            <div class="content center-text">
+                <h1>⚙️ Configuração Inicial do Servidor</h1>
+                <h2 style="border: none; color: #667eea;">Nome e IP Estático no Windows Server 2025</h2>
+                <div class="highlight-box large-text">
+                    <strong>Configure seu servidor profissionalmente</strong><br>
+                    Defina o nome do servidor e IP estático na rede interna<br>
+                    Essencial para administração de infraestrutura
+                </div>
+                
+                <div class="example-box" style="margin-top: 40px;">
+                    <h3>🎯 Objetivo da Aula</h3>
+                    <p style="font-size: 1.3em; margin: 10px 0;">
+                        <strong>Configurar nome e IP estático</strong><br>
+                        Preparando o servidor para funcionar em rede
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: Pré-requisitos -->
+        <div class="slide">
+            <div class="content">
+                <h2>📋 Pré-requisitos</h2>
+                
+                <div class="step-box">
+                    <h3>🎯 O que Você Precisa</h3>
+                    <p style="font-size: 1.2em;">
+                        Antes de começar, certifique-se que tem:
+                    </p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>✅ Requisitos</h3>
+                        <div class="bullet-point">Windows Server 2025 instalado</div>
+                        <div class="bullet-point">Logado como Administrator</div>
+                        <div class="bullet-point">Senha: Info4jc (já cadastrada)</div>
+                        <div class="bullet-point">Acesso ao menu Iniciar</div>
+                        <div class="bullet-point">Placa de rede configurada (Rede Interna)</div>
+                    </div>
+                    <div>
+                        <h3>📝 Informações Necessárias</h3>
+                        <div class="bullet-point">Novo nome do servidor: SERVER</div>
+                        <div class="bullet-point">IP desejado: 192.168.1.100</div>
+                        <div class="bullet-point">Máscara: 255.255.255.0</div>
+                        <div class="bullet-point">Gateway: 192.168.1.1</div>
+                        <div class="bullet-point">DNS: 192.168.1.1</div>
+                    </div>
+                </div>
+
+                <div class="important-note">
+                    <h3>⚠️ Atenção!</h3>
+                    <div class="bullet-point">O servidor está inicialmente com IP dinâmico (DHCP)</div>
+                    <div class="bullet-point">Apenas a placa NAT está funcional agora</div>
+                    <div class="bullet-point">A placa Rede Interna será configurada aqui</div>
+                    <div class="bullet-point">Após mudança de nome, servidor vai reiniciar</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Acesso ao Server Manager -->
+        <div class="slide">
+            <div class="content">
+                <h2>🖱️ Passo 1: Acessar o Server Manager</h2>
+                
+                <div class="step-number">1</div>
+                
+                <div class="step-box">
+                    <h3>🎯 O Que Fazer</h3>
+                    <p>Abra o Server Manager para acessar as configurações iniciais</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📍 Como Encontrar</h3>
+                        <div class="bullet-point">Menu Iniciar (canto inferior esquerdo)</div>
+                        <div class="bullet-point">Procure por "Server Manager"</div>
+                        <div class="bullet-point">Clique para abrir</div>
+                    </div>
+                    <div>
+                        <h3>🔍 Alternativa</h3>
+                        <div class="bullet-point">Pressione Windows + S</div>
+                        <div class="bullet-point">Digite "Server Manager"</div>
+                        <div class="bullet-point">Clique no resultado</div>
+                    </div>
+                </div>
+
+                <div class="command-example">
+Server Manager abre automaticamente<br>
+após o login no Windows Server 2025
+                </div>
+
+                <div class="success-box center-text">
+                    <h3>✅ Próximo Passo</h3>
+                    <p>Quando abrir o Server Manager,<br>
+                    procure por "Local Server" no painel esquerdo</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Acessar Local Server -->
+        <div class="slide">
+            <div class="content">
+                <h2>🖱️ Passo 2: Acessar Local Server</h2>
+                
+                <div class="step-number">2</div>
+                
+                <div class="step-box">
+                    <h3>🎯 O Que Fazer</h3>
+                    <p>Clique em "Local Server" para ver as configurações do servidor</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📍 Localização</h3>
+                        <div class="bullet-point">Painel esquerdo do Server Manager</div>
+                        <div class="bullet-point">Clique em "Local Server"</div>
+                        <div class="bullet-point">Verá informações do servidor</div>
+                    </div>
+                    <div>
+                        <h3>📊 O que Verá</h3>
+                        <div class="bullet-point">Computer name (nome aleatório)</div>
+                        <div class="bullet-point">Domain (WORKGROUP)</div>
+                        <div class="bullet-point">Ethernet (conexão de rede)</div>
+                        <div class="bullet-point">IP address (IP dinâmico atual)</div>
+                    </div>
+                </div>
+
+                <div class="analogy-box center-text">
+                    <h3>💡 O que é Local Server?</h3>
+                    <p>É o painel de controle das configurações<br>
+                    específicas do seu servidor local</p>
+                </div>
+
+                <div class="success-box center-text">
+                    <h3>✅ Pronto!</h3>
+                    <p>Agora vamos alterar o nome do servidor<br>
+                    Clique no nome aleatório que aparece</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Alterar Nome do Servidor -->
+        <div class="slide">
+            <div class="content">
+                <h2>📝 Passo 3: Alterar Nome do Servidor</h2>
+                
+                <div class="step-number">3</div>
+                
+                <div class="step-box">
+                    <h3>🎯 O Que Fazer</h3>
+                    <p>Clique no nome atual para abrir as configurações de renomeação</p>
+                </div>
+
+                <div class="grid-steps">
+                    <div class="step-card">
+                        <h4>1️⃣ Localizar Nome</h4>
+                        <p>No painel Local Server,<br>
+                        localize "Computer name"</p>
+                    </div>
+                    
+                    <div class="step-card">
+                        <h4>2️⃣ Clicar no Nome</h4>
+                        <p>Clique sobre o nome<br>
+                        aleatório exibido</p>
+                    </div>
+
+                    <div class="step-card">
+                        <h4>3️⃣ Abrir Propriedades</h4>
+                        <p>Abre a janela<br>
+                        "System Properties"</p>
+                    </div>
+                </div>
+
+                <div class="analogy-box center-text">
+                    <h3>🏷️ Por que Renomear?</h3>
+                    <p>Nome aleatório é confuso.<br>
+                    "SERVER" é profissional e fácil de lembrar!</p>
+                </div>
+
+                <div class="important-note">
+                    <h3>⚠️ Atenção</h3>
+                    <p>Não feche a janela que abrir!</p>
+                    <div class="bullet-point">Você precisará clicar em "Change..."</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Acessar Change Name -->
+        <div class="slide">
+            <div class="content">
+                <h2>🖱️ Passo 4: Acessar Opção de Mudança</h2>
+                
+                <div class="step-number">4</div>
+                
+                <div class="step-box">
+                    <h3>🎯 O Que Fazer</h3>
+                    <p>Na janela System Properties, clique em "Change..."</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📍 Localização do Botão</h3>
+                        <div class="bullet-point">Janela: System Properties</div>
+                        <div class="bullet-point">Abas: General, Computer Name, Hardware, System Protection, Remote</div>
+                        <div class="bullet-point">Escolha a aba "Computer Name"</div>
+                        <div class="bullet-point">Procure pelo botão "Change..."</div>
+                    </div>
+                    <div>
+                        <h3>🔘 Botão "Change..."</h3>
+                        <div class="bullet-point">Está em azul (é um botão)</div>
+                        <div class="bullet-point">Localizado abaixo do nome atual</div>
+                        <div class="bullet-point">Clique uma vez</div>
+                        <div class="bullet-point">Abre nova janela de configuração</div>
+                    </div>
+                </div>
+
+                <div class="success-box center-text">
+                    <h3>✅ Próxima Janela</h3>
+                    <p>"Computer Name/Domain Changes"<br>
+                    é onde você digitará o novo nome!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Digitar Novo Nome -->
+        <div class="slide">
+            <div class="content">
+                <h2>⌨️ Passo 5: Digitar o Novo Nome</h2>
+                
+                <div class="step-number">5</div>
+                
+                <div class="step-box">
+                    <h3>🎯 O Que Fazer</h3>
+                    <p>Digite "SERVER" no campo Computer name</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📝 Passo a Passo</h3>
+                        <div class="bullet-point">Localize o campo "Computer name:"</div>
+                        <div class="bullet-point">Selecione todo o texto atual</div>
+                        <div class="bullet-point">Pressione Ctrl+A para selecionar tudo</div>
+                        <div class="bullet-point">Digite: SERVER</div>
+                    </div>
+                    <div>
+                        <h3>✅ Confirmação</h3>
+                        <div class="command-example">
+SERVER
+(maiúsculas)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="important-note">
+                    <h3>⚠️ Atenção!</h3>
+                    <div class="bullet-point">Use exatamente: SERVER</div>
+                    <div class="bullet-point">Em MAIÚSCULAS</div>
+                    <div class="bullet-point">Sem números ou símbolos</div>
+                    <div class="bullet-point">Máximo 15 caracteres (respeitado)</div>
+                </div>
+
+                <div class="success-box center-text">
+                    <h3>✅ Próximo Passo</h3>
+                    <p>Após digitar "SERVER",<br>
+                    clique em "OK"</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Confirmar Mudança -->
+        <div class="slide">
+            <div class="content">
+                <h2>🔄 Passo 6: Confirmar e Reiniciar</h2>
+                
+                <div class="step-number">6</div>
+                
+                <div class="step-box">
+                    <h3>🎯 O Que Fazer</h3>
+                    <p>Sistema vai notificar que precisa reiniciar</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📢 Mensagem do Sistema</h3>
+                        <div class="bullet-point">Aparecerá uma mensagem:</div>
+                        <div class="command-example">
+"You must restart your 
+computer to apply these 
+changes"
+                        </div>
+                    </div>
+                    <div>
+                        <h3>🔘 O que Clicar</h3>
+                        <div class="bullet-point">Clique em "OK"</div>
+                        <div class="bullet-point">Abre nova janela</div>
+                        <div class="bullet-point">Escolha "Restart Later"</div>
+                        <div class="bullet-point">Finalize a config de IP primeiro</div>
+                    </div>
+                </div>
+
+                <div class="warning-box center-text">
+                    <h3>⚠️ IMPORTANTE!</h3>
+                    <p>Clique em "Restart Later"<br>
+                    Ainda vamos configurar o IP estático!</p>
+                </div>
+
+                <div class="success-box center-text">
+                    <h3>✅ Feche as Janelas</h3>
+                    <p>Clique em "Close" para fechar<br>
+                    System Properties</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Configurar IP Estático -->
+        <div class="slide">
+            <div class="content">
+                <h2>🌐 Passo 7: Configurar IP Estático</h2>
+                
+                <div class="step-number">7</div>
+                
+                <div class="step-box">
+                    <h3>🎯 O Que Fazer</h3>
+                    <p>Configure IP estático na placa Rede Interna</p>
+                </div>
+
+                <div class="analogy-box center-text">
+                    <h3>🏠 IP Estático</h3>
+                    <p>É como um endereço permanente.<br>
+                    Outros computadores sempre encontram você!</p>
+                </div>
+
+                <div class="grid-steps">
+                    <div class="step-card">
+                        <h4>1️⃣ Network Settings</h4>
+                        <p>Menu Iniciar ➜<br>
+                        Settings (engrenagem)</p>
+                    </div>
+                    
+                    <div class="step-card">
+                        <h4>2️⃣ Network</h4>
+                        <p>Procure por "Network"<br>
+                        ou "Advanced network"</p>
+                    </div>
+
+                    <div class="step-card">
+                        <h4>3️⃣ Adapter Options</h4>
+                        <p>"Advanced network settings"<br>
+                        ➜ "More adapter options"</p>
+                    </div>
+                </div>
+
+                <div class="command-example">
+Caminho rápido (PowerShell como Admin):
+ncpa.cpl
+                </div>
+
+                <div class="success-box center-text">
+                    <h3>✅ Resultado</h3>
+                    <p>Abre a janela de Conexões de Rede<br>
+                    com suas placas de rede</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Configurar IPv4 -->
+        <div class="slide">
+            <div class="content">
+                <h2>⚙️ Passo 8: Configurar IPv4</h2>
+                
+                <div class="step-number">8</div>
+                
+                <div class="step-box">
+                    <h3>🎯 O Que Fazer</h3>
+                    <p>Configure IPv4 da placa Rede Interna</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📍 Passo a Passo</h3>
+                        <div class="bullet-point">Localize "Ethernet" (Rede Interna)</div>
+                        <div class="bullet-point">Duplo clique para abrir</div>
+                        <div class="bullet-point">Clique em "Properties"</div>
+                        <div class="bullet-point">Selecione "IPv4 (TCP/IPv4)"</div>
+                        <div class="bullet-point">Clique em "Properties" novamente</div>
+                    </div>
+                    <div>
+                        <h3>📝 Preencher Campos</h3>
+                        <div class="network-config">
+IP Address:
+192.168.1.100
+
+Subnet Mask:
+255.255.255.0
+
+Default Gateway:
+192.168.1.1
+
+Preferred DNS:
+192.168.1.1
+
+Alternate DNS:
+8.8.8.8
+                        </div>
+                    </div>
+                </div>
+
+                <div class="important-note">
+                    <h3>⚠️ Atenção!</h3>
+                    <div class="bullet-point">Selecione "Use the following IP address"</div>
+                    <div class="bullet-point">NÃO deixe "Obtain an IP address automatically"</div>
+                    <div class="bullet-point">Os valores acima são exatos</div>
+                </div>
+
+                <div class="success-box center-text">
+                    <h3>✅ Próxima Etapa</h3>
+                    <p>Após preencher,<br>
+                    clique em "OK"</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Finalização -->
+        <div class="slide">
+            <div class="content">
+                <h2>🎉 Passo 9: Finalização e Restart</h2>
+                
+                <div class="step-number">9</div>
+                
+                <div class="step-box">
+                    <h3>🎯 O Que Fazer</h3>
+                    <p>Feche as janelas e reinicie o servidor</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📋 Checklist Final</h3>
+                        <div class="bullet-point">✅ Nome configurado: SERVER</div>
+                        <div class="bullet-point">✅ IP estático: 192.168.1.100</div>
+                        <div class="bullet-point">✅ Gateway: 192.168.1.1</div>
+                        <div class="bullet-point">✅ DNS: 192.168.1.1</div>
+                        <div class="bullet-point">✅ Placa Rede Interna configurada</div>
+                    </div>
+                    <div>
+                        <h3>🔄 Reiniciar</h3>
+                        <div class="bullet-point">Clique em "OK" em todas as janelas</div>
+                        <div class="bullet-point">Feche Network Connections</div>
+                        <div class="bullet-point">Menu Iniciar ➜ Power ➜ Restart</div>
+                        <div class="bullet-point">Escolha motivo: "Other (Unplanned)"</div>
+                        <div class="bullet-point">Clique "Continue"</div>
+                    </div>
+                </div>
+
+                <div class="success-box center-text">
+                    <h3>✅ Sucesso!</h3>
+                    <p>Servidor reiniciará com novo nome<br>
+                    e IP estático configurado!</p>
+                </div>
+
+                <div class="highlight-box center-text">
+                    <h3>📊 Confirmação</h3>
+                    <p>Após restart, você pode verificar:<br>
+                    <strong>Nome: SERVER</strong><br>
+                    <strong>IP: 192.168.1.100</strong><br>
+                    Servidor pronto para produção!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">⬅️ Anterior</button>
+            <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Próximo ➡️</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('total-slides').textContent = totalSlides;
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.classList.toggle('active', i === index);
+            });
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+            
+            document.getElementById('current-slide').textContent = index + 1;
+            document.getElementById('prevBtn').disabled = index === 0;
+            document.getElementById('nextBtn').disabled = index === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            const newSlide = currentSlide + direction;
+            if (newSlide >= 0 && newSlide < totalSlides) {
+                currentSlide = newSlide;
+                showSlide(currentSlide);
+            }
+        }
+
+        // Navegação por teclado
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+            if (e.key === 'Home') {
+                currentSlide = 0;
+                showSlide(currentSlide);
+            }
+            if (e.key === 'End') {
+                currentSlide = totalSlides - 1;
+                showSlide(currentSlide);
+            }
+        });
+
+        // Inicializar
+        showSlide(0);
+    </script>
+</body>
+</html>
