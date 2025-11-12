@@ -260,22 +260,33 @@
             color: #22543d;
         }
 
-        .image-box {
+        .screenshot-box {
             background: #f8f9fa;
-            border: 2px solid #e2e8f0;
+            border: 3px solid #667eea;
             border-radius: 15px;
             padding: 20px;
             margin: 20px 0;
             text-align: center;
-            color: #718096;
-            font-size: 1.2em;
+        }
+
+        .screenshot-box img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .screenshot-box h4 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.4em;
         }
     </style>
 </head>
 <body>
     <div class="presentation">
         <div class="slide-counter">
-            <span id="current-slide">1</span> / <span id="total-slides">7</span>
+            <span id="current-slide">1</span> / <span id="total-slides">13</span>
         </div>
 
         <!-- Slide 1: Título -->
@@ -346,251 +357,609 @@ Adaptador 2: Rede Interna
             </div>
         </div>
 
-        <!-- Slide 3: Criando a Máquina Virtual -->
+        <!-- Slide 3: Passo 1 - Idioma e Formato -->
         <div class="slide">
             <div class="content">
-                <h2>🔧 Passo 1: Criar Máquina Virtual</h2>
+                <h2>🌍 Passo 1: Seleção de Idioma</h2>
                 
                 <div class="step-number">1</div>
                 
                 <div class="step-box">
                     <h3>🎯 O Que Fazer</h3>
-                    <p>Crie uma nova máquina virtual no VirtualBox com as configurações exatas</p>
+                    <p>Configurar idioma da instalação e formato regional</p>
                 </div>
 
-                <div class="command-example" style="font-size: 1.2em;">
-1. Clique em "Novo" no VirtualBox<br>
-2. Configure conforme slide anterior<br>
-3. Defina as 2 placas de rede<br>
-4. Conecte a ISO do Windows Server 2025
+                <div class="screenshot-box">
+                    <h4>📸 Tela de Seleção de Idioma</h4>
+                    <img src="1language_time.png" alt="Seleção de idioma">
                 </div>
 
                 <div class="two-column">
                     <div>
-                        <h3>📝 Configurações Básicas</h3>
-                        <div class="command-example">
-Nome: Windows-Server-2025<br>
-Tipo: Microsoft Windows<br>
-Versão: Windows 2022+ (2025)
+                        <h3>🗣️ Language to Install</h3>
+                        <div class="command-example" style="font-size: 1.2em;">
+Selecione:<br>
+<strong>English (United States)</strong>
                         </div>
                     </div>
                     <div>
-                        <h3>💾 Armazenamento</h3>
-                        <div class="command-example">
-Controlador: SATA<br>
-Tipo: VDI<br>
-Alocação: Dinâmica<br>
-Tamanho: 60 GB
+                        <h3>🕐 Time and Currency Format</h3>
+                        <div class="command-example" style="font-size: 1.2em;">
+Selecione:<br>
+<strong>Portuguese (Brazil)</strong>
                         </div>
                     </div>
                 </div>
 
                 <div class="important-note">
-                    <h3>⚠️ Configurações de Rede OBRIGATÓRIAS</h3>
-                    <div class="bullet-point">Adaptador 1: NAT (internet)</div>
-                    <div class="bullet-point">Adaptador 2: Rede Interna</div>
-                    <div class="bullet-point">ISO anexada à unidade óptica</div>
+                    <h3>⚠️ Por que Inglês?</h3>
+                    <div class="bullet-point">Padrão internacional para servidores</div>
+                    <div class="bullet-point">Facilita resolução de problemas</div>
+                    <div class="bullet-point">Formato brasileiro para hora e moeda</div>
                 </div>
 
                 <div class="success-box center-text">
-                    <h3>✅ Pronto!</h3>
-                    <p>Máquina criada com 4 GB RAM e 2 núcleos.<br>
-                    Agora clique em "Iniciar"</p>
+                    <h3>✅ Após configurar</h3>
+                    <p>Clique em <strong>"Next"</strong> para continuar</p>
                 </div>
             </div>
         </div>
 
-        <!-- Slide 4: Instalação Básica -->
+        <!-- Slide 4: Passo 2 - Teclado -->
         <div class="slide">
             <div class="content">
-                <h2>⚡ Passo 2: Iniciar e Instalar</h2>
+                <h2>⌨️ Passo 2: Configuração do Teclado</h2>
                 
                 <div class="step-number">2</div>
                 
                 <div class="step-box">
                     <h3>🎯 O Que Fazer</h3>
-                    <p>Ligar a VM e seguir o assistente de instalação</p>
+                    <p>Definir o layout do teclado brasileiro</p>
                 </div>
 
-                <div class="grid-steps">
-                    <div class="step-card">
-                        <h4>1️⃣ Iniciar VM</h4>
-                        <p>Clique em "Start"<br>
-                        Aguarde carregar</p>
-                    </div>
-                    
-                    <div class="step-card">
-                        <h4>2️⃣ Idioma</h4>
-                        <p>English<br>
-                        (United States)</p>
-                    </div>
-
-                    <div class="step-card">
-                        <h4>3️⃣ Instalar Agora</h4>
-                        <p>Clique em<br>
-                        "Install Now"</p>
-                    </div>
+                <div class="screenshot-box">
+                    <h4>📸 Tela de Configuração do Teclado</h4>
+                    <img src="2abn2.png" alt="Configuração do teclado">
                 </div>
 
-                <div class="warning-box">
-                    <h3>⚠️ Idioma de Instalação</h3>
-                    <p><strong>SELECIONE: English (United States)</strong></p>
-                    <p>Este é o idioma correto para o curso</p>
+                <div class="highlight-box center-text">
+                    <h3>⌨️ Keyboard or Input Method</h3>
+                    <p style="font-size: 1.4em; margin: 15px 0;">
+                        Selecione: <strong>Portuguese (Brazil ABNT2)</strong>
+                    </p>
                 </div>
 
-                <div class="two-column">
-                    <div>
-                        <h3>🔧 Tipo de Instalação</h3>
-                        <div class="bullet-point">Custom (Recomendado)</div>
-                        <div class="bullet-point">Limpa e controlada</div>
-                        <div class="bullet-point">Clique em "Next"</div>
-                    </div>
-                    <div>
-                        <h3>💾 Seleção de Disco</h3>
-                        <div class="bullet-point">Escolha o disco criado</div>
-                        <div class="bullet-point">Clique em "Next"</div>
-                        <div class="bullet-point">Aguarde 15-20 minutos</div>
-                    </div>
+                <div class="analogy-box">
+                    <h3>💡 Dica Importante</h3>
+                    <p>O ABNT2 é o padrão brasileiro com acentuação e "Ç".<br>
+                    Garante que você digitará corretamente no servidor!</p>
                 </div>
 
                 <div class="success-box center-text">
-                    <h3>✅ Primeira Reinicialização</h3>
-                    <p>O sistema vai reiniciar automaticamente.<br>
-                    Deixe completar sem interrupção.</p>
+                    <h3>✅ Após selecionar</h3>
+                    <p>Clique em <strong>"Next"</strong> para prosseguir</p>
                 </div>
             </div>
         </div>
 
-        <!-- Slide 5: Configuração do Administrador -->
+        <!-- Slide 5: Passo 3 - Instalar Agora -->
         <div class="slide">
             <div class="content">
-                <h2>🔐 Passo 3: Criar Conta Administrator</h2>
+                <h2>🚀 Passo 3: Iniciar a Instalação</h2>
                 
                 <div class="step-number">3</div>
                 
                 <div class="step-box">
                     <h3>🎯 O Que Fazer</h3>
-                    <p>Defina a senha do administrador conforme o curso</p>
+                    <p>Iniciar o processo de instalação do Windows Server</p>
                 </div>
 
-                <div class="highlight-box center-text" style="font-size: 1.4em;">
-                    <h3>🔐 Senha do Administrator</h3>
-                    <p style="font-size: 1.5em; margin: 20px 0;">
-                        <strong>Info4jc</strong>
+                <div class="screenshot-box">
+                    <h4>📸 Tela de Opção de Instalação</h4>
+                    <img src="3install.png" alt="Opção de instalação">
+                </div>
+
+                <div class="highlight-box center-text">
+                    <h3>⚡ Ação Necessária</h3>
+                    <p style="font-size: 1.4em; margin: 15px 0;">
+                        Clique em <strong>"Install Windows Server"</strong>
                     </p>
-                    <p>(Exatamente assim, com maiúsculas)</p>
                 </div>
 
                 <div class="two-column">
                     <div>
-                        <h3>📝 Como Fazer</h3>
-                        <div class="bullet-point">Clique em "Customize settings"</div>
-                        <div class="bullet-point">Username: Administrator</div>
-                        <div class="bullet-point">Digite a senha</div>
-                        <div class="bullet-point">Confirme a senha</div>
+                        <h3>✅ Instalação Nova</h3>
+                        <div class="bullet-point">Configuração limpa</div>
+                        <div class="bullet-point">Melhor para aprendizado</div>
+                        <div class="bullet-point">Sem problemas de versões anteriores</div>
                     </div>
                     <div>
-                        <h3>✅ Confirmação</h3>
-                        <div class="bullet-point">Clique em "Finish"</div>
-                        <div class="bullet-point">Aguarde processar</div>
-                        <div class="bullet-point">Sistema vai reiniciar</div>
+                        <h3>📝 Não escolha "Repair"</h3>
+                        <div class="bullet-point">Usado apenas para correções</div>
+                        <div class="bullet-point">Requer instalação prévia</div>
+                        <div class="bullet-point">Não é nosso objetivo</div>
                     </div>
-                </div>
-
-                <div class="command-example" style="font-size: 1.3em;">
-SENHA: Info4jc
-                </div>
-
-                <div class="warning-box">
-                    <h3>⚠️ IMPORTANTE!</h3>
-                    <p>Use EXATAMENTE a senha: <strong>Info4jc</strong></p>
-                    <p>Se errar, terá que reinstalar!</p>
                 </div>
 
                 <div class="success-box center-text">
-                    <h3>✅ Pronto!</h3>
-                    <p>Após definir a senha,<br>
-                    clique em "Finish" e aguarde.</p>
+                    <h3>✅ Próximo passo</h3>
+                    <p>O assistente continuará automaticamente</p>
                 </div>
             </div>
         </div>
 
-        <!-- Slide 6: Network Discovery -->
+        <!-- Slide 6: Passo 4 - Escolha da Edição -->
         <div class="slide">
             <div class="content">
-                <h2>🌐 Passo 4: Network Discovery</h2>
+                <h2>📦 Passo 4: Selecionar Edição</h2>
                 
                 <div class="step-number">4</div>
                 
                 <div class="step-box">
                     <h3>🎯 O Que Fazer</h3>
-                    <p>Responda sobre descoberta de rede</p>
+                    <p>Escolher a versão do Windows Server a instalar</p>
                 </div>
 
-                <div class="two-column">
-                    <div>
-                        <h3>❓ Pergunta</h3>
-                        <p style="font-size: 1.3em; margin: 20px 0;">
-                            "Do you want to allow your PC to be discoverable<br>
-                            by other PCs and devices on this network?"
-                        </p>
-                    </div>
-                    <div>
-                        <h3>✅ Resposta Correta</h3>
-                        <p style="font-size: 1.3em; margin: 20px 0;">
-                            <strong>Clique em "Yes"</strong>
-                        </p>
-                    </div>
+                <div class="screenshot-box">
+                    <h4>📸 Tela de Seleção de Imagem</h4>
+                    <img src="4standart.png" alt="Seleção de edição">
                 </div>
 
-                <div class="success-box center-text">
-                    <h3>✅ Próxima Etapa</h3>
-                    <p>Após responder "Yes",<br>
-                    o servidor estará pronto!</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Slide 7: Conclusão -->
-        <div class="slide">
-            <div class="content">
-                <h2>🎉 Conclusão</h2>
-                
-                <div class="success-box center-text">
-                    <h3>✅ Windows Server 2025 Instalado!</h3>
-                    <p style="font-size: 1.4em;">
-                        Sua máquina virtual está<br>
-                        totalmente pronta para uso!
+                <div class="highlight-box center-text">
+                    <h3>🎯 Versão Recomendada</h3>
+                    <p style="font-size: 1.3em; margin: 15px 0;">
+                        Selecione:<br>
+                        <strong>Windows Server 2025 Standard Evaluation (Desktop Experience)</strong>
                     </p>
                 </div>
 
                 <div class="two-column">
                     <div>
-                        <h3>📋 Configuração Realizada</h3>
+                        <h3>💡 Por que Standard?</h3>
+                        <div class="bullet-point">Ideal para aprendizado</div>
+                        <div class="bullet-point">Recursos completos</div>
+                        <div class="bullet-point">Modo de avaliação gratuito</div>
+                    </div>
+                    <div>
+                        <h3>💡 Por que Desktop Experience?</h3>
+                        <div class="bullet-point">Interface gráfica completa</div>
+                        <div class="bullet-point">Mais fácil para iniciantes</div>
+                        <div class="bullet-point">Ferramentas visuais</div>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h3>⚠️ Evite "Datacenter"</h3>
+                    <p>Datacenter é para grandes empresas e clusters.<br>
+                    Para nosso curso, <strong>Standard</strong> é o ideal!</p>
+                </div>
+
+                <div class="success-box center-text">
+                    <h3>✅ Após selecionar</h3>
+                    <p>Clique em <strong>"Next"</strong> para continuar</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Passo 5 - Termos de Licença -->
+        <div class="slide">
+            <div class="content">
+                <h2>📜 Passo 5: Aceitar Termos de Licença</h2>
+                
+                <div class="step-number">5</div>
+                
+                <div class="step-box">
+                    <h3>🎯 O Que Fazer</h3>
+                    <p>Ler e aceitar os termos de uso da Microsoft</p>
+                </div>
+
+                <div class="screenshot-box">
+                    <h4>📸 Tela de Termos de Licença</h4>
+                    <img src="5accept.png" alt="Termos de licença">
+                </div>
+
+                <div class="highlight-box center-text">
+                    <h3>✅ Ação Necessária</h3>
+                    <p style="font-size: 1.3em; margin: 15px 0;">
+                        1. Leia os termos (se desejar)<br>
+                        2. Marque: <strong>"I accept the license terms"</strong><br>
+                        3. Clique em <strong>"Accept"</strong>
+                    </p>
+                </div>
+
+                <div class="analogy-box">
+                    <h3>💡 Sobre os Termos</h3>
+                    <p>É como assinar um contrato para usar o software.<br>
+                    Estamos usando versão de avaliação (gratuita para testes).</p>
+                </div>
+
+                <div class="important-note">
+                    <h3>📋 Informações Importantes</h3>
+                    <div class="bullet-point">Versão Evaluation: 180 dias de teste gratuito</div>
+                    <div class="bullet-point">Coleta de dados para diagnóstico</div>
+                    <div class="bullet-point">Pode ser desativada posteriormente</div>
+                </div>
+
+                <div class="success-box center-text">
+                    <h3>✅ Próximo passo</h3>
+                    <p>Após aceitar, o instalador continuará automaticamente</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Passo 6 - Seleção de Disco -->
+        <div class="slide">
+            <div class="content">
+                <h2>💾 Passo 6: Escolher Local de Instalação</h2>
+                
+                <div class="step-number">6</div>
+                
+                <div class="step-box">
+                    <h3>🎯 O Que Fazer</h3>
+                    <p>Selecionar o disco onde o Windows será instalado</p>
+                </div>
+
+                <div class="screenshot-box">
+                    <h4>📸 Tela de Seleção de Disco</h4>
+                    <img src="6next.png" alt="Seleção de disco">
+                </div>
+
+                <div class="highlight-box center-text">
+                    <h3>💾 Disco Disponível</h3>
+                    <p style="font-size: 1.3em; margin: 15px 0;">
+                        Você verá: <strong>Disk 0 Unallocated Space</strong><br>
+                        (20.0 GB de espaço não alocado)
+                    </p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>✅ O Que Fazer</h3>
+                        <div class="bullet-point">Selecione o disco disponível</div>
+                        <div class="bullet-point">Clique em <strong>"Next"</strong></div>
+                        <div class="bullet-point">Não precisa criar partições manualmente</div>
+                    </div>
+                    <div>
+                        <h3>🔧 Opções Avançadas</h3>
+                        <div class="bullet-point">Refresh: atualizar lista</div>
+                        <div class="bullet-point">Delete: remover partições</div>
+                        <div class="bullet-point">Format: formatar disco</div>
+                        <div class="bullet-point">Load Driver: carregar drivers</div>
+                    </div>
+                </div>
+
+                <div class="analogy-box">
+                    <h3>💡 Analogia</h3>
+                    <p>É como escolher em qual HD você vai instalar o sistema.<br>
+                    O Windows criará automaticamente as partições necessárias!</p>
+                </div>
+
+                <div class="success-box center-text">
+                    <h3>✅ Instalação iniciará</h3>
+                    <p>Após clicar em Next, a instalação começa!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Passo 7 - Aguardar Instalação -->
+        <div class="slide">
+            <div class="content">
+                <h2>⏳ Passo 7: Processo de Instalação</h2>
+                
+                <div class="step-number">7</div>
+                
+                <div class="step-box">
+                    <h3>🎯 O Que Fazer</h3>
+                    <p>Aguardar enquanto o sistema é instalado</p>
+                </div>
+
+                <div class="screenshot-box">
+                    <h4>📸 Tela de Confirmação antes de Instalar</h4>
+                    <img src="7install.png" alt="Pronto para instalar">
+                </div>
+
+                <div class="screenshot-box">
+                    <h4>📸 Tela de Instalação em Progresso</h4>
+                    <img src="8wait.png" alt="Instalando Windows Server">
+                </div>
+
+                <div class="highlight-box center-text">
+                    <h3>⏰ Tempo Estimado</h3>
+                    <p style="font-size: 1.3em; margin: 15px 0;">
+                        A instalação levará entre <strong>15 a 30 minutos</strong><br>
+                        dependendo do seu computador
+                    </p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📋 O Que Está Acontecendo</h3>
+                        <div class="bullet-point">Copiando arquivos do Windows</div>
+                        <div class="bullet-point">Instalando recursos</div>
+                        <div class="bullet-point">Aplicando atualizações</div>
+                        <div class="bullet-point">Configurando sistema</div>
+                    </div>
+                    <div>
+                        <h3>⚠️ Durante a Instalação</h3>
+                        <div class="bullet-point">NÃO desligue o computador</div>
+                        <div class="bullet-point">NÃO feche a máquina virtual</div>
+                        <div class="bullet-point">O PC reiniciará várias vezes</div>
+                        <div class="bullet-point">Aguarde pacientemente</div>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h3>🔄 ATENÇÃO: Reinicializações Automáticas!</h3>
+                    <p style="font-size: 1.2em; margin: 10px 0;">
+                        <strong>Durante a instalação, o computador será reiniciado algumas vezes.</strong>
+                    </p>
+                    <div class="bullet-point" style="color: white;">NÃO pressione NENHUMA tecla quando o PC reiniciar!</div>
+                    <div class="bullet-point" style="color: white;">Se pressionar alguma tecla, o processo de instalação recomeçará</div>
+                    <div class="bullet-point" style="color: white;">Deixe o sistema carregar automaticamente</div>
+                </div>
+
+                <div class="success-box center-text">
+                    <h3>✅ Próxima Etapa</h3>
+                    <p>Após a instalação, você verá uma tela de configuração pós-instalação</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Passo 8 - Tela Pós-Instalação -->
+        <div class="slide">
+            <div class="content">
+                <h2>🔄 Passo 8: Configuração Pós-Instalação</h2>
+                
+                <div class="step-number">8</div>
+                
+                <div class="step-box">
+                    <h3>🎯 O Que Fazer</h3>
+                    <p>Aguardar a finalização das configurações iniciais</p>
+                </div>
+
+                <div class="screenshot-box">
+                    <h4>📸 Tela Pós-Reinicialização</h4>
+                    <img src="9afterreboot.png" alt="Instalação pós-reboot">
+                </div>
+
+                <div class="highlight-box center-text">
+                    <h3>⏳ Finalizando Configurações</h3>
+                    <p style="font-size: 1.3em; margin: 15px 0;">
+                        O sistema está preparando o Windows pela primeira vez<br>
+                        <strong>Aguarde sem interromper!</strong>
+                    </p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📋 Nesta Etapa</h3>
+                        <div class="bullet-point">Configurações finais</div>
+                        <div class="bullet-point">Preparando sistema</div>
+                        <div class="bullet-point">Pode reiniciar novamente</div>
+                        <div class="bullet-point">Seja paciente</div>
+                    </div>
+                    <div>
+                        <h3>⏰ Tempo</h3>
+                        <div class="bullet-point">Leva alguns minutos</div>
+                        <div class="bullet-point">Varia conforme hardware</div>
+                        <div class="bullet-point">Não interrompa o processo</div>
+                        <div class="bullet-point">Deixe completar</div>
+                    </div>
+                </div>
+
+                <div class="analogy-box">
+                    <h3>💡 Analogia</h3>
+                    <p>É como quando você compra um celular novo e ele precisa configurar<br>
+                    tudo pela primeira vez antes de você poder usar!</p>
+                </div>
+
+                <div class="success-box center-text">
+                    <h3>✅ Próximo Passo</h3>
+                    <p>Após esta etapa, você criará a senha do Administrator</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Passo 9 - Configurar Senha -->
+        <div class="slide">
+            <div class="content">
+                <h2>🔐 Passo 9: Criar Senha do Administrator</h2>
+                
+                <div class="step-number">9</div>
+                
+                <div class="step-box">
+                    <h3>🎯 O Que Fazer</h3>
+                    <p>Definir a senha do administrador do sistema</p>
+                </div>
+
+                <div class="screenshot-box">
+                    <h4>📸 Tela de Customização</h4>
+                    <img src="10password.png" alt="Customizar configurações">
+                </div>
+
+                <div class="highlight-box center-text" style="font-size: 1.4em;">
+                    <h3>🔐 Senha do Administrator</h3>
+                    <p style="font-size: 1.8em; margin: 20px 0; font-family: 'Courier New', monospace; letter-spacing: 3px;">
+                        <strong>Info4jc</strong>
+                    </p>
+                    <p style="font-size: 1.2em;">(Exatamente assim: I maiúsculo, resto minúsculo)</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📝 Como Configurar</h3>
+                        <div class="bullet-point">User name: Administrator</div>
+                        <div class="bullet-point">Password: Info4jc</div>
+                        <div class="bullet-point">Reenter password: Info4jc</div>
+                        <div class="bullet-point">Clique em "Finish"</div>
+                    </div>
+                    <div>
+                        <h3>✅ Detalhes da Senha</h3>
+                        <div class="bullet-point">Primeira letra maiúscula: I</div>
+                        <div class="bullet-point">Resto minúsculo: nfo4jc</div>
+                        <div class="bullet-point">Número 4 no lugar de "for"</div>
+                        <div class="bullet-point">Termine com: jc</div>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h3>⚠️ MUITO IMPORTANTE!</h3>
+                    <p style="font-size: 1.2em;">Use EXATAMENTE a senha: <strong>Info4jc</strong></p>
+                    <p>Digite com atenção! Letras maiúsculas e minúsculas fazem diferença!</p>
+                    <p>Se errar, não conseguirá acessar o sistema depois!</p>
+                </div>
+
+                <div class="command-example" style="font-size: 1.5em; text-align: center;">
+User name: Administrator<br>
+Password: Info4jc<br>
+Reenter password: Info4jc
+                </div>
+
+                <div class="success-box center-text">
+                    <h3>✅ Após Definir a Senha</h3>
+                    <p>Clique em <strong>"Finish"</strong> e aguarde o sistema processar</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 12: Passo 10 - Tela de Login -->
+        <div class="slide">
+            <div class="content">
+                <h2>🔓 Passo 10: Primeiro Acesso</h2>
+                
+                <div class="step-number">10</div>
+                
+                <div class="step-box">
+                    <h3>🎯 O Que Fazer</h3>
+                    <p>Fazer login no sistema pela primeira vez</p>
+                </div>
+
+                <div class="screenshot-box">
+                    <h4>📸 Tela de Login (Bloqueada)</h4>
+                    <img src="11finish.png" alt="Tela de bloqueio">
+                </div>
+
+                <div class="highlight-box center-text">
+                    <h3>🔐 Como Desbloquear</h3>
+                    <p style="font-size: 1.4em; margin: 15px 0;">
+                        Pressione: <strong>Ctrl + Alt + Delete</strong><br>
+                        (ou use o menu do VirtualBox)
+                    </p>
+                </div>
+
+                <div class="screenshot-box">
+                    <h4>📸 Menu do VirtualBox para Ctrl+Alt+Del</h4>
+                    <img src="12ctrlaldel.png" alt="Menu do VirtualBox">
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>💻 No Teclado Físico</h3>
+                        <div class="bullet-point">Pressione Ctrl + Alt + Delete</div>
+                        <div class="bullet-point">Mas pode não funcionar!</div>
+                        <div class="bullet-point">O VirtualBox captura o comando</div>
+                        <div class="bullet-point">Use o método do menu</div>
+                    </div>
+                    <div>
+                        <h3>🖱️ Pelo Menu (Recomendado)</h3>
+                        <div class="bullet-point">Clique em "Entrada"</div>
+                        <div class="bullet-point">Selecione "Teclado"</div>
+                        <div class="bullet-point">Clique em "Inserir Ctrl-Alt-Del"</div>
+                        <div class="bullet-point">Atalho: Host+Del</div>
+                    </div>
+                </div>
+
+                <div class="analogy-box">
+                    <h3>💡 Por Que Ctrl+Alt+Delete?</h3>
+                    <p>É uma medida de segurança do Windows!<br>
+                    Garante que você está realmente tentando fazer login<br>
+                    (protege contra programas maliciosos)</p>
+                </div>
+
+                <div class="important-note">
+                    <h3>⚙️ Como Usar o Menu</h3>
+                    <div class="bullet-point">Vá em: <strong>Entrada → Teclado → Inserir Ctrl-Alt-Del</strong></div>
+                    <div class="bullet-point">Ou pressione: <strong>Host + Del</strong> (Host = tecla direita do Ctrl)</div>
+                </div>
+
+                <div class="success-box center-text">
+                    <h3>✅ Após Desbloquear</h3>
+                    <p>Digite a senha <strong>Info4jc</strong> e pressione Enter</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 13: Conclusão -->
+        <div class="slide">
+            <div class="content">
+                <h2>🎉 Parabéns! Instalação Completa!</h2>
+                
+                <div class="success-box center-text">
+                    <h3>✅ Windows Server 2025 Instalado!</h3>
+                    <p style="font-size: 1.4em;">
+                        Você completou com sucesso<br>
+                        todos os passos da instalação!
+                    </p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📋 O Que Foi Feito</h3>
                         <div class="command-example">
-✓ 4 GB RAM<br>
-✓ 2 Processadores<br>
-✓ 60 GB Disco<br>
-✓ 2 Placas de Rede<br>
-✓ Inglês (US)<br>
-✓ Senha: Info4jc
+✓ Idioma: English (US)<br>
+✓ Teclado: ABNT2<br>
+✓ Edição: Standard (Desktop)<br>
+✓ Disco configurado<br>
+✓ Sistema instalado<br>
+✓ Senha: Info4jc<br>
+✓ Primeiro login realizado
                         </div>
                     </div>
                     <div>
-                        <h3>🎯 Acesso</h3>
+                        <h3>🎯 Credenciais de Acesso</h3>
                         <div class="command-example">
 User: Administrator<br>
 Password: Info4jc<br><br>
-Servidor pronto para<br>
-próximos passos!
+<strong>IMPORTANTE:</strong><br>
+Primeira letra maiúscula!<br>
+I = maiúsculo<br>
+nfo4jc = minúsculo
                         </div>
                     </div>
                 </div>
 
                 <div class="highlight-box center-text">
-                    <h3>🚀 Parabéns!</h3>
-                    <p>Você completou com sucesso a instalação<br>
-                    do Windows Server 2025!</p>
+                    <h3>🚀 Continue Aprendendo!</h3>
+                    <p style="font-size: 1.2em;">
+                        Agora você tem um servidor Windows 2025<br>
+                        pronto para configuração e uso!
+                    </p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>💡 Lembre-se</h3>
+                        <div class="bullet-point">Senha: <strong>Info4jc</strong></div>
+                        <div class="bullet-point">2 placas de rede (NAT + Interna)</div>
+                        <div class="bullet-point">Desktop Experience</div>
+                        <div class="bullet-point">Ctrl+Alt+Del via menu</div>
+                    </div>
+                    <div>
+                        <h3>📌 Próximas Aulas</h3>
+                        <div class="bullet-point">Configurar rede</div>
+                        <div class="bullet-point">Instalar serviços</div>
+                        <div class="bullet-point">Active Directory</div>
+                        <div class="bullet-point">DNS e DHCP</div>
+                    </div>
+                </div>
+
+                <div class="example-box center-text">
+                    <h3>🎓 Parabéns!</h3>
+                    <p style="font-size: 1.3em;">
+                        Você concluiu com sucesso a instalação<br>
+                        do Windows Server 2025!<br><br>
+                        Agora está pronto para as próximas aulas!
+                    </p>
                 </div>
             </div>
         </div>
