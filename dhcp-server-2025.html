@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuração de Servidor DHCP - Windows Server 2025</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .presentation {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slide {
+            min-height: 100vh;
+            padding: 60px 40px;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            background: white;
+            margin: 20px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        .slide h1 {
+            font-size: 3.5em;
+            color: #4a5568;
+            text-align: center;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .slide h2 {
+            font-size: 2.8em;
+            color: #2d3748;
+            margin-bottom: 30px;
+            border-bottom: 4px solid #667eea;
+            padding-bottom: 15px;
+        }
+
+        .slide h3 {
+            font-size: 2.2em;
+            color: #4a5568;
+            margin: 25px 0 15px 0;
+        }
+
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        .bullet-point {
+            display: flex;
+            align-items: flex-start;
+            margin: 15px 0;
+            font-size: 1.3em;
+            line-height: 1.5;
+        }
+
+        .bullet-point::before {
+            content: "➡️";
+            margin-right: 15px;
+            font-size: 1.2em;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #4c51bf;
+        }
+
+        .example-box {
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #2c5aa0;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #c53030;
+        }
+
+        .step-box {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #2f855a;
+        }
+
+        .analogy-box {
+            background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #c05621;
+        }
+
+        .important-note {
+            background: #fff5f5;
+            border: 2px solid #fc8181;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #742a2a;
+        }
+
+        .success-box {
+            background: #f0fff4;
+            border: 2px solid #68d391;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #22543d;
+        }
+
+        .command-example {
+            background: #2d3748;
+            color: #00ff41;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            border-left: 4px solid #00ff41;
+            font-size: 1.1em;
+        }
+
+        .step-number {
+            background: #667eea;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin: 0 auto 20px;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            padding: 15px 25px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .nav-btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .nav-btn:disabled {
+            background: #a0a0a0;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(255,255,255,0.9);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #4a5568;
+            z-index: 1000;
+        }
+
+        .center-text {
+            text-align: center;
+        }
+
+        .large-text {
+            font-size: 1.4em;
+            line-height: 1.6;
+        }
+
+        .grid-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 20px 0;
+        }
+
+        .step-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid #e2e8f0;
+            text-align: center;
+        }
+
+        .network-config {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: monospace;
+            font-size: 1.1em;
+            color: #2d3748;
+        }
+
+        .dhcp-diagram {
+            background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e0 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .dhcp-flow {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .dhcp-step {
+            background: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            font-weight: bold;
+        }
+
+        .arrow {
+            font-size: 2em;
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation">
+        <div class="slide-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">15</span>
+        </div>
+
+        <!-- Slide 1: Título -->
+        <div class="slide active">
+            <div class="content center-text">
+                <h1>🌐 Servidor DHCP</h1>
+                <h2 style="border: none; color: #667eea;">Configuração no Windows Server 2025</h2>
+                <div class="highlight-box large-text">
+                    <strong>Distribua IPs automaticamente na sua rede!</strong><br>
+                    Configure o serviço DHCP do zero<br>
+                    Essencial para redes corporativas
+                </div>
+                
+                <div class="example-box" style="margin-top: 40px;">
+                    <h3>🎯 Objetivo da Aula</h3>
+                    <p style="font-size: 1.3em; margin: 10px 0;">
+                        <strong>Instalar e configurar o servidor DHCP</strong><br>
+                        Criar escopo de IPs para distribuição automática
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: O que é DHCP? -->
+        <div class="slide">
+            <div class="content">
+                <h2>🤔 O que é DHCP?</h2>
+                
+                <div class="analogy-box">
+                    <h3>🏨 Analogia: Recepção de Hotel</h3>
+                    <p style="font-size: 1.3em;">
+                        Imagine um hotel sem recepção. Cada hóspede teria que escolher seu próprio quarto,
+                        podendo haver conflitos (dois hóspedes no mesmo quarto)!<br><br>
+                        O <strong>DHCP é como a recepção do hotel</strong>: distribui "quartos" (IPs) 
+                        automaticamente, sem conflitos!
+                    </p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📖 Definição</h3>
+                        <div class="bullet-point"><strong>D</strong>ynamic <strong>H</strong>ost <strong>C</strong>onfiguration <strong>P</strong>rotocol</div>
+                        <div class="bullet-point">Protocolo de Configuração Dinâmica de Host</div>
+                        <div class="bullet-point">Distribui IPs automaticamente</div>
+                        <div class="bullet-point">Evita conflitos de endereços</div>
+                    </div>
+                    <div>
+                        <h3>🎁 O que ele distribui?</h3>
+                        <div class="bullet-point">Endereço IP</div>
+                        <div class="bullet-point">Máscara de sub-rede</div>
+                        <div class="bullet-point">Gateway padrão</div>
+                        <div class="bullet-point">Servidor DNS</div>
+                    </div>
+                </div>
+
+                <div class="success-box center-text">
+                    <h3>✅ Benefício Principal</h3>
+                    <p>Você não precisa configurar IP manualmente em cada computador!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Como funciona? -->
+        <div class="slide">
+            <div class="content">
+                <h2>⚙️ Como o DHCP Funciona?</h2>
+                
+                <div class="step-box center-text">
+                    <h3>🔄 Processo DORA</h3>
+                    <p>4 passos simples para obter um IP</p>
+                </div>
+
+                <div class="dhcp-diagram">
+                    <div class="dhcp-flow">
+                        <div class="dhcp-step">📢 <strong>D</strong>iscover<br><small>Cliente procura servidor</small></div>
+                        <div class="arrow">➡️</div>
+                        <div class="dhcp-step">📨 <strong>O</strong>ffer<br><small>Servidor oferece IP</small></div>
+                        <div class="arrow">➡️</div>
+                        <div class="dhcp-step">🙋 <strong>R</strong>equest<br><small>Cliente aceita oferta</small></div>
+                        <div class="arrow">➡️</div>
+                        <div class="dhcp-step">✅ <strong>A</strong>ck<br><small>Servidor confirma</small></div>
+                    </div>
+                </div>
+
+                <div class="analogy-box">
+                    <h3>🍕 Analogia: Pedindo Pizza</h3>
+                    <p style="font-size: 1.2em;">
+                        <strong>Discover:</strong> "Tem pizzaria aí?" (broadcast)<br>
+                        <strong>Offer:</strong> "Sim! Temos pizza de calabresa por R$40"<br>
+                        <strong>Request:</strong> "Quero essa pizza!"<br>
+                        <strong>Ack:</strong> "Confirmado! Pizza a caminho!"
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Pré-requisitos -->
+        <div class="slide">
+            <div class="content">
+                <h2>📋 Pré-requisitos</h2>
+                
+                <div class="step-box">
+                    <h3>🎯 O que Você Precisa</h3>
+                    <p style="font-size: 1.2em;">
+                        Antes de começar, certifique-se que tem:
+                    </p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>✅ Requisitos do Servidor</h3>
+                        <div class="bullet-point">Windows Server 2025 instalado</div>
+                        <div class="bullet-point">Logado como Administrator</div>
+                        <div class="bullet-point">Nome configurado: SERVER</div>
+                        <div class="bullet-point">IP estático: 192.168.0.1</div>
+                        <div class="bullet-point">Acesso à internet (para instalar)</div>
+                    </div>
+                    <div>
+                        <h3>📝 Informações do Escopo</h3>
+                        <div class="network-config">
+Faixa de IPs: 192.168.0.100 até 192.168.0.200<br>
+Máscara: 255.255.255.0<br>
+Gateway: 192.168.0.1<br>
+DNS: 192.168.0.1<br>
+Lease: 8 dias
+                        </div>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h3>⚠️ IMPORTANTE!</h3>
+                    <div class="bullet-point">O servidor DHCP PRECISA ter IP estático!</div>
+                    <div class="bullet-point">Se não configurou ainda, faça antes de continuar</div>
+                    <div class="bullet-point">DHCP com IP dinâmico = DESASTRE!</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Instalar Função DHCP -->
+        <div class="slide">
+            <div class="content">
+                <h2>📦 Passo 1: Instalar a Função DHCP</h2>
+                
+                <div class="step-number">1</div>
+                
+                <div class="step-box">
+                    <h3>🎯 O Que Fazer</h3>
+                    <p>Adicionar a função DHCP Server ao Windows Server</p>
+                </div>
+
+                <div class="grid-steps">
+                    <div class="step-card">
+                        <h4>1️⃣ Abrir Server Manager</h4>
+                        <p>Menu Iniciar ➜<br>
+                        Server Manager</p>
+                    </div>
+                    
+                    <div class="step-card">
+                        <h4>2️⃣ Add Roles</h4>
+                        <p>Clique em "Manage" ➜<br>
+                        "Add Roles and Features"</p>
+                    </div>
+
+                    <div class="step-card">
+                        <h4>3️⃣ Wizard</h4>
+                        <p>Abre o assistente<br>
+                        de instalação</p>
+                    </div>
+                </div>
+
+                <div class="analogy-box center-text">
+                    <h3>📱 Analogia: Instalar App</h3>
+                    <p>É como instalar um aplicativo no celular.<br>
+                    O DHCP é um "app" que o Windows Server precisa!</p>
+                </div>
+
+                <div class="success-box center-text">
+                    <h3>✅ Próximo Passo</h3>
+                    <p>O wizard vai abrir.<br>
+                    Clique em "Next" para continuar.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Wizard - Tipo de Instalação -->
+        <div class="slide">
+            <div class="content">
+                <h2>🔧 Passo 2: Wizard - Tipo de Instalação</h2>
+                
+                <div class="step-number">2</div>
+                
+                <div class="step-box">
+                    <h3>🎯 O Que Fazer</h3>
+                    <p>Selecione o tipo de instalação baseada em função (Role-based)</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📍 Tela "Before You Begin"</h3>
+                        <div class="bullet-point">Apenas informações</div>
+                        <div class="bullet-point">Clique em "Next"</div>
+                    </div>
+                    <div>
+                        <h3>📍 Tela "Installation Type"</h3>
+                        <div class="bullet-point">Selecione: <strong>"Role-based or feature-based installation"</strong></div>
+                        <div class="bullet-point">Clique em "Next"</div>
+                    </div>
+                </div>
+
+                <div class="command-example">
+✅ Marcar: Role-based or feature-based installation
+❌ NÃO marcar: Remote Desktop Services installation
+                </div>
+
+                <div class="success-box center-text">
+                    <h3>✅ Próxima Tela</h3>
+                    <p>Server Selection - Selecionar o servidor</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Wizard - Seleção do Servidor -->
+        <div class="slide">
+            <div class="content">
+                <h2>🖥️ Passo 3: Wizard - Seleção do Servidor</h2>
+                
+                <div class="step-number">3</div>
+                
+                <div class="step-box">
+                    <h3>🎯 O Que Fazer</h3>
+                    <p>Selecione o servidor onde instalar o DHCP</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📍 Tela "Server Selection"</h3>
+                        <div class="bullet-point">Marque: "Select a server from the server pool"</div>
+                        <div class="bullet-point">Na lista, aparece seu servidor</div>
+                        <div class="bullet-point">Selecione: <strong>SERVER</strong></div>
+                        <div class="bullet-point">Clique em "Next"</div>
+                    </div>
+                    <div>
+                        <h3>📊 O que Verá</h3>
+                        <div class="network-config">
+Name: SERVER<br>
+IP Address: 192.168.0.1<br>
+Operating System: Windows Server 2025
+                        </div>
+                    </div>
+                </div>
+
+                <div class="important-note">
+                    <h3>⚠️ Só Aparece Um Servidor?</h3>
+                    <p>Normal! Você só tem um servidor.<br>
+                    Selecione ele e continue.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Wizard - Seleção da Função -->
+        <div class="slide">
+            <div class="content">
+                <h2>☑️ Passo 4: Wizard - Selecionar Função DHCP</h2>
+                
+                <div class="step-number">4</div>
+                
+                <div class="step-box">
+                    <h3>🎯 O Que Fazer</h3>
+                    <p>Marque a caixa "DHCP Server" na lista de funções</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📍 Como Encontrar</h3>
+                        <div class="bullet-point">Lista de Roles (funções)</div>
+                        <div class="bullet-point">Procure: <strong>DHCP Server</strong></div>
+                        <div class="bullet-point">Marque a caixinha ☑️</div>
+                        <div class="bullet-point">Popup aparece!</div>
+                    </div>
+                    <div>
+                        <h3>🔔 Popup de Recursos</h3>
+                        <div class="bullet-point">"Add features required for DHCP Server?"</div>
+                        <div class="bullet-point">Clique em <strong>"Add Features"</strong></div>
+                        <div class="bullet-point">Isso instala ferramentas de gerenciamento</div>
+                    </div>
+                </div>
+
+                <div class="command-example">
+Roles:
+☐ Active Directory Domain Services
+☐ Active Directory Certificate Services
+☑️ DHCP Server  ← MARCAR ESTE!
+☐ DNS Server
+☐ File and Storage Services
+                </div>
+
+                <div class="success-box center-text">
+                    <h3>✅ Após Marcar</h3>
+                    <p>Clique em "Next" para continuar</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Wizard - Features e Confirmação -->
+        <div class="slide">
+            <div class="content">
+                <h2>⏭️ Passo 5: Features e Confirmação</h2>
+                
+                <div class="step-number">5</div>
+                
+                <div class="step-box">
+                    <h3>🎯 O Que Fazer</h3>
+                    <p>Passar pelas telas de Features e DHCP Server, depois confirmar</p>
+                </div>
+
+                <div class="grid-steps">
+                    <div class="step-card">
+                        <h4>1️⃣ Tela Features</h4>
+                        <p>Não precisa marcar nada extra<br>
+                        Clique em "Next"</p>
+                    </div>
+                    
+                    <div class="step-card">
+                        <h4>2️⃣ Tela DHCP Server</h4>
+                        <p>Informações sobre DHCP<br>
+                        Clique em "Next"</p>
+                    </div>
+
+                    <div class="step-card">
+                        <h4>3️⃣ Tela Confirmation</h4>
+                        <p>Revise a instalação<br>
+                        Clique em "Install"</p>
+                    </div>
+                </div>
+
+                <div class="highlight-box center-text">
+                    <h3>⏳ Instalando...</h3>
+                    <p>Aguarde a barra de progresso completar.<br>
+                    Pode levar alguns minutos.</p>
+                </div>
+
+                <div class="success-box center-text">
+                    <h3>✅ Quando Terminar</h3>
+                    <p>Aparece link: "Complete DHCP configuration"<br>
+                    <strong>NÃO CLIQUE AINDA!</strong> Clique em "Close"</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Pós-Instalação - Autorizar DHCP -->
+        <div class="slide">
+            <div class="content">
+                <h2>🔐 Passo 6: Completar Configuração DHCP</h2>
+                
+                <div class="step-number">6</div>
+                
+                <div class="step-box">
+                    <h3>🎯 O Que Fazer</h3>
+                    <p>Completar a configuração pós-instalação do DHCP</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📍 Como Acessar</h3>
+                        <div class="bullet-point">No Server Manager</div>
+                        <div class="bullet-point">Veja a bandeirinha ⚠️ (notificação)</div>
+                        <div class="bullet-point">Clique nela</div>
+                        <div class="bullet-point">Clique em "Complete DHCP configuration"</div>
+                    </div>
+                    <div>
+                        <h3">🔧 Wizard Pós-Instalação</h3>
+                        <div class="bullet-point">Tela "Description": Next</div>
+                        <div class="bullet-point">Tela "Authorization": Escolha credenciais</div>
+                        <div class="bullet-point">Use: Administrator</div>
+                        <div class="bullet-point">Clique "Commit" depois "Close"</div>
+                    </div>
+                </div>
+
+                <div class="analogy-box center-text">
+                    <h3>📋 Por que Autorizar?</h3>
+                    <p>É como registrar seu negócio na prefeitura.<br>
+                    O DHCP precisa de "autorização" para funcionar na rede!</p>
+                </div>
+
+                <div class="success-box center-text">
+                    <h3>✅ DHCP Instalado!</h3>
+                    <p>Agora vamos criar o escopo de IPs</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Abrir Console DHCP -->
+        <div class="slide">
+            <div class="content">
+                <h2>🖱️ Passo 7: Abrir Console DHCP</h2>
+                
+                <div class="step-number">7</div>
+                
+                <div class="step-box">
+                    <h3>🎯 O Que Fazer</h3>
+                    <p>Abrir a ferramenta de gerenciamento do DHCP</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📍 Como Abrir</h3>
+                        <div class="bullet-point">Server Manager</div>
+                        <div class="bullet-point">Menu "Tools" (canto superior direito)</div>
+                        <div class="bullet-point">Clique em <strong>"DHCP"</strong></div>
+                    </div>
+                    <div>
+                        <h3>🔍 Alternativa</h3>
+                        <div class="bullet-point">Menu Iniciar</div>
+                        <div class="bullet-point">Digite: <strong>DHCP</strong></div>
+                        <div class="bullet-point">Clique no resultado</div>
+                    </div>
+                </div>
+
+                <div class="command-example">
+Atalho PowerShell:
+dhcpmgmt.msc
+                </div>
+
+                <div class="highlight-box">
+                    <h3>📊 O que Verá</h3>
+                    <p>Console DHCP com seu servidor listado:<br>
+                    <strong>server.workgroup</strong> ou apenas <strong>SERVER</strong></p>
+                </div>
+
+                <div class="success-box center-text">
+                    <h3>✅ Console Aberto!</h3>
+                    <p>Expanda o servidor clicando na setinha ▶</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 12: Criar Novo Escopo -->
+        <div class="slide">
+            <div class="content">
+                <h2>➕ Passo 8: Criar Novo Escopo</h2>
+                
+                <div class="step-number">8</div>
+                
+                <div class="step-box">
+                    <h3>🎯 O Que Fazer</h3>
+                    <p>Criar um escopo (range) de IPs para distribuir</p>
+                </div>
+
+                <div class="analogy-box">
+                    <h3>🎫 O que é Escopo?</h3>
+                    <p style="font-size: 1.2em;">
+                        É como definir quantos "ingressos" você tem para distribuir.<br>
+                        Escopo = Faixa de IPs disponíveis para os clientes.
+                    </p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📍 Como Criar</h3>
+                        <div class="bullet-point">Expanda seu servidor</div>
+                        <div class="bullet-point">Clique com botão direito em <strong>"IPv4"</strong></div>
+                        <div class="bullet-point">Selecione <strong>"New Scope..."</strong></div>
+                    </div>
+                    <div>
+                        <h3">🔧 Wizard Inicia</h3>
+                        <div class="bullet-point">Abre o "New Scope Wizard"</div>
+                        <div class="bullet-point">Clique "Next" para começar</div>
+                    </div>
+                </div>
+
+                <div class="success-box center-text">
+                    <h3>✅ Wizard Aberto!</h3>
+                    <p>Vamos configurar o escopo passo a passo</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 13: Configurar Escopo - Nome e Faixa -->
+        <div class="slide">
+            <div class="content">
+                <h2>📝 Passo 9: Nome e Faixa de IPs</h2>
+                
+                <div class="step-number">9</div>
+                
+                <div class="step-box">
+                    <h3>🎯 O Que Fazer</h3>
+                    <p>Definir nome do escopo e faixa de IPs</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📛 Tela "Scope Name"</h3>
+                        <div class="network-config">
+Name: Rede Local<br>
+Description: Escopo para rede interna
+                        </div>
+                        <div class="bullet-point">Clique "Next"</div>
+                    </div>
+                    <div>
+                        <h3>🔢 Tela "IP Address Range"</h3>
+                        <div class="network-config">
+Start IP: 192.168.0.100<br>
+End IP: 192.168.0.200<br>
+Length: 24<br>
+Subnet mask: 255.255.255.0
+                        </div>
+                        <div class="bullet-point">Clique "Next"</div>
+                    </div>
+                </div>
+
+                <div class="important-note">
+                    <h3>⚠️ Por que 100 a 200?</h3>
+                    <div class="bullet-point">IPs 1-99: Reservados para servidores/equipamentos fixos</div>
+                    <div class="bullet-point">IPs 100-200: Para computadores clientes (101 IPs disponíveis)</div>
+                    <div class="bullet-point">IPs 201-254: Reserva futura</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 14: Configurar Exclusões, Lease e Opções -->
+        <div class="slide">
+            <div class="content">
+                <h2>⚙️ Passo 10: Exclusões, Lease e Opções</h2>
+                
+                <div class="step-number">10</div>
+                
+                <div class="step-box">
+                    <h3>🎯 O Que Fazer</h3>
+                    <p>Configurar exclusões, tempo de concessão e opções de rede</p>
+                </div>
+
+                <div class="grid-steps">
+                    <div class="step-card">
+                        <h4>1️⃣ Add Exclusions</h4>
+                        <p>Pule esta tela<br>
+                        Clique "Next"<br>
+                        <small>(não temos exclusões)</small></p>
+                    </div>
+                    
+                    <div class="step-card">
+                        <h4>2️⃣ Lease Duration</h4>
+                        <p>Deixe: 8 dias<br>
+                        Clique "Next"<br>
+                        <small>(tempo que IP fica reservado)</small></p>
+                    </div>
+
+                    <div class="step-card">
+                        <h4>3️⃣ Configure Options</h4>
+                        <p>Selecione: <strong>"Yes, I want to configure these options now"</strong><br>
+                        Clique "Next"</p>
+                    </div>
+                </div>
+
+                <div class="analogy-box center-text">
+                    <h3>⏰ O que é Lease?</h3>
+                    <p>É o "aluguel" do IP. Após 8 dias, o cliente renova ou perde o IP.<br>
+                    Como um quarto de hotel com checkout!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 15: Configurar Gateway e DNS -->
+        <div class="slide">
+            <div class="content">
+                <h2>🌐 Passo 11: Gateway, DNS e Ativar</h2>
+                
+                <div class="step-number">11</div>
+                
+                <div class="step-box">
+                    <h3>🎯 O Que Fazer</h3>
+                    <p>Configurar Gateway, DNS e ativar o escopo</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>🚪 Tela "Router (Default Gateway)"</h3>
+                        <div class="network-config">
+IP address: 192.168.0.1<br>
+Clique "Add"
+                        </div>
+                        <div class="bullet-point">Clique "Next"</div>
+                        
+                        <h3 style="margin-top: 20px;">🔍 Tela "Domain Name and DNS"</h3>
+                        <div class="network-config">
+Parent domain: (deixe vazio)<br>
+IP address: 192.168.0.1<br>
+Clique "Add"
+                        </div>
+                        <div class="bullet-point">Clique "Next"</div>
+                    </div>
+                    <div>
+                        <h3>📡 Tela "WINS Servers"</h3>
+                        <div class="bullet-point">Pule esta tela</div>
+                        <div class="bullet-point">Clique "Next"</div>
+                        
+                        <h3 style="margin-top: 20px;">✅ Tela "Activate Scope"</h3>
+                        <div class="bullet-point">Selecione: <strong>"Yes, I want to activate this scope now"</strong></div>
+                        <div class="bullet-point">Clique "Next"</div>
+                        <div class="bullet-point">Clique "Finish"</div>
+                    </div>
+                </div>
+
+                <div class="success-box center-text">
+                    <h3>🎉 ESCOPO CRIADO E ATIVO!</h3>
+                    <p>O servidor DHCP está pronto para distribuir IPs!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 16: Verificação Final -->
+        <div class="slide">
+            <div class="content">
+                <h2>🎉 Passo 12: Verificação Final</h2>
+                
+                <div class="step-number">12</div>
+                
+                <div class="step-box">
+                    <h3>🎯 O Que Fazer</h3>
+                    <p>Verificar se tudo está funcionando corretamente</p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📋 Checklist do Servidor</h3>
+                        <div class="bullet-point">✅ Função DHCP instalada</div>
+                        <div class="bullet-point">✅ DHCP autorizado</div>
+                        <div class="bullet-point">✅ Escopo criado: Rede Local</div>
+                        <div class="bullet-point">✅ Faixa: 192.168.0.100-200</div>
+                        <div class="bullet-point">✅ Gateway: 192.168.0.1</div>
+                        <div class="bullet-point">✅ DNS: 192.168.0.1</div>
+                        <div class="bullet-point">✅ Escopo ATIVO (bolinha verde)</div>
+                    </div>
+                    <div>
+                        <h3>🧪 Testar no Cliente</h3>
+                        <div class="bullet-point">Ligue uma máquina cliente</div>
+                        <div class="bullet-point">Configure rede como "Rede Interna"</div>
+                        <div class="bullet-point">Deixe IP como automático (DHCP)</div>
+                        <div class="bullet-point">Verifique se recebeu IP na faixa</div>
+                        <div class="command-example">
+No cliente, execute:
+ipconfig /all
+
+Deve mostrar:
+DHCP Enabled: Yes
+IPv4: 192.168.0.1xx
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight-box center-text">
+                    <h3>🏆 Parabéns!</h3>
+                    <p>Seu servidor DHCP está configurado e funcionando!<br>
+                    Agora ele distribui IPs automaticamente para a rede.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 17: Resumo -->
+        <div class="slide">
+            <div class="content">
+                <h2>📊 Resumo da Configuração</h2>
+                
+                <div class="highlight-box">
+                    <h3>🎯 O que Fizemos</h3>
+                    <p style="font-size: 1.2em;">
+                        Instalamos e configuramos um servidor DHCP completo!
+                    </p>
+                </div>
+
+                <div class="two-column">
+                    <div>
+                        <h3>📝 Passos Realizados</h3>
+                        <div class="bullet-point">1. Instalamos a função DHCP</div>
+                        <div class="bullet-point">2. Autorizamos o servidor</div>
+                        <div class="bullet-point">3. Criamos escopo "Rede Local"</div>
+                        <div class="bullet-point">4. Definimos faixa 100-200</div>
+                        <div class="bullet-point">5. Configuramos Gateway e DNS</div>
+                        <div class="bullet-point">6. Ativamos o escopo</div>
+                    </div>
+                    <div>
+                        <h3>📊 Configurações Finais</h3>
+                        <div class="network-config">
+Servidor DHCP: 192.168.0.1<br>
+Escopo: Rede Local<br>
+Faixa: 192.168.0.100 - 200<br>
+Gateway: 192.168.0.1<br>
+DNS: 192.168.0.1<br>
+Lease: 8 dias<br>
+Status: ATIVO ✅
+                        </div>
+                    </div>
+                </div>
+
+                <div class="success-box center-text">
+                    <h3>🚀 Próximos Passos</h3>
+                    <p>Configure os clientes para usar DHCP automático<br>
+                    e eles receberão IP automaticamente!</p>
+                </div>
+
+                <div class="example-box center-text">
+                    <h3>💡 Dica Pro</h3>
+                    <p>No console DHCP, clique em "Address Leases"<br>
+                    para ver quais clientes receberam IP!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">⬅️ Anterior</button>
+            <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Próximo ➡️</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('total-slides').textContent = totalSlides;
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.classList.toggle('active', i === index);
+            });
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+            
+            document.getElementById('current-slide').textContent = index + 1;
+            document.getElementById('prevBtn').disabled = index === 0;
+            document.getElementById('nextBtn').disabled = index === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            const newSlide = currentSlide + direction;
+            if (newSlide >= 0 && newSlide < totalSlides) {
+                currentSlide = newSlide;
+                showSlide(currentSlide);
+            }
+        }
+
+        // Navegação por teclado
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+            if (e.key === 'Home') {
+                currentSlide = 0;
+                showSlide(currentSlide);
+            }
+            if (e.key === 'End') {
+                currentSlide = totalSlides - 1;
+                showSlide(currentSlide);
+            }
+        });
+
+        // Inicializar
+        showSlide(0);
+    </script>
+</body>
+</html>
