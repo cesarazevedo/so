@@ -3,822 +3,633 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aula 02 - Arquitetura e FHS (Diretórios do Sistema)</title>
+    <title>Aula 1.2 — Arquitetura e FHS</title>
+    <link rel="stylesheet" href="slide-mode.css">
+    <link rel="stylesheet" href="exercise.css">
     <style>
         :root {
-            --primary: #667eea;
+            --primary:   #667eea;
             --secondary: #764ba2;
-            --bg-light: #f4f7fe;
+            --bg-light:  #f4f7fe;
             --text-dark: #2d3748;
-            --text-light: #718096;
-            --accent-green: #38ef7d;
-            --accent-red: #ff758c;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-light);
-            color: var(--text-dark);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        .classroom-header {
-            background: white;
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 1000;
-        }
-        .back-btn {
-            text-decoration: none;
-            color: var(--text-dark);
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            border-radius: 50px;
-            transition: all 0.2s;
-            background: #f0f2f5;
-        }
-        .back-btn:hover { background: #e2e8f0; color: var(--primary); }
-        .lesson-info h1 { font-size: 1.1em; margin: 0; color: var(--text-dark); }
-        .lesson-info span { font-size: 0.85em; color: var(--text-light); }
-        .slide-counter {
-            background: var(--primary);
-            color: white;
-            padding: 5px 12px;
-            border-radius: 12px;
-            font-size: 0.9em;
-            font-weight: bold;
-        }
-        .viewer-container {
-            margin-top: 80px;
-            padding: 20px;
-            padding-bottom: 100px;
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-        }
-        .slide-card {
-            background: white;
-            width: 100%;
-            max-width: 1000px;
-            min-height: 80vh;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            padding: 50px;
-            position: relative;
-            display: none;
-            flex-direction: column;
-            animation: fadeIn 0.4s ease;
-        }
-        .slide-card.active { display: flex; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        h1.slide-title {
-            font-size: 2.8em;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        h2.slide-subtitle {
-            font-size: 2.2em;
-            color: var(--text-dark);
-            border-bottom: 3px solid #e2e8f0;
-            padding-bottom: 15px;
-            margin-bottom: 30px;
-        }
-        h3 { color: var(--primary); margin: 20px 0 10px; font-size: 1.5em; }
-        .content-box {
-            padding: 20px;
-            border-radius: 12px;
-            margin: 15px 0;
-            border-left: 5px solid;
-            background: #f8fafc;
-        }
-        .box-highlight { border-color: #f39c12; background: #fffaf0; }
-        .box-info { border-color: var(--primary); background: #f4f7fe; }
-        .box-success { border-color: var(--accent-green); background: #f0fdf4; }
-        .box-warning { border-color: var(--accent-red); background: #fff5f5; }
-        .box-terminal { 
-            background: #1a202c; 
-            color: #38ef7d; 
-            font-family: 'Courier New', monospace; 
-            border-left: 5px solid #38ef7d;
-            padding: 25px;
-            border-radius: 12px;
-            font-size: 1.1em;
-            line-height: 1.8;
-        }
-        .box-terminal .prompt { color: #63b3ed; }
-        .box-terminal .command { color: #38ef7d; }
-        .box-terminal .output { color: #a0aec0; }
-        .box-terminal .comment { color: #718096; font-style: italic; }
-        .box-terminal .folder { color: #63b3ed; }
-        .box-terminal .highlight { color: #f6e05e; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
-        .bullet-point {
-            display: flex;
-            align-items: center;
-            margin: 10px 0;
-            font-size: 1.1em;
-            line-height: 1.4;
-        }
-        .bullet-point::before {
-            content: "📁";
-            margin-right: 10px;
-            flex-shrink: 0;
-        }
-        .command-card {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
-        }
-        .command-card:hover { transform: translateY(-5px); }
-        .command-card .cmd { 
-            font-family: 'Courier New', monospace;
-            font-size: 1.4em; 
-            color: var(--primary);
-            background: #f4f7fe;
-            padding: 10px 20px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            display: inline-block;
-        }
-        .command-card h4 { color: var(--text-dark); margin-bottom: 10px; }
-        .command-card p { font-size: 0.9em; color: var(--text-light); }
-        .dir-icon {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-        .tree-container {
-            background: #1a202c;
-            color: #e2e8f0;
-            padding: 25px;
-            border-radius: 12px;
-            font-family: 'Courier New', monospace;
-            line-height: 1.6;
-            font-size: 1.05em;
-        }
-        .tree-container .root { color: #f6e05e; font-weight: bold; }
-        .tree-container .folder { color: #63b3ed; }
-        .tree-container .desc { color: #a0aec0; font-style: italic; }
-        .nav-controls {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 15px;
-            background: white;
-            padding: 10px 20px;
-            border-radius: 50px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            z-index: 100;
-        }
-        .nav-btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 25px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
-        }
-        .nav-btn:hover { background: var(--secondary); transform: translateY(-2px); }
-        .nav-btn:disabled { background: #cbd5e0; cursor: not-allowed; transform: none; }
-        .drag-drop-container { display: flex; gap: 30px; margin-top: 20px; }
-        .col-questions, .col-answers { flex: 1; }
-        .question-item {
-            background: white;
-            border: 2px solid #e2e8f0;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 12px;
-        }
-        .question-text { font-weight: bold; margin-bottom: 10px; color: var(--text-dark); }
-        .drop-zone {
-            background: #f8fafc;
-            border: 2px dashed #cbd5e0;
-            border-radius: 8px;
-            min-height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.9em;
-            color: var(--text-light);
-            transition: all 0.2s;
-        }
-        .drop-zone.drag-over { background: #e6fffa; border-color: var(--accent-green); }
-        .drop-zone.has-answer { border-style: solid; background: white; border-color: var(--primary); }
-        .answer-item {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            padding: 12px 20px;
-            margin-bottom: 10px;
-            border-radius: 8px;
-            cursor: grab;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            font-size: 0.95em;
-            user-select: none;
-            font-family: 'Courier New', monospace;
-        }
-        .answer-item:active { cursor: grabbing; }
-        .answer-item.dragging { opacity: 0.5; }
-        .answer-item.in-drop-zone { margin: 0; width: 100%; box-shadow: none; }
-        .quiz-result {
-            margin-top: 30px;
-            padding: 20px;
-            border-radius: 15px;
-            text-align: center;
-            display: none;
-            background: linear-gradient(135deg, #f6ad55 0%, #ed8936 100%);
-            color: white;
-        }
-        @media (max-width: 768px) {
-            .viewer-container { padding: 10px; margin-top: 70px; }
-            .slide-card { padding: 25px; min-height: 70vh; }
-            .grid-2, .grid-3 { grid-template-columns: 1fr; }
-            .drag-drop-container { flex-direction: column; }
-            .classroom-header { padding: 10px 15px; }
-            h1.slide-title { font-size: 2em; }
-            h2.slide-subtitle { font-size: 1.5em; }
-            .tree-container { font-size: 0.85em; }
-        }
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: var(--bg-light); color: var(--text-dark); line-height: 1.7; }
+        .top-bar { background: white; padding: 15px 30px; display: flex; align-items: center; gap: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 10; }
+        .back-btn { text-decoration: none; color: var(--primary); font-weight: 600; display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 8px; transition: background .3s; }
+        .back-btn:hover { background: rgba(102,126,234,.08); }
+        .page-badge { font-size: .8em; padding: 4px 12px; border-radius: 20px; background: rgba(102,126,234,.12); color: var(--primary); font-weight: 600; }
+        .content-wrapper { max-width: 800px; margin: 40px auto; padding: 0 30px; }
+        .lesson-hero { background: white; border-radius: 16px; padding: 40px; box-shadow: 0 5px 15px rgba(0,0,0,.05); margin-bottom: 30px; border-top: 4px solid var(--primary); }
+        .lesson-hero h1 { font-size: 2em; margin-bottom: 10px; color: var(--primary); }
+        .lesson-hero .subtitle { font-size: 1.05em; color: #718096; }
+        .content-card { background: white; border-radius: 16px; padding: 35px; box-shadow: 0 5px 15px rgba(0,0,0,.05); margin-bottom: 25px; }
+        .content-card h2 { font-size: 1.4em; color: var(--primary); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
+        .content-card h3 { font-size: 1.05em; color: #4a5568; margin: 20px 0 10px; }
+        .content-card p { margin-bottom: 15px; text-align: justify; }
+        ul, ol { margin: 10px 0 15px 25px; }
+        li { margin-bottom: 8px; }
+        .highlight-box { background: linear-gradient(135deg,rgba(102,126,234,.05),rgba(118,75,162,.06)); border-left: 4px solid var(--primary); padding: 20px 25px; border-radius: 0 12px 12px 0; margin: 20px 0; }
+        .highlight-box p { margin-bottom: 0; font-style: italic; }
+        .alert-box { background: #fff8e1; border-left: 4px solid #f59e0b; padding: 18px 22px; border-radius: 0 12px 12px 0; margin: 20px 0; }
+        .alert-box p { margin: 0; color: #78350f; font-size: .93em; }
+        .tip-box { background: #f0fdf4; border-left: 4px solid #16a34a; padding: 18px 22px; border-radius: 0 12px 12px 0; margin: 20px 0; }
+        .tip-box p { margin: 0; color: #14532d; font-size: .93em; }
+        .kbd-sm { background: #1e293b; color: #e2e8f0; border-radius: 4px; padding: 2px 6px; font-family:'Consolas',monospace; font-size:.82em; white-space:nowrap; }
+        .terminal { background: #1a202c; border-radius: 12px; overflow: hidden; margin: 16px 0; box-shadow: 0 4px 20px rgba(0,0,0,.3); }
+        .terminal-bar { background: #2d3748; padding: 8px 16px; display: flex; align-items: center; gap: 8px; }
+        .term-dot { width: 12px; height: 12px; border-radius: 50%; }
+        .term-dot.red    { background: #fc8181; }
+        .term-dot.yellow { background: #f6e05e; }
+        .term-dot.green  { background: #68d391; }
+        .term-title { font-size: .75em; color: #718096; margin-left: 8px; font-family: 'Consolas', monospace; }
+        .terminal-body { padding: 20px 24px; font-family: 'Courier New','Consolas',monospace; font-size: .92em; line-height: 2; color: #a0aec0; }
+        .t-prompt  { color: #63b3ed; }
+        .t-root    { color: #fc8181; }
+        .t-cmd     { color: #38ef7d; }
+        .t-flag    { color: #f6e05e; }
+        .t-path    { color: #fc8181; }
+        .t-arg     { color: #90cdf4; }
+        .t-out     { color: #a0aec0; }
+        .t-comment { color: #4a5568; font-style: italic; }
+        .t-string  { color: #68d391; }
+        .t-var     { color: #b794f4; }
+        .t-shebang { color: #f687b3; }
+        .t-ok      { color: #38ef7d; font-weight: bold; }
+        .t-err     { color: #fc8181; font-weight: bold; }
+        .dir-table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: .9em; }
+        .dir-table th { background: var(--primary); color: white; padding: 10px 14px; text-align: left; }
+        .dir-table th:first-child { border-radius: 8px 0 0 0; }
+        .dir-table th:last-child  { border-radius: 0 8px 0 0; }
+        .dir-table td { padding: 9px 14px; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
+        .dir-table tr:nth-child(even) td { background: #f8fafc; }
+        .dir-table td code { font-family: 'Consolas',monospace; background: #1e293b; color: #63b3ed; padding: 1px 6px; border-radius: 4px; font-size: .9em; }
+        .dir-table td:first-child { font-family: 'Consolas',monospace; color: var(--primary); font-weight: 700; white-space: nowrap; }
+        .dir-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 16px 0; }
+        .dir-card { background: #f8fafc; border-radius: 12px; padding: 16px; border-left: 4px solid var(--primary); }
+        .dir-card .dc-dir { font-family: 'Consolas',monospace; font-weight: 700; color: var(--primary); font-size: 1em; margin-bottom: 6px; }
+        .dir-card .dc-label { font-size: .85em; font-weight: 600; color: #2d3748; margin-bottom: 4px; }
+        .dir-card .dc-desc { font-size: .8em; color: #718096; }
+        .nav-footer { display: flex; justify-content: space-between; margin-top: 40px; padding-bottom: 40px; }
+        .nav-link { text-decoration: none; color: var(--primary); font-weight: 600; padding: 12px 24px; border-radius: 10px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,.05); transition: all .3s; }
+        .nav-link:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.1); }
+        @media (max-width: 768px) { .content-wrapper { padding: 0 15px; } .lesson-hero, .content-card { padding: 25px; } .lesson-hero h1 { font-size: 1.5em; } .dir-table { font-size: .8em; } }
     </style>
 </head>
 <body>
-    <header class="classroom-header">
-        <div style="display: flex; align-items: center; gap: 20px;">
-            <a href="index.html" class="back-btn"><span>←</span> Voltar</a>
-            <div class="lesson-info">
-                <h1>Fundamentos do Linux</h1>
-                <span>Módulo 1 • Aula 02</span>
-            </div>
-        </div>
-        <div class="slide-counter">
-            <span id="current-slide">1</span> / <span id="total-slides">14</span>
-        </div>
-    </header>
 
-    <div class="viewer-container">
-        
-        <!-- SLIDE 1: Capa -->
-        <div class="slide-card active">
-            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
-                <div style="font-size: 5em;">🏗️</div>
-                <h1 class="slide-title">Arquitetura e FHS</h1>
-                <div class="content-box box-highlight" style="text-align: center; font-size: 1.2em;">
-                    <p><strong>A Espinha Dorsal do Linux</strong></p>
-                    <p style="margin-top: 10px; opacity: 0.8;">Entenda os diretórios do sistema!</p>
-                </div>
-                <div class="box-terminal" style="margin-top: 30px; max-width: 600px;">
-                    <span class="prompt">usuario@linux</span>:~$ <span class="command">ls /</span><br>
-                    <span class="folder">bin  boot  dev  etc  home  lib  media  mnt  opt  proc  root  run  sbin  srv  sys  tmp  usr  var</span><br>
-                    <span class="comment"># Para que serve cada um? 🤔</span>
-                </div>
-                <div class="content-box box-info" style="margin-top: 30px;">
-                    💡 Hoje você vai conhecer o "mapa" do sistema de arquivos Linux!
-                </div>
-            </div>
-        </div>
+<div class="top-bar">
+    <a href="index.html" class="back-btn">&#x2B05; Voltar ao Dashboard</a>
+    <span class="page-badge">Módulo 1 — Fundamentos Linux</span>
+    <button class="slide-toggle" id="slideToggleBtn">&#x1F4FA; Modo Slide</button>
+</div>
 
-        <!-- SLIDE 2: O que é FHS -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🤔 O que é FHS?</h2>
-            <div class="grid-2">
-                <div class="content-box box-info">
-                    <h3>📋 Definição</h3>
-                    <p style="font-size: 1.1em; line-height: 1.6;"><strong>FHS</strong> = Filesystem Hierarchy Standard</p>
-                    <p style="margin-top: 15px;">É o <strong>padrão</strong> que define onde cada tipo de arquivo deve ficar no Linux.</p>
-                    <p style="margin-top: 10px;">Todas as distros seguem esse padrão!</p>
-                </div>
-                <div class="content-box box-highlight">
-                    <h3>🏢 Analogia: Prédio Comercial</h3>
-                    <p style="font-size: 1.1em; line-height: 1.6;">Imagine um prédio organizado:</p>
-                    <div class="bullet-point">Térreo → Recepção (raiz /)</div>
-                    <div class="bullet-point">1º andar → Escritórios (/home)</div>
-                    <div class="bullet-point">Subsolo → Máquinas (/dev)</div>
-                    <div class="bullet-point">Arquivo → Documentos (/var)</div>
-                </div>
-            </div>
-            <div class="content-box box-success" style="text-align: center; margin-top: 20px;">
-                💼 <strong>Por que importa:</strong> Saber onde as coisas ficam é essencial para administrar sistemas!
-            </div>
-        </div>
+<div class="content-wrapper">
 
-        <!-- SLIDE 3: Diferença Windows vs Linux -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🔄 Windows vs Linux</h2>
-            <div class="content-box box-highlight" style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 1.2em;">No Linux, <strong>não existe C:</strong> — Tudo começa na raiz <code>/</code></p>
-            </div>
-            <div class="grid-2">
-                <div class="content-box box-warning">
-                    <h3>🪟 Windows</h3>
-                    <p style="line-height: 1.8;">Cada disco tem uma letra:</p>
-                    <div class="bullet-point"><code>C:\</code> → Sistema</div>
-                    <div class="bullet-point"><code>D:\</code> → Outro disco</div>
-                    <div class="bullet-point"><code>E:\</code> → Pendrive</div>
-                    <p style="margin-top: 15px;">Estrutura fragmentada, cada unidade separada.</p>
-                </div>
-                <div class="content-box box-success">
-                    <h3>🐧 Linux</h3>
-                    <p style="line-height: 1.8;">Tudo em uma única árvore:</p>
-                    <div class="bullet-point"><code>/</code> → Raiz (tudo começa aqui)</div>
-                    <div class="bullet-point"><code>/home</code> → Seus arquivos</div>
-                    <div class="bullet-point"><code>/media</code> → Pendrive montado</div>
-                    <p style="margin-top: 15px;">Estrutura unificada e organizada!</p>
-                </div>
-            </div>
-            <div class="content-box box-info" style="margin-top: 20px;">
-                <h3>💡 Curiosidade</h3>
-                <p>No Linux, até o pendrive vira uma "pasta" dentro da árvore. Isso se chama <strong>montar</strong> um dispositivo.</p>
-            </div>
-        </div>
-
-        <!-- SLIDE 4: Visão Geral da Árvore -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🌳 Visão Geral da Árvore</h2>
-            <div class="tree-container">
-                <span class="root">/</span> <span class="desc">← Raiz de TUDO</span><br>
-                ├── <span class="folder">bin/</span> <span class="desc">← Programas essenciais</span><br>
-                ├── <span class="folder">boot/</span> <span class="desc">← Arquivos de inicialização</span><br>
-                ├── <span class="folder">dev/</span> <span class="desc">← Dispositivos (HD, USB...)</span><br>
-                ├── <span class="folder">etc/</span> <span class="desc">← Configurações do sistema</span><br>
-                ├── <span class="folder">home/</span> <span class="desc">← Pastas dos usuários</span><br>
-                ├── <span class="folder">lib/</span> <span class="desc">← Bibliotecas do sistema</span><br>
-                ├── <span class="folder">media/</span> <span class="desc">← Mídias removíveis</span><br>
-                ├── <span class="folder">mnt/</span> <span class="desc">← Montagens temporárias</span><br>
-                ├── <span class="folder">opt/</span> <span class="desc">← Programas opcionais</span><br>
-                ├── <span class="folder">proc/</span> <span class="desc">← Informações do kernel</span><br>
-                ├── <span class="folder">root/</span> <span class="desc">← Home do superusuário</span><br>
-                ├── <span class="folder">tmp/</span> <span class="desc">← Arquivos temporários</span><br>
-                ├── <span class="folder">usr/</span> <span class="desc">← Programas do usuário</span><br>
-                └── <span class="folder">var/</span> <span class="desc">← Dados variáveis (logs)</span>
-            </div>
-            <div class="content-box box-highlight" style="margin-top: 20px; text-align: center;">
-                <p>Parece muito? Calma! Vamos ver os <strong>mais importantes</strong> um por um.</p>
-            </div>
-        </div>
-
-        <!-- SLIDE 5: /home - Sua casa -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🏠 /home — Sua Casa</h2>
-            <div class="grid-2">
-                <div class="content-box box-info">
-                    <div class="dir-icon">🏠</div>
-                    <h3>/home</h3>
-                    <p style="font-size: 1.1em; line-height: 1.6;">Onde ficam as <strong>pastas pessoais</strong> de cada usuário.</p>
-                    <p style="margin-top: 15px;">Cada usuário tem sua própria pasta:</p>
-                    <div class="bullet-point"><code>/home/joao</code></div>
-                    <div class="bullet-point"><code>/home/maria</code></div>
-                    <div class="bullet-point"><code>/home/usuario</code></div>
-                </div>
-                <div class="content-box box-highlight">
-                    <h3>💡 O que fica aqui?</h3>
-                    <div class="bullet-point">Documentos pessoais</div>
-                    <div class="bullet-point">Downloads</div>
-                    <div class="bullet-point">Configurações de apps</div>
-                    <div class="bullet-point">Área de trabalho</div>
-                    <p style="margin-top: 15px;"><strong>Dica:</strong> O til <code>~</code> é um atalho para sua home!</p>
-                </div>
-            </div>
-            <div class="box-terminal" style="margin-top: 20px;">
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">cd ~</span> <span class="comment"># Vai para /home/usuario</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">ls</span><br>
-                <span class="output">Documentos  Downloads  Imagens  Música  Vídeos  .bashrc  .config</span>
-            </div>
-        </div>
-
-        <!-- SLIDE 6: /etc - Configurações -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">⚙️ /etc — Configurações</h2>
-            <div class="grid-2">
-                <div class="content-box box-info">
-                    <div class="dir-icon">⚙️</div>
-                    <h3>/etc</h3>
-                    <p style="font-size: 1.1em; line-height: 1.6;">Arquivos de <strong>configuração do sistema</strong> e dos serviços.</p>
-                    <p style="margin-top: 15px;">"etc" vem de "et cetera" (e outras coisas).</p>
-                </div>
-                <div class="content-box box-highlight">
-                    <h3>📄 Arquivos importantes</h3>
-                    <div class="bullet-point"><code>/etc/passwd</code> → Usuários</div>
-                    <div class="bullet-point"><code>/etc/hosts</code> → DNS local</div>
-                    <div class="bullet-point"><code>/etc/fstab</code> → Discos</div>
-                    <div class="bullet-point"><code>/etc/ssh/</code> → Config do SSH</div>
-                    <div class="bullet-point"><code>/etc/apache2/</code> → Config Apache</div>
-                </div>
-            </div>
-            <div class="box-terminal" style="margin-top: 20px;">
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">cat /etc/hostname</span><br>
-                <span class="output">meu-servidor</span><br><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">ls /etc/*.conf | head -5</span><br>
-                <span class="output">/etc/resolv.conf  /etc/sysctl.conf  /etc/host.conf...</span>
-            </div>
-            <div class="content-box box-warning" style="margin-top: 15px;">
-                <p>⚠️ <strong>Cuidado:</strong> Mexer errado aqui pode quebrar o sistema!</p>
-            </div>
-        </div>
-
-        <!-- SLIDE 7: /var - Dados Variáveis -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">📊 /var — Dados Variáveis</h2>
-            <div class="grid-2">
-                <div class="content-box box-info">
-                    <div class="dir-icon">📊</div>
-                    <h3>/var</h3>
-                    <p style="font-size: 1.1em; line-height: 1.6;">Dados que <strong>mudam constantemente</strong> durante o uso do sistema.</p>
-                    <p style="margin-top: 15px;">"var" vem de "variable" (variável).</p>
-                </div>
-                <div class="content-box box-highlight">
-                    <h3>📁 Subpastas importantes</h3>
-                    <div class="bullet-point"><code>/var/log/</code> → Logs do sistema</div>
-                    <div class="bullet-point"><code>/var/www/</code> → Sites web</div>
-                    <div class="bullet-point"><code>/var/mail/</code> → E-mails</div>
-                    <div class="bullet-point"><code>/var/cache/</code> → Cache</div>
-                    <div class="bullet-point"><code>/var/lib/</code> → Dados de apps</div>
-                </div>
-            </div>
-            <div class="box-terminal" style="margin-top: 20px;">
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">ls /var/log/</span><br>
-                <span class="output">syslog  auth.log  kern.log  apache2/  mysql/</span><br><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">tail -3 /var/log/syslog</span><br>
-                <span class="output">Jan 15 10:30:45 linux systemd: Started Daily apt...</span>
-            </div>
-            <div class="content-box box-success" style="margin-top: 15px;">
-                <p>💡 <strong>Dica:</strong> Quando algo dá errado, os logs em /var/log são seu melhor amigo!</p>
-            </div>
-        </div>
-
-        <!-- SLIDE 8: /bin, /sbin, /usr - Programas -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">⚡ /bin, /sbin, /usr — Programas</h2>
-            <div class="grid-3">
-                <div class="content-box box-info" style="text-align: center;">
-                    <div class="dir-icon">🔧</div>
-                    <h3>/bin</h3>
-                    <p>Comandos <strong>essenciais</strong> para todos os usuários.</p>
-                    <p style="margin-top: 10px; font-size: 0.9em;"><code>ls, cp, mv, cat, bash</code></p>
-                </div>
-                <div class="content-box box-highlight" style="text-align: center;">
-                    <div class="dir-icon">🛠️</div>
-                    <h3>/sbin</h3>
-                    <p>Comandos de <strong>administração</strong> (para root).</p>
-                    <p style="margin-top: 10px; font-size: 0.9em;"><code>fdisk, mkfs, iptables</code></p>
-                </div>
-                <div class="content-box box-success" style="text-align: center;">
-                    <div class="dir-icon">📦</div>
-                    <h3>/usr</h3>
-                    <p>Programas <strong>instalados</strong> pelo usuário.</p>
-                    <p style="margin-top: 10px; font-size: 0.9em;"><code>/usr/bin, /usr/lib</code></p>
-                </div>
-            </div>
-            <div class="box-terminal" style="margin-top: 20px;">
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">which ls</span><br>
-                <span class="output">/usr/bin/ls</span><br><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">which fdisk</span><br>
-                <span class="output">/usr/sbin/fdisk</span>
-            </div>
-            <div class="content-box box-info" style="margin-top: 15px;">
-                <p>💡 <strong>Nota:</strong> Em distros modernas, /bin e /sbin são links para /usr/bin e /usr/sbin.</p>
-            </div>
-        </div>
-
-        <!-- SLIDE 9: /dev - Dispositivos -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🔌 /dev — Dispositivos</h2>
-            <div class="grid-2">
-                <div class="content-box box-info">
-                    <div class="dir-icon">🔌</div>
-                    <h3>/dev</h3>
-                    <p style="font-size: 1.1em; line-height: 1.6;">Arquivos especiais que representam <strong>dispositivos de hardware</strong>.</p>
-                    <p style="margin-top: 15px;">No Linux, "tudo é arquivo" — até seu HD!</p>
-                </div>
-                <div class="content-box box-highlight">
-                    <h3>🖥️ Dispositivos comuns</h3>
-                    <div class="bullet-point"><code>/dev/sda</code> → 1º disco (HD/SSD)</div>
-                    <div class="bullet-point"><code>/dev/sda1</code> → 1ª partição</div>
-                    <div class="bullet-point"><code>/dev/null</code> → "Lixeira infinita"</div>
-                    <div class="bullet-point"><code>/dev/zero</code> → Fonte de zeros</div>
-                    <div class="bullet-point"><code>/dev/tty</code> → Terminal</div>
-                </div>
-            </div>
-            <div class="box-terminal" style="margin-top: 20px;">
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">ls /dev/sd*</span><br>
-                <span class="output">/dev/sda  /dev/sda1  /dev/sda2  /dev/sdb  /dev/sdb1</span><br><br>
-                <span class="comment"># Jogar saída fora (útil em scripts)</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">comando_barulhento > /dev/null</span>
-            </div>
-        </div>
-
-        <!-- SLIDE 10: /tmp e /proc -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🗑️ /tmp e 🧠 /proc</h2>
-            <div class="grid-2">
-                <div class="content-box box-warning">
-                    <div class="dir-icon">🗑️</div>
-                    <h3>/tmp</h3>
-                    <p style="font-size: 1.1em; line-height: 1.6;">Arquivos <strong>temporários</strong>.</p>
-                    <p style="margin-top: 15px;">Qualquer usuário pode escrever aqui.</p>
-                    <p style="margin-top: 10px;">⚠️ <strong>Apagado a cada boot!</strong></p>
-                    <p style="margin-top: 10px;">Nunca guarde nada importante aqui.</p>
-                </div>
-                <div class="content-box box-info">
-                    <div class="dir-icon">🧠</div>
-                    <h3>/proc</h3>
-                    <p style="font-size: 1.1em; line-height: 1.6;">Sistema de arquivos <strong>virtual</strong>.</p>
-                    <p style="margin-top: 15px;">Informações sobre processos e kernel.</p>
-                    <p style="margin-top: 10px;">Não são arquivos reais — são gerados na hora!</p>
-                </div>
-            </div>
-            <div class="box-terminal" style="margin-top: 20px;">
-                <span class="comment"># Ver informações da CPU</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">cat /proc/cpuinfo | head -5</span><br>
-                <span class="output">processor : 0</span><br>
-                <span class="output">model name : Intel Core i7...</span><br><br>
-                <span class="comment"># Ver memória</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">cat /proc/meminfo | head -3</span>
-            </div>
-        </div>
-
-        <!-- SLIDE 11: /boot, /root, /media -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">📦 Outros Diretórios</h2>
-            <div class="grid-3">
-                <div class="content-box box-info" style="text-align: center;">
-                    <div class="dir-icon">🚀</div>
-                    <h3>/boot</h3>
-                    <p>Arquivos de <strong>inicialização</strong>.</p>
-                    <p style="margin-top: 10px; font-size: 0.9em;">Kernel, GRUB, initrd</p>
-                </div>
-                <div class="content-box box-warning" style="text-align: center;">
-                    <div class="dir-icon">👑</div>
-                    <h3>/root</h3>
-                    <p>Home do <strong>superusuário</strong>.</p>
-                    <p style="margin-top: 10px; font-size: 0.9em;">Não fica em /home!</p>
-                </div>
-                <div class="content-box box-success" style="text-align: center;">
-                    <div class="dir-icon">💿</div>
-                    <h3>/media</h3>
-                    <p>Mídias <strong>removíveis</strong>.</p>
-                    <p style="margin-top: 10px; font-size: 0.9em;">Pendrive, CD, HD externo</p>
-                </div>
-            </div>
-            <div class="grid-2" style="margin-top: 20px;">
-                <div class="content-box box-highlight">
-                    <h3>📂 /mnt</h3>
-                    <p>Ponto de montagem <strong>temporário</strong> para discos. Usado manualmente pelo admin.</p>
-                </div>
-                <div class="content-box box-info">
-                    <h3>📦 /opt</h3>
-                    <p>Programas <strong>opcionais</strong> de terceiros. Ex: Google Chrome, Zoom, etc.</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 12: Resumo Visual -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">📋 Resumo: Mapa Mental</h2>
-            <div class="grid-3">
-                <div class="command-card">
-                    <div class="cmd">/home</div>
-                    <h4>🏠 Usuários</h4>
-                    <p>Suas pastas pessoais</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">/etc</div>
-                    <h4>⚙️ Configs</h4>
-                    <p>Configurações</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">/var</div>
-                    <h4>📊 Variáveis</h4>
-                    <p>Logs, sites, cache</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">/bin</div>
-                    <h4>⚡ Programas</h4>
-                    <p>Comandos básicos</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">/dev</div>
-                    <h4>🔌 Devices</h4>
-                    <p>Hardware</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">/tmp</div>
-                    <h4>🗑️ Temporário</h4>
-                    <p>Apagado no boot</p>
-                </div>
-            </div>
-            <div class="content-box box-success" style="margin-top: 30px; text-align: center;">
-                <h3>🎯 Regra de Ouro</h3>
-                <p style="font-size: 1.1em;">Seus arquivos → <code>/home</code> | Configs → <code>/etc</code> | Logs → <code>/var/log</code></p>
-            </div>
-        </div>
-
-        <!-- SLIDE 13: Quiz -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🎯 Desafio Interativo</h2>
-            <p style="text-align: center;">Arraste os diretórios para suas funções!</p>
-            <div class="drag-drop-container">
-                <div class="col-questions">
-                    <div class="question-item">
-                        <div class="question-text">Pastas pessoais dos usuários</div>
-                        <div class="drop-zone" data-correct="/home">Arraste aqui</div>
-                    </div>
-                    <div class="question-item">
-                        <div class="question-text">Configurações do sistema</div>
-                        <div class="drop-zone" data-correct="/etc">Arraste aqui</div>
-                    </div>
-                    <div class="question-item">
-                        <div class="question-text">Logs e dados variáveis</div>
-                        <div class="drop-zone" data-correct="/var">Arraste aqui</div>
-                    </div>
-                    <div class="question-item">
-                        <div class="question-text">Dispositivos de hardware</div>
-                        <div class="drop-zone" data-correct="/dev">Arraste aqui</div>
-                    </div>
-                    <div class="question-item">
-                        <div class="question-text">Arquivos temporários</div>
-                        <div class="drop-zone" data-correct="/tmp">Arraste aqui</div>
-                    </div>
-                    <div class="question-item">
-                        <div class="question-text">Comandos essenciais</div>
-                        <div class="drop-zone" data-correct="/bin">Arraste aqui</div>
-                    </div>
-                </div>
-                <div class="col-answers" id="answersPool"></div>
-            </div>
-            <div style="text-align: center; margin-top: 20px; display: flex; gap: 10px; justify-content: center;">
-                <button onclick="checkAnswers()" class="nav-btn" style="background: var(--accent-green);">✅ Verificar</button>
-                <button onclick="resetQuiz()" class="nav-btn" style="background: var(--accent-red);">🔄 Reiniciar</button>
-            </div>
-            <div id="quizResult" class="quiz-result"></div>
-        </div>
-
-        <!-- SLIDE 14: Conclusão -->
-        <div class="slide-card">
-            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center;">
-                <div style="font-size: 4em; margin-bottom: 20px;">🎓🏗️</div>
-                <h2 class="slide-subtitle" style="border: none;">Parabéns!</h2>
-                <div class="content-box box-success" style="max-width: 700px;">
-                    <h3>📚 O que aprendemos:</h3>
-                    <div class="grid-2" style="text-align: left; margin-top: 15px;">
-                        <div>
-                            <div class="bullet-point">O que é FHS</div>
-                            <div class="bullet-point">/home → Usuários</div>
-                            <div class="bullet-point">/etc → Configurações</div>
-                        </div>
-                        <div>
-                            <div class="bullet-point">/var → Logs e dados</div>
-                            <div class="bullet-point">/dev → Dispositivos</div>
-                            <div class="bullet-point">/tmp → Temporários</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="content-box box-highlight" style="max-width: 700px; margin-top: 20px;">
-                    <h3>🔜 Na próxima aula:</h3>
-                    <p>Vamos aprender sobre <strong>Navegação no Terminal</strong>! Comandos cd, ls, pwd e mais.</p>
-                </div>
-                <div class="content-box box-info" style="max-width: 700px; margin-top: 20px;">
-                    <h3>💡 Explore!</h3>
-                    <p>Use <code>ls /</code> e navegue pelos diretórios para fixar o conteúdo!</p>
-                </div>
-                <div style="margin-top: 40px;">
-                    <a href="index.html" class="nav-btn" style="font-size: 1.2em; padding: 15px 40px;">Voltar ao Dashboard 🏠</a>
-                </div>
-            </div>
-        </div>
-
+    <div class="lesson-hero">
+        <h1>🗂️ Arquitetura e FHS</h1>
+        <p class="subtitle">Aula 1.2 — O mapa do Linux: entenda a hierarquia de diretórios e o que cada pasta significa</p>
     </div>
 
-    <div class="nav-controls">
-        <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">⬅️ Anterior</button>
-        <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Próximo ➡️</button>
+    <!-- CARD 1 — O que é FHS -->
+    <div class="content-card">
+        <h2>📋 O que é o FHS?</h2>
+        <p>O <strong>FHS — Filesystem Hierarchy Standard</strong> (Padrão de Hierarquia do Sistema de Arquivos) é a especificação que define onde cada tipo de arquivo deve estar localizado no Linux. Todas as distribuições Linux seguem esse padrão, garantindo que um administrador treinado em Ubuntu saiba navegar também em um Debian, CentOS ou Red Hat.</p>
+
+        <div class="highlight-box">
+            <p>🏢 <strong>Analogia — Prédio Comercial:</strong> Imagine um prédio bem organizado. O térreo é a recepção (raiz <code>/</code>). O primeiro andar tem os escritórios individuais (<code>/home</code>). O subsolo guarda as máquinas e equipamentos (<code>/dev</code>). O arquivo de documentos fica em um andar separado (<code>/var</code>). Cada coisa tem seu lugar, e todos sabem onde procurar.</p>
+        </div>
+
+        <h3>Por que o FHS é importante?</h3>
+        <ul>
+            <li>Garante consistência entre distribuições diferentes</li>
+            <li>Facilita a manutenção e diagnóstico de problemas</li>
+            <li>Permite automação e scripts portáveis</li>
+            <li>Profissionais de TI sabem onde encontrar configurações, logs e binários sem precisar decorar cada distro</li>
+        </ul>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div>
+                <div class="term-dot yellow"></div>
+                <div class="term-dot green"></div>
+                <span class="term-title">bash — visualizando a raiz</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">/</span>
+<span class="t-out">bin  boot  dev  etc  home  lib  lib64  media  mnt  opt  proc  root  run  sbin  srv  sys  tmp  usr  var</span>
+<span class="t-comment"># Cada um desses diretórios tem uma função específica definida pelo FHS</span>
+            </div>
+        </div>
     </div>
 
-    <script>
-        let currentSlide = 0;
-        const slides = document.querySelectorAll('.slide-card');
-        const totalSlides = slides.length;
-        document.getElementById('total-slides').textContent = totalSlides;
+    <!-- CARD 2 — Windows vs Linux: estrutura de arquivos -->
+    <div class="content-card">
+        <h2>🔄 Linux vs Windows: Uma Única Árvore</h2>
+        <p>Uma das primeiras diferenças que surpreende quem migra do Windows para o Linux é a estrutura do sistema de arquivos. No Windows, cada disco recebe uma letra (<code>C:\</code>, <code>D:\</code>, <code>E:\</code>). No Linux, existe <strong>uma única árvore</strong> que começa na raiz <code>/</code> e tudo é ramificado a partir daí.</p>
 
-        function showSlide(index) {
-            slides.forEach((slide, i) => slide.classList.toggle('active', i === index));
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            document.getElementById('current-slide').textContent = index + 1;
-            document.getElementById('prevBtn').disabled = index === 0;
-            document.getElementById('nextBtn').disabled = index === totalSlides - 1;
-        }
+        <h3>A raiz / (barra)</h3>
+        <p>A raiz (<code>/</code>) é o ponto de partida de toda a hierarquia. Não existe nada "acima" dela. Todo caminho absoluto no Linux começa com <code>/</code>. Mesmo pendrives e HDs externos, quando conectados, são "montados" dentro dessa árvore — geralmente em <code>/media</code> ou <code>/mnt</code>.</p>
 
-        function changeSlide(direction) {
-            const newSlide = currentSlide + direction;
-            if (newSlide >= 0 && newSlide < totalSlides) {
-                currentSlide = newSlide;
-                showSlide(currentSlide);
-            }
-        }
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div>
+                <div class="term-dot yellow"></div>
+                <div class="term-dot green"></div>
+                <span class="term-title">bash — caminhos absolutos vs relativos</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-comment"># Caminho absoluto — começa sempre com /</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-path">/home/usuario/Downloads</span>
 
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowLeft') changeSlide(-1);
-            if (e.key === 'ArrowRight') changeSlide(1);
-        });
+<span class="t-comment"># Caminho relativo — relativo ao diretório atual</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-path">Downloads</span>
 
-        const answersData = [
-            { id: '/home', text: '/home' },
-            { id: '/etc', text: '/etc' },
-            { id: '/var', text: '/var' },
-            { id: '/dev', text: '/dev' },
-            { id: '/tmp', text: '/tmp' },
-            { id: '/bin', text: '/bin' }
-        ];
+<span class="t-comment"># Til ~ é atalho para /home/seuusuario</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">cd</span> <span class="t-path">~</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">pwd</span>
+<span class="t-out">/home/usuario</span>
+            </div>
+        </div>
 
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
-        }
+        <div class="alert-box">
+            <p>⚠️ <strong>Atenção:</strong> No Linux não existe <code>C:\Usuários\João</code>. O equivalente é <code>/home/joao</code>. O separador de diretórios é a barra <strong>normal</strong> (<code>/</code>), não a barra invertida como no Windows (<code>\</code>).</p>
+        </div>
+    </div>
 
-        let draggedItem = null;
+    <!-- CARD 3 — Árvore completa e os principais diretórios -->
+    <div class="content-card">
+        <h2>🌳 A Árvore de Diretórios do Linux</h2>
+        <p>Veja a estrutura completa que você encontra ao executar <code>ls /</code> em qualquer sistema Linux:</p>
 
-        function initQuiz() {
-            const pool = document.getElementById('answersPool');
-            pool.innerHTML = '';
-            shuffleArray([...answersData]).forEach(ans => {
-                const div = document.createElement('div');
-                div.className = 'answer-item';
-                div.draggable = true;
-                div.textContent = ans.text;
-                div.dataset.id = ans.id;
-                div.addEventListener('dragstart', (e) => { draggedItem = e.target; e.target.classList.add('dragging'); });
-                div.addEventListener('dragend', (e) => { e.target.classList.remove('dragging'); draggedItem = null; });
-                pool.appendChild(div);
-            });
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div>
+                <div class="term-dot yellow"></div>
+                <div class="term-dot green"></div>
+                <span class="term-title">bash — árvore da raiz</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">tree</span> <span class="t-flag">-L 1</span> <span class="t-path">/</span>
+<span class="t-out">/</span>
+<span class="t-out">├── bin    <span class="t-comment">← Comandos essenciais para todos os usuários</span></span>
+<span class="t-out">├── boot   <span class="t-comment">← Arquivos de inicialização do sistema</span></span>
+<span class="t-out">├── dev    <span class="t-comment">← Dispositivos de hardware</span></span>
+<span class="t-out">├── etc    <span class="t-comment">← Configurações do sistema</span></span>
+<span class="t-out">├── home   <span class="t-comment">← Diretórios pessoais dos usuários</span></span>
+<span class="t-out">├── lib    <span class="t-comment">← Bibliotecas compartilhadas</span></span>
+<span class="t-out">├── media  <span class="t-comment">← Mídias removíveis (pendrive, CD)</span></span>
+<span class="t-out">├── mnt    <span class="t-comment">← Montagens temporárias manuais</span></span>
+<span class="t-out">├── opt    <span class="t-comment">← Programas opcionais de terceiros</span></span>
+<span class="t-out">├── proc   <span class="t-comment">← Sistema virtual: processos e kernel</span></span>
+<span class="t-out">├── root   <span class="t-comment">← Home do superusuário (root)</span></span>
+<span class="t-out">├── sbin   <span class="t-comment">← Comandos de administração (root)</span></span>
+<span class="t-out">├── tmp    <span class="t-comment">← Arquivos temporários (apagados no boot)</span></span>
+<span class="t-out">├── usr    <span class="t-comment">← Programas instalados pelo usuário</span></span>
+<span class="t-out">└── var    <span class="t-comment">← Dados variáveis: logs, spool, sites</span></span>
+            </div>
+        </div>
 
-            document.querySelectorAll('.drop-zone').forEach(zone => {
-                zone.innerHTML = 'Arraste aqui';
-                zone.classList.remove('has-answer');
-                zone.style.background = '#f8fafc';
-                zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('drag-over'); });
-                zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
-                zone.addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    zone.classList.remove('drag-over');
-                    if (draggedItem && !zone.querySelector('.answer-item')) {
-                        zone.innerHTML = '';
-                        zone.appendChild(draggedItem);
-                        draggedItem.classList.add('in-drop-zone');
-                        zone.classList.add('has-answer');
-                    }
-                });
-            });
-            document.getElementById('quizResult').style.display = 'none';
-        }
+        <div class="tip-box">
+            <p>💡 <strong>Regra de ouro para memorizar:</strong> Seus arquivos ficam em <code>/home</code>. Configurações do sistema ficam em <code>/etc</code>. Logs e dados que mudam ficam em <code>/var</code>. Aprenda esses três e você já domina 80% do uso cotidiano.</p>
+        </div>
+    </div>
 
-        function checkAnswers() {
-            let correct = 0;
-            const zones = document.querySelectorAll('.drop-zone');
-            zones.forEach(zone => {
-                const answer = zone.querySelector('.answer-item');
-                if (answer && answer.dataset.id === zone.dataset.correct) {
-                    correct++;
-                    zone.style.background = '#d1fae5';
-                } else {
-                    zone.style.background = '#fee2e2';
-                }
-            });
-            const resultDiv = document.getElementById('quizResult');
-            resultDiv.style.display = 'block';
-            resultDiv.innerHTML = `<h3>Você acertou ${correct} de ${zones.length}!</h3>`;
-            if(correct === zones.length) resultDiv.innerHTML += '<p>🎉 Perfeito! Você conhece o FHS!</p>';
-            else if(correct >= zones.length/2) resultDiv.innerHTML += '<p>👍 Bom trabalho!</p>';
-            else resultDiv.innerHTML += '<p>📚 Revise os diretórios!</p>';
-        }
+    <!-- CARD 4 — Diretórios essenciais: tabela -->
+    <div class="content-card">
+        <h2>📊 Guia dos Diretórios Essenciais</h2>
+        <p>Conheça em detalhe cada diretório e seu propósito no sistema:</p>
 
-        function resetQuiz() { initQuiz(); }
-        initQuiz();
-    </script>
+        <table class="dir-table">
+            <tr>
+                <th>Diretório</th>
+                <th>Nome / Função</th>
+                <th>Exemplos de conteúdo</th>
+            </tr>
+            <tr>
+                <td>/</td>
+                <td>Raiz — ponto de partida de tudo</td>
+                <td>Todos os demais diretórios</td>
+            </tr>
+            <tr>
+                <td>/bin</td>
+                <td>Binários essenciais para todos os usuários</td>
+                <td><code>ls</code>, <code>cp</code>, <code>mv</code>, <code>bash</code>, <code>cat</code></td>
+            </tr>
+            <tr>
+                <td>/sbin</td>
+                <td>Binários de administração do sistema (root)</td>
+                <td><code>fdisk</code>, <code>mkfs</code>, <code>iptables</code>, <code>reboot</code></td>
+            </tr>
+            <tr>
+                <td>/etc</td>
+                <td>Configurações do sistema e serviços</td>
+                <td><code>passwd</code>, <code>hosts</code>, <code>fstab</code>, <code>ssh/</code></td>
+            </tr>
+            <tr>
+                <td>/home</td>
+                <td>Diretórios pessoais dos usuários</td>
+                <td><code>/home/joao</code>, <code>/home/maria</code></td>
+            </tr>
+            <tr>
+                <td>/root</td>
+                <td>Diretório pessoal do superusuário root</td>
+                <td>Arquivos e configurações do root</td>
+            </tr>
+            <tr>
+                <td>/var</td>
+                <td>Dados variáveis que mudam durante uso</td>
+                <td><code>log/</code>, <code>www/</code>, <code>mail/</code>, <code>cache/</code></td>
+            </tr>
+            <tr>
+                <td>/tmp</td>
+                <td>Arquivos temporários (apagados no boot)</td>
+                <td>Arquivos de sessão, temporários de apps</td>
+            </tr>
+            <tr>
+                <td>/dev</td>
+                <td>Dispositivos de hardware representados como arquivos</td>
+                <td><code>sda</code>, <code>null</code>, <code>tty</code>, <code>zero</code></td>
+            </tr>
+            <tr>
+                <td>/proc</td>
+                <td>Sistema virtual: informações de processos e kernel</td>
+                <td><code>cpuinfo</code>, <code>meminfo</code>, <code>version</code></td>
+            </tr>
+            <tr>
+                <td>/usr</td>
+                <td>Programas e recursos do usuário (instalados)</td>
+                <td><code>/usr/bin</code>, <code>/usr/lib</code>, <code>/usr/share</code></td>
+            </tr>
+            <tr>
+                <td>/opt</td>
+                <td>Programas opcionais de terceiros</td>
+                <td>Google Chrome, Zoom, softwares proprietários</td>
+            </tr>
+            <tr>
+                <td>/boot</td>
+                <td>Arquivos de inicialização do sistema</td>
+                <td>Kernel Linux, GRUB, initrd</td>
+            </tr>
+            <tr>
+                <td>/media</td>
+                <td>Ponto de montagem automático de mídias removíveis</td>
+                <td>Pendrive, DVD, HD externo</td>
+            </tr>
+            <tr>
+                <td>/mnt</td>
+                <td>Ponto de montagem temporário manual</td>
+                <td>Usado pelo administrador para montar discos</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- CARD 5 — /etc e /home em detalhe -->
+    <div class="content-card">
+        <h2>⚙️ /etc e 🏠 /home em Detalhe</h2>
+
+        <h3>/etc — O cofre de configurações</h3>
+        <p>O diretório <code>/etc</code> contém praticamente todos os arquivos de configuração do sistema e dos serviços instalados. É aqui que você edita para configurar rede, SSH, servidores web, DNS local e usuários.</p>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div>
+                <div class="term-dot yellow"></div>
+                <div class="term-dot green"></div>
+                <span class="term-title">bash — explorando /etc</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">cat</span> <span class="t-path">/etc/hostname</span>
+<span class="t-out">meu-servidor</span>
+
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">cat</span> <span class="t-path">/etc/hosts</span>
+<span class="t-out">127.0.0.1   localhost</span>
+<span class="t-out">127.0.1.1   meu-servidor</span>
+
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-path">/etc/</span> <span class="t-flag">| head -15</span>
+<span class="t-out">apache2  apt  bash.bashrc  cron.d  default  fstab  group  hostname</span>
+<span class="t-out">hosts  init.d  locale.gen  netplan  passwd  resolv.conf  ssh  sudoers</span>
+            </div>
+        </div>
+
+        <div class="alert-box">
+            <p>⚠️ <strong>Cuidado em /etc:</strong> Um erro de edição em arquivos como <code>/etc/fstab</code> ou <code>/etc/sudoers</code> pode impedir o sistema de iniciar ou bloquear o acesso de administrador. Sempre faça backup antes de editar.</p>
+        </div>
+
+        <h3>/home — A casa de cada usuário</h3>
+        <p>Cada usuário comum tem seu próprio subdiretório dentro de <code>/home</code>. É aqui que ficam documentos, downloads, configurações de aplicativos e a área de trabalho. O til (<code>~</code>) é um atalho para o diretório home do usuário logado.</p>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div>
+                <div class="term-dot yellow"></div>
+                <div class="term-dot green"></div>
+                <span class="term-title">bash — explorando /home</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">/home</span>
+<span class="t-out">alice  bob  usuario</span>
+
+<span class="t-comment"># ~ é atalho para /home/usuario</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">cd</span> <span class="t-path">~</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-la</span>
+<span class="t-out">total 40</span>
+<span class="t-out">drwxr-xr-x 5 usuario usuario 4096 jan 15 10:00 .</span>
+<span class="t-out">-rw-r--r-- 1 usuario usuario  220 jan 10 08:00 .bash_logout</span>
+<span class="t-out">-rw-r--r-- 1 usuario usuario 3526 jan 10 08:00 .bashrc</span>
+<span class="t-out">drwxr-xr-x 2 usuario usuario 4096 jan 10 08:00 Downloads</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARD 6 — /var e /tmp -->
+    <div class="content-card">
+        <h2>📊 /var e 🗑️ /tmp</h2>
+
+        <h3>/var — Dados que mudam constantemente</h3>
+        <p>O diretório <code>/var</code> (de <em>variable</em>) contém dados que crescem e mudam durante o funcionamento do sistema. Logs de sistema, arquivos de spool de impressão, cache, bancos de dados de aplicações e os arquivos dos sites hospedados ficam todos aqui.</p>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div>
+                <div class="term-dot yellow"></div>
+                <div class="term-dot green"></div>
+                <span class="term-title">bash — explorando /var/log</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-path">/var/log/</span>
+<span class="t-out">apt  auth.log  dpkg.log  kern.log  syslog  apache2/  mysql/  nginx/</span>
+
+<span class="t-comment"># Ver as últimas 5 linhas do log do sistema</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">tail</span> <span class="t-flag">-5</span> <span class="t-path">/var/log/syslog</span>
+<span class="t-out">Jan 15 10:30:45 servidor systemd[1]: Started Daily apt update</span>
+<span class="t-out">Jan 15 10:31:02 servidor sshd[1234]: Accepted password for usuario</span>
+
+<span class="t-comment"># Verificar tamanho do diretório /var/log</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">du</span> <span class="t-flag">-sh</span> <span class="t-path">/var/log/</span>
+<span class="t-out">48M     /var/log/</span>
+            </div>
+        </div>
+
+        <div class="tip-box">
+            <p>💡 <strong>Dica profissional:</strong> Quando algo dá errado em um servidor, os logs em <code>/var/log/syslog</code>, <code>/var/log/auth.log</code> e nos subdiretórios dos serviços são o primeiro lugar para investigar. Aprender a ler logs é uma habilidade fundamental em administração de sistemas.</p>
+        </div>
+
+        <h3>/tmp — Temporário e efêmero</h3>
+        <p>O diretório <code>/tmp</code> é um espaço de trabalho temporário. Qualquer usuário pode criar arquivos aqui, mas o conteúdo é <strong>apagado automaticamente a cada reinicialização</strong>. Nunca guarde arquivos importantes em <code>/tmp</code>.</p>
+
+        <div class="alert-box">
+            <p>⚠️ <strong>Nunca use /tmp para dados permanentes!</strong> Scripts de instalação, arquivos de download temporário e dados de sessão ficam aqui por conveniência — mas desaparecem no próximo boot.</p>
+        </div>
+    </div>
+
+    <!-- CARD 7 — /dev e /proc -->
+    <div class="content-card">
+        <h2>🔌 /dev e 🧠 /proc</h2>
+
+        <h3>/dev — "Tudo é arquivo"</h3>
+        <p>Uma das filosofias fundamentais do Unix/Linux é que <strong>"tudo é arquivo"</strong>. No diretório <code>/dev</code>, cada dispositivo de hardware é representado como um arquivo especial. Discos, partições, terminais, a "lixeira infinita" (<code>/dev/null</code>) — tudo aparece aqui.</p>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div>
+                <div class="term-dot yellow"></div>
+                <div class="term-dot green"></div>
+                <span class="term-title">bash — dispositivos em /dev</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-path">/dev/sd*</span>
+<span class="t-out">/dev/sda  /dev/sda1  /dev/sda2  /dev/sdb  /dev/sdb1</span>
+<span class="t-comment"># sda = primeiro disco HD/SSD | sda1 = primeira partição</span>
+
+<span class="t-comment"># /dev/null descarta qualquer saída enviada a ele</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-la</span> <span class="t-path">/nonexistent</span> <span class="t-arg">2>/dev/null</span>
+<span class="t-comment"># Nenhuma mensagem de erro aparece</span>
+
+<span class="t-comment"># Listar terminais disponíveis</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-path">/dev/tty*</span> <span class="t-flag">| head -5</span>
+<span class="t-out">/dev/tty  /dev/tty0  /dev/tty1  /dev/tty2  /dev/tty3</span>
+            </div>
+        </div>
+
+        <h3>/proc — O sistema nervoso do kernel</h3>
+        <p>O diretório <code>/proc</code> é um <strong>sistema de arquivos virtual</strong> — os arquivos não existem no disco; são gerados dinamicamente pelo kernel quando você os lê. Fornecem informações em tempo real sobre processos em execução, hardware e estado do sistema.</p>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div>
+                <div class="term-dot yellow"></div>
+                <div class="term-dot green"></div>
+                <span class="term-title">bash — informações via /proc</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-comment"># Versão do kernel</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">cat</span> <span class="t-path">/proc/version</span>
+<span class="t-out">Linux version 6.5.0-15-generic (buildd@ubuntu) gcc version 13.2.0</span>
+
+<span class="t-comment"># Informações de memória</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">cat</span> <span class="t-path">/proc/meminfo</span> <span class="t-flag">| head -5</span>
+<span class="t-out">MemTotal:        8192000 kB</span>
+<span class="t-out">MemFree:         4096000 kB</span>
+<span class="t-out">MemAvailable:    5120000 kB</span>
+
+<span class="t-comment"># Número de CPUs disponíveis</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">grep</span> <span class="t-flag">-c</span> <span class="t-string">"processor"</span> <span class="t-path">/proc/cpuinfo</span>
+<span class="t-out">4</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARD 8 — /bin, /sbin, /usr, /boot, /opt -->
+    <div class="content-card">
+        <h2>⚡ /bin, /sbin, /usr, /boot e /opt</h2>
+
+        <h3>/bin e /sbin — Onde vivem os comandos</h3>
+        <p>Os comandos que você digita no terminal são arquivos executáveis armazenados em <code>/bin</code> (para todos os usuários) e <code>/sbin</code> (somente para o superusuário root, comandos de administração). Em distribuições modernas, ambos são links simbólicos para <code>/usr/bin</code> e <code>/usr/sbin</code>.</p>
+
+        <div class="dir-grid">
+            <div class="dir-card">
+                <div class="dc-dir">/bin</div>
+                <div class="dc-label">Comandos essenciais</div>
+                <div class="dc-desc">ls, cp, mv, rm, cat, bash, echo — disponíveis para todos os usuários</div>
+            </div>
+            <div class="dir-card">
+                <div class="dc-dir">/sbin</div>
+                <div class="dc-label">Comandos de administração</div>
+                <div class="dc-desc">fdisk, mkfs, iptables, reboot, shutdown — geralmente requerem root</div>
+            </div>
+            <div class="dir-card">
+                <div class="dc-dir">/usr</div>
+                <div class="dc-label">Programas do usuário</div>
+                <div class="dc-desc">Programas instalados via apt/dnf ficam em /usr/bin e /usr/lib</div>
+            </div>
+            <div class="dir-card">
+                <div class="dc-dir">/boot</div>
+                <div class="dc-label">Inicialização do sistema</div>
+                <div class="dc-desc">Kernel Linux (vmlinuz), initrd e configuração do GRUB</div>
+            </div>
+            <div class="dir-card">
+                <div class="dc-dir">/opt</div>
+                <div class="dc-label">Softwares opcionais</div>
+                <div class="dc-desc">Google Chrome, Zoom, softwares que não vêm nos repositórios padrão</div>
+            </div>
+        </div>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div>
+                <div class="term-dot yellow"></div>
+                <div class="term-dot green"></div>
+                <span class="term-title">bash — localizando comandos</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-comment"># Onde está o comando ls?</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">which</span> <span class="t-arg">ls</span>
+<span class="t-out">/usr/bin/ls</span>
+
+<span class="t-comment"># Onde está o fdisk (comando de admin)?</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">which</span> <span class="t-arg">fdisk</span>
+<span class="t-out">/usr/sbin/fdisk</span>
+
+<span class="t-comment"># Verificar se /bin é link para /usr/bin (distros modernas)</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-la</span> <span class="t-path">/bin</span>
+<span class="t-out">lrwxrwxrwx 1 root root 7 jan 10 2024 /bin -> usr/bin</span>
+            </div>
+        </div>
+
+        <div class="highlight-box">
+            <p>💡 <strong>Nota moderna:</strong> Em distribuições recentes (Ubuntu 20.04+, Debian 11+), <code>/bin</code>, <code>/sbin</code>, <code>/lib</code> e <code>/lib64</code> são links simbólicos para dentro de <code>/usr</code>. Isso simplifica a estrutura e facilita atualizações atômicas do sistema.</p>
+        </div>
+    </div>
+
+    <!-- EXERCÍCIO -->
+    <div class="content-card exercise-card">
+        <h2>🎯 Exercício — Diretórios do FHS</h2>
+        <p style="color:#475569;font-size:.9em;margin-bottom:4px;">Arraste cada diretório para sua descrição correta.</p>
+
+        <div class="ex-drag-root" data-ex="ex01">
+            <div class="ex-drag">
+                <div>
+                    <div class="ex-col-title">Diretório</div>
+                    <div class="ex-pool" data-pool="ex01">
+                        <div class="drag-chip" data-id="c1">/etc</div>
+                        <div class="drag-chip" data-id="c2">/home</div>
+                        <div class="drag-chip" data-id="c3">/var</div>
+                        <div class="drag-chip" data-id="c4">/bin</div>
+                        <div class="drag-chip" data-id="c5">/dev</div>
+                        <div class="drag-chip" data-id="c6">/tmp</div>
+                    </div>
+                </div>
+                <div>
+                    <div class="ex-col-title">Função</div>
+                    <div class="ex-zones" data-zones="ex01">
+                        <div class="drop-zone" data-zone="ex01-z1" data-accept="c1">
+                            <span class="zone-name">Configurações do sistema</span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z2" data-accept="c2">
+                            <span class="zone-name">Pastas dos usuários</span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z3" data-accept="c3">
+                            <span class="zone-name">Dados variáveis (logs, spool)</span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z4" data-accept="c4">
+                            <span class="zone-name">Comandos essenciais do sistema</span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z5" data-accept="c5">
+                            <span class="zone-name">Dispositivos do sistema (hardware)</span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z6" data-accept="c6">
+                            <span class="zone-name">Arquivos temporários (apagados no boot)</span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ex-actions">
+            <button class="btn-verificar" onclick="dragVerify('ex01')">Verificar</button>
+            <button class="btn-refazer"  onclick="dragReset('ex01')">Refazer</button>
+        </div>
+        <div class="ex-result" id="ex01-result"></div>
+    </div>
+
+    <!-- ATIVIDADE PRÁTICA -->
+    <div class="content-card practical-card" id="prat-01">
+        <h2>🛠️ Atividade Prática — Explorando o FHS</h2>
+        <div class="prat-meta">
+            <span class="prat-tag">⏱ ~30 min</span>
+            <span class="prat-tag">💻 Ubuntu Server / Terminal</span>
+            <span class="prat-tag">📸 Tirar screenshot da saída</span>
+        </div>
+
+        <div class="prat-steps">
+            <div class="prat-step">
+                <div class="step-num">1</div>
+                <div class="step-body">
+                    <div class="step-label">Navegar pelos diretórios principais</div>
+                    <div class="step-desc">Use o comando <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">ls /</code> para listar a raiz. Em seguida, execute <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">ls -la /home</code>, <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">ls /usr</code> e <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">ls /boot</code>. Use <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">cd /etc && ls | head -20</code> para entrar no /etc e listar os primeiros 20 arquivos. Execute <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">cd ~</code> para voltar ao home. Anote o que você encontrou em cada diretório.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">2</div>
+                <div class="step-body">
+                    <div class="step-label">Listar e ler arquivos de configuração em /etc</div>
+                    <div class="step-desc">Execute <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">cat /etc/hostname</code> para ver o nome da máquina, <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">cat /etc/hosts</code> para ver o DNS local, e <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">cat /etc/os-release</code> para ver informações da distro. Observe como as configurações são simples arquivos de texto que podem ser editados com qualquer editor.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">3</div>
+                <div class="step-body">
+                    <div class="step-label">Visualizar logs em /var/log</div>
+                    <div class="step-desc">Execute <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">ls /var/log</code> para listar os logs disponíveis. Em seguida, veja as últimas linhas do log do sistema: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">tail -20 /var/log/syslog</code>. Se existir, leia também <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">tail -10 /var/log/auth.log</code> para ver tentativas de autenticação. Identifique o formato de data e horário nos logs.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">4</div>
+                <div class="step-body">
+                    <div class="step-label">Identificar dispositivos em /dev</div>
+                    <div class="step-desc">Execute <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">ls /dev/sd*</code> para listar os discos e partições. Execute <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">ls /dev/tty*</code> para listar os terminais. Teste o <code>/dev/null</code>: execute <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">ls /pastaqueNaoExiste 2>/dev/null</code> e observe que nenhuma mensagem de erro aparece — foi "descartada" no /dev/null.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">5</div>
+                <div class="step-body">
+                    <div class="step-label">Criar uma estrutura de diretórios de projeto</div>
+                    <div class="step-desc">Dentro do seu home, crie uma estrutura organizada para um projeto: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">mkdir -p ~/projeto/{scripts,logs,configs,docs}</code>. Verifique com <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">tree ~/projeto</code> (ou <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">ls -la ~/projeto</code>). Crie um arquivo README: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">echo "Meu projeto Linux" > ~/projeto/docs/README.txt</code>. Tire um screenshot da estrutura criada.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="prat-observe">
+            <strong>📌 Para refletir:</strong> O FHS não é apenas uma convenção burocrática — é o que permite que profissionais de TI do mundo todo possam administrar qualquer servidor Linux sem precisar "decifrar" onde as coisas ficam. Quando você souber que logs estão sempre em /var/log e configurações em /etc, você terá um mapa mental que funciona em qualquer distribuição.
+        </div>
+
+        <div class="ex-actions">
+            <button class="btn-print" onclick="printPractical('prat-01', 'Aula 1.2 \u2014 Arquitetura e FHS')">🖨️ Imprimir roteiro</button>
+        </div>
+    </div>
+
+    <div class="nav-footer">
+        <a href="intro_so.html" class="nav-link">&#x2190; Introdução ao Linux</a>
+        <a href="aula03-comandos-produtividade.html" class="nav-link">Comandos Essenciais &#x2192;</a>
+    </div>
+
+</div>
+
+<script src="slide-mode.js"></script>
+<script src="exercise-drag.js"></script>
+<script src="exercise-print.js"></script>
 </body>
 </html>

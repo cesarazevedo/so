@@ -3,1077 +3,588 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aula 08 - Shell Script: Variáveis e Interação</title>
+    <title>Aula 2.2 — Variáveis e Interação</title>
+    <link rel="stylesheet" href="slide-mode.css">
+    <link rel="stylesheet" href="exercise.css">
     <style>
-        /* --- VARIÁVEIS GLOBAIS --- */
-        :root {
-            --primary: #667eea;
-            --secondary: #764ba2;
-            --bg-light: #f4f7fe;
-            --text-dark: #2d3748;
-            --text-light: #718096;
-            --accent-green: #38ef7d;
-            --accent-red: #ff758c;
-            --accent-orange: #f39c12;
-            --accent-cyan: #17a2b8;
-        }
-
-        /* --- RESET E BASE --- */
+        :root { --primary: #11998e; --secondary: #38ef7d; --bg-light: #f4f7fe; --text-dark: #2d3748; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-light);
-            color: var(--text-dark);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: var(--bg-light); color: var(--text-dark); line-height: 1.7; }
 
-        /* --- HEADER DA SALA DE AULA --- */
-        .classroom-header {
-            background: white;
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 1000;
-        }
+        .top-bar { background: white; padding: 15px 30px; display: flex; align-items: center; gap: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 10; }
+        .back-btn { text-decoration: none; color: var(--primary); font-weight: 600; display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 8px; transition: background .3s; }
+        .back-btn:hover { background: rgba(17,153,142,.08); }
+        .page-badge { font-size: .8em; padding: 4px 12px; border-radius: 20px; background: rgba(17,153,142,.12); color: var(--primary); font-weight: 600; }
 
-        .back-btn {
-            text-decoration: none;
-            color: var(--text-dark);
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            border-radius: 50px;
-            transition: all 0.2s;
-            background: #f0f2f5;
-        }
-        .back-btn:hover { background: #e2e8f0; color: var(--primary); }
+        .content-wrapper { max-width: 800px; margin: 40px auto; padding: 0 30px; }
+        .lesson-hero { background: white; border-radius: 16px; padding: 40px; box-shadow: 0 5px 15px rgba(0,0,0,.05); margin-bottom: 30px; border-top: 4px solid var(--primary); }
+        .lesson-hero h1 { font-size: 2em; margin-bottom: 10px; color: var(--primary); }
+        .lesson-hero .subtitle { font-size: 1.05em; color: #718096; }
+        .content-card { background: white; border-radius: 16px; padding: 35px; box-shadow: 0 5px 15px rgba(0,0,0,.05); margin-bottom: 25px; }
+        .content-card h2 { font-size: 1.4em; color: var(--primary); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
+        .content-card h3 { font-size: 1.05em; color: #0d7a72; margin: 20px 0 10px; }
+        .content-card p { margin-bottom: 15px; text-align: justify; }
+        ul, ol { margin: 10px 0 15px 25px; }
+        li { margin-bottom: 8px; }
 
-        .lesson-info h1 { font-size: 1.1em; margin: 0; color: var(--text-dark); }
-        .lesson-info span { font-size: 0.85em; color: var(--text-light); }
+        .highlight-box { background: linear-gradient(135deg,rgba(17,153,142,.05),rgba(56,239,125,.06)); border-left: 4px solid var(--primary); padding: 20px 25px; border-radius: 0 12px 12px 0; margin: 20px 0; }
+        .highlight-box p { margin-bottom: 0; font-style: italic; }
+        .alert-box { background: #fff8e1; border-left: 4px solid #f59e0b; padding: 18px 22px; border-radius: 0 12px 12px 0; margin: 20px 0; }
+        .alert-box p { margin: 0; color: #78350f; font-size: .93em; }
+        .tip-box { background: #f0fdf4; border-left: 4px solid #16a34a; padding: 18px 22px; border-radius: 0 12px 12px 0; margin: 20px 0; }
+        .tip-box p { margin: 0; color: #14532d; font-size: .93em; }
 
-        .slide-counter {
-            background: var(--primary);
-            color: white;
-            padding: 5px 12px;
-            border-radius: 12px;
-            font-size: 0.9em;
-            font-weight: bold;
-        }
+        .kbd-sm { background: #1e293b; color: #e2e8f0; border-radius: 4px; padding: 2px 6px; font-family:'Consolas',monospace; font-size:.82em; }
 
-        /* --- CONTAINER PRINCIPAL --- */
-        .viewer-container {
-            margin-top: 80px;
-            padding: 20px;
-            padding-bottom: 100px;
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-        }
+        .terminal { background: #1a202c; border-radius: 12px; overflow: hidden; margin: 16px 0; box-shadow: 0 4px 20px rgba(0,0,0,.3); }
+        .terminal-bar { background: #2d3748; padding: 8px 16px; display: flex; align-items: center; gap: 8px; }
+        .term-dot { width: 12px; height: 12px; border-radius: 50%; }
+        .term-dot.red { background: #fc8181; } .term-dot.yellow { background: #f6e05e; } .term-dot.green { background: #68d391; }
+        .term-title { font-size: .75em; color: #718096; margin-left: 8px; font-family: 'Consolas', monospace; }
+        .terminal-body { padding: 20px 24px; font-family: 'Courier New','Consolas',monospace; font-size: .92em; line-height: 2; color: #a0aec0; }
+        .t-prompt { color: #63b3ed; } .t-root { color: #fc8181; } .t-cmd { color: #38ef7d; } .t-flag { color: #f6e05e; } .t-path { color: #fc8181; } .t-arg { color: #90cdf4; } .t-out { color: #a0aec0; } .t-comment { color: #4a5568; font-style: italic; } .t-string { color: #68d391; } .t-var { color: #b794f4; } .t-shebang { color: #f687b3; } .t-ok { color: #38ef7d; font-weight: bold; } .t-err { color: #fc8181; font-weight: bold; } .t-kw { color: #f687b3; font-weight: bold; }
 
-        .slide-card {
-            background: white;
-            width: 100%;
-            max-width: 1000px;
-            min-height: 80vh;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            padding: 50px;
-            padding-bottom: 100px;
-            position: relative;
-            display: none;
-            flex-direction: column;
-            animation: fadeIn 0.4s ease;
-        }
-        .slide-card.active { display: flex; }
+        /* Tabela de referência */
+        .ref-table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: .88em; }
+        .ref-table th { background: var(--primary); color: white; padding: 8px 12px; text-align: left; }
+        .ref-table th:first-child { border-radius: 6px 0 0 0; } .ref-table th:last-child { border-radius: 0 6px 0 0; }
+        .ref-table td { padding: 7px 12px; border-bottom: 1px solid #e5e7eb; }
+        .ref-table tr:nth-child(even) td { background: #f0fdf4; }
+        .ref-table td code { font-family: 'Consolas',monospace; background: #1e293b; color: #38ef7d; padding: 1px 6px; border-radius: 4px; font-size: .9em; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* Comparação correto/errado */
+        .compare-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 14px 0; }
+        .compare-wrong { background: #fee2e2; border: 2px solid #fc8181; border-radius: 10px; padding: 14px 18px; font-family: 'Consolas',monospace; font-size: .9em; color: #7f1d1d; }
+        .compare-right { background: #d1fae5; border: 2px solid #34d399; border-radius: 10px; padding: 14px 18px; font-family: 'Consolas',monospace; font-size: .9em; color: #064e3b; }
+        .compare-wrong strong, .compare-right strong { display: block; font-size: .8em; margin-bottom: 4px; letter-spacing: .03em; }
 
-        /* --- ESTILOS DO CONTEÚDO --- */
-        h1.slide-title {
-            font-size: 2.8em;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-align: center;
-            margin-bottom: 30px;
-        }
+        .nav-footer { display: flex; justify-content: space-between; margin-top: 40px; padding-bottom: 40px; }
+        .nav-link { text-decoration: none; color: var(--primary); font-weight: 600; padding: 12px 24px; border-radius: 10px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,.05); transition: all .3s; }
+        .nav-link:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.1); }
 
-        h2.slide-subtitle {
-            font-size: 2.2em;
-            color: var(--text-dark);
-            border-bottom: 3px solid #e2e8f0;
-            padding-bottom: 15px;
-            margin-bottom: 30px;
-        }
-
-        h3 { color: var(--primary); margin: 20px 0 10px; font-size: 1.5em; }
-
-        /* Boxes de Conteúdo */
-        .content-box {
-            padding: 20px;
-            border-radius: 12px;
-            margin: 15px 0;
-            border-left: 5px solid;
-            background: #f8fafc;
-        }
-        
-        .box-highlight { border-color: #f39c12; background: #fffaf0; }
-        .box-info { border-color: var(--primary); background: #f4f7fe; }
-        .box-success { border-color: var(--accent-green); background: #f0fdf4; }
-        .box-warning { border-color: var(--accent-red); background: #fff5f5; }
-        .box-tip { border-color: var(--accent-cyan); background: #e6fffa; }
-        
-        .box-terminal { 
-            background: #1a202c; 
-            color: #38ef7d; 
-            font-family: 'Courier New', monospace; 
-            border-left: 5px solid #38ef7d;
-            padding: 25px;
-            border-radius: 12px;
-            font-size: 1.1em;
-            line-height: 1.8;
-        }
-        .box-terminal .prompt { color: #63b3ed; }
-        .box-terminal .command { color: #38ef7d; }
-        .box-terminal .output { color: #a0aec0; }
-        .box-terminal .comment { color: #718096; font-style: italic; }
-        .box-terminal .shebang { color: #f687b3; }
-        .box-terminal .string { color: #68d391; }
-        .box-terminal .variable { color: #fbd38d; }
-
-        /* Layouts de Colunas */
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
-
-        .bullet-point {
-            display: flex;
-            align-items: flex-start;
-            margin: 10px 0;
-            font-size: 1.1em;
-            line-height: 1.4;
-        }
-        .bullet-point::before {
-            content: "📦";
-            margin-right: 10px;
-            flex-shrink: 0;
-        }
-
-        /* Cards de Comando */
-        .command-card {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
-        }
-        .command-card:hover { transform: translateY(-5px); }
-        .command-card .cmd { 
-            font-family: 'Courier New', monospace;
-            font-size: 1.4em; 
-            color: var(--primary);
-            background: #f4f7fe;
-            padding: 10px 20px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            display: inline-block;
-        }
-        .command-card h4 { color: var(--text-dark); margin-bottom: 10px; }
-        .command-card p { font-size: 0.9em; color: var(--text-light); }
-
-        /* Tabela de Referência */
-        .reference-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            font-size: 1em;
-        }
-        .reference-table th {
-            background: var(--primary);
-            color: white;
-            padding: 12px;
-            text-align: left;
-        }
-        .reference-table td {
-            padding: 12px;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        .reference-table tr:hover {
-            background: #f4f7fe;
-        }
-        .reference-table code {
-            background: #e2e8f0;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-family: 'Courier New', monospace;
-        }
-
-        /* Comparação Visual */
-        .compare-box {
-            display: flex;
-            gap: 20px;
-            margin: 20px 0;
-        }
-        .compare-item {
-            flex: 1;
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-        }
-        .compare-wrong { background: #fee2e2; border: 2px solid #fc8181; }
-        .compare-right { background: #c6f6d5; border: 2px solid #48bb78; }
-
-        /* --- CONTROLES DE NAVEGAÇÃO --- */
-        .nav-controls {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 15px;
-            background: white;
-            padding: 10px 20px;
-            border-radius: 50px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            z-index: 100;
-        }
-
-        .nav-btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 25px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
-        }
-        .nav-btn:hover { background: var(--secondary); transform: translateY(-2px); }
-        .nav-btn:disabled { background: #cbd5e0; cursor: not-allowed; transform: none; }
-
-        /* --- DRAG AND DROP QUIZ --- */
-        .drag-drop-container { display: flex; gap: 30px; margin-top: 20px; }
-        .col-questions, .col-answers { flex: 1; }
-
-        .question-item {
-            background: white;
-            border: 2px solid #e2e8f0;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 12px;
-        }
-        .question-text { font-weight: bold; margin-bottom: 10px; color: var(--text-dark); }
-        
-        .drop-zone {
-            background: #f8fafc;
-            border: 2px dashed #cbd5e0;
-            border-radius: 8px;
-            min-height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.9em;
-            color: var(--text-light);
-            transition: all 0.2s;
-        }
-        .drop-zone.drag-over { background: #e6fffa; border-color: var(--accent-green); }
-        .drop-zone.has-answer { border-style: solid; background: white; border-color: var(--primary); }
-
-        .answer-item {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            padding: 12px 20px;
-            margin-bottom: 10px;
-            border-radius: 8px;
-            cursor: grab;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            font-size: 0.95em;
-            user-select: none;
-            font-family: 'Courier New', monospace;
-        }
-        .answer-item:active { cursor: grabbing; }
-        .answer-item.dragging { opacity: 0.5; }
-        .answer-item.in-drop-zone { margin: 0; width: 100%; box-shadow: none; }
-
-        .quiz-result {
-            margin-top: 30px;
-            padding: 20px;
-            border-radius: 15px;
-            text-align: center;
-            display: none;
-            background: linear-gradient(135deg, #f6ad55 0%, #ed8936 100%);
-            color: white;
-        }
-
-        /* Responsivo */
-        @media (max-width: 768px) {
-            .viewer-container { padding: 10px; margin-top: 70px; }
-            .slide-card { padding: 25px; padding-bottom: 100px; min-height: 70vh; }
-            .grid-2, .grid-3 { grid-template-columns: 1fr; }
-            .drag-drop-container { flex-direction: column; }
-            .classroom-header { padding: 10px 15px; }
-            h1.slide-title { font-size: 2em; }
-            h2.slide-subtitle { font-size: 1.5em; }
-            .compare-box { flex-direction: column; }
-        }
+        @media (max-width: 768px) { .content-wrapper { padding: 0 15px; } .lesson-hero, .content-card { padding: 25px; } .compare-row { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
-    <header class="classroom-header">
-        <div style="display: flex; align-items: center; gap: 20px;">
-            <a href="index.html" class="back-btn">
-                <span>←</span> Voltar
-            </a>
-            <div class="lesson-info">
-                <h1>Fundamentos do Linux</h1>
-                <span>Módulo 2 • Aula 08</span>
-            </div>
-        </div>
-        <div class="slide-counter">
-            <span id="current-slide">1</span> / <span id="total-slides">14</span>
-        </div>
-    </header>
+<div class="top-bar">
+    <a href="index.html" class="back-btn">&#x2B05; Voltar ao Dashboard</a>
+    <span class="page-badge">M&oacute;dulo 2 &mdash; Shell Script</span>
+    <button class="slide-toggle" id="slideToggleBtn">&#x1F4FA; Modo Slide</button>
+</div>
 
-    <div class="viewer-container">
-        
-        <!-- SLIDE 1: Capa -->
-        <div class="slide-card active">
-            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
-                <div style="font-size: 5em;">📦</div>
-                <h1 class="slide-title">Shell Script: Variáveis e Interação</h1>
-                <div class="content-box box-highlight" style="text-align: center; font-size: 1.2em;">
-                    <p><strong>Armazenando dados e conversando com o usuário</strong></p>
-                    <p style="margin-top: 10px; opacity: 0.8;">Scripts dinâmicos e interativos!</p>
-                </div>
-                <div class="box-terminal" style="margin-top: 30px; max-width: 600px;">
-                    <span class="variable">NOME</span>=<span class="string">"Aluno"</span><br>
-                    <span class="command">echo</span> <span class="string">"Bem-vindo, $NOME!"</span><br>
-                    <span class="output">Bem-vindo, Aluno!</span><br>
-                    <span class="comment"># Variáveis guardam informações! 📦</span>
-                </div>
-                <div class="content-box box-info" style="margin-top: 30px;">
-                    💡 Aprenda a criar scripts que guardam dados e interagem com o usuário!
-                </div>
-            </div>
-        </div>
+<div class="content-wrapper">
 
-        <!-- SLIDE 2: O que são Variáveis? -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">📦 O que são Variáveis?</h2>
-            <div class="content-box box-highlight" style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 1.3em;"><strong>Variáveis = Caixinhas com etiquetas para guardar informações</strong></p>
-            </div>
-            <div class="grid-2">
-                <div>
-                    <div class="content-box box-info">
-                        <h3>🏷️ Características</h3>
-                        <div class="bullet-point">Não precisa declarar tipo</div>
-                        <div class="bullet-point">Guarda texto, números, resultados</div>
-                        <div class="bullet-point">Convenção: nomes em MAIÚSCULO</div>
-                        <div class="bullet-point">Use $ para acessar o valor</div>
-                    </div>
-                    <div class="content-box box-warning">
-                        <h3>⚠️ Regra de Ouro</h3>
-                        <p><strong>SEM ESPAÇOS</strong> em volta do <code>=</code></p>
-                        <div class="compare-box">
-                            <div class="compare-item compare-wrong">
-                                ❌ NOME = "João"
-                            </div>
-                            <div class="compare-item compare-right">
-                                ✅ NOME="João"
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <div class="box-terminal" style="font-size: 1em;">
-                        <span class="comment"># Criando variáveis</span><br>
-                        <span class="variable">NOME</span>=<span class="string">"Maria Silva"</span><br>
-                        <span class="variable">IDADE</span>=<span class="string">25</span><br>
-                        <span class="variable">CURSO</span>=<span class="string">"Informática"</span><br><br>
-                        <span class="comment"># Usando variáveis (com $)</span><br>
-                        <span class="command">echo</span> <span class="string">"Nome: $NOME"</span><br>
-                        <span class="command">echo</span> <span class="string">"Idade: $IDADE"</span><br>
-                        <span class="command">echo</span> <span class="string">"Curso: $CURSO"</span><br><br>
-                        <span class="comment"># Resultado:</span><br>
-                        <span class="output">Nome: Maria Silva</span><br>
-                        <span class="output">Idade: 25</span><br>
-                        <span class="output">Curso: Informática</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 3: Capturando Comandos -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">⚙️ Capturando Resultados de Comandos</h2>
-            <div class="content-box box-highlight" style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 1.2em;">Guarde o resultado de um comando dentro de uma variável!</p>
-            </div>
-            <div class="grid-2">
-                <div>
-                    <div class="content-box box-info">
-                        <h3>🎯 Método $(comando)</h3>
-                        <p>Forma moderna e recomendada</p>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.95em; margin-top: 10px;">
-                            <span class="variable">DATA</span>=<span class="string">$(date)</span><br>
-                            <span class="variable">USUARIO</span>=<span class="string">$(whoami)</span><br>
-                            <span class="variable">PASTA</span>=<span class="string">$(pwd)</span>
-                        </div>
-                    </div>
-                    <div class="content-box box-success">
-                        <h3>🔄 Método `comando`</h3>
-                        <p>Forma antiga (ainda funciona)</p>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.95em; margin-top: 10px;">
-                            <span class="variable">DATA</span>=<span class="string">`date`</span><br>
-                            <span class="variable">USUARIO</span>=<span class="string">`whoami`</span>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <div class="box-terminal" style="font-size: 0.95em;">
-                        <span class="shebang">#!/bin/bash</span><br>
-                        <span class="comment"># Script de informações</span><br><br>
-                        <span class="variable">HOSTNAME</span>=<span class="string">$(hostname)</span><br>
-                        <span class="variable">UPTIME</span>=<span class="string">$(uptime -p)</span><br>
-                        <span class="variable">DATA</span>=<span class="string">$(date +%d/%m/%Y)</span><br><br>
-                        <span class="command">echo</span> <span class="string">"Servidor: $HOSTNAME"</span><br>
-                        <span class="command">echo</span> <span class="string">"Ligado: $UPTIME"</span><br>
-                        <span class="command">echo</span> <span class="string">"Data: $DATA"</span><br><br>
-                        <span class="comment"># Resultado:</span><br>
-                        <span class="output">Servidor: linux-pc</span><br>
-                        <span class="output">Ligado: up 2 days, 3 hours</span><br>
-                        <span class="output">Data: 26/12/2025</span>
-                    </div>
-                </div>
-            </div>
-            <div class="content-box box-tip" style="margin-top: 15px;">
-                <h3>💡 Por que usar $()?</h3>
-                <p>É mais legível e permite aninhar: <code>$(echo $(date +%Y))</code></p>
-            </div>
-        </div>
-
-        <!-- SLIDE 4: Aspas no Shell -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🔒 O Poder das Aspas</h2>
-            <div class="content-box box-highlight" style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 1.2em;">Aspas protegem caracteres especiais de serem interpretados</p>
-            </div>
-            <div class="grid-2">
-                <div>
-                    <div class="content-box box-info">
-                        <h3>📝 Aspas Duplas " "</h3>
-                        <p>Interpreta variáveis ($) mas protege espaços</p>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.9em; margin-top: 10px;">
-                            <span class="variable">NOME</span>=<span class="string">"Linux"</span><br>
-                            <span class="command">echo</span> <span class="string">"Sistema: $NOME"</span><br>
-                            <span class="output">Sistema: Linux</span>
-                        </div>
-                    </div>
-                    <div class="content-box box-success">
-                        <h3>✋ Aspas Simples ' '</h3>
-                        <p>NÃO interpreta nada - texto literal</p>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.9em; margin-top: 10px;">
-                            <span class="variable">NOME</span>=<span class="string">"Linux"</span><br>
-                            <span class="command">echo</span> 'Sistema: $NOME'<br>
-                            <span class="output">Sistema: $NOME</span>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <div class="content-box box-warning">
-                        <h3>⚠️ Problema Comum</h3>
-                        <p>Espaços em nomes de arquivos:</p>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.9em; margin-top: 10px;">
-                            <span class="comment"># ❌ PROBLEMA</span><br>
-                            <span class="variable">ARQ</span>=meu arquivo.txt<br>
-                            <span class="command">touch</span> $ARQ <span class="comment"># Cria 2 arquivos!</span><br><br>
-                            <span class="comment"># ✅ SOLUÇÃO</span><br>
-                            <span class="variable">ARQ</span>=<span class="string">"meu arquivo.txt"</span><br>
-                            <span class="command">touch</span> "$ARQ" <span class="comment"># Cria 1 arquivo</span>
-                        </div>
-                    </div>
-                    <div class="content-box box-tip">
-                        <h3>💡 Regra Prática</h3>
-                        <p><strong>Sempre use aspas duplas</strong> em variáveis: <code>"$VAR"</code></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 5: Códigos de Saída -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🚦 Códigos de Saída (Exit Codes)</h2>
-            <div class="content-box box-highlight" style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 1.2em;">Todo comando dá uma "nota" de 0 a 255 dizendo se deu certo!</p>
-            </div>
-            <div class="grid-2">
-                <div>
-                    <div class="content-box box-success">
-                        <h3>✅ Código 0 = Sucesso!</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.95em; margin-top: 10px;">
-                            <span class="prompt">$</span> <span class="command">touch</span> arquivo.txt<br>
-                            <span class="prompt">$</span> <span class="command">echo</span> $?<br>
-                            <span class="output">0</span> <span class="comment"># Deu certo!</span>
-                        </div>
-                    </div>
-                    <div class="content-box box-warning">
-                        <h3>❌ Código 1-255 = Erro</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.95em; margin-top: 10px;">
-                            <span class="prompt">$</span> <span class="command">ls</span> /pasta_inexistente<br>
-                            <span class="output" style="color: #fc8181;">ls: cannot access...</span><br>
-                            <span class="prompt">$</span> <span class="command">echo</span> $?<br>
-                            <span class="output">2</span> <span class="comment"># Erro!</span>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <div class="content-box box-info">
-                        <h3>📋 Códigos Comuns</h3>
-                        <table class="reference-table">
-                            <tr><th>Código</th><th>Significado</th></tr>
-                            <tr><td><code>0</code></td><td>Sucesso! Tudo OK</td></tr>
-                            <tr><td><code>1</code></td><td>Erro geral</td></tr>
-                            <tr><td><code>2</code></td><td>Uso incorreto</td></tr>
-                            <tr><td><code>127</code></td><td>Comando não encontrado</td></tr>
-                            <tr><td><code>130</code></td><td>Cancelado (Ctrl+C)</td></tr>
-                        </table>
-                    </div>
-                    <div class="content-box box-tip">
-                        <h3>💡 Variável Mágica: $?</h3>
-                        <p>Sempre contém o código do <strong>último comando</strong></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 6: Comando read -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🎤 Comando read - Entrada do Usuário</h2>
-            <div class="content-box box-highlight" style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 1.2em;">Faça seu script <strong>conversar</strong> com quem está usando!</p>
-            </div>
-            <div class="grid-2">
-                <div>
-                    <div class="content-box box-info">
-                        <h3>📥 Uso Básico</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.95em; margin-top: 10px;">
-                            <span class="command">echo</span> <span class="string">"Digite seu nome:"</span><br>
-                            <span class="command">read</span> NOME<br>
-                            <span class="command">echo</span> <span class="string">"Olá, $NOME!"</span>
-                        </div>
-                        <p style="margin-top: 10px;"><strong>Execução:</strong></p>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.9em; margin-top: 5px;">
-                            <span class="output">Digite seu nome:</span><br>
-                            <span class="string">João</span> <span class="comment">← usuário digita</span><br>
-                            <span class="output">Olá, João!</span>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <div class="content-box box-success">
-                        <h3>⚡ Opções Úteis</h3>
-                        <table class="reference-table">
-                            <tr><th>Opção</th><th>Função</th></tr>
-                            <tr><td><code>read -p "texto"</code></td><td>Mostra prompt na mesma linha</td></tr>
-                            <tr><td><code>read -s</code></td><td>Oculta digitação (senhas)</td></tr>
-                            <tr><td><code>read -n 1</code></td><td>Lê apenas 1 caractere</td></tr>
-                        </table>
-                    </div>
-                    <div class="box-terminal" style="padding: 15px; font-size: 0.9em; margin-top: 15px;">
-                        <span class="comment"># Prompt na mesma linha</span><br>
-                        <span class="command">read</span> -p <span class="string">"Seu curso: "</span> CURSO<br><br>
-                        <span class="comment"># Senha oculta</span><br>
-                        <span class="command">read</span> -s -p <span class="string">"Senha: "</span> SENHA
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 7: Exemplo Prático - Preparação -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🎯 Exemplo Prático: Busca de Alunos</h2>
-            <div class="content-box box-highlight" style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 1.2em;">Vamos criar um script que busca nomes em um arquivo!</p>
-            </div>
-            <div class="grid-2">
-                <div>
-                    <div class="content-box box-info">
-                        <h3>📝 Passo 1: Criar arquivo de dados</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.95em; margin-top: 10px;">
-                            <span class="prompt">$</span> <span class="command">vim</span> lista_alunos.txt
-                        </div>
-                        <p style="margin-top: 10px;"><strong>Conteúdo:</strong></p>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.9em; margin-top: 5px;">
-                            Beatriz Machado<br>
-                            Ana Trim<br>
-                            Zilah Freitas<br>
-                            Fabio Dantas<br>
-                            Marta Nogueira<br>
-                            Diogo Cortez
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <div class="content-box box-success">
-                        <h3>🔍 Passo 2: Testar busca manual</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.95em; margin-top: 10px;">
-                            <span class="comment"># Busca que ENCONTRA</span><br>
-                            <span class="prompt">$</span> <span class="command">grep</span> "Ana" lista_alunos.txt<br>
-                            <span class="output">Ana Trim</span><br>
-                            <span class="prompt">$</span> <span class="command">echo</span> $?<br>
-                            <span class="output">0</span> <span class="comment"># Encontrou!</span><br><br>
-                            <span class="comment"># Busca que NÃO encontra</span><br>
-                            <span class="prompt">$</span> <span class="command">grep</span> "Pedro" lista_alunos.txt<br>
-                            <span class="prompt">$</span> <span class="command">echo</span> $?<br>
-                            <span class="output">1</span> <span class="comment"># Não encontrou!</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="content-box box-tip" style="margin-top: 15px;">
-                <h3>💡 O grep usa exit codes!</h3>
-                <p><strong>0</strong> = encontrou algo | <strong>1</strong> = não encontrou nada</p>
-            </div>
-        </div>
-
-        <!-- SLIDE 8: Script BuscaAluno -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">📋 Script Completo: BuscaAluno.sh</h2>
-            <div class="box-terminal" style="font-size: 0.95em; line-height: 1.6;">
-                <span class="shebang">#!/bin/bash</span><br>
-                <span class="comment">###########################################</span><br>
-                <span class="comment"># BuscaAluno.sh - Procura nome de aluno</span><br>
-                <span class="comment"># Uso: ./BuscaAluno.sh</span><br>
-                <span class="comment">###########################################</span><br><br>
-                <span class="comment"># Arquivo com os nomes</span><br>
-                <span class="variable">ARQUIVO</span>=<span class="string">"lista_alunos.txt"</span><br><br>
-                <span class="comment"># Limpa a tela</span><br>
-                <span class="command">clear</span><br><br>
-                <span class="command">echo</span> <span class="string">"====== BUSCA DE ALUNOS ======"</span><br>
-                <span class="command">echo</span><br><br>
-                <span class="comment"># Pede o nome para buscar</span><br>
-                <span class="command">read</span> -p <span class="string">"Digite o primeiro nome: "</span> ALUNO<br><br>
-                <span class="comment"># Faz a busca e mostra resultado</span><br>
-                <span class="command">echo</span><br>
-                <span class="command">echo</span> <span class="string">"Resultado: "</span> <span class="variable">$(grep "$ALUNO" $ARQUIVO)</span><br>
-                <span class="command">echo</span><br>
-                <span class="command">echo</span> <span class="string">"Fim da busca!"</span>
-            </div>
-            <div class="grid-2" style="margin-top: 20px;">
-                <div class="content-box box-info">
-                    <h3>🔧 Executar</h3>
-                    <div class="box-terminal" style="padding: 10px; font-size: 0.9em;">
-                        <span class="prompt">$</span> <span class="command">chmod</span> +x BuscaAluno.sh<br>
-                        <span class="prompt">$</span> <span class="command">./BuscaAluno.sh</span>
-                    </div>
-                </div>
-                <div class="content-box box-tip">
-                    <h3>💡 Dica: Ignorar maiúsculas</h3>
-                    <p>Use <code>grep -i</code> para busca case-insensitive</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 9: Script de Cadastro -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">👤 Exemplo 2: Script de Cadastro</h2>
-            <div class="box-terminal" style="font-size: 0.95em; line-height: 1.6;">
-                <span class="shebang">#!/bin/bash</span><br>
-                <span class="comment"># cadastro.sh - Sistema de cadastro simples</span><br><br>
-                <span class="command">clear</span><br>
-                <span class="command">echo</span> <span class="string">"╔════════════════════════════════╗"</span><br>
-                <span class="command">echo</span> <span class="string">"║      CADASTRO DE ALUNO         ║"</span><br>
-                <span class="command">echo</span> <span class="string">"╚════════════════════════════════╝"</span><br>
-                <span class="command">echo</span><br><br>
-                <span class="comment"># Coleta os dados</span><br>
-                <span class="command">read</span> -p <span class="string">"Nome completo: "</span> NOME<br>
-                <span class="command">read</span> -p <span class="string">"Idade: "</span> IDADE<br>
-                <span class="command">read</span> -p <span class="string">"Curso: "</span> CURSO<br>
-                <span class="command">read</span> -s -p <span class="string">"Senha: "</span> SENHA<br>
-                <span class="command">echo</span> <span class="comment"># Pula linha após senha</span><br><br>
-                <span class="comment"># Captura data do sistema</span><br>
-                <span class="variable">DATA_CADASTRO</span>=<span class="string">$(date +"%d/%m/%Y %H:%M")</span><br><br>
-                <span class="comment"># Exibe confirmação</span><br>
-                <span class="command">echo</span><br>
-                <span class="command">echo</span> <span class="string">"✅ CADASTRO REALIZADO!"</span><br>
-                <span class="command">echo</span> <span class="string">"Nome: $NOME"</span><br>
-                <span class="command">echo</span> <span class="string">"Idade: $IDADE anos"</span><br>
-                <span class="command">echo</span> <span class="string">"Curso: $CURSO"</span><br>
-                <span class="command">echo</span> <span class="string">"Data: $DATA_CADASTRO"</span>
-            </div>
-        </div>
-
-        <!-- SLIDE 10: Variáveis Especiais -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">⭐ Variáveis Especiais do Shell</h2>
-            <div class="content-box box-highlight" style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 1.2em;">O Shell já tem variáveis prontas para você usar!</p>
-            </div>
-            <div class="grid-2">
-                <div>
-                    <div class="content-box box-info">
-                        <h3>📋 Variáveis de Ambiente</h3>
-                        <table class="reference-table">
-                            <tr><th>Variável</th><th>Conteúdo</th></tr>
-                            <tr><td><code>$HOME</code></td><td>Pasta do usuário</td></tr>
-                            <tr><td><code>$USER</code></td><td>Nome do usuário</td></tr>
-                            <tr><td><code>$PWD</code></td><td>Diretório atual</td></tr>
-                            <tr><td><code>$SHELL</code></td><td>Shell em uso</td></tr>
-                            <tr><td><code>$PATH</code></td><td>Caminhos de comandos</td></tr>
-                        </table>
-                    </div>
-                </div>
-                <div>
-                    <div class="content-box box-success">
-                        <h3>🔧 Variáveis de Script</h3>
-                        <table class="reference-table">
-                            <tr><th>Variável</th><th>Conteúdo</th></tr>
-                            <tr><td><code>$0</code></td><td>Nome do script</td></tr>
-                            <tr><td><code>$1, $2...</code></td><td>Argumentos</td></tr>
-                            <tr><td><code>$#</code></td><td>Quantidade de args</td></tr>
-                            <tr><td><code>$?</code></td><td>Exit code anterior</td></tr>
-                            <tr><td><code>$$</code></td><td>PID do script</td></tr>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            <div class="box-terminal" style="margin-top: 20px; font-size: 0.95em;">
-                <span class="prompt">$</span> <span class="command">echo</span> <span class="string">"Usuário: $USER"</span><br>
-                <span class="output">Usuário: aluno</span><br>
-                <span class="prompt">$</span> <span class="command">echo</span> <span class="string">"Pasta: $HOME"</span><br>
-                <span class="output">Pasta: /home/aluno</span><br>
-                <span class="prompt">$</span> <span class="command">echo</span> <span class="string">"Shell: $SHELL"</span><br>
-                <span class="output">Shell: /bin/bash</span>
-            </div>
-        </div>
-
-        <!-- SLIDE 11: Erros Comuns -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🚨 Erros Comuns com Variáveis</h2>
-            <div class="grid-2">
-                <div class="content-box box-warning">
-                    <h3>❌ Espaços no =</h3>
-                    <div class="box-terminal" style="padding: 15px; font-size: 0.9em; margin-top: 10px;">
-                        <span class="comment"># ERRADO</span><br>
-                        <span class="variable">NOME</span> = <span class="string">"João"</span><br>
-                        <span class="output" style="color: #fc8181;">bash: NOME: command not found</span><br><br>
-                        <span class="comment"># CERTO</span><br>
-                        <span class="variable">NOME</span>=<span class="string">"João"</span>
-                    </div>
-                </div>
-                <div class="content-box box-warning">
-                    <h3>❌ Esquecer o $</h3>
-                    <div class="box-terminal" style="padding: 15px; font-size: 0.9em; margin-top: 10px;">
-                        <span class="comment"># ERRADO</span><br>
-                        <span class="command">echo</span> NOME<br>
-                        <span class="output">NOME</span> <span class="comment"># Texto literal</span><br><br>
-                        <span class="comment"># CERTO</span><br>
-                        <span class="command">echo</span> $NOME<br>
-                        <span class="output">João</span>
-                    </div>
-                </div>
-                <div class="content-box box-warning">
-                    <h3>❌ Variável sem aspas</h3>
-                    <div class="box-terminal" style="padding: 15px; font-size: 0.9em; margin-top: 10px;">
-                        <span class="variable">ARQ</span>=<span class="string">"meu arquivo.txt"</span><br><br>
-                        <span class="comment"># ERRADO</span><br>
-                        <span class="command">cat</span> $ARQ <span class="comment"># Erro!</span><br><br>
-                        <span class="comment"># CERTO</span><br>
-                        <span class="command">cat</span> "$ARQ"
-                    </div>
-                </div>
-                <div class="content-box box-warning">
-                    <h3>❌ $? após outro comando</h3>
-                    <div class="box-terminal" style="padding: 15px; font-size: 0.9em; margin-top: 10px;">
-                        <span class="command">grep</span> "teste" arquivo<br>
-                        <span class="command">echo</span> "Buscando..." <span class="comment"># Sobrescreve $?</span><br>
-                        <span class="command">echo</span> $? <span class="comment"># Código do echo!</span><br><br>
-                        <span class="comment"># Salve antes!</span><br>
-                        <span class="variable">RESULTADO</span>=$?
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 12: Resumo dos Comandos -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">📋 Resumo: Comandos Essenciais</h2>
-            <div class="grid-3">
-                <div class="command-card">
-                    <div class="cmd">VAR="valor"</div>
-                    <h4>Criar Variável</h4>
-                    <p>Sem espaços!</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">echo $VAR</div>
-                    <h4>Usar Variável</h4>
-                    <p>Com $ na frente</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">$(comando)</div>
-                    <h4>Capturar</h4>
-                    <p>Resultado de comando</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">read VAR</div>
-                    <h4>Ler Entrada</h4>
-                    <p>Do usuário</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">echo $?</div>
-                    <h4>Exit Code</h4>
-                    <p>0=OK, outro=erro</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">"$VAR"</div>
-                    <h4>Proteger</h4>
-                    <p>Sempre use aspas!</p>
-                </div>
-            </div>
-            <div class="box-terminal" style="margin-top: 30px; font-size: 0.95em;">
-                <span class="comment"># Exemplo combinando tudo:</span><br>
-                <span class="variable">USUARIO</span>=<span class="string">$(whoami)</span><br>
-                <span class="command">read</span> -p <span class="string">"Arquivo: "</span> ARQ<br>
-                <span class="command">cp</span> "$ARQ" "/home/$USUARIO/backup/"<br>
-                <span class="command">echo</span> <span class="string">"Resultado: $?"</span>
-            </div>
-        </div>
-
-        <!-- SLIDE 13: Quiz Interativo -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🎯 Desafio Interativo</h2>
-            <p style="text-align: center; margin-bottom: 20px;">Arraste os conceitos para suas definições!</p>
-            
-            <div class="drag-drop-container">
-                <div class="col-questions">
-                    <div class="question-item">
-                        <div class="question-text">Guarda resultado de comando</div>
-                        <div class="drop-zone" data-correct="$(comando)">Arraste aqui</div>
-                    </div>
-                    <div class="question-item">
-                        <div class="question-text">Lê entrada do usuário</div>
-                        <div class="drop-zone" data-correct="read">Arraste aqui</div>
-                    </div>
-                    <div class="question-item">
-                        <div class="question-text">Código do último comando</div>
-                        <div class="drop-zone" data-correct="$?">Arraste aqui</div>
-                    </div>
-                    <div class="question-item">
-                        <div class="question-text">Interpreta variáveis</div>
-                        <div class="drop-zone" data-correct="aspas duplas">Arraste aqui</div>
-                    </div>
-                    <div class="question-item">
-                        <div class="question-text">Texto literal (não interpreta)</div>
-                        <div class="drop-zone" data-correct="aspas simples">Arraste aqui</div>
-                    </div>
-                </div>
-
-                <div class="col-answers" id="answersPool">
-                </div>
-            </div>
-
-            <div style="text-align: center; margin-top: 20px; display: flex; gap: 10px; justify-content: center;">
-                <button onclick="checkAnswers()" class="nav-btn" style="background: var(--accent-green);">✅ Verificar</button>
-                <button onclick="resetQuiz()" class="nav-btn" style="background: var(--accent-red);">🔄 Reiniciar</button>
-            </div>
-
-            <div id="quizResult" class="quiz-result"></div>
-        </div>
-
-        <!-- SLIDE 14: Conclusão -->
-        <div class="slide-card">
-            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center;">
-                <div style="font-size: 4em; margin-bottom: 20px;">🎓📦</div>
-                <h2 class="slide-subtitle" style="border: none;">Parabéns! Você completou a Aula 08!</h2>
-                <div class="content-box box-success" style="max-width: 700px;">
-                    <h3>📚 O que aprendemos hoje:</h3>
-                    <div class="grid-2" style="text-align: left; margin-top: 15px;">
-                        <div>
-                            <div class="bullet-point">Criar e usar variáveis</div>
-                            <div class="bullet-point">Capturar comandos com $()</div>
-                            <div class="bullet-point">Diferença das aspas</div>
-                        </div>
-                        <div>
-                            <div class="bullet-point">Códigos de saída ($?)</div>
-                            <div class="bullet-point">Comando read</div>
-                            <div class="bullet-point">Variáveis especiais</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="content-box box-info" style="max-width: 700px; margin-top: 20px;">
-                    <h3>🔜 Na próxima aula:</h3>
-                    <p><strong>Estruturas Condicionais (if/else)</strong> - Faça seu script tomar decisões!</p>
-                </div>
-                <div class="content-box box-tip" style="max-width: 700px; margin-top: 20px;">
-                    <h3>💡 Lembre-se</h3>
-                    <p><code>VAR="valor"</code> sem espaços | <code>$VAR</code> para usar | <code>"$VAR"</code> protege!</p>
-                </div>
-                <div style="margin-top: 40px;">
-                    <a href="dashboard.html" class="nav-btn" style="font-size: 1.2em; padding: 15px 40px;">
-                        Voltar para o Dashboard 🏠
-                    </a>
-                </div>
-            </div>
-        </div>
-
+    <div class="lesson-hero">
+        <h1>&#x1F4DD; Vari&aacute;veis e Intera&ccedil;&atilde;o com Usu&aacute;rio</h1>
+        <p class="subtitle">Aula 2.2 &mdash; Scripts que leem input do usu&aacute;rio, processam vari&aacute;veis e retornam exit codes</p>
     </div>
 
-    <div class="nav-controls">
-        <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">⬅️ Anterior</button>
-        <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Próximo ➡️</button>
+    <!-- CARD 1 — Variáveis: declaração, atribuição e uso -->
+    <div class="content-card">
+        <h2>&#x1F4E6; Vari&aacute;veis: Declara&ccedil;&atilde;o, Atribui&ccedil;&atilde;o e Uso</h2>
+        <p>Vari&aacute;veis s&atilde;o <strong>caixinhas com etiqueta</strong> que guardam valores para reutilizar ao longo do script. No Bash, n&atilde;o existe declara&ccedil;&atilde;o de tipo: basta atribuir um valor com o sinal <code>=</code>. Para acessar o conte&uacute;do, use o prefixo <code>$</code> antes do nome.</p>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">variaveis.sh</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-shebang">#!/bin/bash</span>
+<span class="t-comment"># Declaração e atribuição — SEM espaços ao redor do =</span>
+<span class="t-var">NOME</span>=<span class="t-string">"Maria Silva"</span>
+<span class="t-var">IDADE</span>=<span class="t-string">25</span>
+<span class="t-var">CURSO</span>=<span class="t-string">"Informática"</span>
+
+<span class="t-comment"># Uso: prefixe com $</span>
+<span class="t-cmd">echo</span> <span class="t-string">"Aluna: <span class="t-var">$NOME</span>"</span>
+<span class="t-cmd">echo</span> <span class="t-string">"Idade: <span class="t-var">$IDADE</span> anos"</span>
+<span class="t-cmd">echo</span> <span class="t-string">"Curso: <span class="t-var">$CURSO</span>"</span>
+
+<span class="t-out">Aluna: Maria Silva</span>
+<span class="t-out">Idade: 25 anos</span>
+<span class="t-out">Curso: Informática</span>
+            </div>
+        </div>
+
+        <div class="alert-box">
+            <p>&#x26A0;&#xFE0F; <strong>Regra de ouro:</strong> <span style="color:#dc2626;">&#x274C; <code>NOME = "João"</code></span> (com espa&ccedil;os) causa erro — o Bash interpreta <code>NOME</code> como um comando. Use sempre <code>NOME="João"</code> sem espa&ccedil;os ao redor do <code>=</code>.</p>
+        </div>
+
+        <div class="compare-row">
+            <div class="compare-wrong"><strong>&#x274C; ERRADO</strong>NOME = "João"<br>CURSO = "Linux"</div>
+            <div class="compare-right"><strong>&#x2705; CERTO</strong>NOME="João"<br>CURSO="Linux"</div>
+        </div>
+
+        <h3>&#x1F4A1; Aspas simples vs duplas</h3>
+        <p>Aspas <strong>duplas</strong> (<code>"</code>) interpretam vari&aacute;veis e substitui&ccedil;&otilde;es. Aspas <strong>simples</strong> (<code>'</code>) tratam tudo como literal.</p>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">aspas.sh</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-var">NOME</span>=<span class="t-string">"Linux"</span>
+<span class="t-cmd">echo</span> <span class="t-string">"Sistema: <span class="t-var">$NOME</span>"</span>    <span class="t-comment"># interpreta → Sistema: Linux</span>
+<span class="t-cmd">echo</span> 'Sistema: $NOME'    <span class="t-comment"># literal  → Sistema: $NOME</span>
+            </div>
+        </div>
     </div>
 
-    <script>
-        // === LÓGICA DE NAVEGAÇÃO ===
-        let currentSlide = 0;
-        const slides = document.querySelectorAll('.slide-card');
-        const totalSlides = slides.length;
+    <!-- CARD 2 — Tipos de variáveis -->
+    <div class="content-card">
+        <h2>&#x1F3F7;&#xFE0F; Tipos de Vari&aacute;veis no Bash</h2>
+        <p>O Bash n&atilde;o exige declara&ccedil;&atilde;o de tipo, mas &eacute; importante entender como os valores s&atilde;o tratados dependendo do contexto em que s&atilde;o usados.</p>
 
-        document.getElementById('total-slides').textContent = totalSlides;
+        <table class="ref-table">
+            <tr><th>Tipo</th><th>Exemplo</th><th>Observa&ccedil;&atilde;o</th></tr>
+            <tr><td>String</td><td><code>NOME="Alice"</code></td><td>Texto simples; use aspas se tiver espa&ccedil;os</td></tr>
+            <tr><td>N&uacute;mero inteiro</td><td><code>PORTA=8080</code></td><td>Sem aspas; use <code>$(( ))</code> para aritm&eacute;tica</td></tr>
+            <tr><td>Booleano (conven&ccedil;&atilde;o)</td><td><code>ATIVO="true"</code></td><td>Bash usa strings ou exit codes, n&atilde;o tipo bool nativo</td></tr>
+            <tr><td>Captura de comando</td><td><code>DATA=$(date)</code></td><td>Guarda a sa&iacute;da de um comando</td></tr>
+        </table>
 
-        function showSlide(index) {
-            slides.forEach((slide, i) => {
-                slide.classList.toggle('active', i === index);
-            });
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            
-            document.getElementById('current-slide').textContent = index + 1;
-            document.getElementById('prevBtn').disabled = index === 0;
-            document.getElementById('nextBtn').disabled = index === totalSlides - 1;
-        }
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">tipos.sh</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-shebang">#!/bin/bash</span>
 
-        function changeSlide(direction) {
-            const newSlide = currentSlide + direction;
-            if (newSlide >= 0 && newSlide < totalSlides) {
-                currentSlide = newSlide;
-                showSlide(currentSlide);
-            }
-        }
+<span class="t-comment"># String</span>
+<span class="t-var">SERVIDOR</span>=<span class="t-string">"192.168.1.10"</span>
 
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowLeft') changeSlide(-1);
-            if (e.key === 'ArrowRight') changeSlide(1);
-        });
+<span class="t-comment"># Número inteiro</span>
+<span class="t-var">PORTA</span>=<span class="t-string">22</span>
+<span class="t-var">TOTAL</span>=$(( 10 + 5 ))   <span class="t-comment"># aritmética com $(( ))</span>
 
-        // === LÓGICA DO QUIZ ===
-        const answersData = [
-            { id: '$(comando)', text: '$(comando)' },
-            { id: 'read', text: 'read' },
-            { id: '$?', text: '$?' },
-            { id: 'aspas duplas', text: '" " (duplas)' },
-            { id: 'aspas simples', text: "' ' (simples)" }
-        ];
+<span class="t-comment"># Booleano por convenção</span>
+<span class="t-var">ATIVO</span>=<span class="t-string">"true"</span>
 
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
-        }
+<span class="t-cmd">echo</span> <span class="t-string">"Servidor: <span class="t-var">$SERVIDOR</span>:<span class="t-var">$PORTA</span>"</span>
+<span class="t-cmd">echo</span> <span class="t-string">"Total: <span class="t-var">$TOTAL</span>"</span>
+<span class="t-out">Servidor: 192.168.1.10:22</span>
+<span class="t-out">Total: 15</span>
+            </div>
+        </div>
+    </div>
 
-        let draggedItem = null;
+    <!-- CARD 3 — Variáveis especiais -->
+    <div class="content-card">
+        <h2>&#x2B50; Vari&aacute;veis Especiais do Shell</h2>
+        <p>O Bash define vari&aacute;veis autom&aacute;ticas que fornecem informa&ccedil;&otilde;es sobre o ambiente de execu&ccedil;&atilde;o e os argumentos recebidos pelo script.</p>
 
-        function initQuiz() {
-            const pool = document.getElementById('answersPool');
-            pool.innerHTML = '';
-            const shuffled = shuffleArray([...answersData]);
-            
-            shuffled.forEach(ans => {
-                const div = document.createElement('div');
-                div.className = 'answer-item';
-                div.draggable = true;
-                div.textContent = ans.text;
-                div.dataset.id = ans.id;
-                
-                div.addEventListener('dragstart', (e) => {
-                    draggedItem = e.target;
-                    e.target.classList.add('dragging');
-                });
-                div.addEventListener('dragend', (e) => {
-                    e.target.classList.remove('dragging');
-                    draggedItem = null;
-                });
-                
-                pool.appendChild(div);
-            });
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:14px 0;">
+            <div>
+                <p style="font-weight:700;font-size:.85em;color:#475569;margin-bottom:6px;">VARI&Aacute;VEIS DE AMBIENTE</p>
+                <table class="ref-table">
+                    <tr><th>Vari&aacute;vel</th><th>Conte&uacute;do</th></tr>
+                    <tr><td><code>$HOME</code></td><td>Pasta home do usu&aacute;rio</td></tr>
+                    <tr><td><code>$USER</code></td><td>Nome do usu&aacute;rio logado</td></tr>
+                    <tr><td><code>$PWD</code></td><td>Diret&oacute;rio atual</td></tr>
+                    <tr><td><code>$SHELL</code></td><td>Shell em uso</td></tr>
+                    <tr><td><code>$PATH</code></td><td>Caminhos de busca de comandos</td></tr>
+                </table>
+            </div>
+            <div>
+                <p style="font-weight:700;font-size:.85em;color:#475569;margin-bottom:6px;">VARI&Aacute;VEIS DE SCRIPT</p>
+                <table class="ref-table">
+                    <tr><th>Vari&aacute;vel</th><th>Conte&uacute;do</th></tr>
+                    <tr><td><code>$0</code></td><td>Nome do pr&oacute;prio script</td></tr>
+                    <tr><td><code>$1</code>, <code>$2</code>...</td><td>Argumentos posicionais</td></tr>
+                    <tr><td><code>$#</code></td><td>Quantidade de argumentos</td></tr>
+                    <tr><td><code>$@</code></td><td>Todos os argumentos</td></tr>
+                    <tr><td><code>$?</code></td><td>Exit code do &uacute;ltimo comando</td></tr>
+                    <tr><td><code>$$</code></td><td>PID do pr&oacute;prio script</td></tr>
+                </table>
+            </div>
+        </div>
 
-            document.querySelectorAll('.drop-zone').forEach(zone => {
-                zone.innerHTML = 'Arraste aqui';
-                zone.classList.remove('has-answer');
-                zone.style.background = '#f8fafc';
-                
-                zone.addEventListener('dragover', (e) => {
-                    e.preventDefault();
-                    zone.classList.add('drag-over');
-                });
-                
-                zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
-                
-                zone.addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    zone.classList.remove('drag-over');
-                    
-                    const jaTemResposta = zone.querySelector('.answer-item');
-                    
-                    if (draggedItem && !jaTemResposta) {
-                        zone.innerHTML = '';
-                        zone.appendChild(draggedItem);
-                        draggedItem.classList.add('in-drop-zone');
-                        zone.classList.add('has-answer');
-                    }
-                });
-            });
-            
-            document.getElementById('quizResult').style.display = 'none';
-        }
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">argumentos.sh</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-shebang">#!/bin/bash</span>
+<span class="t-comment"># Uso: ./argumentos.sh João 25</span>
+<span class="t-cmd">echo</span> <span class="t-string">"Script: <span class="t-var">$0</span>"</span>
+<span class="t-cmd">echo</span> <span class="t-string">"1º argumento: <span class="t-var">$1</span>"</span>
+<span class="t-cmd">echo</span> <span class="t-string">"2º argumento: <span class="t-var">$2</span>"</span>
+<span class="t-cmd">echo</span> <span class="t-string">"Total de argumentos: <span class="t-var">$#</span>"</span>
 
-        function checkAnswers() {
-            let correct = 0;
-            const zones = document.querySelectorAll('.drop-zone');
-            const total = zones.length;
-            
-            zones.forEach(zone => {
-                const answer = zone.querySelector('.answer-item');
-                if (answer && answer.dataset.id === zone.dataset.correct) {
-                    correct++;
-                    zone.style.background = '#d1fae5';
-                } else {
-                    zone.style.background = '#fee2e2';
-                }
-            });
+<span class="t-comment"># Executando:</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">./argumentos.sh</span> <span class="t-arg">João 25</span>
+<span class="t-out">Script: ./argumentos.sh</span>
+<span class="t-out">1º argumento: João</span>
+<span class="t-out">2º argumento: 25</span>
+<span class="t-out">Total de argumentos: 2</span>
+            </div>
+        </div>
+    </div>
 
-            const resultDiv = document.getElementById('quizResult');
-            resultDiv.style.display = 'block';
-            resultDiv.innerHTML = `<h3>Você acertou ${correct} de ${total}!</h3>`;
-            
-            if(correct === total) resultDiv.innerHTML += '<p>🎉 Perfeito! Você domina variáveis!</p>';
-            else if(correct >= total/2) resultDiv.innerHTML += '<p>👍 Bom trabalho! Revise os erros.</p>';
-            else resultDiv.innerHTML += '<p>📚 Continue praticando!</p>';
-        }
+    <!-- CARD 4 — Comando read -->
+    <div class="content-card">
+        <h2>&#x1F3A4; Leitura de Input com <code>read</code></h2>
+        <p>O comando <code>read</code> pausa o script e aguarda que o usu&aacute;rio digite algo, armazenando o valor em uma vari&aacute;vel. &Eacute; a principal forma de criar scripts interativos.</p>
 
-        function resetQuiz() {
-            initQuiz();
-        }
+        <h3>&#x1F4E5; Uso b&aacute;sico</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">read-basico.sh</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-shebang">#!/bin/bash</span>
+<span class="t-cmd">echo</span> <span class="t-string">"Digite seu nome:"</span>
+<span class="t-cmd">read</span> <span class="t-var">NOME</span>
+<span class="t-cmd">echo</span> <span class="t-string">"Olá, <span class="t-var">$NOME</span>!"</span>
 
-        // Inicia tudo
-        initQuiz();
-    </script>
+<span class="t-comment"># Execução:</span>
+<span class="t-out">Digite seu nome:</span>
+<span class="t-out">João</span>   <span class="t-comment">← usuário digita</span>
+<span class="t-out">Olá, João!</span>
+            </div>
+        </div>
+
+        <h3>&#x26A1; <code>read -p</code> — prompt na mesma linha</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">read-prompt.sh</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-shebang">#!/bin/bash</span>
+<span class="t-comment"># -p exibe o texto de prompt antes de aguardar input</span>
+<span class="t-cmd">read</span> <span class="t-flag">-p</span> <span class="t-string">"Seu nome: "</span> <span class="t-var">NOME</span>
+<span class="t-cmd">read</span> <span class="t-flag">-p</span> <span class="t-string">"Seu curso: "</span> <span class="t-var">CURSO</span>
+<span class="t-cmd">echo</span> <span class="t-string">"Bem-vindo, <span class="t-var">$NOME</span> do curso <span class="t-var">$CURSO</span>!"</span>
+            </div>
+        </div>
+
+        <h3>&#x1F512; <code>read -s</code> — entrada silenciosa (senha)</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">read-senha.sh</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-shebang">#!/bin/bash</span>
+<span class="t-comment"># -s oculta os caracteres digitados (ideal para senhas)</span>
+<span class="t-cmd">read</span> <span class="t-flag">-p</span> <span class="t-string">"Usuário: "</span> <span class="t-var">USUARIO</span>
+<span class="t-cmd">read</span> <span class="t-flag">-s</span> <span class="t-flag">-p</span> <span class="t-string">"Senha: "</span> <span class="t-var">SENHA</span>
+<span class="t-cmd">echo</span>   <span class="t-comment"># pula linha após senha oculta</span>
+<span class="t-cmd">echo</span> <span class="t-string">"Autenticando <span class="t-var">$USUARIO</span>..."</span>
+            </div>
+        </div>
+
+        <div class="tip-box">
+            <p>&#x1F4A1; <strong>Dica:</strong> combine <code>-s</code> e <code>-p</code> juntos (<code>read -s -p "Senha: " SENHA</code>) para pedir a senha com prompt e sem eco. Sempre adicione um <code>echo</code> vazio logo ap&oacute;s para pular a linha.</p>
+        </div>
+    </div>
+
+    <!-- CARD 5 — Substituição de comandos e export -->
+    <div class="content-card">
+        <h2>&#x2699;&#xFE0F; Substitui&ccedil;&atilde;o de Comandos e <code>export</code></h2>
+
+        <h3>&#x1F504; Substitui&ccedil;&atilde;o com <code>$()</code> e backtick</h3>
+        <p>A substitui&ccedil;&atilde;o de comandos captura a sa&iacute;da de um comando e a insere no lugar. A forma moderna &eacute; <code>$(comando)</code>; a forma antiga usa backtick (<code>`comando`</code>), ainda v&aacute;lida mas menos leg&iacute;vel.</p>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">substituicao.sh</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-shebang">#!/bin/bash</span>
+
+<span class="t-comment"># Forma moderna — recomendada</span>
+<span class="t-var">HOJE</span>=<span class="t-string">$(date +%d/%m/%Y)</span>
+<span class="t-var">USUARIO</span>=<span class="t-string">$(whoami)</span>
+<span class="t-var">ESPACO</span>=<span class="t-string">$(df -h / | tail -1 | awk '{print $5}')</span>
+
+<span class="t-comment"># Forma antiga com backtick (ainda funciona)</span>
+<span class="t-var">HOSTNAME</span>=<span class="t-string">`hostname`</span>
+
+<span class="t-cmd">echo</span> <span class="t-string">"Data: <span class="t-var">$HOJE</span> | Usuário: <span class="t-var">$USUARIO</span>"</span>
+<span class="t-cmd">echo</span> <span class="t-string">"Disco usado: <span class="t-var">$ESPACO</span> | Host: <span class="t-var">$HOSTNAME</span>"</span>
+<span class="t-out">Data: 24/02/2026 | Usuário: aluno</span>
+<span class="t-out">Disco usado: 45% | Host: linux-srv</span>
+            </div>
+        </div>
+
+        <h3>&#x1F30D; <code>export</code> e vari&aacute;veis de ambiente</h3>
+        <p>Por padr&atilde;o, vari&aacute;veis criadas em um script s&atilde;o <strong>locais</strong> a ele. O comando <code>export</code> torna a vari&aacute;vel vis&iacute;vel para processos filhos (subshells e programas iniciados pelo script).</p>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">export.sh</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-shebang">#!/bin/bash</span>
+
+<span class="t-comment"># Exportar variável para subprocessos</span>
+<span class="t-cmd">export</span> <span class="t-var">AMBIENTE</span>=<span class="t-string">"producao"</span>
+
+<span class="t-comment"># Adicionar diretório ao PATH do sistema</span>
+<span class="t-cmd">export</span> <span class="t-var">PATH</span>=<span class="t-string"><span class="t-var">$PATH</span>:/opt/bin</span>
+
+<span class="t-comment"># Verificar valor exportado</span>
+<span class="t-cmd">echo</span> <span class="t-string">"Ambiente: <span class="t-var">$AMBIENTE</span>"</span>
+<span class="t-cmd">echo</span> <span class="t-string">"PATH inclui /opt/bin agora"</span>
+
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">printenv</span> <span class="t-arg">AMBIENTE</span>
+<span class="t-out">producao</span>
+            </div>
+        </div>
+
+        <div class="highlight-box">
+            <p>&#x1F4CC; <strong>Quando usar <code>export</code>?</strong> Use quando um programa externo ou script filho precisar ler a vari&aacute;vel. Vari&aacute;veis sem <code>export</code> s&atilde;o invis&iacute;veis fora do script atual.</p>
+        </div>
+    </div>
+
+    <!-- CARD 6 — Exit codes -->
+    <div class="content-card">
+        <h2>&#x1F6A6; Exit Codes &mdash; C&oacute;digos de Sa&iacute;da</h2>
+        <p>Todo comando Linux retorna um <strong>exit code</strong> (c&oacute;digo de sa&iacute;da) ao terminar: <code>0</code> indica <strong>sucesso</strong>; qualquer valor entre <code>1</code> e <code>255</code> indica algum tipo de <strong>erro ou condi&ccedil;&atilde;o especial</strong>. A vari&aacute;vel especial <code>$?</code> sempre guarda o exit code do &uacute;ltimo comando executado.</p>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">exit-codes.sh</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">touch</span> <span class="t-arg">arquivo.txt</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">echo</span> <span class="t-var">$?</span>
+<span class="t-ok">0</span>                      <span class="t-comment"># sucesso!</span>
+
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-arg">/pasta_inexistente</span>
+<span class="t-err">ls: cannot access '/pasta_inexistente': No such file or directory</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">echo</span> <span class="t-var">$?</span>
+<span class="t-err">2</span>                      <span class="t-comment"># erro!</span>
+            </div>
+        </div>
+
+        <table class="ref-table">
+            <tr><th>C&oacute;digo</th><th>Significado</th></tr>
+            <tr><td><code>0</code></td><td>Sucesso — comando executou sem erros</td></tr>
+            <tr><td><code>1</code></td><td>Erro gen&eacute;rico</td></tr>
+            <tr><td><code>2</code></td><td>Uso incorreto do comando</td></tr>
+            <tr><td><code>126</code></td><td>Permiss&atilde;o negada (arquivo n&atilde;o execut&aacute;vel)</td></tr>
+            <tr><td><code>127</code></td><td>Comando n&atilde;o encontrado</td></tr>
+            <tr><td><code>130</code></td><td>Processo cancelado pelo usu&aacute;rio (Ctrl+C)</td></tr>
+        </table>
+
+        <h3>&#x1F4DD; Usando exit code em scripts</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">script-exit.sh</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-shebang">#!/bin/bash</span>
+<span class="t-comment"># Salve o $? imediatamente após o comando de interesse</span>
+<span class="t-cmd">grep</span> <span class="t-string">"root"</span> <span class="t-arg">/etc/passwd</span>
+<span class="t-var">RESULTADO</span>=$?          <span class="t-comment"># salva antes que outro comando sobrescreva</span>
+
+<span class="t-cmd">echo</span> <span class="t-string">"grep retornou: <span class="t-var">$RESULTADO</span>"</span>
+
+<span class="t-comment"># Sinalizando sucesso ou erro ao final do script</span>
+<span class="t-cmd">exit</span> 0                 <span class="t-comment"># 0 = tudo ok</span>
+<span class="t-comment"># exit 1               # descomente para sinalizar erro</span>
+            </div>
+        </div>
+
+        <div class="alert-box">
+            <p>&#x26A0;&#xFE0F; <strong>Armadilha comum:</strong> <code>$?</code> &eacute; sobrescrito a cada comando executado. Se precisar do exit code de um comando, salve-o em uma vari&aacute;vel imediatamente: <code>CODIGO=$?</code>.</p>
+        </div>
+    </div>
+
+    <!-- CARD 7 — Script completo de cadastro -->
+    <div class="content-card">
+        <h2>&#x1F464; Script Completo: Cadastro de Usu&aacute;rio</h2>
+        <p>Veja todos os conceitos da aula combinados em um script real que coleta dados do usu&aacute;rio, usa vari&aacute;veis especiais, exibe resumo e sinaliza o resultado com exit code.</p>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">cadastro.sh</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-shebang">#!/bin/bash</span>
+<span class="t-comment">##################################################</span>
+<span class="t-comment"># cadastro.sh — Cadastro simples de usuário</span>
+<span class="t-comment"># Uso: ./cadastro.sh</span>
+<span class="t-comment">##################################################</span>
+
+<span class="t-var">DATA_HORA</span>=<span class="t-string">$(date +"%d/%m/%Y %H:%M")</span>
+
+<span class="t-cmd">clear</span>
+<span class="t-cmd">echo</span> <span class="t-string">"╔════════════════════════════╗"</span>
+<span class="t-cmd">echo</span> <span class="t-string">"║    CADASTRO DE USUÁRIO     ║"</span>
+<span class="t-cmd">echo</span> <span class="t-string">"╚════════════════════════════╝"</span>
+<span class="t-cmd">echo</span>
+
+<span class="t-cmd">read</span> <span class="t-flag">-p</span> <span class="t-string">"Nome completo: "</span> <span class="t-var">NOME</span>
+<span class="t-cmd">read</span> <span class="t-flag">-p</span> <span class="t-string">"E-mail: "</span> <span class="t-var">EMAIL</span>
+<span class="t-cmd">read</span> <span class="t-flag">-s</span> <span class="t-flag">-p</span> <span class="t-string">"Senha: "</span> <span class="t-var">SENHA</span>
+<span class="t-cmd">echo</span>
+
+<span class="t-cmd">echo</span>
+<span class="t-cmd">echo</span> <span class="t-string">"=== RESUMO DO CADASTRO ==="</span>
+<span class="t-cmd">echo</span> <span class="t-string">"Nome:  <span class="t-var">$NOME</span>"</span>
+<span class="t-cmd">echo</span> <span class="t-string">"Email: <span class="t-var">$EMAIL</span>"</span>
+<span class="t-cmd">echo</span> <span class="t-string">"Data:  <span class="t-var">$DATA_HORA</span>"</span>
+<span class="t-cmd">echo</span> <span class="t-string">"PID do script: $$"</span>
+<span class="t-cmd">echo</span> <span class="t-string">"Cadastro concluído com sucesso!"</span>
+
+<span class="t-cmd">exit</span> 0   <span class="t-comment"># sinaliza sucesso</span>
+            </div>
+        </div>
+
+        <div class="tip-box">
+            <p>&#x1F4A1; <strong>Boas pr&aacute;ticas:</strong> nomes de vari&aacute;veis em MAIUSCULO por conven&ccedil;&atilde;o; salve o <code>$?</code> imediatamente ap&oacute;s o comando relevante; use <code>exit 0</code> para indicar sucesso e <code>exit 1</code> (ou outro valor) para erros.</p>
+        </div>
+    </div>
+
+    <!-- EXERCÍCIO DRAG AND DROP -->
+    <div class="content-card exercise-card">
+        <h2>&#x1F3AF; Exerc&iacute;cio &mdash; Arraste e Conecte</h2>
+        <p style="color:#475569;font-size:.9em;margin-bottom:4px;">Arraste cada descri&ccedil;&atilde;o para o comando ou conceito correto de vari&aacute;veis e intera&ccedil;&atilde;o.</p>
+
+        <div class="ex-drag-root" data-ex="ex01">
+            <div class="ex-drag">
+                <div>
+                    <div class="ex-col-title">Descri&ccedil;&atilde;o</div>
+                    <div class="ex-pool" data-pool="ex01">
+                        <div class="drag-chip" data-id="c1">Declara vari&aacute;vel de string</div>
+                        <div class="drag-chip" data-id="c2">L&ecirc; input do usu&aacute;rio com prompt</div>
+                        <div class="drag-chip" data-id="c3">Mostra o c&oacute;digo de sa&iacute;da do &uacute;ltimo comando</div>
+                        <div class="drag-chip" data-id="c4">Usa vari&aacute;vel dentro de string</div>
+                        <div class="drag-chip" data-id="c5">N&uacute;mero de argumentos passados ao script</div>
+                        <div class="drag-chip" data-id="c6">Adiciona diret&oacute;rio ao PATH do sistema</div>
+                    </div>
+                </div>
+                <div>
+                    <div class="ex-col-title">Comando / Conceito</div>
+                    <div class="ex-zones" data-zones="ex01">
+                        <div class="drop-zone" data-zone="ex01-z1" data-accept="c1">
+                            <span class="zone-name"><code>NOME="João"</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z2" data-accept="c2">
+                            <span class="zone-name"><code>read -p "Digite seu nome: " NOME</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z3" data-accept="c3">
+                            <span class="zone-name"><code>echo $?</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z4" data-accept="c4">
+                            <span class="zone-name"><code>echo "Olá, $NOME!"</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z5" data-accept="c5">
+                            <span class="zone-name"><code>$#</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z6" data-accept="c6">
+                            <span class="zone-name"><code>export PATH=$PATH:/opt/bin</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ex-actions">
+            <button class="btn-verificar" onclick="dragVerify('ex01')">Verificar</button>
+            <button class="btn-refazer"  onclick="dragReset('ex01')">Refazer</button>
+        </div>
+        <div class="ex-result" id="ex01-result"></div>
+    </div>
+
+    <!-- ATIVIDADE PRÁTICA -->
+    <div class="content-card practical-card" id="prat-01">
+        <h2>&#x1F6E0;&#xFE0F; Atividade Pr&aacute;tica &mdash; Script de Cadastro de Usu&aacute;rio</h2>
+        <div class="prat-meta">
+            <span class="prat-tag">&#x23F1; ~35 min</span>
+            <span class="prat-tag">&#x1F4BB; Ubuntu Server / Terminal</span>
+            <span class="prat-tag">&#x1F4F8; Tirar screenshot da sa&iacute;da</span>
+        </div>
+
+        <div class="prat-steps">
+            <div class="prat-step">
+                <div class="step-num">1</div>
+                <div class="step-body">
+                    <div class="step-label">Crie o script que pede nome e e-mail</div>
+                    <div class="step-desc">No terminal: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">vim ~/scripts/cadastro.sh</code>. Pressione <strong>i</strong> e escreva o shebang (<code>#!/bin/bash</code>), coment&aacute;rio de cabe&ccedil;alho e dois <code>read -p</code>: um para <code>NOME</code> e outro para <code>EMAIL</code>. Salve com <kbd>Esc</kbd> <kbd>:wq</kbd>.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">2</div>
+                <div class="step-body">
+                    <div class="step-label">Valide se os campos est&atilde;o preenchidos</div>
+                    <div class="step-desc">Ap&oacute;s o <code>read</code> de cada campo, adicione uma verifica&ccedil;&atilde;o simples: <code style="background:#f1f5f9;padding:2px 5px;border-radius:3px;font-family:monospace;display:block;margin-top:6px;">[ -z "$NOME" ] &amp;&amp; echo "ERRO: Nome obrigatório!" &amp;&amp; exit 1</code> Fa&ccedil;a o mesmo para <code>EMAIL</code>. Isso usa operadores de string para checar campo vazio.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">3</div>
+                <div class="step-body">
+                    <div class="step-label">Exiba o resumo com as vari&aacute;veis</div>
+                    <div class="step-desc">Adicione ao final do script: <code style="background:#f1f5f9;padding:2px 5px;border-radius:3px;font-family:monospace;display:block;margin-top:6px;">DATA=$(date +"%d/%m/%Y %H:%M")<br>echo "=== RESUMO ==="<br>echo "Nome:  $NOME"<br>echo "Email: $EMAIL"<br>echo "Data:  $DATA"</code> Use aspas duplas para garantir a interpreta&ccedil;&atilde;o das vari&aacute;veis.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">4</div>
+                <div class="step-body">
+                    <div class="step-label">Use exit code para indicar sucesso</div>
+                    <div class="step-desc">Na &uacute;ltima linha do script, adicione <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">exit 0</code>. D&ecirc; permiss&atilde;o e execute: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">chmod +x ~/scripts/cadastro.sh &amp;&amp; ~/scripts/cadastro.sh</code>. Ap&oacute;s a execu&ccedil;&atilde;o, execute <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">echo $?</code> e confirme que retorna <code>0</code>.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">5</div>
+                <div class="step-body">
+                    <div class="step-label">Teste com argumentos posicionais</div>
+                    <div class="step-desc">Crie uma vers&atilde;o alternativa que recebe nome via argumento: <code style="background:#f1f5f9;padding:2px 5px;border-radius:3px;font-family:monospace;display:block;margin-top:6px;">NOME=$1<br>echo "Olá, $NOME! (via argumento $0)"<br>echo "Total de argumentos: $#"</code> Execute: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">./cadastro.sh "João Silva"</code> e verifique as vari&aacute;veis especiais.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">6</div>
+                <div class="step-body">
+                    <div class="step-label">Use export para configurar ambiente</div>
+                    <div class="step-desc">Adicione ao in&iacute;cio do script: <code style="background:#f1f5f9;padding:2px 5px;border-radius:3px;font-family:monospace;display:block;margin-top:6px;">export APP_ENV="dev"<br>export LOG_DIR="$HOME/logs"<br>mkdir -p "$LOG_DIR"<br>echo "Ambiente: $APP_ENV"</code> Verifique que <code>printenv APP_ENV</code> mostra o valor dentro do script e que a pasta de log foi criada.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="prat-observe">
+            <strong>&#x1F4CC; Para refletir:</strong> Vari&aacute;veis transformam scripts est&aacute;ticos em ferramentas din&acirc;micas. Com <code>read</code>, o mesmo script serve para dados diferentes a cada execu&ccedil;&atilde;o. Com exit codes, outros scripts e sistemas de monitoramento conseguem saber se tudo correu bem &mdash; a base da automa&ccedil;&atilde;o profissional.
+        </div>
+
+        <div class="ex-actions">
+            <button class="btn-print" onclick="printPractical('prat-01', 'Aula 2.2 \u2014 Variáveis e Interação com Usuário')">&#x1F5A8;&#xFE0F; Imprimir roteiro</button>
+        </div>
+    </div>
+
+    <div class="nav-footer">
+        <a href="aula01-shell-script.html" class="nav-link">&#x2190; Shell Script: Primeiros Passos</a>
+        <a href="aula09-condicionais-if.html" class="nav-link">Condicionais IF/ELSE &#x2192;</a>
+    </div>
+
+</div>
+
+<script src="slide-mode.js"></script>
+<script src="exercise-drag.js"></script>
+<script src="exercise-print.js"></script>
 </body>
 </html>

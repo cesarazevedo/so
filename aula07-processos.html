@@ -3,878 +3,546 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aula 07 - Processos e Serviços</title>
+    <title>Aula 1.7 — Processos e Serviços</title>
+    <link rel="stylesheet" href="slide-mode.css">
+    <link rel="stylesheet" href="exercise.css">
     <style>
-        :root {
-            --primary: #667eea;
-            --secondary: #764ba2;
-            --bg-light: #f4f7fe;
-            --text-dark: #2d3748;
-            --text-light: #718096;
-            --accent-green: #38ef7d;
-            --accent-red: #ff758c;
-        }
+        :root { --primary: #667eea; --secondary: #764ba2; --bg-light: #f4f7fe; --text-dark: #2d3748; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-light);
-            color: var(--text-dark);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        .classroom-header {
-            background: white;
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 1000;
-        }
-        .back-btn {
-            text-decoration: none;
-            color: var(--text-dark);
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            border-radius: 50px;
-            transition: all 0.2s;
-            background: #f0f2f5;
-        }
-        .back-btn:hover { background: #e2e8f0; color: var(--primary); }
-        .lesson-info h1 { font-size: 1.1em; margin: 0; color: var(--text-dark); }
-        .lesson-info span { font-size: 0.85em; color: var(--text-light); }
-        .slide-counter {
-            background: var(--primary);
-            color: white;
-            padding: 5px 12px;
-            border-radius: 12px;
-            font-size: 0.9em;
-            font-weight: bold;
-        }
-        .viewer-container {
-            margin-top: 80px;
-            padding: 20px;
-            padding-bottom: 100px;
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-        }
-        .slide-card {
-            background: white;
-            width: 100%;
-            max-width: 1000px;
-            min-height: 80vh;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            padding: 50px;
-            position: relative;
-            display: none;
-            flex-direction: column;
-            animation: fadeIn 0.4s ease;
-        }
-        .slide-card.active { display: flex; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        h1.slide-title {
-            font-size: 2.8em;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        h2.slide-subtitle {
-            font-size: 2.2em;
-            color: var(--text-dark);
-            border-bottom: 3px solid #e2e8f0;
-            padding-bottom: 15px;
-            margin-bottom: 30px;
-        }
-        h3 { color: var(--primary); margin: 15px 0 10px; font-size: 1.3em; }
-        .content-box {
-            padding: 18px;
-            border-radius: 12px;
-            margin: 12px 0;
-            border-left: 5px solid;
-            background: #f8fafc;
-        }
-        .box-highlight { border-color: #f39c12; background: #fffaf0; }
-        .box-info { border-color: var(--primary); background: #f4f7fe; }
-        .box-success { border-color: var(--accent-green); background: #f0fdf4; }
-        .box-warning { border-color: var(--accent-red); background: #fff5f5; }
-        .box-terminal { 
-            background: #1a202c; 
-            color: #38ef7d; 
-            font-family: 'Courier New', monospace; 
-            border-left: 5px solid #38ef7d;
-            padding: 20px;
-            border-radius: 12px;
-            font-size: 1em;
-            line-height: 1.7;
-        }
-        .box-terminal .prompt { color: #63b3ed; }
-        .box-terminal .root { color: #fc8181; }
-        .box-terminal .command { color: #38ef7d; }
-        .box-terminal .output { color: #a0aec0; }
-        .box-terminal .comment { color: #718096; font-style: italic; }
-        .box-terminal .highlight { color: #f6e05e; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
-        .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; }
-        .bullet-point {
-            display: flex;
-            align-items: center;
-            margin: 6px 0;
-            font-size: 1em;
-            line-height: 1.4;
-        }
-        .bullet-point::before {
-            content: "⚙️";
-            margin-right: 8px;
-            flex-shrink: 0;
-        }
-        .command-card {
-            background: white;
-            border-radius: 12px;
-            padding: 15px;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
-        }
-        .command-card:hover { transform: translateY(-5px); }
-        .command-card .cmd { 
-            font-family: 'Courier New', monospace;
-            font-size: 1.3em; 
-            color: var(--primary);
-            background: #f4f7fe;
-            padding: 8px 15px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            display: inline-block;
-        }
-        .command-card h4 { color: var(--text-dark); margin-bottom: 5px; font-size: 0.95em; }
-        .command-card p { font-size: 0.8em; color: var(--text-light); }
-        .section-divider {
-            text-align: center;
-            padding: 12px;
-            margin: 15px 0;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            color: white;
-            border-radius: 10px;
-            font-size: 1em;
-            font-weight: bold;
-        }
-        .process-states {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            flex-wrap: wrap;
-            margin: 15px 0;
-        }
-        .state-badge {
-            padding: 12px 20px;
-            border-radius: 10px;
-            text-align: center;
-            color: white;
-            font-weight: bold;
-            min-width: 100px;
-        }
-        .signal-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin: 15px 0;
-        }
-        .signal-box {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 10px;
-            padding: 15px;
-            text-align: center;
-            color: white;
-        }
-        .signal-box .num { font-size: 1.8em; font-weight: bold; }
-        .signal-box .name { font-size: 0.9em; opacity: 0.9; }
-        .top-simulation {
-            background: #000;
-            color: #00ff00;
-            font-family: 'Courier New', monospace;
-            padding: 15px;
-            border-radius: 10px;
-            font-size: 0.8em;
-            line-height: 1.5;
-            overflow-x: auto;
-        }
-        .top-header { color: #00ffff; }
-        .top-highlight { color: #ffff00; }
-        .nav-controls {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 15px;
-            background: white;
-            padding: 10px 20px;
-            border-radius: 50px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            z-index: 100;
-        }
-        .nav-btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 25px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
-        }
-        .nav-btn:hover { background: var(--secondary); transform: translateY(-2px); }
-        .nav-btn:disabled { background: #cbd5e0; cursor: not-allowed; transform: none; }
-        .drag-drop-container { display: flex; gap: 25px; margin-top: 15px; }
-        .col-questions, .col-answers { flex: 1; }
-        .question-item {
-            background: white;
-            border: 2px solid #e2e8f0;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 10px;
-        }
-        .question-text { font-weight: bold; margin-bottom: 6px; color: var(--text-dark); font-size: 0.9em; }
-        .drop-zone {
-            background: #f8fafc;
-            border: 2px dashed #cbd5e0;
-            border-radius: 8px;
-            min-height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8em;
-            color: var(--text-light);
-            transition: all 0.2s;
-        }
-        .drop-zone.drag-over { background: #e6fffa; border-color: var(--accent-green); }
-        .drop-zone.has-answer { border-style: solid; background: white; border-color: var(--primary); }
-        .answer-item {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            padding: 8px 15px;
-            margin-bottom: 8px;
-            border-radius: 8px;
-            cursor: grab;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            font-size: 0.85em;
-            user-select: none;
-            font-family: 'Courier New', monospace;
-        }
-        .answer-item:active { cursor: grabbing; }
-        .answer-item.dragging { opacity: 0.5; }
-        .answer-item.in-drop-zone { margin: 0; width: 100%; box-shadow: none; }
-        .quiz-result {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 12px;
-            text-align: center;
-            display: none;
-            background: linear-gradient(135deg, #f6ad55 0%, #ed8936 100%);
-            color: white;
-        }
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: var(--bg-light); color: var(--text-dark); line-height: 1.7; }
+        .top-bar { background: white; padding: 15px 30px; display: flex; align-items: center; gap: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 10; }
+        .back-btn { text-decoration: none; color: var(--primary); font-weight: 600; display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 8px; transition: background .3s; }
+        .back-btn:hover { background: rgba(102,126,234,.08); }
+        .page-badge { font-size: .8em; padding: 4px 12px; border-radius: 20px; background: rgba(102,126,234,.12); color: var(--primary); font-weight: 600; }
+        .content-wrapper { max-width: 800px; margin: 40px auto; padding: 0 30px; }
+        .lesson-hero { background: white; border-radius: 16px; padding: 40px; box-shadow: 0 5px 15px rgba(0,0,0,.05); margin-bottom: 30px; border-top: 4px solid var(--primary); }
+        .lesson-hero h1 { font-size: 2em; margin-bottom: 10px; color: var(--primary); }
+        .lesson-hero .subtitle { font-size: 1.05em; color: #718096; }
+        .content-card { background: white; border-radius: 16px; padding: 35px; box-shadow: 0 5px 15px rgba(0,0,0,.05); margin-bottom: 25px; }
+        .content-card h2 { font-size: 1.4em; color: var(--primary); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
+        .content-card h3 { font-size: 1.05em; color: #4a5568; margin: 20px 0 10px; }
+        .content-card p { margin-bottom: 15px; text-align: justify; }
+        ul, ol { margin: 10px 0 15px 25px; }
+        li { margin-bottom: 8px; }
+        .highlight-box { background: linear-gradient(135deg,rgba(102,126,234,.05),rgba(118,75,162,.06)); border-left: 4px solid var(--primary); padding: 20px 25px; border-radius: 0 12px 12px 0; margin: 20px 0; }
+        .highlight-box p { margin-bottom: 0; font-style: italic; }
+        .alert-box { background: #fff8e1; border-left: 4px solid #f59e0b; padding: 18px 22px; border-radius: 0 12px 12px 0; margin: 20px 0; }
+        .alert-box p { margin: 0; color: #78350f; font-size: .93em; }
+        .tip-box { background: #f0fdf4; border-left: 4px solid #16a34a; padding: 18px 22px; border-radius: 0 12px 12px 0; margin: 20px 0; }
+        .tip-box p { margin: 0; color: #14532d; font-size: .93em; }
+        .kbd-sm { background: #1e293b; color: #e2e8f0; border-radius: 4px; padding: 2px 6px; font-family:'Consolas',monospace; font-size:.82em; }
+        .terminal { background: #1a202c; border-radius: 12px; overflow: hidden; margin: 16px 0; box-shadow: 0 4px 20px rgba(0,0,0,.3); }
+        .terminal-bar { background: #2d3748; padding: 8px 16px; display: flex; align-items: center; gap: 8px; }
+        .term-dot { width: 12px; height: 12px; border-radius: 50%; }
+        .term-dot.red { background: #fc8181; } .term-dot.yellow { background: #f6e05e; } .term-dot.green { background: #68d391; }
+        .term-title { font-size: .75em; color: #718096; margin-left: 8px; font-family: 'Consolas', monospace; }
+        .terminal-body { padding: 20px 24px; font-family: 'Courier New','Consolas',monospace; font-size: .92em; line-height: 2; color: #a0aec0; }
+        .t-prompt { color: #63b3ed; } .t-root { color: #fc8181; } .t-cmd { color: #38ef7d; } .t-flag { color: #f6e05e; } .t-path { color: #fc8181; } .t-arg { color: #90cdf4; } .t-out { color: #a0aec0; } .t-comment { color: #4a5568; font-style: italic; } .t-string { color: #68d391; } .t-var { color: #b794f4; } .t-ok { color: #38ef7d; font-weight: bold; } .t-err { color: #fc8181; font-weight: bold; }
+
+        /* Estado dos processos */
+        .process-states { display: flex; justify-content: flex-start; gap: 12px; flex-wrap: wrap; margin: 16px 0; }
+        .state-badge { padding: 10px 18px; border-radius: 10px; text-align: center; color: white; font-weight: bold; font-size: .88em; min-width: 110px; }
+
+        /* Grade de sinais */
+        .signal-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 16px 0; }
+        .signal-box { background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 10px; padding: 16px; text-align: center; color: white; }
+        .signal-box .sig-num { font-size: 1.8em; font-weight: bold; display: block; }
+        .signal-box .sig-name { font-size: .9em; opacity: .9; display: block; margin-bottom: 4px; }
+        .signal-box small { font-size: .78em; opacity: .8; }
+
+        /* Grade de comandos systemctl */
+        .cmd-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 16px 0; }
+        .cmd-item { background: #f8fafc; border-radius: 10px; padding: 14px 16px; border-left: 3px solid var(--primary); }
+        .cmd-item code { font-family: 'Consolas', monospace; background: #1e293b; color: #38ef7d; padding: 2px 7px; border-radius: 4px; font-size: .85em; }
+        .cmd-item p { margin: 6px 0 0; font-size: .85em; color: #475569; }
+
+        /* top simulação */
+        .top-sim { background: #000; color: #00ff00; font-family: 'Courier New', monospace; padding: 14px 16px; border-radius: 10px; font-size: .82em; line-height: 1.6; overflow-x: auto; margin: 16px 0; }
+        .top-sim .ts-header { color: #00ffff; }
+        .top-sim .ts-hl { color: #ffff00; }
+
+        .nav-footer { display: flex; justify-content: space-between; margin-top: 40px; padding-bottom: 40px; }
+        .nav-link { text-decoration: none; color: var(--primary); font-weight: 600; padding: 12px 24px; border-radius: 10px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,.05); transition: all .3s; }
+        .nav-link:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.1); }
+
         @media (max-width: 768px) {
-            .viewer-container { padding: 10px; margin-top: 70px; }
-            .slide-card { padding: 25px; min-height: 70vh; }
-            .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
-            .drag-drop-container { flex-direction: column; }
-            .classroom-header { padding: 10px 15px; }
-            h1.slide-title { font-size: 2em; }
-            h2.slide-subtitle { font-size: 1.5em; }
+            .content-wrapper { padding: 0 15px; }
+            .lesson-hero, .content-card { padding: 25px; }
             .signal-grid { grid-template-columns: 1fr; }
+            .cmd-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-    <header class="classroom-header">
-        <div style="display: flex; align-items: center; gap: 20px;">
-            <a href="index.html" class="back-btn"><span>←</span> Voltar</a>
-            <div class="lesson-info">
-                <h1>Fundamentos do Linux</h1>
-                <span>Módulo 1 • Aula 07</span>
-            </div>
-        </div>
-        <div class="slide-counter">
-            <span id="current-slide">1</span> / <span id="total-slides">14</span>
-        </div>
-    </header>
 
-    <div class="viewer-container">
-        
-        <!-- SLIDE 1: Capa -->
-        <div class="slide-card active">
-            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
-                <div style="font-size: 5em;">⚙️</div>
-                <h1 class="slide-title">Processos e Serviços</h1>
-                <div class="content-box box-highlight" style="text-align: center; font-size: 1.2em;">
-                    <p><strong>Monitoramento, Controle e Gerenciamento</strong></p>
-                    <p style="margin-top: 10px; opacity: 0.8;">Domine o que roda no seu sistema!</p>
-                </div>
-                <div class="box-terminal" style="margin-top: 30px; max-width: 650px;">
-                    <span class="prompt">usuario@linux</span>:~$ <span class="command">ps aux | head -4</span><br>
-                    <span class="output">USER   PID %CPU %MEM COMMAND</span><br>
-                    <span class="output">root     1  0.0  0.1 /sbin/init</span><br>
-                    <span class="output">mysql 2156  1.2  5.4 mysqld</span><br>
-                    <span class="comment"># Veja tudo que está rodando! 🔍</span>
-                </div>
-                <div class="content-box box-info" style="margin-top: 30px;">
-                    💡 Aprenda a controlar processos como um verdadeiro SysAdmin!
-                </div>
-            </div>
+<div class="top-bar">
+    <a href="index.html" class="back-btn">&#x2B05; Voltar ao Dashboard</a>
+    <span class="page-badge">Módulo 1 — Fundamentos Linux</span>
+    <button class="slide-toggle" id="slideToggleBtn">&#x1F4FA; Modo Slide</button>
+</div>
+
+<div class="content-wrapper">
+
+    <div class="lesson-hero">
+        <h1>&#x2699;&#xFE0F; Processos e Serviços</h1>
+        <p class="subtitle">Aula 1.7 — ps, top, kill, nice e systemctl: monitore e controle o que roda no seu servidor</p>
+    </div>
+
+    <!-- CARD 1 — O que é um processo -->
+    <div class="content-card">
+        <h2>&#x1F914; O que é um Processo?</h2>
+        <p>Um <strong>processo</strong> é um programa em execução. Enquanto o programa é apenas um arquivo estático armazenado no disco, o processo é a instância viva desse programa carregada na memória, com recursos alocados e em plena atividade.</p>
+
+        <div class="highlight-box">
+            <p><strong>Analogia:</strong> o programa é a receita de bolo escrita no papel; o processo é o bolo sendo feito no forno — dinâmico, consome energia e ocupa espaço.</p>
         </div>
 
-        <!-- SLIDE 2: O que é um Processo -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🤔 O que é um Processo?</h2>
-            <div class="content-box box-highlight" style="text-align: center; margin-bottom: 15px;">
-                <p style="font-size: 1.2em;"><strong>Processo = Programa em execução</strong></p>
+        <h3>Identificadores essenciais</h3>
+        <ul>
+            <li><strong>PID (Process ID):</strong> número único que identifica o processo no sistema.</li>
+            <li><strong>PPID (Parent PID):</strong> PID do processo que o criou (processo pai).</li>
+            <li><strong>Dono:</strong> usuário que iniciou o processo; define quais recursos pode acessar.</li>
+            <li><strong>Estado:</strong> situação atual — rodando, dormindo, parado ou zumbi.</li>
+        </ul>
+
+        <h3>Estados dos processos</h3>
+        <div class="process-states">
+            <div class="state-badge" style="background: linear-gradient(135deg,#38ef7d,#11998e);">&#x1F3C3; Running (R)<br><small style="font-weight:400;">Executando na CPU</small></div>
+            <div class="state-badge" style="background: linear-gradient(135deg,#667eea,#764ba2);">&#x1F634; Sleeping (S)<br><small style="font-weight:400;">Aguardando evento</small></div>
+            <div class="state-badge" style="background: linear-gradient(135deg,#f39c12,#e67e22);">&#x23F8;&#xFE0F; Stopped (T)<br><small style="font-weight:400;">Pausado (Ctrl+Z)</small></div>
+            <div class="state-badge" style="background: linear-gradient(135deg,#e74c3c,#c0392b);">&#x1F9DF; Zombie (Z)<br><small style="font-weight:400;">Encerrado, não coletado</small></div>
+        </div>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">bash — árvore de processos</span>
             </div>
-            <div class="grid-2">
-                <div class="content-box box-info">
-                    <h3>📦 Programa vs Processo</h3>
-                    <div class="bullet-point"><strong>Programa:</strong> Arquivo no disco (estático)</div>
-                    <div class="bullet-point"><strong>Processo:</strong> Rodando na memória (dinâmico)</div>
-                    <p style="margin-top: 10px;"><strong>Analogia:</strong> Programa é a receita, processo é o bolo sendo feito!</p>
-                </div>
-                <div class="content-box box-success">
-                    <h3>🔢 Cada Processo Tem:</h3>
-                    <div class="bullet-point"><strong>PID:</strong> ID único do processo</div>
-                    <div class="bullet-point"><strong>PPID:</strong> PID do processo pai</div>
-                    <div class="bullet-point"><strong>Dono:</strong> Usuário que iniciou</div>
-                    <div class="bullet-point"><strong>Estado:</strong> Rodando, dormindo...</div>
-                </div>
-            </div>
-            <div class="box-terminal" style="margin-top: 15px;">
-                <span class="comment"># Ver árvore de processos (quem é pai de quem)</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">pstree</span><br>
-                <span class="output">systemd─┬─apache2───5*[apache2]</span><br>
-                <span class="output">        ├─sshd───sshd───bash───pstree</span><br>
-                <span class="output">        └─mysql───mysqld</span>
+            <div class="terminal-body">
+<span class="t-comment"># Ver a árvore de processos (quem é pai de quem)</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">pstree</span>
+<span class="t-out">systemd─┬─apache2───5*[apache2]</span>
+<span class="t-out">        ├─sshd───sshd───bash───pstree</span>
+<span class="t-out">        └─mysql───mysqld</span>
             </div>
         </div>
 
-        <!-- SLIDE 3: Estados dos Processos -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🔄 Estados dos Processos</h2>
-            <div class="process-states">
-                <div class="state-badge" style="background: linear-gradient(135deg, #38ef7d, #11998e);">
-                    🏃 Running (R)<br><small>Executando</small>
-                </div>
-                <div class="state-badge" style="background: linear-gradient(135deg, #667eea, #764ba2);">
-                    😴 Sleeping (S)<br><small>Esperando</small>
-                </div>
-                <div class="state-badge" style="background: linear-gradient(135deg, #f39c12, #e67e22);">
-                    ⏸️ Stopped (T)<br><small>Pausado</small>
-                </div>
-                <div class="state-badge" style="background: linear-gradient(135deg, #e74c3c, #c0392b);">
-                    🧟 Zombie (Z)<br><small>Terminado</small>
-                </div>
+        <div class="tip-box">
+            <p>&#x1F4A1; Processos <strong>Zombie</strong> não devem preocupar em condições normais. São apenas registros de processos que terminaram e aguardam o pai coletar o código de saída. O sistema limpa-os automaticamente.</p>
+        </div>
+    </div>
+
+    <!-- CARD 2 — ps -->
+    <div class="content-card">
+        <h2>&#x1F4CB; Comando <code>ps</code> — Listando Processos</h2>
+        <p>O comando <code>ps</code> (process status) exibe uma fotografia instantânea dos processos em execução. Ao contrário do <code>top</code>, ele não atualiza em tempo real — ideal para scripts e filtragens com <code>grep</code>.</p>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">bash — ps</span>
             </div>
-            <div class="grid-2" style="margin-top: 15px;">
-                <div class="content-box box-info">
-                    <h3>📊 Ciclo de Vida</h3>
-                    <p><strong>Novo</strong> → <strong>Pronto</strong> → <strong>Executando</strong> → <strong>Esperando</strong> → <strong>Terminado</strong></p>
-                    <p style="margin-top: 10px;">Processos alternam entre estados conforme usam CPU e esperam recursos.</p>
-                </div>
-                <div class="content-box box-highlight">
-                    <h3>🧟 Processo Zombie?</h3>
-                    <p>Não se preocupe! São apenas "registros" de processos que terminaram.</p>
-                    <p style="margin-top: 10px;">Usam poucos recursos e o sistema limpa automaticamente.</p>
-                </div>
+            <div class="terminal-body">
+<span class="t-comment"># Todos os processos do sistema — formato Unix estendido</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ps</span> <span class="t-flag">aux</span>
+<span class="t-out">USER       PID %CPU %MEM  STAT COMMAND</span>
+<span class="t-out">root         1  0.0  0.1  Ss   /sbin/init</span>
+<span class="t-out">www-data  1423  0.5  2.1  S    apache2</span>
+<span class="t-out">mysql     2156  1.2  5.4  Sl   mysqld</span>
+
+<span class="t-comment"># Formato System V (todas as informações)</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ps</span> <span class="t-flag">-ef</span>
+
+<span class="t-comment"># Processos de um usuário específico</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ps</span> <span class="t-flag">-u</span> <span class="t-arg">www-data</span>
+
+<span class="t-comment"># Buscar processo por nome com grep</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ps</span> <span class="t-flag">aux</span> <span class="t-out">|</span> <span class="t-cmd">grep</span> <span class="t-arg">nginx</span>
+<span class="t-out">www-data  1423  0.5  2.1  S    nginx: worker process</span>
+
+<span class="t-comment"># Encontrar PID rapidamente pelo nome</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">pgrep</span> <span class="t-arg">apache2</span>
+<span class="t-out">1423</span>
             </div>
         </div>
 
-        <!-- SLIDE 4: Comando ps -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">📋 Comando ps - Listando Processos</h2>
-            <div class="box-terminal">
-                <span class="comment"># TODOS os processos do sistema (mais usado!)</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">ps aux</span><br>
-                <span class="output">USER       PID %CPU %MEM  STAT COMMAND</span><br>
-                <span class="output">root         1  0.0  0.1  Ss   /sbin/init</span><br>
-                <span class="output">www-data  1423  0.5  2.1  S    apache2</span><br>
-                <span class="output">mysql     2156  1.2  5.4  Sl   mysqld</span><br><br>
+        <h3>Colunas mais importantes do <code>ps aux</code></h3>
+        <ul>
+            <li><strong>USER</strong> — usuário dono do processo</li>
+            <li><strong>PID</strong> — identificador único do processo</li>
+            <li><strong>%CPU</strong> — porcentagem de CPU utilizada</li>
+            <li><strong>%MEM</strong> — porcentagem de RAM utilizada</li>
+            <li><strong>STAT</strong> — estado atual: R (rodando), S (dormindo), T (parado), Z (zumbi)</li>
+            <li><strong>COMMAND</strong> — comando que originou o processo</li>
+        </ul>
+    </div>
 
-                <span class="comment"># Buscar processo específico</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">ps aux | grep apache</span><br>
-                <span class="output">www-data  1423  0.5  2.1  S  apache2</span><br><br>
+    <!-- CARD 3 — top e htop -->
+    <div class="content-card">
+        <h2>&#x1F4CA; <code>top</code> e <code>htop</code> — Monitoramento em Tempo Real</h2>
+        <p>Enquanto o <code>ps</code> tira uma foto, o <code>top</code> exibe um <strong>vídeo ao vivo</strong> do estado do sistema, atualizando automaticamente a cada poucos segundos. É a ferramenta padrão para diagnóstico imediato de desempenho.</p>
 
-                <span class="comment"># Encontrar PID rapidamente</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">pgrep apache</span><br>
-                <span class="output">1423</span>
+        <div class="top-sim">
+<span class="ts-header">top - 14:32:15 up 5 days,  load average: 0.52, 0.58, 0.59</span>
+<span class="ts-header">Tasks: 203 total,   1 running, 202 sleeping,   0 zombie</span>
+<span class="ts-header">%Cpu:  5.2 us,  2.1 sy, 92.1 id  |  Mem: 7976M total, 4521M used</span>
+
+  <span class="ts-hl">PID  USER     %CPU  %MEM   COMMAND</span>
+ 2156 mysql     5.3  10.2   mysqld
+ 1423 www-data  2.1   4.1   apache2
+ 3456 usuario   1.0   2.1   node</div>
+
+        <h3>Atalhos interativos dentro do <code>top</code></h3>
+        <ul>
+            <li><span class="kbd-sm">P</span> — ordenar por uso de CPU (padrão)</li>
+            <li><span class="kbd-sm">M</span> — ordenar por uso de memória</li>
+            <li><span class="kbd-sm">k</span> — enviar sinal para matar um processo (pede o PID)</li>
+            <li><span class="kbd-sm">u</span> — filtrar por usuário</li>
+            <li><span class="kbd-sm">q</span> — sair do top</li>
+        </ul>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">bash — htop</span>
             </div>
-            <div class="content-box box-info" style="margin-top: 15px;">
-                <h3>📊 Colunas Importantes</h3>
-                <div class="grid-4">
-                    <div><strong>PID</strong> - ID do processo</div>
-                    <div><strong>%CPU</strong> - Uso de CPU</div>
-                    <div><strong>%MEM</strong> - Uso de RAM</div>
-                    <div><strong>STAT</strong> - Estado (R,S,T,Z)</div>
-                </div>
+            <div class="terminal-body">
+<span class="t-comment"># htop: versão visual aprimorada do top (aceita mouse!)</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">sudo</span> <span class="t-arg">apt install htop</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">htop</span>
             </div>
         </div>
 
-        <!-- SLIDE 5: top e htop -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">📊 top e htop - Monitoramento em Tempo Real</h2>
-            <div class="top-simulation">
-<span class="top-header">top - 14:32:15 up 5 days, load average: 0.52, 0.58, 0.59</span>
-<span class="top-header">Tasks: 203 total,   1 running, 202 sleeping,   0 zombie</span>
-<span class="top-header">%Cpu:  5.2 us,  2.1 sy, 92.1 id | Mem: 7976M total, 4521M used</span>
+        <div class="tip-box">
+            <p>&#x1F4A1; Use <code>top -o %CPU</code> para abrir já ordenado por consumo de CPU, ou <code>top -d 1</code> para atualizar a cada 1 segundo. O <strong>htop</strong> oferece barras coloridas, suporte a mouse e navegação mais intuitiva.</p>
+        </div>
+    </div>
 
-  <span class="top-highlight">PID USER      %CPU  %MEM   COMMAND</span>
- 2156 mysql      5.3  10.2   mysqld
- 1423 www-data   2.1   4.1   apache2
- 3456 usuario    1.0   2.1   firefox
+    <!-- CARD 4 — kill e killall -->
+    <div class="content-card">
+        <h2>&#x1F480; <code>kill</code> e <code>killall</code> — Sinais para Processos</h2>
+        <p>O comando <code>kill</code> não serve apenas para "matar" processos — ele envia <strong>sinais</strong> que instruem o processo a executar determinada ação. Matar é apenas um dos efeitos possíveis. Entender os sinais é essencial para administrar servidores com segurança.</p>
+
+        <div class="signal-grid">
+            <div class="signal-box" style="background: linear-gradient(135deg,#38ef7d,#11998e);">
+                <span class="sig-num">15</span>
+                <span class="sig-name">SIGTERM</span>
+                <small>"Termine, por favor"</small>
             </div>
-            <div class="grid-2" style="margin-top: 15px;">
-                <div class="content-box box-info">
-                    <h3>⌨️ Atalhos no top</h3>
-                    <div class="bullet-point"><strong>P</strong> - Ordenar por CPU</div>
-                    <div class="bullet-point"><strong>M</strong> - Ordenar por Memória</div>
-                    <div class="bullet-point"><strong>k</strong> - Matar processo</div>
-                    <div class="bullet-point"><strong>q</strong> - Sair</div>
-                </div>
-                <div class="content-box box-success">
-                    <h3>🎨 htop (Melhorado!)</h3>
-                    <p>Interface colorida com mouse!</p>
-                    <div class="box-terminal" style="padding: 10px; margin-top: 8px; font-size: 0.9em;">
-                        <span class="command">sudo apt install htop</span><br>
-                        <span class="command">htop</span>
+            <div class="signal-box" style="background: linear-gradient(135deg,#e74c3c,#c0392b);">
+                <span class="sig-num">9</span>
+                <span class="sig-name">SIGKILL</span>
+                <small>"Encerre imediatamente"</small>
+            </div>
+            <div class="signal-box" style="background: linear-gradient(135deg,#f39c12,#e67e22);">
+                <span class="sig-num">1</span>
+                <span class="sig-name">SIGHUP</span>
+                <small>"Recarregue configuração"</small>
+            </div>
+        </div>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">bash — kill e killall</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-comment"># Terminar educadamente — SIGTERM (padrão, sinal 15)</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">kill</span> <span class="t-arg">1234</span>
+
+<span class="t-comment"># Forçar encerramento imediato — SIGKILL (último recurso!)</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">kill</span> <span class="t-flag">-9</span> <span class="t-arg">1234</span>
+
+<span class="t-comment"># Recarregar configuração sem matar — SIGHUP</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">kill</span> <span class="t-flag">-1</span> <span class="t-arg">1234</span>
+
+<span class="t-comment"># Matar todos os processos com o nome especificado</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">killall</span> <span class="t-arg">firefox</span>
+
+<span class="t-comment"># Ver todos os sinais disponíveis</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">kill</span> <span class="t-flag">-l</span>
+            </div>
+        </div>
+
+        <div class="alert-box">
+            <p>&#x26A0;&#xFE0F; <strong>SIGKILL (kill -9)</strong> não pode ser ignorado pelo processo e encerra imediatamente sem salvar dados. Use sempre <code>kill</code> (SIGTERM) primeiro e recorra ao <code>-9</code> apenas se o processo não responder.</p>
+        </div>
+    </div>
+
+    <!-- CARD 5 — nice e renice -->
+    <div class="content-card">
+        <h2>&#x2696;&#xFE0F; <code>nice</code> e <code>renice</code> — Prioridade de Processos</h2>
+        <p>O Linux distribui o tempo de CPU entre os processos conforme sua <strong>prioridade</strong>. O comando <code>nice</code> define a prioridade ao iniciar um processo, enquanto <code>renice</code> altera a prioridade de um processo já em execução.</p>
+
+        <div class="highlight-box">
+            <p>A escala de <em>niceness</em> vai de <strong>-20</strong> (máxima prioridade) até <strong>+19</strong> (mínima prioridade). O valor padrão é <strong>0</strong>. Quanto mais "bonzinho" (nice) o processo, menos CPU ele exige — e por isso recebe menos.</p>
+        </div>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">bash — nice e renice</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-comment"># Iniciar com baixa prioridade (nice +10) — não atrapalha o sistema</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">nice</span> <span class="t-flag">-n 10</span> <span class="t-arg">./script.sh</span>
+
+<span class="t-comment"># Iniciar com alta prioridade (só root pode usar nice negativo)</span>
+<span class="t-root">root@servidor:~#</span> <span class="t-cmd">nice</span> <span class="t-flag">-n -10</span> <span class="t-arg">./processo_critico</span>
+
+<span class="t-comment"># Mudar prioridade de um processo já rodando</span>
+<span class="t-root">root@servidor:~#</span> <span class="t-cmd">renice</span> <span class="t-flag">-n 5</span> <span class="t-flag">-p</span> <span class="t-arg">1234</span>
+<span class="t-out">1234 (process ID) old priority 0, new priority 5</span>
+
+<span class="t-comment"># Exemplo prático: backup com prioridade reduzida</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">nice</span> <span class="t-flag">-n 19</span> <span class="t-cmd">tar</span> <span class="t-flag">-czf</span> <span class="t-arg">backup.tar.gz /home</span>
+            </div>
+        </div>
+
+        <div class="alert-box">
+            <p>&#x26A0;&#xFE0F; Apenas o <strong>root</strong> pode aumentar a prioridade (valores negativos de nice). Usuários comuns só podem diminuir a prioridade dos próprios processos (valores positivos).</p>
+        </div>
+    </div>
+
+    <!-- CARD 6 — systemctl -->
+    <div class="content-card">
+        <h2>&#x1F527; <code>systemctl</code> — Gerenciando Serviços</h2>
+        <p><strong>Serviços</strong> (ou <em>daemons</em>) são processos que rodam permanentemente em background: Apache, MySQL, SSH, Nginx etc. No Linux moderno, todos são gerenciados pelo <strong>systemd</strong> por meio do comando <code>systemctl</code>.</p>
+
+        <div class="highlight-box">
+            <p>&#x1F4A1; <strong>Diferença fundamental:</strong> <code>start</code>/<code>stop</code> controlam o serviço <em>agora</em>. <code>enable</code>/<code>disable</code> controlam se o serviço <em>inicia automaticamente no boot</em>.</p>
+        </div>
+
+        <div class="cmd-grid">
+            <div class="cmd-item"><code>systemctl start nginx</code><p>Inicia o serviço imediatamente</p></div>
+            <div class="cmd-item"><code>systemctl stop nginx</code><p>Para o serviço imediatamente</p></div>
+            <div class="cmd-item"><code>systemctl restart nginx</code><p>Para e reinicia o serviço</p></div>
+            <div class="cmd-item"><code>systemctl reload nginx</code><p>Recarrega configuração sem parar</p></div>
+            <div class="cmd-item"><code>systemctl enable ssh</code><p>Habilita início automático no boot</p></div>
+            <div class="cmd-item"><code>systemctl disable ssh</code><p>Desabilita início automático no boot</p></div>
+            <div class="cmd-item"><code>systemctl status nginx</code><p>Exibe estado atual e logs recentes</p></div>
+            <div class="cmd-item"><code>systemctl is-enabled nginx</code><p>Verifica se está habilitado no boot</p></div>
+        </div>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">bash — systemctl status</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-root">root@servidor:~#</span> <span class="t-cmd">systemctl</span> <span class="t-arg">status</span> <span class="t-arg">nginx</span>
+<span class="t-out">● nginx.service - A high performance web server</span>
+<span class="t-out">   Loaded: loaded (/lib/systemd/system/nginx.service; enabled)</span>
+<span class="t-out">   Active: <span class="t-ok">active (running)</span> since Seg 2025-12-01 10:00:00</span>
+<span class="t-out"> Main PID: 1423 (nginx)</span>
+
+<span class="t-comment"># Listar todos os serviços ativos</span>
+<span class="t-root">root@servidor:~#</span> <span class="t-cmd">systemctl</span> <span class="t-arg">list-units</span> <span class="t-flag">--type=service</span> <span class="t-flag">--state=active</span>
+
+<span class="t-comment"># Ver serviços com falha</span>
+<span class="t-root">root@servidor:~#</span> <span class="t-cmd">systemctl</span> <span class="t-flag">--failed</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARD 7 — journalctl -->
+    <div class="content-card">
+        <h2>&#x1F4D3; <code>journalctl</code> — Logs do systemd</h2>
+        <p>O <code>journalctl</code> é a ferramenta para consultar os <strong>logs centralizados</strong> gerenciados pelo systemd. Em vez de verificar dezenas de arquivos dispersos em <code>/var/log/</code>, você tem um único ponto de acesso com filtros poderosos.</p>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">bash — journalctl</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-comment"># Logs de um serviço específico</span>
+<span class="t-root">root@servidor:~#</span> <span class="t-cmd">journalctl</span> <span class="t-flag">-u</span> <span class="t-arg">nginx</span>
+
+<span class="t-comment"># Monitorar logs em tempo real (equivalente ao tail -f)</span>
+<span class="t-root">root@servidor:~#</span> <span class="t-cmd">journalctl</span> <span class="t-flag">-u</span> <span class="t-arg">nginx</span> <span class="t-flag">-f</span>
+
+<span class="t-comment"># Últimas 50 linhas de log do sistema</span>
+<span class="t-root">root@servidor:~#</span> <span class="t-cmd">journalctl</span> <span class="t-flag">-n</span> <span class="t-arg">50</span>
+
+<span class="t-comment"># Logs desde hoje</span>
+<span class="t-root">root@servidor:~#</span> <span class="t-cmd">journalctl</span> <span class="t-flag">--since</span> <span class="t-string">"today"</span>
+
+<span class="t-comment"># Apenas erros e alertas críticos</span>
+<span class="t-root">root@servidor:~#</span> <span class="t-cmd">journalctl</span> <span class="t-flag">-p</span> <span class="t-arg">err</span>
+
+<span class="t-comment"># Logs do boot atual</span>
+<span class="t-root">root@servidor:~#</span> <span class="t-cmd">journalctl</span> <span class="t-flag">-b</span>
+            </div>
+        </div>
+
+        <div class="tip-box">
+            <p>&#x1F4A1; Combine <code>journalctl -u nginx -f</code> com <code>systemctl restart nginx</code> em outra aba do terminal para ver os logs de reinicialização em tempo real — técnica essencial para diagnóstico de serviços.</p>
+        </div>
+
+        <h3>Caso prático: servidor lento</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">bash — investigando lentidão</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-comment"># 1. Verificar carga geral</span>
+<span class="t-prompt">admin@servidor:~$</span> <span class="t-cmd">uptime</span>
+<span class="t-out">load average: <span class="t-err">8.52</span>, 7.21, 5.43  <span class="t-comment"># carga alta!</span></span>
+
+<span class="t-comment"># 2. Identificar o processo culpado</span>
+<span class="t-prompt">admin@servidor:~$</span> <span class="t-cmd">top</span> <span class="t-flag">-o</span> <span class="t-arg">%CPU</span>
+<span class="t-out"><span class="t-err">9876  95.2 python loop_infinito.py</span>  <span class="t-comment"># vilão!</span></span>
+
+<span class="t-comment"># 3. Encerrar o processo problemático</span>
+<span class="t-prompt">admin@servidor:~$</span> <span class="t-cmd">kill</span> <span class="t-arg">9876</span>
+
+<span class="t-comment"># 4. Se não responder, forçar encerramento</span>
+<span class="t-prompt">admin@servidor:~$</span> <span class="t-cmd">kill</span> <span class="t-flag">-9</span> <span class="t-arg">9876</span>
+
+<span class="t-comment"># 5. Confirmar melhora</span>
+<span class="t-prompt">admin@servidor:~$</span> <span class="t-cmd">uptime</span>
+<span class="t-out">load average: <span class="t-ok">0.52</span>, 2.21, 4.43  <span class="t-comment"># normalizado!</span></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- EXERCÍCIO -->
+    <div class="content-card exercise-card">
+        <h2>&#x1F3AF; Exercício — Arraste e Conecte</h2>
+        <p style="color:#475569;font-size:.9em;margin-bottom:4px;">Arraste cada descrição para o comando correto de processos e serviços.</p>
+
+        <div class="ex-drag-root" data-ex="ex01">
+            <div class="ex-drag">
+                <div>
+                    <div class="ex-col-title">Descrição</div>
+                    <div class="ex-pool" data-pool="ex01">
+                        <div class="drag-chip" data-id="c1">Lista processos filtrando por nome</div>
+                        <div class="drag-chip" data-id="c2">Força encerramento do processo 1234</div>
+                        <div class="drag-chip" data-id="c3">Reinicia o serviço nginx</div>
+                        <div class="drag-chip" data-id="c4">Habilita serviço para iniciar no boot</div>
+                        <div class="drag-chip" data-id="c5">Executa script com prioridade reduzida</div>
+                        <div class="drag-chip" data-id="c6">Monitora logs do serviço nginx em tempo real</div>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 6: kill - Sinais -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">💀 Comando kill - Enviando Sinais</h2>
-            <div class="content-box box-highlight" style="text-align: center; margin-bottom: 15px;">
-                <p><strong>kill</strong> não é só "matar" - é enviar <strong>sinais</strong> para processos!</p>
-            </div>
-            <div class="signal-grid">
-                <div class="signal-box" style="background: linear-gradient(135deg, #38ef7d, #11998e);">
-                    <div class="num">15</div>
-                    <div class="name">SIGTERM</div>
-                    <small>"Termine, por favor"</small>
-                </div>
-                <div class="signal-box" style="background: linear-gradient(135deg, #e74c3c, #c0392b);">
-                    <div class="num">9</div>
-                    <div class="name">SIGKILL</div>
-                    <small>"MORRA AGORA!"</small>
-                </div>
-                <div class="signal-box" style="background: linear-gradient(135deg, #f39c12, #e67e22);">
-                    <div class="num">1</div>
-                    <div class="name">SIGHUP</div>
-                    <small>"Recarregue config"</small>
-                </div>
-            </div>
-            <div class="box-terminal" style="margin-top: 15px;">
-                <span class="comment"># Terminar educadamente (SIGTERM - padrão)</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">kill 1234</span><br><br>
-                <span class="comment"># Forçar término (SIGKILL) - último recurso!</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">kill -9 1234</span><br><br>
-                <span class="comment"># Matar pelo nome</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">killall firefox</span>
-            </div>
-        </div>
-
-        <!-- SLIDE 7: Foreground e Background -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🔄 Foreground e Background</h2>
-            <div class="grid-2">
-                <div class="content-box box-info">
-                    <h3>📺 Foreground (Frente)</h3>
-                    <div class="bullet-point">Ocupa o terminal</div>
-                    <div class="bullet-point">Você vê a saída</div>
-                    <div class="bullet-point">Ctrl+C para parar</div>
-                </div>
-                <div class="content-box box-success">
-                    <h3>🌙 Background (Fundo)</h3>
-                    <div class="bullet-point">Libera o terminal</div>
-                    <div class="bullet-point">Use <code>&</code> no final</div>
-                    <div class="bullet-point">Pode ter vários</div>
-                </div>
-            </div>
-            <div class="box-terminal" style="margin-top: 15px;">
-                <span class="comment"># Rodar em background</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">cp arquivo_grande.iso /backup/ &</span><br>
-                <span class="output">[1] 5678</span><br><br>
-                <span class="comment"># Ctrl+Z pausa, bg continua em background</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">bg</span><br><br>
-                <span class="comment"># fg traz de volta para foreground</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">fg</span>
-            </div>
-            <div class="content-box box-highlight" style="margin-top: 15px;">
-                <h3>💡 nohup - Sobrevive ao logout</h3>
-                <p><code>nohup ./script_longo.sh &</code> → Continua rodando mesmo se você fechar o terminal!</p>
-            </div>
-        </div>
-
-        <!-- SLIDE 8: nice e renice -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">⚖️ nice e renice - Prioridades</h2>
-            <div class="content-box box-highlight" style="text-align: center; margin-bottom: 15px;">
-                <p><strong>nice</strong> = "gentileza" → Quanto maior, <strong>menos</strong> prioridade!</p>
-                <p style="margin-top: 5px;">Escala: <strong>-20</strong> (máxima) até <strong>+19</strong> (mínima) | Padrão: <strong>0</strong></p>
-            </div>
-            <div class="grid-2">
-                <div class="content-box box-info">
-                    <h3>🚀 nice (ao iniciar)</h3>
-                    <div class="box-terminal" style="padding: 10px; font-size: 0.9em;">
-                        <span class="comment"># Baixa prioridade</span><br>
-                        <span class="command">nice -n 10 tar -czf backup.tar.gz /home</span><br><br>
-                        <span class="comment"># Alta prioridade (só root)</span><br>
-                        <span class="command">sudo nice -n -10 ./importante</span>
-                    </div>
-                </div>
-                <div class="content-box box-success">
-                    <h3>🔧 renice (já rodando)</h3>
-                    <div class="box-terminal" style="padding: 10px; font-size: 0.9em;">
-                        <span class="comment"># Mudar prioridade do PID 1234</span><br>
-                        <span class="command">renice -n 5 -p 1234</span><br>
-                        <span class="output">old priority 0, new priority 5</span>
-                    </div>
-                </div>
-            </div>
-            <div class="content-box box-warning" style="margin-top: 15px;">
-                <p>⚠️ Só <strong>root</strong> pode aumentar prioridade (nice negativo). Usuários comuns só podem diminuir.</p>
-            </div>
-        </div>
-
-        <!-- SLIDE 9: systemctl - Serviços -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🔧 systemctl - Gerenciando Serviços</h2>
-            <div class="content-box box-highlight" style="text-align: center; margin-bottom: 15px;">
-                <p><strong>Serviços (daemons)</strong> são processos que rodam em background</p>
-                <p>Apache, MySQL, SSH, etc. são gerenciados pelo <strong>systemd</strong></p>
-            </div>
-            <div class="box-terminal">
-                <span class="comment"># Ver status de um serviço</span><br>
-                <span class="root">root@linux</span>:~# <span class="command">systemctl status apache2</span><br>
-                <span class="output">● apache2.service - The Apache HTTP Server</span><br>
-                <span class="output">   Active: <span class="highlight">active (running)</span></span><br><br>
-
-                <span class="comment"># Controlar serviços</span><br>
-                <span class="root">root@linux</span>:~# <span class="command">systemctl start apache2</span>   <span class="comment"># Iniciar</span><br>
-                <span class="root">root@linux</span>:~# <span class="command">systemctl stop apache2</span>    <span class="comment"># Parar</span><br>
-                <span class="root">root@linux</span>:~# <span class="command">systemctl restart apache2</span> <span class="comment"># Reiniciar</span><br>
-                <span class="root">root@linux</span>:~# <span class="command">systemctl reload apache2</span>  <span class="comment"># Recarregar config</span><br><br>
-
-                <span class="comment"># Habilitar/Desabilitar no boot</span><br>
-                <span class="root">root@linux</span>:~# <span class="command">systemctl enable apache2</span>  <span class="comment"># Inicia no boot</span><br>
-                <span class="root">root@linux</span>:~# <span class="command">systemctl disable apache2</span> <span class="comment"># Não inicia no boot</span>
-            </div>
-        </div>
-
-        <!-- SLIDE 10: Mais comandos systemctl -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🔧 systemctl - Comandos Úteis</h2>
-            <div class="box-terminal">
-                <span class="comment"># Listar todos os serviços</span><br>
-                <span class="root">root@linux</span>:~# <span class="command">systemctl list-units --type=service</span><br><br>
-
-                <span class="comment"># Ver serviços ativos</span><br>
-                <span class="root">root@linux</span>:~# <span class="command">systemctl list-units --type=service --state=active</span><br><br>
-
-                <span class="comment"># Ver serviços com falha</span><br>
-                <span class="root">root@linux</span>:~# <span class="command">systemctl --failed</span><br><br>
-
-                <span class="comment"># Ver logs de um serviço</span><br>
-                <span class="root">root@linux</span>:~# <span class="command">journalctl -u apache2</span><br><br>
-
-                <span class="comment"># Verificar se está habilitado no boot</span><br>
-                <span class="root">root@linux</span>:~# <span class="command">systemctl is-enabled apache2</span><br>
-                <span class="output">enabled</span>
-            </div>
-            <div class="content-box box-info" style="margin-top: 15px;">
-                <h3>💡 start vs enable</h3>
-                <p><strong>start/stop:</strong> Controla AGORA | <strong>enable/disable:</strong> Controla no BOOT</p>
-            </div>
-        </div>
-
-        <!-- SLIDE 11: Caso Prático -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🎯 Caso Prático: Servidor Lento</h2>
-            <div class="content-box box-warning" style="text-align: center; margin-bottom: 15px;">
-                <p>😱 O servidor está lento! Como investigar?</p>
-            </div>
-            <div class="box-terminal">
-                <span class="comment"># 1. Verificar carga</span><br>
-                <span class="prompt">admin@server</span>:~$ <span class="command">uptime</span><br>
-                <span class="output">load average: <span class="highlight">8.52</span>, 7.21, 5.43</span> <span class="comment"># Alto!</span><br><br>
-
-                <span class="comment"># 2. Quem está consumindo?</span><br>
-                <span class="prompt">admin@server</span>:~$ <span class="command">top -o %CPU</span><br>
-                <span class="output">PID   %CPU COMMAND</span><br>
-                <span class="output"><span class="highlight">9876  95.2 python loop_infinito.py</span></span> <span class="comment"># Vilão!</span><br><br>
-
-                <span class="comment"># 3. Matar o problema</span><br>
-                <span class="prompt">admin@server</span>:~$ <span class="command">kill 9876</span><br><br>
-
-                <span class="comment"># 4. Se não funcionar...</span><br>
-                <span class="prompt">admin@server</span>:~$ <span class="command">kill -9 9876</span><br><br>
-
-                <span class="comment"># 5. Verificar se melhorou</span><br>
-                <span class="prompt">admin@server</span>:~$ <span class="command">uptime</span><br>
-                <span class="output">load average: 0.52, 2.21, 4.43</span> <span class="comment"># Melhorando! ✅</span>
-            </div>
-        </div>
-
-        <!-- SLIDE 12: Resumo dos Comandos -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">📋 Resumo: Comandos Essenciais</h2>
-            <div class="grid-3">
-                <div class="command-card">
-                    <div class="cmd">ps aux</div>
-                    <h4>Listar Processos</h4>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">top</div>
-                    <h4>Monitor Tempo Real</h4>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">kill PID</div>
-                    <h4>Terminar Processo</h4>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">killall</div>
-                    <h4>Matar por Nome</h4>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">bg / fg</div>
-                    <h4>Background/Fore</h4>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">nice</div>
-                    <h4>Prioridade</h4>
-                </div>
-            </div>
-            <div class="section-divider" style="margin-top: 20px;">Serviços (systemctl)</div>
-            <div class="grid-4">
-                <div class="command-card">
-                    <div class="cmd" style="font-size: 1em;">start</div>
-                    <p>Iniciar</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd" style="font-size: 1em;">stop</div>
-                    <p>Parar</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd" style="font-size: 1em;">restart</div>
-                    <p>Reiniciar</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd" style="font-size: 1em;">status</div>
-                    <p>Ver estado</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 13: Quiz -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🎯 Desafio Interativo</h2>
-            <p style="text-align: center; margin-bottom: 10px;">Arraste os comandos para suas funções!</p>
-            
-            <div class="drag-drop-container">
-                <div class="col-questions">
-                    <div class="question-item">
-                        <div class="question-text">Listar todos os processos</div>
-                        <div class="drop-zone" data-correct="ps aux">Arraste aqui</div>
-                    </div>
-                    <div class="question-item">
-                        <div class="question-text">Monitoramento em tempo real</div>
-                        <div class="drop-zone" data-correct="top">Arraste aqui</div>
-                    </div>
-                    <div class="question-item">
-                        <div class="question-text">Matar processo forçado</div>
-                        <div class="drop-zone" data-correct="kill -9">Arraste aqui</div>
-                    </div>
-                    <div class="question-item">
-                        <div class="question-text">Iniciar um serviço</div>
-                        <div class="drop-zone" data-correct="systemctl start">Arraste aqui</div>
-                    </div>
-                    <div class="question-item">
-                        <div class="question-text">Ver status de serviço</div>
-                        <div class="drop-zone" data-correct="systemctl status">Arraste aqui</div>
-                    </div>
-                    <div class="question-item">
-                        <div class="question-text">Mudar prioridade</div>
-                        <div class="drop-zone" data-correct="renice">Arraste aqui</div>
-                    </div>
-                </div>
-                <div class="col-answers" id="answersPool"></div>
-            </div>
-
-            <div style="text-align: center; margin-top: 15px; display: flex; gap: 10px; justify-content: center;">
-                <button onclick="checkAnswers()" class="nav-btn" style="background: var(--accent-green);">✅ Verificar</button>
-                <button onclick="resetQuiz()" class="nav-btn" style="background: var(--accent-red);">🔄 Reiniciar</button>
-            </div>
-            <div id="quizResult" class="quiz-result"></div>
-        </div>
-
-        <!-- SLIDE 14: Conclusão -->
-        <div class="slide-card">
-            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center;">
-                <div style="font-size: 4em; margin-bottom: 20px;">🎓⚙️</div>
-                <h2 class="slide-subtitle" style="border: none;">Parabéns!</h2>
-                <div class="content-box box-success" style="max-width: 750px;">
-                    <h3>📚 O que aprendemos:</h3>
-                    <div class="grid-2" style="text-align: left; margin-top: 15px;">
-                        <div>
-                            <div class="bullet-point">Processos e PIDs</div>
-                            <div class="bullet-point">ps, top, htop</div>
-                            <div class="bullet-point">kill e sinais</div>
+                <div>
+                    <div class="ex-col-title">Comando</div>
+                    <div class="ex-zones" data-zones="ex01">
+                        <div class="drop-zone" data-zone="ex01-z1" data-accept="c1">
+                            <span class="zone-name"><code>ps aux | grep nginx</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
                         </div>
-                        <div>
-                            <div class="bullet-point">Foreground/Background</div>
-                            <div class="bullet-point">nice e renice</div>
-                            <div class="bullet-point">systemctl (serviços)</div>
+                        <div class="drop-zone" data-zone="ex01-z2" data-accept="c2">
+                            <span class="zone-name"><code>kill -9 1234</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z3" data-accept="c3">
+                            <span class="zone-name"><code>systemctl restart nginx</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z4" data-accept="c4">
+                            <span class="zone-name"><code>systemctl enable ssh</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z5" data-accept="c5">
+                            <span class="zone-name"><code>nice -n 10 ./script.sh</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z6" data-accept="c6">
+                            <span class="zone-name"><code>journalctl -u nginx -f</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
                         </div>
                     </div>
                 </div>
-                <div class="content-box box-highlight" style="max-width: 750px; margin-top: 20px;">
-                    <h3>🎯 Pratique agora:</h3>
-                    <p style="font-family: monospace; font-size: 1em; margin-top: 10px;">
-                        <code>ps aux | grep bash && top -d 1</code>
-                    </p>
-                    <p style="margin-top: 10px;">Lista processos bash e abre o monitor!</p>
+            </div>
+        </div>
+
+        <div class="ex-actions">
+            <button class="btn-verificar" onclick="dragVerify('ex01')">Verificar</button>
+            <button class="btn-refazer"  onclick="dragReset('ex01')">Refazer</button>
+        </div>
+        <div class="ex-result" id="ex01-result"></div>
+    </div>
+
+    <!-- ATIVIDADE PRÁTICA -->
+    <div class="content-card practical-card" id="prat-01">
+        <h2>&#x1F6E0;&#xFE0F; Atividade Prática — Monitoramento do Sistema</h2>
+        <div class="prat-meta">
+            <span class="prat-tag">&#x23F1; ~30 min</span>
+            <span class="prat-tag">&#x1F4BB; Ubuntu Server / Terminal</span>
+            <span class="prat-tag">&#x1F4F8; Tirar screenshot da saída</span>
+        </div>
+
+        <div class="prat-steps">
+            <div class="prat-step">
+                <div class="step-num">1</div>
+                <div class="step-body">
+                    <div class="step-label">Use o <code>top</code> para ver os processos em tempo real</div>
+                    <div class="step-desc">Execute <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">top</code> no terminal. Observe os processos ordenados por CPU. Pressione <strong>M</strong> para ordenar por memória e <strong>P</strong> para voltar à ordenação por CPU. Tire um screenshot mostrando os 5 primeiros processos. Pressione <strong>q</strong> para sair.</div>
                 </div>
-                <div class="content-box box-warning" style="max-width: 750px; margin-top: 15px;">
-                    <p>💡 <strong>Lembre:</strong> Sempre use <code>kill</code> antes de <code>kill -9</code>!</p>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">2</div>
+                <div class="step-body">
+                    <div class="step-label">Use o <code>ps aux</code> para listar todos os processos</div>
+                    <div class="step-desc">Execute <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">ps aux</code> e observe a saída. Em seguida execute <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">ps aux | wc -l</code> para contar quantos processos estão rodando. Anote o número.</div>
                 </div>
-                <div style="margin-top: 30px;">
-                    <a href="index.html" class="nav-btn" style="font-size: 1.2em; padding: 15px 40px;">Voltar ao Dashboard 🏠</a>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">3</div>
+                <div class="step-body">
+                    <div class="step-label">Identifique um processo pelo nome</div>
+                    <div class="step-desc">Execute <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">ps aux | grep bash</code> para localizar o processo bash em execução. Observe o PID exibido. Confirme com <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">pgrep bash</code> — os números devem ser compatíveis.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">4</div>
+                <div class="step-body">
+                    <div class="step-label">Envie um sinal com <code>kill</code> (sem matar nada essencial)</div>
+                    <div class="step-desc">Abra um segundo terminal e execute <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">sleep 300 &amp;</code> para criar um processo em background. Anote o PID exibido. No primeiro terminal, execute <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">kill PID</code> (substituindo PID pelo número anotado). Confirme que o processo não aparece mais com <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">ps aux | grep sleep</code>.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">5</div>
+                <div class="step-body">
+                    <div class="step-label">Gerencie o serviço SSH com <code>systemctl</code></div>
+                    <div class="step-desc">Execute os seguintes comandos em sequência: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">sudo systemctl status ssh</code> (observe o estado), <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">sudo systemctl restart ssh</code> e novamente <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">sudo systemctl status ssh</code>. Verifique que o serviço reiniciou com sucesso e o PID mudou.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">6</div>
+                <div class="step-body">
+                    <div class="step-label">Verifique logs com <code>journalctl</code></div>
+                    <div class="step-desc">Execute <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">sudo journalctl -u ssh -n 20</code> para ver as últimas 20 linhas do log do serviço SSH. Você deve ver o registro do restart realizado no passo anterior. Tire um screenshot mostrando as entradas de log com o horário do restart.</div>
                 </div>
             </div>
         </div>
 
+        <div class="prat-observe">
+            <strong>&#x1F4CC; Para refletir:</strong> Um administrador de sistemas Linux passa boa parte do dia monitorando processos, ajustando prioridades e gerenciando serviços. Dominar <code>ps</code>, <code>top</code>, <code>kill</code>, <code>systemctl</code> e <code>journalctl</code> é o que separa um operador de um verdadeiro SysAdmin — você acaba de dar esse passo.
+        </div>
+
+        <div class="ex-actions">
+            <button class="btn-print" onclick="printPractical('prat-01', 'Aula 1.7 \u2014 Processos e Servi\u00e7os')">&#x1F5A8;&#xFE0F; Imprimir roteiro</button>
+        </div>
     </div>
 
-    <div class="nav-controls">
-        <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">⬅️ Anterior</button>
-        <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Próximo ➡️</button>
+    <div class="nav-footer">
+        <a href="aula06-pacotes.html" class="nav-link">&#x2190; Pacotes e Repositórios</a>
+        <a href="aula08-filesystem.html" class="nav-link">Sistema de Arquivos &#x2192;</a>
     </div>
 
-    <script>
-        let currentSlide = 0;
-        const slides = document.querySelectorAll('.slide-card');
-        const totalSlides = slides.length;
-        document.getElementById('total-slides').textContent = totalSlides;
+</div>
 
-        function showSlide(index) {
-            slides.forEach((slide, i) => slide.classList.toggle('active', i === index));
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            document.getElementById('current-slide').textContent = index + 1;
-            document.getElementById('prevBtn').disabled = index === 0;
-            document.getElementById('nextBtn').disabled = index === totalSlides - 1;
-        }
-
-        function changeSlide(direction) {
-            const newSlide = currentSlide + direction;
-            if (newSlide >= 0 && newSlide < totalSlides) {
-                currentSlide = newSlide;
-                showSlide(currentSlide);
-            }
-        }
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowLeft') changeSlide(-1);
-            if (e.key === 'ArrowRight') changeSlide(1);
-        });
-
-        const answersData = [
-            { id: 'ps aux', text: 'ps aux' },
-            { id: 'top', text: 'top' },
-            { id: 'kill -9', text: 'kill -9' },
-            { id: 'systemctl start', text: 'systemctl start' },
-            { id: 'systemctl status', text: 'systemctl status' },
-            { id: 'renice', text: 'renice' }
-        ];
-
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
-        }
-
-        let draggedItem = null;
-
-        function initQuiz() {
-            const pool = document.getElementById('answersPool');
-            pool.innerHTML = '';
-            shuffleArray([...answersData]).forEach(ans => {
-                const div = document.createElement('div');
-                div.className = 'answer-item';
-                div.draggable = true;
-                div.textContent = ans.text;
-                div.dataset.id = ans.id;
-                div.addEventListener('dragstart', (e) => { draggedItem = e.target; e.target.classList.add('dragging'); });
-                div.addEventListener('dragend', (e) => { e.target.classList.remove('dragging'); draggedItem = null; });
-                pool.appendChild(div);
-            });
-
-            document.querySelectorAll('.drop-zone').forEach(zone => {
-                zone.innerHTML = 'Arraste aqui';
-                zone.classList.remove('has-answer');
-                zone.style.background = '#f8fafc';
-                zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('drag-over'); });
-                zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
-                zone.addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    zone.classList.remove('drag-over');
-                    if (draggedItem && !zone.querySelector('.answer-item')) {
-                        zone.innerHTML = '';
-                        zone.appendChild(draggedItem);
-                        draggedItem.classList.add('in-drop-zone');
-                        zone.classList.add('has-answer');
-                    }
-                });
-            });
-            document.getElementById('quizResult').style.display = 'none';
-        }
-
-        function checkAnswers() {
-            let correct = 0;
-            const zones = document.querySelectorAll('.drop-zone');
-            zones.forEach(zone => {
-                const answer = zone.querySelector('.answer-item');
-                if (answer && answer.dataset.id === zone.dataset.correct) {
-                    correct++;
-                    zone.style.background = '#d1fae5';
-                } else {
-                    zone.style.background = '#fee2e2';
-                }
-            });
-            const resultDiv = document.getElementById('quizResult');
-            resultDiv.style.display = 'block';
-            resultDiv.innerHTML = `<h3>Você acertou ${correct} de ${zones.length}!</h3>`;
-            if(correct === zones.length) resultDiv.innerHTML += '<p>🎉 Perfeito! Você domina processos!</p>';
-            else if(correct >= zones.length/2) resultDiv.innerHTML += '<p>👍 Bom trabalho!</p>';
-            else resultDiv.innerHTML += '<p>📚 Use top e ps para praticar!</p>';
-        }
-
-        function resetQuiz() { initQuiz(); }
-        initQuiz();
-    </script>
+<script src="slide-mode.js"></script>
+<script src="exercise-drag.js"></script>
+<script src="exercise-print.js"></script>
 </body>
 </html>

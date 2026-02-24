@@ -1,924 +1,597 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aula 03 - Comandos Essenciais e Produtividade</title>
+    <title>Aula 1.3 — Comandos Essenciais e Produtividade</title>
+    <link rel="stylesheet" href="slide-mode.css">
+    <link rel="stylesheet" href="exercise.css">
     <style>
         :root {
-            --primary: #667eea;
+            --primary:   #667eea;
             --secondary: #764ba2;
-            --bg-light: #f4f7fe;
+            --bg-light:  #f4f7fe;
             --text-dark: #2d3748;
-            --text-light: #718096;
-            --accent-green: #38ef7d;
-            --accent-red: #ff758c;
-            --accent-orange: #f39c12;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-light);
-            color: var(--text-dark);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        .classroom-header {
-            background: white;
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 1000;
-        }
-        .back-btn {
-            text-decoration: none;
-            color: var(--text-dark);
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            border-radius: 50px;
-            transition: all 0.2s;
-            background: #f0f2f5;
-        }
-        .back-btn:hover { background: #e2e8f0; color: var(--primary); }
-        .lesson-info h1 { font-size: 1.1em; margin: 0; color: var(--text-dark); }
-        .lesson-info span { font-size: 0.85em; color: var(--text-light); }
-        .slide-counter {
-            background: var(--primary);
-            color: white;
-            padding: 5px 12px;
-            border-radius: 12px;
-            font-size: 0.9em;
-            font-weight: bold;
-        }
-        .viewer-container {
-            margin-top: 80px;
-            padding: 20px;
-            padding-bottom: 100px;
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-        }
-        .slide-card {
-            background: white;
-            width: 100%;
-            max-width: 1000px;
-            min-height: 80vh;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            padding: 50px;
-            position: relative;
-            display: none;
-            flex-direction: column;
-            animation: fadeIn 0.4s ease;
-        }
-        .slide-card.active { display: flex; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        h1.slide-title {
-            font-size: 2.8em;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        h2.slide-subtitle {
-            font-size: 2.2em;
-            color: var(--text-dark);
-            border-bottom: 3px solid #e2e8f0;
-            padding-bottom: 15px;
-            margin-bottom: 30px;
-        }
-        h3 { color: var(--primary); margin: 20px 0 10px; font-size: 1.4em; }
-        .content-box {
-            padding: 20px;
-            border-radius: 12px;
-            margin: 15px 0;
-            border-left: 5px solid;
-            background: #f8fafc;
-        }
-        .box-highlight { border-color: #f39c12; background: #fffaf0; }
-        .box-info { border-color: var(--primary); background: #f4f7fe; }
-        .box-success { border-color: var(--accent-green); background: #f0fdf4; }
-        .box-warning { border-color: var(--accent-red); background: #fff5f5; }
-        .box-terminal { 
-            background: #1a202c; 
-            color: #38ef7d; 
-            font-family: 'Courier New', monospace; 
-            border-left: 5px solid #38ef7d;
-            padding: 25px;
-            border-radius: 12px;
-            font-size: 1.05em;
-            line-height: 1.8;
-        }
-        .box-terminal .prompt { color: #63b3ed; }
-        .box-terminal .command { color: #38ef7d; }
-        .box-terminal .output { color: #a0aec0; }
-        .box-terminal .comment { color: #718096; font-style: italic; }
-        .box-terminal .pipe { color: #f6e05e; font-weight: bold; }
-        .box-terminal .redirect { color: #fc8181; font-weight: bold; }
-        .box-terminal .highlight { color: #f6e05e; }
-        .box-terminal .path-absolute { color: #fc8181; }
-        .box-terminal .path-relative { color: #38ef7d; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
-        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
-        .bullet-point {
-            display: flex;
-            align-items: center;
-            margin: 8px 0;
-            font-size: 1.05em;
-            line-height: 1.4;
-        }
-        .bullet-point::before {
-            content: "•";
-            color: var(--primary);
-            font-weight: bold;
-            font-size: 1.5em;
-            margin-right: 10px;
-        }
-        .command-card {
-            background: white;
-            border-radius: 15px;
-            padding: 18px;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
-        }
-        .command-card:hover { transform: translateY(-5px); }
-        .command-card .cmd { 
-            font-family: 'Courier New', monospace;
-            font-size: 1.5em; 
-            color: var(--primary);
-            background: #f4f7fe;
-            padding: 8px 18px;
-            border-radius: 8px;
-            margin-bottom: 12px;
-            display: inline-block;
-        }
-        .command-card h4 { color: var(--text-dark); margin-bottom: 8px; font-size: 1em; }
-        .command-card p { font-size: 0.85em; color: var(--text-light); }
-        .keyboard-key {
-            background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
-            border: 1px solid #dee2e6;
-            border-radius: 6px;
-            padding: 6px 12px;
-            font-family: 'Courier New', monospace;
-            font-weight: bold;
-            box-shadow: 0 2px 0 #dee2e6;
-            display: inline-block;
-            margin: 0 3px;
-            font-size: 0.9em;
-        }
-        .pipe-diagram {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            margin: 25px 0;
-            flex-wrap: wrap;
-        }
-        .pipe-box {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            padding: 12px 20px;
-            border-radius: 10px;
-            font-family: 'Courier New', monospace;
-            font-weight: bold;
-        }
-        .pipe-arrow { font-size: 1.8em; color: #f39c12; }
-        .section-divider {
-            text-align: center;
-            padding: 15px;
-            margin: 20px 0;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            color: white;
-            border-radius: 10px;
-            font-size: 1.1em;
-            font-weight: bold;
-        }
-        /* Estilos para árvore de diretórios */
-        .tree-container {
-            background: #f8fafc;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 20px;
-            font-family: 'Courier New', monospace;
-            font-size: 1em;
-        }
-        .tree-item {
-            margin: 5px 0;
-            padding-left: 0;
-        }
-        .tree-item.level-1 { padding-left: 20px; color: #667eea; }
-        .tree-item.level-2 { padding-left: 40px; color: #38ef7d; }
-        .tree-item.level-3 { padding-left: 60px; color: #f39c12; }
-        .tree-icon { margin-right: 8px; }
-        .path-example {
-            background: #1a202c;
-            color: #38ef7d;
-            padding: 15px;
-            border-radius: 8px;
-            font-family: 'Courier New', monospace;
-            margin: 10px 0;
-            border-left: 4px solid;
-        }
-        .path-absolute-box { border-color: #fc8181; }
-        .path-relative-box { border-color: #38ef7d; }
-        .nav-controls {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 15px;
-            background: white;
-            padding: 10px 20px;
-            border-radius: 50px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            z-index: 100;
-        }
-        .nav-btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 25px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
-        }
-        .nav-btn:hover { background: var(--secondary); transform: translateY(-2px); }
-        .nav-btn:disabled { background: #cbd5e0; cursor: not-allowed; transform: none; }
-        .drag-drop-container { display: flex; gap: 30px; margin-top: 20px; }
-        .col-questions, .col-answers { flex: 1; }
-        .question-item {
-            background: white;
-            border: 2px solid #e2e8f0;
-            padding: 12px;
-            margin-bottom: 12px;
-            border-radius: 12px;
-        }
-        .question-text { font-weight: bold; margin-bottom: 8px; color: var(--text-dark); font-size: 0.95em; }
-        .drop-zone {
-            background: #f8fafc;
-            border: 2px dashed #cbd5e0;
-            border-radius: 8px;
-            min-height: 45px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.85em;
-            color: var(--text-light);
-            transition: all 0.2s;
-        }
-        .drop-zone.drag-over { background: #e6fffa; border-color: var(--accent-green); }
-        .drop-zone.has-answer { border-style: solid; background: white; border-color: var(--primary); }
-        .answer-item {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            padding: 10px 18px;
-            margin-bottom: 8px;
-            border-radius: 8px;
-            cursor: grab;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            font-size: 0.9em;
-            user-select: none;
-            font-family: 'Courier New', monospace;
-        }
-        .answer-item:active { cursor: grabbing; }
-        .answer-item.dragging { opacity: 0.5; }
-        .answer-item.in-drop-zone { margin: 0; width: 100%; box-shadow: none; }
-        .quiz-result {
-            margin-top: 25px;
-            padding: 18px;
-            border-radius: 15px;
-            text-align: center;
-            display: none;
-            background: linear-gradient(135deg, #f6ad55 0%, #ed8936 100%);
-            color: white;
-        }
-        @media (max-width: 768px) {
-            .viewer-container { padding: 10px; margin-top: 70px; }
-            .slide-card { padding: 25px; min-height: 70vh; }
-            .grid-2, .grid-3 { grid-template-columns: 1fr; }
-            .drag-drop-container { flex-direction: column; }
-            .classroom-header { padding: 10px 15px; }
-            h1.slide-title { font-size: 2em; }
-            h2.slide-subtitle { font-size: 1.5em; }
-            .pipe-diagram { flex-direction: column; }
-            .pipe-arrow { transform: rotate(90deg); }
-        }
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: var(--bg-light); color: var(--text-dark); line-height: 1.7; }
+        .top-bar { background: white; padding: 15px 30px; display: flex; align-items: center; gap: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 10; }
+        .back-btn { text-decoration: none; color: var(--primary); font-weight: 600; display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 8px; transition: background .3s; }
+        .back-btn:hover { background: rgba(102,126,234,.08); }
+        .page-badge { font-size: .8em; padding: 4px 12px; border-radius: 20px; background: rgba(102,126,234,.12); color: var(--primary); font-weight: 600; }
+        .content-wrapper { max-width: 800px; margin: 40px auto; padding: 0 30px; }
+        .lesson-hero { background: white; border-radius: 16px; padding: 40px; box-shadow: 0 5px 15px rgba(0,0,0,.05); margin-bottom: 30px; border-top: 4px solid var(--primary); }
+        .lesson-hero h1 { font-size: 2em; margin-bottom: 10px; color: var(--primary); }
+        .lesson-hero .subtitle { font-size: 1.05em; color: #718096; }
+        .content-card { background: white; border-radius: 16px; padding: 35px; box-shadow: 0 5px 15px rgba(0,0,0,.05); margin-bottom: 25px; }
+        .content-card h2 { font-size: 1.4em; color: var(--primary); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
+        .content-card h3 { font-size: 1.05em; color: #4a5568; margin: 20px 0 10px; }
+        .content-card p { margin-bottom: 15px; text-align: justify; }
+        ul, ol { margin: 10px 0 15px 25px; }
+        li { margin-bottom: 8px; }
+        .highlight-box { background: linear-gradient(135deg,rgba(102,126,234,.05),rgba(118,75,162,.06)); border-left: 4px solid var(--primary); padding: 20px 25px; border-radius: 0 12px 12px 0; margin: 20px 0; }
+        .highlight-box p { margin-bottom: 0; font-style: italic; }
+        .alert-box { background: #fff8e1; border-left: 4px solid #f59e0b; padding: 18px 22px; border-radius: 0 12px 12px 0; margin: 20px 0; }
+        .alert-box p { margin: 0; color: #78350f; font-size: .93em; }
+        .tip-box { background: #f0fdf4; border-left: 4px solid #16a34a; padding: 18px 22px; border-radius: 0 12px 12px 0; margin: 20px 0; }
+        .tip-box p { margin: 0; color: #14532d; font-size: .93em; }
+        .kbd-sm { background: #1e293b; color: #e2e8f0; border-radius: 4px; padding: 2px 6px; font-family:'Consolas',monospace; font-size:.82em; }
+        .terminal { background: #1a202c; border-radius: 12px; overflow: hidden; margin: 16px 0; box-shadow: 0 4px 20px rgba(0,0,0,.3); }
+        .terminal-bar { background: #2d3748; padding: 8px 16px; display: flex; align-items: center; gap: 8px; }
+        .term-dot { width: 12px; height: 12px; border-radius: 50%; }
+        .term-dot.red { background: #fc8181; }
+        .term-dot.yellow { background: #f6e05e; }
+        .term-dot.green { background: #68d391; }
+        .term-title { font-size: .75em; color: #718096; margin-left: 8px; font-family: 'Consolas', monospace; }
+        .terminal-body { padding: 20px 24px; font-family: 'Courier New','Consolas',monospace; font-size: .92em; line-height: 2; color: #a0aec0; }
+        .t-prompt { color: #63b3ed; }
+        .t-root { color: #fc8181; }
+        .t-cmd { color: #38ef7d; }
+        .t-flag { color: #f6e05e; }
+        .t-path { color: #fc8181; }
+        .t-arg { color: #90cdf4; }
+        .t-out { color: #a0aec0; }
+        .t-comment { color: #4a5568; font-style: italic; }
+        .t-string { color: #68d391; }
+        .t-var { color: #b794f4; }
+        .t-shebang { color: #f687b3; }
+        .t-ok { color: #38ef7d; font-weight: bold; }
+        .t-err { color: #fc8181; font-weight: bold; }
+        .cmd-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin: 16px 0; }
+        .cmd-box { background: #f4f7fe; border-radius: 10px; padding: 14px 16px; text-align: center; border-top: 3px solid var(--primary); }
+        .cmd-box code { font-family: 'Consolas', monospace; font-size: 1.05em; color: var(--primary); display: block; margin-bottom: 4px; }
+        .cmd-box span { font-size: .82em; color: #718096; }
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 16px 0; }
+        .col-box { background: #f8fafc; border-radius: 10px; padding: 16px 20px; }
+        .col-box h4 { font-size: .9em; color: var(--primary); margin-bottom: 10px; }
+        .col-box ul { margin: 0 0 0 18px; }
+        .col-box li { font-size: .88em; margin-bottom: 6px; }
+        .pipe-row { display: flex; align-items: center; gap: 10px; margin: 14px 0; flex-wrap: wrap; }
+        .pipe-box { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 8px 16px; border-radius: 8px; font-family: 'Consolas', monospace; font-size: .88em; font-weight: 600; }
+        .pipe-arrow { color: var(--primary); font-size: 1.4em; }
+        .nav-footer { display: flex; justify-content: space-between; margin-top: 40px; padding-bottom: 40px; }
+        .nav-link { text-decoration: none; color: var(--primary); font-weight: 600; padding: 12px 24px; border-radius: 10px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,.05); transition: all .3s; }
+        .nav-link:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.1); }
+        @media (max-width: 768px) { .content-wrapper { padding: 0 15px; } .lesson-hero, .content-card { padding: 25px; } .lesson-hero h1 { font-size: 1.5em; } .two-col { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
-    <header class="classroom-header">
-        <div style="display: flex; align-items: center; gap: 20px;">
-            <a href="index.html" class="back-btn"><span>←</span> Voltar</a>
-            <div class="lesson-info">
-                <h1>Fundamentos do Linux</h1>
-                <span>Módulo 1 • Aula 03</span>
-            </div>
-        </div>
-        <div class="slide-counter">
-            <span id="current-slide">1</span> / <span id="total-slides">17</span>
-        </div>
-    </header>
 
-    <div class="viewer-container">
-        
-        <!-- SLIDE 1: Capa -->
-        <div class="slide-card active">
-            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
-                <div style="font-size: 5em;">⌨️</div>
-                <h1 class="slide-title">Comandos Essenciais e Produtividade</h1>
-                <div class="content-box box-highlight" style="text-align: center; font-size: 1.2em;">
-                    <p><strong>Domine o terminal Linux!</strong></p>
-                    <p style="margin-top: 10px; opacity: 0.8;">Navegação, caminhos, manipulação de arquivos e truques de produtividade</p>
-                </div>
-                <div class="box-terminal" style="margin-top: 30px; max-width: 700px;">
-                    <span class="prompt">usuario@linux</span>:~$ <span class="command">ls -la</span> <span class="pipe">|</span> <span class="command">grep ".txt"</span> <span class="redirect">></span> <span class="command">arquivos.txt</span><br>
-                    <span class="comment"># Navegação + Filtro + Salvamento em 1 linha! 🚀</span>
-                </div>
-                <div class="content-box box-info" style="margin-top: 30px;">
-                    💡 Hoje você vai aprender os comandos mais usados e truques para ser <strong>muito mais rápido</strong>!
-                </div>
-            </div>
-        </div>
+<div class="top-bar">
+    <a href="index.html" class="back-btn">&#x2B05; Voltar ao Dashboard</a>
+    <span class="page-badge">Módulo 1 — Fundamentos Linux</span>
+    <button class="slide-toggle" id="slideToggleBtn">&#x1F4FA; Modo Slide</button>
+</div>
 
-        <!-- SLIDE 2: Navegação - pwd, ls, cd -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🧭 Navegação: pwd, ls, cd</h2>
-            <div class="section-divider">📍 Onde estou? O que tem aqui? Como vou para lá?</div>
-            
-            <div class="grid-3">
-                <div class="command-card">
-                    <div class="cmd">pwd</div>
-                    <h4>📍 Onde estou?</h4>
-                    <p>Print Working Directory</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">ls</div>
-                    <h4>👀 O que tem aqui?</h4>
-                    <p>Lista arquivos e pastas</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">cd</div>
-                    <h4>🚶 Ir para...</h4>
-                    <p>Change Directory</p>
-                </div>
-            </div>
+<div class="content-wrapper">
 
-            <div class="box-terminal" style="margin-top: 25px;">
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">pwd</span><br>
-                <span class="output">/home/usuario</span><br><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">ls</span><br>
-                <span class="output">Documentos  Downloads  Imagens  Música  Vídeos</span><br><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">cd Documentos</span><br>
-                <span class="prompt">usuario@linux</span>:<span style="color:#63b3ed">~/Documentos</span>$ <span class="comment"># Agora estou em Documentos!</span>
+    <div class="lesson-hero">
+        <h1>⌨️ Comandos Essenciais e Produtividade</h1>
+        <p class="subtitle">Aula 1.3 — Domine os comandos fundamentais do terminal: navegação, manipulação de arquivos, pipes e redirecionamentos</p>
+    </div>
+
+    <!-- CARD 1 — Navegação -->
+    <div class="content-card">
+        <h2>🧭 Navegação no Sistema de Arquivos</h2>
+        <p>No Linux, tudo começa pelo terminal. Os três comandos de navegação mais usados são <code>pwd</code>, <code>ls</code> e <code>cd</code>. Dominá-los é o primeiro passo para trabalhar com eficiência.</p>
+
+        <div class="cmd-grid">
+            <div class="cmd-box">
+                <code>pwd</code>
+                <span>Mostra a pasta atual (Print Working Directory)</span>
+            </div>
+            <div class="cmd-box">
+                <code>ls</code>
+                <span>Lista arquivos e pastas do diretório</span>
+            </div>
+            <div class="cmd-box">
+                <code>cd</code>
+                <span>Navega entre diretórios (Change Directory)</span>
+            </div>
+            <div class="cmd-box">
+                <code>find</code>
+                <span>Busca arquivos e pastas no sistema</span>
             </div>
         </div>
 
-        <!-- SLIDE 3: ls detalhado e cd atalhos -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🔍 ls e cd: Opções Úteis</h2>
-            <div class="grid-2">
-                <div class="content-box box-info">
-                    <h3>📋 Variações do ls</h3>
-                    <div class="bullet-point"><code>ls -l</code> → Lista detalhada</div>
-                    <div class="bullet-point"><code>ls -a</code> → Mostra ocultos (.arquivos)</div>
-                    <div class="bullet-point"><code>ls -la</code> → Detalhado + ocultos</div>
-                    <div class="bullet-point"><code>ls -lh</code> → Tamanhos legíveis (KB, MB)</div>
-                </div>
-                <div class="content-box box-highlight">
-                    <h3>🚀 Atalhos do cd</h3>
-                    <div class="bullet-point"><code>cd ~</code> ou <code>cd</code> → Volta para home</div>
-                    <div class="bullet-point"><code>cd ..</code> → Volta uma pasta (pai)</div>
-                    <div class="bullet-point"><code>cd -</code> → Volta para anterior</div>
-                    <div class="bullet-point"><code>cd /</code> → Vai para raiz</div>
-                </div>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div>
+                <div class="term-dot yellow"></div>
+                <div class="term-dot green"></div>
+                <span class="term-title">bash — navegação básica</span>
             </div>
+            <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">pwd</span>
+<span class="t-out">/home/usuario</span>
 
-            <div class="box-terminal" style="margin-top: 20px;">
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">ls -lh</span><br>
-                <span class="output">-rw-r--r-- 1 usuario usuario <span class="highlight">4.5K</span> jan 15 notas.txt</span><br>
-                <span class="output">drwxr-xr-x 2 usuario usuario <span class="highlight">4.0K</span> jan 12 Documentos/</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-la</span>
+<span class="t-out">drwxr-xr-x 5 usuario usuario 4096 jan 15 Documentos/</span>
+<span class="t-out">drwxr-xr-x 2 usuario usuario 4096 jan 14 Downloads/</span>
+<span class="t-out">-rw-r--r-- 1 usuario usuario 2048 jan 15 notas.txt</span>
+
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">cd</span> <span class="t-arg">Documentos</span>
+<span class="t-prompt">usuario@servidor:~/Documentos$</span> <span class="t-comment"># Agora estou em Documentos!</span>
             </div>
         </div>
 
-        <!-- SLIDE 4: Árvore de Diretórios -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🌳 Estrutura de Diretórios do Linux</h2>
-            <div class="content-box box-info" style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 1.1em;">Tudo começa na <strong>raiz</strong> (<code>/</code>)</p>
+        <h3>Variações úteis do ls</h3>
+        <div class="two-col">
+            <div class="col-box">
+                <h4>Opções de listagem</h4>
+                <ul>
+                    <li><code>ls -l</code> — lista detalhada com permissões, dono e tamanho</li>
+                    <li><code>ls -a</code> — mostra arquivos ocultos (que começam com .)</li>
+                    <li><code>ls -la</code> — detalhado + ocultos (combinação mais usada)</li>
+                    <li><code>ls -lh</code> — tamanhos em formato legível (KB, MB, GB)</li>
+                </ul>
             </div>
-
-            <div class="tree-container">
-                <div class="tree-item"><span class="tree-icon">📁</span><strong>/</strong> (raiz)</div>
-                <div class="tree-item level-1"><span class="tree-icon">📁</span>home/</div>
-                <div class="tree-item level-2"><span class="tree-icon">👤</span>usuario/</div>
-                <div class="tree-item level-3"><span class="tree-icon">📄</span>Documentos/</div>
-                <div class="tree-item level-3"><span class="tree-icon">📥</span>Downloads/</div>
-                <div class="tree-item level-1"><span class="tree-icon">📁</span>etc/</div>
-                <div class="tree-item level-1"><span class="tree-icon">📁</span>var/</div>
-                <div class="tree-item level-2"><span class="tree-icon">📁</span>www/</div>
-                <div class="tree-item level-3"><span class="tree-icon">🌐</span>html/</div>
-            </div>
-
-            <div class="content-box box-success" style="margin-top: 20px;">
-                <h3>💡 Conceitos importantes:</h3>
-                <div class="bullet-point"><code>/</code> = raiz (topo de tudo)</div>
-                <div class="bullet-point"><code>~</code> = sua pasta pessoal (/home/usuario)</div>
-                <div class="bullet-point"><code>.</code> = pasta atual</div>
-                <div class="bullet-point"><code>..</code> = pasta pai (uma acima)</div>
+            <div class="col-box">
+                <h4>Atalhos do cd</h4>
+                <ul>
+                    <li><code>cd ~</code> ou <code>cd</code> — vai para a pasta home</li>
+                    <li><code>cd ..</code> — sobe um nível (pasta pai)</li>
+                    <li><code>cd -</code> — volta para a pasta anterior</li>
+                    <li><code>cd /</code> — vai para a raiz do sistema</li>
+                    <li><code>cd ../Downloads</code> — sobe e entra em outra pasta</li>
+                </ul>
             </div>
         </div>
 
-        <!-- SLIDE 5: Caminhos Absolutos -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">📍 Caminho Absoluto</h2>
-            <div class="section-divider">Endereço completo desde a raiz</div>
+        <div class="tip-box">
+            <p><strong>Caminhos absolutos vs relativos:</strong> Caminhos que começam com <code>/</code> são absolutos (funcionam de qualquer lugar). Caminhos sem <code>/</code> são relativos à pasta atual. Exemplo: <code>/home/usuario/Documentos</code> (absoluto) vs <code>Documentos/projetos</code> (relativo).</p>
+        </div>
+    </div>
 
-            <div class="content-box box-warning" style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 1.3em;">Sempre começa com <code style="font-size: 1.5em; color: #fc8181;">/</code></p>
-                <p style="margin-top: 10px;">Como um endereço completo: "Rua X, nº 123, Bairro Y, Cidade Z"</p>
+    <!-- CARD 2 — Manipulação de Arquivos -->
+    <div class="content-card">
+        <h2>📁 Manipulação de Arquivos e Pastas</h2>
+        <p>Criar, copiar, mover e remover arquivos são operações diárias de um administrador. Os comandos abaixo cobrem praticamente todos os casos de manipulação de arquivos no terminal Linux.</p>
+
+        <div class="two-col">
+            <div class="col-box">
+                <h4>Criar arquivos e pastas</h4>
+                <ul>
+                    <li><code>mkdir pasta</code> — cria um diretório</li>
+                    <li><code>mkdir -p a/b/c</code> — cria pastas aninhadas de uma vez</li>
+                    <li><code>touch arquivo.txt</code> — cria arquivo vazio ou atualiza data</li>
+                </ul>
             </div>
-
-            <div class="grid-2">
-                <div class="content-box box-info">
-                    <h3>🏠 Analogia: Endereço</h3>
-                    <p><strong>Endereço completo:</strong></p>
-                    <p style="margin-top: 10px;">Avenida Brasil, 1500<br>
-                    Centro, Mossoró-RN<br>
-                    CEP 59600-000</p>
-                    <p style="margin-top: 10px; color: var(--primary);">Funciona de <strong>qualquer lugar</strong>!</p>
-                </div>
-                <div class="content-box box-success">
-                    <h3>💻 No Linux</h3>
-                    <p><strong>Caminho absoluto:</strong></p>
-                    <div class="path-example path-absolute-box">
-                        <span class="path-absolute">/home/usuario/Documentos/relatorio.txt</span>
-                    </div>
-                    <p style="margin-top: 10px; color: var(--primary);">Funciona de <strong>qualquer pasta</strong>!</p>
-                </div>
-            </div>
-
-            <div class="box-terminal" style="margin-top: 20px;">
-                <span class="comment"># Estando em qualquer lugar, funciona:</span><br>
-                <span class="prompt">usuario@linux</span>:/etc$ <span class="command">cd <span class="path-absolute">/home/usuario/Documentos</span></span><br>
-                <span class="prompt">usuario@linux</span>:~/Documentos$ <span class="comment"># Chegou!</span><br><br>
-
-                <span class="comment"># Copiar usando caminho absoluto</span><br>
-                <span class="prompt">usuario@linux</span>:/tmp$ <span class="command">cp <span class="path-absolute">/home/usuario/notas.txt</span> .</span>
+            <div class="col-box">
+                <h4>Copiar e mover</h4>
+                <ul>
+                    <li><code>cp origem destino</code> — copia arquivo</li>
+                    <li><code>cp -r pasta/ copia/</code> — copia diretório recursivamente</li>
+                    <li><code>mv origem destino</code> — move ou renomeia</li>
+                </ul>
             </div>
         </div>
 
-        <!-- SLIDE 6: Caminhos Relativos -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🧭 Caminho Relativo</h2>
-            <div class="section-divider">Caminho a partir de onde você está</div>
-
-            <div class="content-box box-success" style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 1.3em;"><strong>NÃO</strong> começa com <code>/</code></p>
-                <p style="margin-top: 10px;">Como direções: "Vire à esquerda, depois 2 quadras à frente"</p>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div>
+                <div class="term-dot yellow"></div>
+                <div class="term-dot green"></div>
+                <span class="term-title">bash — manipulação de arquivos</span>
             </div>
-
-            <div class="grid-2">
-                <div class="content-box box-info">
-                    <h3>🚶 Analogia: Direções</h3>
-                    <p><strong>Você está na praça:</strong></p>
-                    <p style="margin-top: 10px;">"Vá duas quadras à frente,<br>
-                    depois vire à direita"</p>
-                    <p style="margin-top: 10px; color: var(--accent-red);">Depende de <strong>onde você está</strong>!</p>
-                </div>
-                <div class="content-box box-highlight">
-                    <h3>💻 No Linux</h3>
-                    <p><strong>Caminho relativo:</strong></p>
-                    <div class="path-example path-relative-box">
-                        <span class="path-relative">./Documentos/relatorio.txt</span><br>
-                        <span class="path-relative">../Downloads/foto.jpg</span>
-                    </div>
-                    <p style="margin-top: 10px; color: var(--accent-red);">Depende de <strong>onde você está</strong>!</p>
-                </div>
-            </div>
-
-            <div class="content-box box-warning" style="margin-top: 20px;">
-                <h3>⚙️ Símbolos especiais:</h3>
-                <div class="bullet-point"><code>.</code> = pasta atual (onde estou agora)</div>
-                <div class="bullet-point"><code>..</code> = pasta pai (uma pasta acima)</div>
-                <div class="bullet-point"><code>../.. </code> = duas pastas acima</div>
+            <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">mkdir</span> <span class="t-flag">-p</span> <span class="t-arg">projetos/site/css</span>  <span class="t-comment"># Cria estrutura inteira</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">touch</span> <span class="t-arg">notas.txt</span>               <span class="t-comment"># Cria arquivo vazio</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">cp</span> <span class="t-arg">notas.txt</span> <span class="t-arg">backup.txt</span>       <span class="t-comment"># Copia arquivo</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">mv</span> <span class="t-arg">backup.txt</span> <span class="t-path">/tmp/</span>           <span class="t-comment"># Move para /tmp</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">cp</span> <span class="t-flag">-r</span> <span class="t-arg">projetos/</span> <span class="t-arg">backup_projetos/</span>  <span class="t-comment"># Copia pasta inteira</span>
             </div>
         </div>
 
-        <!-- SLIDE 7: Comparação Absoluto vs Relativo -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">⚖️ Absoluto vs Relativo</h2>
-            
-            <div class="content-box box-info" style="margin-bottom: 20px;">
-                <h3>📌 Situação:</h3>
-                <p>Você está em: <code>/home/usuario</code></p>
-                <p>Quer ir para: <code>/home/usuario/Documentos/projetos</code></p>
-            </div>
+        <div class="alert-box">
+            <p>⚠️ <strong>rm não tem lixeira!</strong> O comando <code>rm arquivo.txt</code> remove permanentemente. Use <code>rm -i arquivo</code> para pedir confirmação antes de apagar. Para remover pastas com conteúdo, use <code>rm -r pasta/</code> — mas com muito cuidado!</p>
+        </div>
+    </div>
 
-            <div class="grid-2">
-                <div class="content-box box-warning">
-                    <h3>📍 Caminho Absoluto</h3>
-                    <div class="path-example path-absolute-box">
-                        <span class="command">cd <span class="path-absolute">/home/usuario/Documentos/projetos</span></span>
-                    </div>
-                    <p style="margin-top: 15px;"><strong>✅ Vantagens:</strong></p>
-                    <div class="bullet-point">Funciona de qualquer lugar</div>
-                    <div class="bullet-point">Sem ambiguidade</div>
-                    <p style="margin-top: 10px;"><strong>❌ Desvantagens:</strong></p>
-                    <div class="bullet-point">Mais longo para digitar</div>
-                </div>
-                <div class="content-box box-success">
-                    <h3>🧭 Caminho Relativo</h3>
-                    <div class="path-example path-relative-box">
-                        <span class="command">cd <span class="path-relative">Documentos/projetos</span></span><br>
-                        <span class="comment"># ou</span><br>
-                        <span class="command">cd <span class="path-relative">./Documentos/projetos</span></span>
-                    </div>
-                    <p style="margin-top: 15px;"><strong>✅ Vantagens:</strong></p>
-                    <div class="bullet-point">Mais curto e rápido</div>
-                    <div class="bullet-point">Usa Tab para autocompletar</div>
-                    <p style="margin-top: 10px;"><strong>❌ Desvantagens:</strong></p>
-                    <div class="bullet-point">Depende de onde você está</div>
-                </div>
+    <!-- CARD 3 — Visualização de Conteúdo -->
+    <div class="content-card">
+        <h2>👀 Visualizando Conteúdo de Arquivos</h2>
+        <p>Antes de editar ou processar um arquivo, é fundamental saber como visualizá-lo. O Linux oferece várias ferramentas, cada uma indicada para diferentes situações — de ver um arquivo pequeno inteiro até monitorar logs em tempo real.</p>
+
+        <div class="cmd-grid">
+            <div class="cmd-box">
+                <code>cat</code>
+                <span>Exibe o arquivo inteiro de uma vez</span>
+            </div>
+            <div class="cmd-box">
+                <code>less</code>
+                <span>Visualiza página por página (q para sair)</span>
+            </div>
+            <div class="cmd-box">
+                <code>head</code>
+                <span>Mostra as primeiras N linhas (padrão: 10)</span>
+            </div>
+            <div class="cmd-box">
+                <code>tail</code>
+                <span>Mostra as últimas N linhas do arquivo</span>
             </div>
         </div>
 
-        <!-- SLIDE 8: Exemplos práticos de caminhos -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🎯 Exemplos Práticos de Caminhos</h2>
-            
-            <div class="box-terminal">
-                <span class="comment"># Situação: Estou em /home/usuario</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">pwd</span><br>
-                <span class="output">/home/usuario</span><br><br>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div>
+                <div class="term-dot yellow"></div>
+                <div class="term-dot green"></div>
+                <span class="term-title">bash — visualização de arquivos</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">cat</span> <span class="t-arg">notas.txt</span>
+<span class="t-out">Linha 1: Estudar Linux</span>
+<span class="t-out">Linha 2: Praticar comandos</span>
 
-                <span class="comment"># RELATIVO - Ir para Documentos</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">cd <span class="path-relative">Documentos</span></span><br>
-                <span class="prompt">usuario@linux</span>:~/Documentos$ <br><br>
-
-                <span class="comment"># RELATIVO - Voltar para pasta pai (usuario)</span><br>
-                <span class="prompt">usuario@linux</span>:~/Documentos$ <span class="command">cd <span class="path-relative">..</span></span><br>
-                <span class="prompt">usuario@linux</span>:~$ <br><br>
-
-                <span class="comment"># RELATIVO - Ir para Downloads a partir de Documentos</span><br>
-                <span class="prompt">usuario@linux</span>:~/Documentos$ <span class="command">cd <span class="path-relative">../Downloads</span></span><br>
-                <span class="comment"># .. = volta para /home/usuario, depois entra em Downloads</span><br><br>
-
-                <span class="comment"># ABSOLUTO - Funciona de qualquer lugar!</span><br>
-                <span class="prompt">usuario@linux</span>:/etc$ <span class="command">cd <span class="path-absolute">/home/usuario/Documentos</span></span><br>
-                <span class="prompt">usuario@linux</span>:~/Documentos$ 
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">head</span> <span class="t-flag">-5</span> <span class="t-path">/var/log/syslog</span>     <span class="t-comment"># Primeiras 5 linhas</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">tail</span> <span class="t-flag">-5</span> <span class="t-path">/var/log/syslog</span>     <span class="t-comment"># Últimas 5 linhas</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">tail</span> <span class="t-flag">-f</span> <span class="t-path">/var/log/syslog</span>     <span class="t-comment"># Monitora em tempo real!</span>
             </div>
         </div>
 
-        <!-- SLIDE 9: Manipulação de Arquivos -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">📁 Manipulação de Arquivos</h2>
-            <div class="section-divider">Criar, copiar, mover e remover</div>
-            
-            <div class="grid-2">
-                <div class="content-box box-success">
-                    <h3>✨ Criar</h3>
-                    <div class="bullet-point"><code>mkdir pasta</code> → Cria pasta</div>
-                    <div class="bullet-point"><code>touch arquivo.txt</code> → Cria arquivo vazio</div>
-                    <div class="bullet-point"><code>mkdir -p a/b/c</code> → Cria pastas aninhadas</div>
-                </div>
-                <div class="content-box box-info">
-                    <h3>📋 Copiar e Mover</h3>
-                    <div class="bullet-point"><code>cp origem destino</code> → Copia</div>
-                    <div class="bullet-point"><code>cp -r pasta/ copia/</code> → Copia pasta</div>
-                    <div class="bullet-point"><code>mv origem destino</code> → Move/Renomeia</div>
-                </div>
+        <div class="highlight-box">
+            <p><strong>tail -f</strong> é uma das ferramentas mais valiosas para administradores: monitora um arquivo de log em tempo real, exibindo novas linhas assim que são escritas. Pressione <span class="kbd-sm">Ctrl+C</span> para sair.</p>
+        </div>
+    </div>
+
+    <!-- CARD 4 — Busca com grep e find -->
+    <div class="content-card">
+        <h2>🔍 Busca: grep, find e locate</h2>
+        <p>Encontrar arquivos e conteúdo específico é uma habilidade essencial. O <code>grep</code> busca texto dentro de arquivos, enquanto <code>find</code> localiza arquivos pelo nome, tipo, tamanho ou data de modificação.</p>
+
+        <h3>grep — busca padrões dentro de arquivos</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div>
+                <div class="term-dot yellow"></div>
+                <div class="term-dot green"></div>
+                <span class="term-title">bash — grep</span>
             </div>
-
-            <div class="box-terminal" style="margin-top: 20px;">
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">mkdir MeuProjeto</span> <span class="comment"># Cria pasta</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">touch notas.txt</span> <span class="comment"># Cria arquivo</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">cp notas.txt backup.txt</span> <span class="comment"># Copia</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">mv backup.txt MeuProjeto/</span> <span class="comment"># Move para pasta</span><br><br>
-
-                <span class="comment"># Usando caminhos absolutos e relativos</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">cp <span class="path-relative">./notas.txt</span> <span class="path-absolute">/tmp/backup.txt</span></span>
+            <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">grep</span> <span class="t-string">"erro"</span> <span class="t-arg">sistema.log</span>        <span class="t-comment"># Busca "erro" no arquivo</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">grep</span> <span class="t-flag">-r</span> <span class="t-string">"usuario"</span> <span class="t-path">/etc/</span>         <span class="t-comment"># Busca recursivamente em /etc</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">grep</span> <span class="t-flag">-i</span> <span class="t-string">"ERRO"</span> <span class="t-arg">sistema.log</span>       <span class="t-comment"># Ignora maiúsculas/minúsculas</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">grep</span> <span class="t-flag">-n</span> <span class="t-string">"falha"</span> <span class="t-arg">sistema.log</span>      <span class="t-comment"># Mostra número da linha</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">grep</span> <span class="t-flag">-v</span> <span class="t-string">"INFO"</span> <span class="t-arg">sistema.log</span>       <span class="t-comment"># Mostra linhas que NÃO contêm</span>
             </div>
         </div>
 
-        <!-- SLIDE 10: rm e visualização -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🗑️ Remover e 👀 Visualizar</h2>
-            <div class="grid-2">
-                <div class="content-box box-warning">
-                    <h3>🗑️ Remover (CUIDADO!)</h3>
-                    <div class="bullet-point"><code>rm arquivo.txt</code> → Remove arquivo</div>
-                    <div class="bullet-point"><code>rm -r pasta/</code> → Remove pasta e conteúdo</div>
-                    <div class="bullet-point"><code>rm -i arquivo</code> → Pede confirmação</div>
-                    <p style="margin-top: 15px; color: #dc2626; font-weight: bold;">⚠️ Não existe lixeira no terminal!</p>
-                </div>
-                <div class="content-box box-info">
-                    <h3>👀 Visualizar conteúdo</h3>
-                    <div class="bullet-point"><code>cat arquivo</code> → Mostra tudo</div>
-                    <div class="bullet-point"><code>less arquivo</code> → Página por página</div>
-                    <div class="bullet-point"><code>head -5 arquivo</code> → Primeiras 5 linhas</div>
-                    <div class="bullet-point"><code>tail -5 arquivo</code> → Últimas 5 linhas</div>
-                </div>
+        <h3>find — localiza arquivos no sistema</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div>
+                <div class="term-dot yellow"></div>
+                <div class="term-dot green"></div>
+                <span class="term-title">bash — find</span>
             </div>
-
-            <div class="box-terminal" style="margin-top: 20px;">
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">cat notas.txt</span><br>
-                <span class="output">Linha 1: Estudar Linux</span><br>
-                <span class="output">Linha 2: Praticar comandos</span><br><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">head -1 notas.txt</span><br>
-                <span class="output">Linha 1: Estudar Linux</span>
+            <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">find</span> <span class="t-path">/home</span> <span class="t-flag">-name</span> <span class="t-string">"*.txt"</span>         <span class="t-comment"># Busca arquivos .txt</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">find</span> <span class="t-path">/var/log</span> <span class="t-flag">-mtime</span> <span class="t-arg">-7</span>          <span class="t-comment"># Modificados nos últimos 7 dias</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">find</span> <span class="t-path">/tmp</span> <span class="t-flag">-type</span> <span class="t-arg">f</span> <span class="t-flag">-size</span> <span class="t-arg">+1M</span>    <span class="t-comment"># Arquivos maiores que 1 MB</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">locate</span> <span class="t-arg">sshd.conf</span>                   <span class="t-comment"># Busca rápida via banco de dados</span>
             </div>
         </div>
 
-        <!-- SLIDE 11: Resumo Comandos Essenciais -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">📋 Resumo: Comandos Essenciais</h2>
-            <div class="grid-3">
-                <div class="command-card">
-                    <div class="cmd">pwd</div>
-                    <h4>Onde estou</h4>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">ls</div>
-                    <h4>Listar</h4>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">cd</div>
-                    <h4>Navegar</h4>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">mkdir</div>
-                    <h4>Criar pasta</h4>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">touch</div>
-                    <h4>Criar arquivo</h4>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">cp</div>
-                    <h4>Copiar</h4>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">mv</div>
-                    <h4>Mover/Renomear</h4>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">rm</div>
-                    <h4>Remover</h4>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">cat</div>
-                    <h4>Ver conteúdo</h4>
-                </div>
+        <div class="tip-box">
+            <p><strong>locate vs find:</strong> <code>locate</code> é muito mais rápido pois usa um banco de dados pré-indexado, mas pode estar desatualizado. <code>find</code> varre o disco em tempo real e suporta filtros avançados. Para atualizar o banco do <code>locate</code>, execute <code>sudo updatedb</code>.</p>
+        </div>
+    </div>
+
+    <!-- CARD 5 — Pipes e Redirecionamentos -->
+    <div class="content-card">
+        <h2>🔗 Pipes e Redirecionamentos</h2>
+        <p>Uma das maiores potências do Linux é a filosofia de compor comandos simples para resolver tarefas complexas. O <strong>pipe</strong> (<code>|</code>) encadeia a saída de um comando como entrada do próximo. O <strong>redirecionamento</strong> salva ou descarta saídas.</p>
+
+        <h3>Pipe — encadeando comandos</h3>
+        <div class="pipe-row">
+            <div class="pipe-box">comando1</div>
+            <div class="pipe-arrow">|</div>
+            <div class="pipe-box">comando2</div>
+            <div class="pipe-arrow">|</div>
+            <div class="pipe-box">comando3</div>
+        </div>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div>
+                <div class="term-dot yellow"></div>
+                <div class="term-dot green"></div>
+                <span class="term-title">bash — pipes</span>
             </div>
-            <div class="content-box box-success" style="margin-top: 25px; text-align: center;">
-                <p style="font-size: 1.1em;">💡 Esses comandos + <strong>caminhos</strong> cobrem 90% do uso diário!</p>
+            <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-la</span> <span class="t-arg">|</span> <span class="t-cmd">grep</span> <span class="t-string">".txt"</span>            <span class="t-comment"># Lista e filtra .txt</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-arg">|</span> <span class="t-cmd">wc -l</span>                         <span class="t-comment"># Conta quantos arquivos há</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ps aux</span> <span class="t-arg">|</span> <span class="t-cmd">grep</span> <span class="t-arg">nginx</span>              <span class="t-comment"># Localiza processo nginx</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">cat</span> <span class="t-path">/var/log/syslog</span> <span class="t-arg">|</span> <span class="t-cmd">grep</span> <span class="t-string">"erro"</span> <span class="t-arg">|</span> <span class="t-cmd">tail</span> <span class="t-flag">-20</span>
             </div>
         </div>
 
-        <!-- SLIDE 12: Tab Autocompletar -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">⚡ Produtividade: Tab Autocompleta</h2>
-            <div class="section-divider">🔮 A tecla mágica que economiza tempo!</div>
-            
-            <div class="content-box box-highlight" style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 1.3em;">A tecla <span class="keyboard-key">Tab</span> completa nomes automaticamente!</p>
+        <h3>Redirecionamentos — salvando e descartando saídas</h3>
+        <div class="two-col">
+            <div class="col-box">
+                <h4>Operadores de saída</h4>
+                <ul>
+                    <li><code>&gt;</code> — redireciona saída, <strong>sobrescrevendo</strong> o arquivo</li>
+                    <li><code>&gt;&gt;</code> — redireciona saída, <strong>adicionando</strong> ao final</li>
+                    <li><code>&lt;</code> — usa um arquivo como entrada de um comando</li>
+                    <li><code>2&gt;</code> — redireciona mensagens de erro (stderr)</li>
+                </ul>
             </div>
-
-            <div class="box-terminal">
-                <span class="comment"># Em vez de digitar "Documentos" inteiro...</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">cd Doc</span><span class="highlight">[Tab]</span> → <span class="command">cd Documentos/</span><br><br>
-                <span class="comment"># Funciona com arquivos também!</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">cat rel</span><span class="highlight">[Tab]</span> → <span class="command">cat relatorio.txt</span><br><br>
-                <span class="comment"># Se tiver várias opções, Tab Tab mostra todas!</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">cd D</span><span class="highlight">[Tab][Tab]</span><br>
-                <span class="output">Desktop/  Documentos/  Downloads/</span><br><br>
-                <span class="comment"># Funciona com caminhos longos!</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">cd /ho</span><span class="highlight">[Tab]</span>/us<span class="highlight">[Tab]</span>/Do<span class="highlight">[Tab]</span>
-            </div>
-
-            <div class="content-box box-success" style="margin-top: 20px;">
-                <h3>🎯 Benefícios</h3>
-                <div class="grid-2">
-                    <div class="bullet-point">Evita erros de digitação</div>
-                    <div class="bullet-point">Muito mais rápido</div>
-                </div>
+            <div class="col-box">
+                <h4>Exemplos práticos</h4>
+                <ul>
+                    <li><code>ls -la &gt; lista.txt</code> — salva listagem em arquivo</li>
+                    <li><code>date &gt;&gt; log.txt</code> — acrescenta data ao log</li>
+                    <li><code>comando 2&gt; erros.txt</code> — salva só os erros</li>
+                    <li><code>comando &gt;&gt; /dev/null 2&gt;&amp;1</code> — descarta tudo</li>
+                </ul>
             </div>
         </div>
 
-        <!-- SLIDE 13: Histórico -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">📜 Histórico de Comandos</h2>
-            <div class="grid-2">
-                <div class="content-box box-info">
-                    <h3>⬆️⬇️ Setas do Teclado</h3>
-                    <p>Navegue pelos comandos anteriores:</p>
-                    <div style="text-align: center; margin: 15px 0;">
-                        <span class="keyboard-key">↑</span> Comando anterior<br><br>
-                        <span class="keyboard-key">↓</span> Comando seguinte
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div>
+                <div class="term-dot yellow"></div>
+                <div class="term-dot green"></div>
+                <span class="term-title">bash — redirecionamentos</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-la</span> <span class="t-arg">&gt;</span> <span class="t-string">arquivos.txt</span>        <span class="t-comment"># Salva listagem (sobrescreve)</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">echo</span> <span class="t-string">"$(date)"</span> <span class="t-arg">&gt;&gt;</span> <span class="t-string">log.txt</span>    <span class="t-comment"># Acrescenta ao log</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">cat</span> <span class="t-arg">arquivo</span> <span class="t-arg">|</span> <span class="t-cmd">grep</span> <span class="t-string">"erro"</span> <span class="t-arg">&gt;</span> <span class="t-string">erros.log</span>
+<span class="t-out">                             <span class="t-comment"># Filtra e salva só os erros</span></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARD 6 — Atalhos e Produtividade -->
+    <div class="content-card">
+        <h2>⚡ Atalhos do Terminal e Produtividade</h2>
+        <p>Conhecer os atalhos de teclado do terminal pode multiplicar sua velocidade no dia a dia. O Bash oferece uma série de combinações que evitam redigitar comandos e navegam no histórico rapidamente.</p>
+
+        <h3>Tab — autocompletar</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div>
+                <div class="term-dot yellow"></div>
+                <div class="term-dot green"></div>
+                <span class="term-title">bash — Tab e histórico</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">cd Doc</span><span class="t-flag">[Tab]</span> → <span class="t-cmd">cd Documentos/</span>    <span class="t-comment"># Autocompleta</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">cat rel</span><span class="t-flag">[Tab]</span> → <span class="t-cmd">cat relatorio.txt</span>  <span class="t-comment"># Autocompleta arquivo</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">cd D</span><span class="t-flag">[Tab][Tab]</span>                          <span class="t-comment"># Mostra todas as opções</span>
+<span class="t-out">Desktop/  Documentos/  Downloads/</span>
+
+<span class="t-comment"># Histórico de comandos</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">history</span>
+<span class="t-out">  501  ls -la</span>
+<span class="t-out">  502  cd Documentos</span>
+<span class="t-out">  503  cat notas.txt</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">!502</span>                                   <span class="t-comment"># Re-executa comando 502</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">!!</span>                                     <span class="t-comment"># Re-executa o último comando</span>
+            </div>
+        </div>
+
+        <h3>Atalhos essenciais de teclado</h3>
+        <div class="two-col">
+            <div class="col-box">
+                <h4>Controle de processo</h4>
+                <ul>
+                    <li><span class="kbd-sm">Ctrl+C</span> — cancela/interrompe o comando atual</li>
+                    <li><span class="kbd-sm">Ctrl+Z</span> — suspende o processo (para segundo plano)</li>
+                    <li><span class="kbd-sm">Ctrl+D</span> — encerra o terminal (EOF)</li>
+                    <li><span class="kbd-sm">Ctrl+L</span> — limpa a tela (equivale a <code>clear</code>)</li>
+                </ul>
+            </div>
+            <div class="col-box">
+                <h4>Edição de linha</h4>
+                <ul>
+                    <li><span class="kbd-sm">Ctrl+A</span> — vai para o início da linha</li>
+                    <li><span class="kbd-sm">Ctrl+E</span> — vai para o fim da linha</li>
+                    <li><span class="kbd-sm">Ctrl+U</span> — apaga da posição até o início</li>
+                    <li><span class="kbd-sm">Ctrl+K</span> — apaga da posição até o fim</li>
+                    <li><span class="kbd-sm">Ctrl+R</span> — busca reversa no histórico</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="highlight-box">
+            <p><strong>Dica de ouro:</strong> <span class="kbd-sm">Ctrl+C</span> é o seu "botão de emergência". Algo travou ou está demorando demais? Pressione Ctrl+C para interromper imediatamente. O <span class="kbd-sm">Ctrl+R</span> é excelente para resgatar comandos longos que você usou antes.</p>
+        </div>
+    </div>
+
+    <!-- CARD 7 — Combinando Tudo -->
+    <div class="content-card">
+        <h2>🚀 Combinando Comandos: Casos Reais</h2>
+        <p>O verdadeiro poder do terminal aparece quando você combina comandos. Um administrador experiente consegue resolver em uma única linha o que levaria minutos com ferramentas gráficas.</p>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div>
+                <div class="term-dot yellow"></div>
+                <div class="term-dot green"></div>
+                <span class="term-title">bash — combinações práticas</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-comment"># Encontrar e contar arquivos .log maiores que 10MB</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">find</span> <span class="t-path">/var/log</span> <span class="t-flag">-name</span> <span class="t-string">"*.log"</span> <span class="t-flag">-size</span> <span class="t-arg">+10M</span> <span class="t-arg">|</span> <span class="t-cmd">wc -l</span>
+
+<span class="t-comment"># Mostrar as 10 últimas linhas de erro do syslog</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">grep</span> <span class="t-flag">-i</span> <span class="t-string">"error"</span> <span class="t-path">/var/log/syslog</span> <span class="t-arg">|</span> <span class="t-cmd">tail</span> <span class="t-flag">-10</span>
+
+<span class="t-comment"># Salvar lista de processos em arquivo de relatório</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ps aux</span> <span class="t-arg">|</span> <span class="t-cmd">grep</span> <span class="t-flag">-v</span> <span class="t-string">"grep"</span> <span class="t-arg">&gt;&gt;</span> <span class="t-string">processos.txt</span>
+
+<span class="t-comment"># Buscar arquivos de configuração que contêm "porta 22"</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">grep</span> <span class="t-flag">-r</span> <span class="t-string">"Port 22"</span> <span class="t-path">/etc/</span> <span class="t-arg">2&gt;</span> <span class="t-path">/dev/null</span>
+
+<span class="t-comment"># Listar os 5 maiores arquivos na pasta atual</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-lhS</span> <span class="t-arg">|</span> <span class="t-cmd">head</span> <span class="t-flag">-6</span>
+            </div>
+        </div>
+
+        <div class="tip-box">
+            <p><strong>Prática recomendada:</strong> Quando um comando complexo der certo, salve-o em um arquivo de "receitas" pessoal. Com o tempo, você terá uma biblioteca de one-liners que resolve problemas recorrentes em segundos.</p>
+        </div>
+    </div>
+
+    <!-- EXERCÍCIO -->
+    <div class="content-card exercise-card">
+        <h2>🎯 Exercício — Arraste e Conecte</h2>
+        <p style="color:#475569;font-size:.9em;margin-bottom:4px;">Arraste cada descrição para o comando correto.</p>
+
+        <div class="ex-drag-root" data-ex="ex01">
+            <div class="ex-drag">
+                <div>
+                    <div class="ex-col-title">Descrição</div>
+                    <div class="ex-pool" data-pool="ex01">
+                        <div class="drag-chip" data-id="c1">Lista arquivos com detalhes e ocultos, mostrando permissões, dono e tamanho</div>
+                        <div class="drag-chip" data-id="c2">Busca texto recursivamente em todos os arquivos de um diretório e subdiretórios</div>
+                        <div class="drag-chip" data-id="c3">Copia um diretório inteiro com todo o seu conteúdo para outro local</div>
+                        <div class="drag-chip" data-id="c4">Move ou renomeia um arquivo para outro caminho ou nome</div>
+                        <div class="drag-chip" data-id="c5">Filtra a saída de um comando com grep e salva apenas as linhas correspondentes num arquivo</div>
+                        <div class="drag-chip" data-id="c6">Monitora um arquivo de log exibindo novas linhas em tempo real conforme são gravadas</div>
                     </div>
                 </div>
-                <div class="content-box box-highlight">
-                    <h3>🔍 Ctrl+R: Busca</h3>
-                    <p>Busca no histórico por texto:</p>
-                    <div style="text-align: center; margin: 15px 0;">
-                        <span class="keyboard-key">Ctrl</span>+<span class="keyboard-key">R</span>
-                    </div>
-                    <p>Digite parte do comando e ele encontra!</p>
-                </div>
-            </div>
-
-            <div class="box-terminal" style="margin-top: 20px;">
-                <span class="comment"># Ver todo o histórico</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">history</span><br>
-                <span class="output">1 ls -la</span><br>
-                <span class="output">2 cd Documentos</span><br>
-                <span class="output">3 cat arquivo.txt</span><br><br>
-                <span class="comment"># Executar comando 2 do histórico</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">!2</span> <span class="comment"># Executa "cd Documentos"</span>
-            </div>
-        </div>
-
-        <!-- SLIDE 14: Atalhos de Teclado -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">⌨️ Atalhos Essenciais</h2>
-            <div class="grid-2">
-                <div class="content-box box-info">
-                    <h3>🚀 Edição de Linha</h3>
-                    <div class="bullet-point"><span class="keyboard-key">Ctrl+A</span> Início da linha</div>
-                    <div class="bullet-point"><span class="keyboard-key">Ctrl+E</span> Fim da linha</div>
-                    <div class="bullet-point"><span class="keyboard-key">Ctrl+U</span> Apaga até início</div>
-                    <div class="bullet-point"><span class="keyboard-key">Ctrl+K</span> Apaga até fim</div>
-                </div>
-                <div class="content-box box-highlight">
-                    <h3>🎯 Controle</h3>
-                    <div class="bullet-point"><span class="keyboard-key">Ctrl+C</span> Cancela comando</div>
-                    <div class="bullet-point"><span class="keyboard-key">Ctrl+L</span> Limpa tela</div>
-                    <div class="bullet-point"><span class="keyboard-key">Ctrl+D</span> Fecha terminal</div>
-                    <div class="bullet-point"><span class="keyboard-key">Tab</span> Autocompleta</div>
-                </div>
-            </div>
-
-            <div class="content-box box-success" style="margin-top: 20px; text-align: center;">
-                <h3>💡 Dica de Ouro</h3>
-                <p><span class="keyboard-key">Ctrl+C</span> é seu "botão de emergência"! Algo travou? Ctrl+C!</p>
-            </div>
-        </div>
-
-        <!-- SLIDE 15: Pipe -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🔗 Pipe: Conectando Comandos</h2>
-            <div class="content-box box-highlight" style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 1.2em;">O <code style="font-size: 1.5em; color: #f39c12;">|</code> passa a saída de um comando para outro!</p>
-            </div>
-
-            <div class="pipe-diagram">
-                <div class="pipe-box">comando1</div>
-                <div class="pipe-arrow">→</div>
-                <div style="font-size: 2.5em; color: #f39c12;">|</div>
-                <div class="pipe-arrow">→</div>
-                <div class="pipe-box">comando2</div>
-            </div>
-
-            <div class="box-terminal">
-                <span class="comment"># Listar arquivos e filtrar só os .txt</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">ls</span> <span class="pipe">|</span> <span class="command">grep .txt</span><br>
-                <span class="output">notas.txt</span><br>
-                <span class="output">relatorio.txt</span><br><br>
-
-                <span class="comment"># Contar quantos arquivos tem</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">ls</span> <span class="pipe">|</span> <span class="command">wc -l</span><br>
-                <span class="output">15</span><br><br>
-
-                <span class="comment"># Ver processos e encontrar o Firefox</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">ps aux</span> <span class="pipe">|</span> <span class="command">grep firefox</span>
-            </div>
-        </div>
-
-        <!-- SLIDE 16: Redirecionamento -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">📤 Redirecionamento: > e >></h2>
-            <div class="grid-2">
-                <div class="content-box box-warning">
-                    <h3><code style="font-size: 1.5em;">></code> Sobrescreve</h3>
-                    <p>Cria arquivo novo ou <strong>apaga o conteúdo</strong> existente!</p>
-                    <div class="box-terminal" style="padding: 10px; margin-top: 10px; font-size: 0.9em;">
-                        <span class="command">ls</span> <span class="redirect">></span> <span class="command">lista.txt</span>
-                    </div>
-                </div>
-                <div class="content-box box-success">
-                    <h3><code style="font-size: 1.5em;">>></code> Adiciona</h3>
-                    <p><strong>Mantém</strong> o conteúdo e adiciona no final!</p>
-                    <div class="box-terminal" style="padding: 10px; margin-top: 10px; font-size: 0.9em;">
-                        <span class="command">date</span> <span class="redirect" style="color: #38ef7d;">>></span> <span class="command">log.txt</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="box-terminal" style="margin-top: 20px;">
-                <span class="comment"># Salvar resultado de comando em arquivo</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">ls -la</span> <span class="redirect">></span> <span class="command">arquivos.txt</span><br><br>
-
-                <span class="comment"># Criar um log adicionando linhas</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">echo "Início"</span> <span class="redirect" style="color: #38ef7d;">>></span> <span class="command">log.txt</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">date</span> <span class="redirect" style="color: #38ef7d;">>></span> <span class="command">log.txt</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">echo "Fim"</span> <span class="redirect" style="color: #38ef7d;">>></span> <span class="command">log.txt</span>
-            </div>
-        </div>
-
-        <!-- SLIDE 17: Conclusão -->
-        <div class="slide-card">
-            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center;">
-                <div style="font-size: 4em; margin-bottom: 20px;">🎓⌨️</div>
-                <h2 class="slide-subtitle" style="border: none;">Parabéns!</h2>
-                <div class="content-box box-success" style="max-width: 750px;">
-                    <h3>📚 O que aprendemos:</h3>
-                    <div class="grid-2" style="text-align: left; margin-top: 15px;">
-                        <div>
-                            <div class="bullet-point"><code>pwd, ls, cd</code> Navegação</div>
-                            <div class="bullet-point">Caminhos absolutos e relativos</div>
-                            <div class="bullet-point"><code>mkdir, touch</code> Criar</div>
-                            <div class="bullet-point"><code>cp, mv, rm</code> Manipular</div>
+                <div>
+                    <div class="ex-col-title">Comando</div>
+                    <div class="ex-zones" data-zones="ex01">
+                        <div class="drop-zone" data-zone="ex01-z1" data-accept="c1">
+                            <span class="zone-name"><code>ls -la</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
                         </div>
-                        <div>
-                            <div class="bullet-point"><span class="keyboard-key">Tab</span> Autocompleta</div>
-                            <div class="bullet-point">Histórico de comandos</div>
-                            <div class="bullet-point"><code>|</code> Pipe (conecta)</div>
-                            <div class="bullet-point"><code>> >></code> Redireciona</div>
+                        <div class="drop-zone" data-zone="ex01-z2" data-accept="c2">
+                            <span class="zone-name"><code>grep -r "texto"</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z3" data-accept="c3">
+                            <span class="zone-name"><code>cp -r src/ dst/</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z4" data-accept="c4">
+                            <span class="zone-name"><code>mv arquivo.txt /backup/</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z5" data-accept="c5">
+                            <span class="zone-name"><code>cat arquivo | grep erro > log.txt</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z6" data-accept="c6">
+                            <span class="zone-name"><code>tail -f /var/log/syslog</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
                         </div>
                     </div>
                 </div>
-                <div class="content-box box-highlight" style="max-width: 750px; margin-top: 20px;">
-                    <h3>🎯 Pratique:</h3>
-                    <div style="font-family: monospace; font-size: 0.95em; margin-top: 10px; text-align: left;">
-                        <code>cd /home</code><br>
-                        <code>cd ../etc</code> <span style="color: #718096;"># caminho relativo</span><br>
-                        <code>cd /home/usuario/Documentos</code> <span style="color: #718096;"># absoluto</span><br>
-                        <code>ls -la | grep ".txt" >> lista.txt</code>
-                    </div>
+            </div>
+        </div>
+
+        <div class="ex-actions">
+            <button class="btn-verificar" onclick="dragVerify('ex01')">Verificar</button>
+            <button class="btn-refazer"  onclick="dragReset('ex01')">Refazer</button>
+        </div>
+        <div class="ex-result" id="ex01-result"></div>
+    </div>
+
+    <!-- ATIVIDADE PRÁTICA -->
+    <div class="content-card practical-card" id="prat-01">
+        <h2>🛠️ Atividade Prática — Explorador do Terminal</h2>
+        <div class="prat-meta">
+            <span class="prat-tag">⏱️ ~30 min</span>
+            <span class="prat-tag">💻 Ubuntu Server / Terminal</span>
+            <span class="prat-tag">📸 Tirar screenshot da saída</span>
+        </div>
+
+        <div class="prat-steps">
+            <div class="prat-step">
+                <div class="step-num">1</div>
+                <div class="step-body">
+                    <div class="step-label">Navegar pelos diretórios principais</div>
+                    <div class="step-desc">Abra o terminal e explore a estrutura: execute <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">pwd</code> para confirmar onde está, depois navegue com <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">cd /var/log</code> e liste os arquivos com <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">ls -lh</code>. Volte para a home com <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">cd ~</code>.</div>
                 </div>
-                <div class="content-box box-info" style="max-width: 750px; margin-top: 20px;">
-                    <p style="font-size: 1.1em;">🔑 <strong>Lembre:</strong> <code>/</code> = absoluto | sem <code>/</code> = relativo</p>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">2</div>
+                <div class="step-body">
+                    <div class="step-label">Criar uma estrutura de pastas de projeto</div>
+                    <div class="step-desc">Crie a estrutura de um projeto com um único comando: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">mkdir -p ~/lab-terminal/{scripts,logs,backup}</code>. Confirme a criação com <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">ls -la ~/lab-terminal/</code>. Crie três arquivos de texto dentro de <code>scripts/</code> usando <code>touch</code>.</div>
                 </div>
-                <div style="margin-top: 35px;">
-                    <a href="index.html" class="nav-btn" style="font-size: 1.2em; padding: 15px 40px;">Voltar ao Dashboard 🏠</a>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">3</div>
+                <div class="step-body">
+                    <div class="step-label">Copiar e mover arquivos</div>
+                    <div class="step-desc">Copie um dos arquivos criados para a pasta <code>backup/</code>: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">cp ~/lab-terminal/scripts/arquivo1.txt ~/lab-terminal/backup/</code>. Mova outro para <code>logs/</code> e renomeie-o ao mesmo tempo: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">mv ~/lab-terminal/scripts/arquivo2.txt ~/lab-terminal/logs/registro.txt</code>.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">4</div>
+                <div class="step-body">
+                    <div class="step-label">Buscar arquivos com find e grep</div>
+                    <div class="step-desc">Use o find para localizar todos os arquivos .txt no seu diretório lab: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">find ~/lab-terminal -name "*.txt"</code>. Em seguida, adicione texto a um arquivo com <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">echo "teste de busca com grep" > ~/lab-terminal/scripts/notas.txt</code> e busque com <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">grep -r "grep" ~/lab-terminal/</code>.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">5</div>
+                <div class="step-body">
+                    <div class="step-label">Usar pipes para filtrar dados</div>
+                    <div class="step-desc">Combine comandos com pipe: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">ls -la ~/lab-terminal/ | grep "^d"</code> (mostra só pastas), <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">ps aux | grep bash</code> (mostra processos bash) e <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">ls | wc -l</code> (conta arquivos). Observe como a saída de um vira a entrada do próximo.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">6</div>
+                <div class="step-body">
+                    <div class="step-label">Redirecionar saída para arquivo de log</div>
+                    <div class="step-desc">Gere um relatório do sistema redirecionando saídas: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">echo "=== Relatório $(date) ===" > ~/lab-terminal/logs/relatorio.txt</code>, depois <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">ls -la ~/lab-terminal/ >> ~/lab-terminal/logs/relatorio.txt</code>. Visualize o resultado com <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">cat ~/lab-terminal/logs/relatorio.txt</code> e tire screenshot.</div>
                 </div>
             </div>
         </div>
 
+        <div class="prat-observe">
+            <strong>📌 Para refletir:</strong> O terminal Linux é uma linguagem de composição — cada comando pequeno resolve uma tarefa, e você os conecta com <code>|</code> e <code>&gt;</code> para criar fluxos de trabalho poderosos. Um único administrador com bom domínio do terminal consegue gerenciar centenas de servidores com eficiência impossível de alcançar em ambientes gráficos.
+        </div>
+
+        <div class="ex-actions">
+            <button class="btn-print" onclick="printPractical('prat-01', 'Aula 1.3 \u2014 Comandos Essenciais e Produtividade')">🖨️ Imprimir roteiro</button>
+        </div>
     </div>
 
-    <div class="nav-controls">
-        <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">⬅️ Anterior</button>
-        <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Próximo ➡️</button>
+    <div class="nav-footer">
+        <a href="aula02-fhs.html" class="nav-link">&#x2190; Arquitetura e FHS</a>
+        <a href="aula04-gerenciamento-usuarios.html" class="nav-link">Gerenciamento de Usuários &#x2192;</a>
     </div>
 
-    <script>
-        let currentSlide = 0;
-        const slides = document.querySelectorAll('.slide-card');
-        const totalSlides = slides.length;
-        document.getElementById('total-slides').textContent = totalSlides;
+</div>
 
-        function showSlide(index) {
-            slides.forEach((slide, i) => slide.classList.toggle('active', i === index));
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            document.getElementById('current-slide').textContent = index + 1;
-            document.getElementById('prevBtn').disabled = index === 0;
-            document.getElementById('nextBtn').disabled = index === totalSlides - 1;
-        }
-
-        function changeSlide(direction) {
-            const newSlide = currentSlide + direction;
-            if (newSlide >= 0 && newSlide < totalSlides) {
-                currentSlide = newSlide;
-                showSlide(currentSlide);
-            }
-        }
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowLeft') changeSlide(-1);
-            if (e.key === 'ArrowRight') changeSlide(1);
-        });
-
-        showSlide(0);
-    </script>
+<script src="slide-mode.js"></script>
+<script src="exercise-drag.js"></script>
+<script src="exercise-print.js"></script>
 </body>
 </html>
