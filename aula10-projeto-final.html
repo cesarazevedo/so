@@ -1,464 +1,723 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aula 10 - Projeto Prático: Ambiente Colaborativo</title>
+    <title>Aula 10 &mdash; Projeto Final: Ambiente Colaborativo</title>
+    <link rel="stylesheet" href="slide-mode.css">
+    <link rel="stylesheet" href="exercise.css">
     <style>
-        :root { --primary: #667eea; --secondary: #764ba2; --bg-light: #f4f7fe; --text-dark: #2d3748; --text-light: #718096; --accent-green: #38ef7d; --accent-red: #ff758c; --accent-orange: #f39c12; }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-light); color: var(--text-dark); min-height: 100vh; display: flex; flex-direction: column; }
-        .classroom-header { background: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: fixed; top: 0; width: 100%; z-index: 1000; }
-        .back-btn { text-decoration: none; color: var(--text-dark); font-weight: 600; display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 50px; transition: all 0.2s; background: #f0f2f5; }
-        .back-btn:hover { background: #e2e8f0; color: var(--primary); }
-        .lesson-info h1 { font-size: 1.1em; margin: 0; color: var(--text-dark); }
-        .lesson-info span { font-size: 0.85em; color: var(--text-light); }
-        .slide-counter { background: var(--primary); color: white; padding: 5px 12px; border-radius: 12px; font-size: 0.9em; font-weight: bold; }
-        .viewer-container { margin-top: 80px; padding: 20px; padding-bottom: 100px; flex: 1; display: flex; justify-content: center; align-items: flex-start; }
-        .slide-card { background: white; width: 100%; max-width: 1000px; min-height: 80vh; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); padding: 50px; position: relative; display: none; flex-direction: column; animation: fadeIn 0.4s ease; }
-        .slide-card.active { display: flex; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        h1.slide-title { font-size: 2.8em; background: linear-gradient(to right, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-align: center; margin-bottom: 30px; }
-        h2.slide-subtitle { font-size: 2.2em; color: var(--text-dark); border-bottom: 3px solid #e2e8f0; padding-bottom: 15px; margin-bottom: 30px; }
-        h3 { color: var(--primary); margin: 15px 0 10px; font-size: 1.3em; }
-        .content-box { padding: 18px; border-radius: 12px; margin: 12px 0; border-left: 5px solid; background: #f8fafc; }
-        .box-highlight { border-color: #f39c12; background: #fffaf0; }
-        .box-info { border-color: var(--primary); background: #f4f7fe; }
-        .box-success { border-color: var(--accent-green); background: #f0fdf4; }
-        .box-terminal { 
-            background: #1a202c; 
-            color: #38ef7d; 
-            font-family: 'Courier New', monospace; 
-            border-left: 5px solid #38ef7d; 
-            padding: 20px; 
-            border-radius: 12px; 
-            font-size: 0.9em; 
-            line-height: 1.6; 
-            overflow-x: auto; 
-            white-space: pre-wrap;
-            word-wrap: break-word;
+        :root {
+            --primary:   #667eea;
+            --secondary: #764ba2;
+            --bg-light:  #f4f7fe;
+            --text-dark: #2d3748;
         }
-        .box-terminal .prompt { color: #63b3ed; }
-        .box-terminal .root { color: #fc8181; }
-        .box-terminal .cmd { color: #38ef7d; }
-        .box-terminal .out { color: #a0aec0; }
-        .box-terminal .cmt { color: #718096; font-style: italic; }
-        .box-terminal .hl { color: #f6e05e; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .bullet-point { display: flex; align-items: center; margin: 6px 0; font-size: 1em; }
-        .bullet-point::before { content: "🔧"; margin-right: 8px; }
-        .section-divider { text-align: center; padding: 12px; margin: 15px 0; background: linear-gradient(to right, var(--primary), var(--secondary)); color: white; border-radius: 10px; font-weight: bold; }
-        .checklist { background: #f8fafc; border-radius: 10px; padding: 15px; margin: 10px 0; }
-        .checklist-item { display: flex; align-items: center; padding: 8px 0; border-bottom: 1px solid #e2e8f0; }
-        .checklist-item:last-child { border-bottom: none; }
-        .checklist-item input[type="checkbox"] { width: 20px; height: 20px; margin-right: 12px; cursor: pointer; }
-        .checklist-item label { cursor: pointer; flex: 1; }
-        .checklist-item .aula-ref { background: var(--primary); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75em; margin-left: 10px; }
-        .server-diagram { display: flex; align-items: center; justify-content: center; gap: 15px; margin: 20px 0; flex-wrap: wrap; }
-        .server-box { padding: 15px 20px; border-radius: 12px; text-align: center; font-weight: bold; min-width: 110px; }
-        .mission-badge { background: linear-gradient(135deg, var(--accent-orange), #e67e22); color: white; padding: 15px 25px; border-radius: 15px; text-align: center; margin: 15px 0; }
-        .mission-badge h3 { color: white; margin: 0 0 5px 0; }
-        .nav-controls { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 15px; background: white; padding: 10px 20px; border-radius: 50px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); z-index: 100; }
-        .nav-btn { background: var(--primary); color: white; border: none; padding: 12px 25px; border-radius: 25px; font-weight: bold; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px; text-decoration: none; }
-        .nav-btn:hover { background: var(--secondary); transform: translateY(-2px); }
-        .nav-btn:disabled { background: #cbd5e0; cursor: not-allowed; transform: none; }
-        .structure-tree { background: #1a202c; color: #38ef7d; padding: 20px; border-radius: 10px; font-family: 'Courier New', monospace; line-height: 1.8; white-space: pre; }
-        .structure-tree .folder { color: #63b3ed; }
-        .structure-tree .file { color: #a0aec0; }
-        .aula-tag { background: var(--primary); color: white; padding: 5px 10px; border-radius: 15px; margin: 3px; display: inline-block; }
-        @media (max-width: 768px) { .viewer-container { padding: 10px; margin-top: 70px; } .slide-card { padding: 25px; min-height: 70vh; } .grid-2 { grid-template-columns: 1fr; } h1.slide-title { font-size: 2em; } h2.slide-subtitle { font-size: 1.5em; } }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: var(--bg-light); color: var(--text-dark); line-height: 1.7; }
+
+        /* ── TOP BAR ── */
+        .top-bar { background: white; padding: 15px 30px; display: flex; align-items: center; gap: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 10; }
+        .back-btn { text-decoration: none; color: var(--primary); font-weight: 600; display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 8px; transition: background .3s; }
+        .back-btn:hover { background: rgba(102,126,234,.08); }
+        .page-badge { font-size: .8em; padding: 4px 12px; border-radius: 20px; background: rgba(102,126,234,.12); color: var(--primary); font-weight: 600; }
+
+        /* ── LAYOUT ── */
+        .content-wrapper { max-width: 800px; margin: 40px auto; padding: 0 30px; }
+        .lesson-hero { background: white; border-radius: 16px; padding: 40px; box-shadow: 0 5px 15px rgba(0,0,0,.05); margin-bottom: 30px; border-top: 4px solid var(--primary); }
+        .lesson-hero h1 { font-size: 2em; margin-bottom: 10px; color: var(--primary); }
+        .lesson-hero .subtitle { font-size: 1.05em; color: #718096; }
+        .content-card { background: white; border-radius: 16px; padding: 35px; box-shadow: 0 5px 15px rgba(0,0,0,.05); margin-bottom: 25px; }
+        .content-card h2 { font-size: 1.4em; color: var(--primary); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
+        .content-card h3 { font-size: 1.05em; color: #5a67d8; margin: 20px 0 10px; }
+        .content-card p { margin-bottom: 15px; text-align: justify; }
+        ul, ol { margin: 10px 0 15px 25px; }
+        li { margin-bottom: 8px; }
+
+        /* ── CAIXAS ── */
+        .highlight-box { background: linear-gradient(135deg,rgba(102,126,234,.05),rgba(118,75,162,.06)); border-left: 4px solid var(--primary); padding: 20px 25px; border-radius: 0 12px 12px 0; margin: 20px 0; }
+        .highlight-box p { margin-bottom: 0; font-style: italic; }
+        .alert-box { background: #fff8e1; border-left: 4px solid #f59e0b; padding: 18px 22px; border-radius: 0 12px 12px 0; margin: 20px 0; }
+        .alert-box p { margin: 0; color: #78350f; font-size: .93em; }
+        .tip-box { background: #f0fdf4; border-left: 4px solid #16a34a; padding: 18px 22px; border-radius: 0 12px 12px 0; margin: 20px 0; }
+        .tip-box p { margin: 0; color: #14532d; font-size: .93em; }
+
+        /* ── TERMINAIS ── */
+        .terminal { background: #1a202c; border-radius: 12px; overflow: hidden; margin: 16px 0; box-shadow: 0 4px 20px rgba(0,0,0,.3); }
+        .terminal-bar { background: #2d3748; padding: 8px 16px; display: flex; align-items: center; gap: 8px; }
+        .term-dot { width: 12px; height: 12px; border-radius: 50%; }
+        .term-dot.red    { background: #fc8181; }
+        .term-dot.yellow { background: #f6e05e; }
+        .term-dot.green  { background: #68d391; }
+        .term-title { font-size: .75em; color: #718096; margin-left: 8px; font-family: 'Consolas', monospace; }
+        .terminal-body { padding: 20px 24px; font-family: 'Courier New','Consolas',monospace; font-size: .92em; line-height: 2; color: #a0aec0; }
+        .t-prompt  { color: #63b3ed; }
+        .t-root    { color: #fc8181; }
+        .t-cmd     { color: #38ef7d; }
+        .t-flag    { color: #f6e05e; }
+        .t-arg     { color: #90cdf4; }
+        .t-out     { color: #a0aec0; }
+        .t-comment { color: #4a5568; font-style: italic; }
+        .t-hl      { color: #f6e05e; font-weight: bold; }
+        .t-ok      { color: #38ef7d; font-weight: bold; }
+
+        /* ── MISSÃO ── */
+        .mission-box { background: linear-gradient(135deg, #f39c12, #e67e22); color: white; border-radius: 12px; padding: 20px 25px; margin: 20px 0; text-align: center; }
+        .mission-box h3 { color: white; font-size: 1.15em; margin-bottom: 6px; }
+        .mission-box p { margin: 0; color: rgba(255,255,255,.9); font-size: .95em; text-align: center; }
+
+        /* ── GRID REQUISITOS ── */
+        .req-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+        .req-box { background: #f8f7ff; border-radius: 10px; padding: 18px; border-top: 3px solid var(--primary); }
+        .req-box h4 { font-size: .95em; color: var(--primary); margin-bottom: 10px; }
+        .req-box ul { margin: 0 0 0 18px; }
+        .req-box li { font-size: .9em; margin-bottom: 5px; }
+
+        /* ── ESTRUTURA ── */
+        .structure-tree { background: #1a202c; color: #38ef7d; padding: 20px; border-radius: 10px; font-family: 'Courier New', monospace; line-height: 1.9; white-space: pre; font-size: .9em; margin: 16px 0; overflow-x: auto; }
+        .structure-tree .sf { color: #63b3ed; }
+        .structure-tree .sa { color: #718096; }
+
+        /* ── CHECKLIST POR ETAPA ── */
+        .checklist-card { background: #f8fafc; border-radius: 12px; padding: 18px; margin: 16px 0; }
+        .checklist-card h4 { font-size: .9em; color: #4a5568; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 12px; }
+        .check-item { display: flex; align-items: center; padding: 8px 0; border-bottom: 1px solid #e8edf3; gap: 12px; }
+        .check-item:last-child { border-bottom: none; }
+        .check-item input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; flex-shrink: 0; accent-color: var(--primary); }
+        .check-item label { cursor: pointer; font-size: .95em; flex: 1; }
+        .aula-ref { background: var(--primary); color: white; padding: 2px 8px; border-radius: 10px; font-size: .72em; white-space: nowrap; }
+
+        /* ── CHECKLIST FINAL ── */
+        .checklist-final-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+        .check-group { border-radius: 12px; padding: 18px; }
+        .check-group.green  { background: #f0fdf4; }
+        .check-group.blue   { background: #f4f7fe; }
+        .check-group.orange { background: #fffaf0; }
+        .check-group.purple { background: #f3e8ff; }
+        .check-group h4 { font-size: .9em; font-weight: 700; margin-bottom: 12px; }
+        .check-group.green  h4 { color: #065f46; }
+        .check-group.blue   h4 { color: #1e40af; }
+        .check-group.orange h4 { color: #92400e; }
+        .check-group.purple h4 { color: #7c3aed; }
+
+        /* ── BADGE DE ETAPA ── */
+        .etapa-badge { display: inline-block; background: var(--primary); color: white; font-size: .8em; font-weight: 700; padding: 3px 12px; border-radius: 20px; margin-bottom: 12px; letter-spacing: .04em; }
+
+        /* ── CONCLUSÃO ── */
+        .result-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; margin: 20px 0; }
+        .result-box { background: #f8f7ff; border-radius: 12px; padding: 16px; text-align: center; border-top: 3px solid var(--primary); }
+        .result-box .r-icon { font-size: 1.8em; margin-bottom: 6px; }
+        .result-box strong { display: block; font-size: .85em; color: #1e293b; margin-bottom: 4px; }
+        .result-box span { font-size: .78em; color: #475569; }
+
+        /* ── TAGS ── */
+        .tag-list { margin: 12px 0; }
+        .aula-tag { display: inline-block; background: rgba(102,126,234,.12); color: var(--primary); padding: 4px 12px; border-radius: 20px; font-size: .82em; font-weight: 600; margin: 4px 3px; }
+
+        /* ── NAV ── */
+        .nav-footer { display: flex; justify-content: space-between; margin-top: 40px; padding-bottom: 40px; }
+        .nav-link { text-decoration: none; color: var(--primary); font-weight: 600; padding: 12px 24px; border-radius: 10px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,.05); transition: all .3s; }
+        .nav-link:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.1); }
+
+        @media (max-width: 768px) {
+            .content-wrapper { padding: 0 15px; }
+            .lesson-hero, .content-card { padding: 25px; }
+            .lesson-hero h1 { font-size: 1.5em; }
+            .req-grid, .checklist-final-grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
-    <header class="classroom-header">
-        <div style="display: flex; align-items: center; gap: 20px;">
-            <a href="index.html" class="back-btn"><span>←</span> Voltar</a>
-            <div class="lesson-info"><h1>Fundamentos do Linux</h1><span>Módulo 1 • Aula 10 - Projeto Final</span></div>
+
+<div class="top-bar">
+    <a href="index.html" class="back-btn">&#x2B05; Voltar ao Dashboard</a>
+    <span class="page-badge">M&oacute;dulo 1 &mdash; Fundamentos do Linux</span>
+    <button class="slide-toggle" id="slideToggleBtn">&#x1F4FA; Modo Slide</button>
+</div>
+
+<div class="content-wrapper">
+
+    <div class="lesson-hero">
+        <h1>&#x1F3C6; Projeto Final: Ambiente Colaborativo</h1>
+        <p class="subtitle">Aula 10 &mdash; Aplique tudo o que voc&ecirc; aprendeu no bimestre configurando um ambiente real de trabalho em equipe</p>
+    </div>
+
+    <!-- CARD 1 — Cenário -->
+    <div class="content-card">
+        <h2>&#x1F4CB; Cen&aacute;rio do Projeto</h2>
+
+        <div class="mission-box">
+            <h3>&#x1F3AF; SUA MISS&Atilde;O</h3>
+            <p>Configurar um ambiente de trabalho para a equipe de desenvolvimento da <strong>TechCorp</strong></p>
         </div>
-        <div class="slide-counter"><span id="current-slide">1</span> / <span id="total-slides">12</span></div>
-    </header>
-    <div class="viewer-container">
-        <!-- SLIDE 1: Capa -->
-        <div class="slide-card active">
-            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
-                <div style="font-size: 5em;">🏆</div>
-                <h1 class="slide-title">Projeto Final: Ambiente Colaborativo</h1>
-                <div class="content-box box-highlight" style="text-align: center; font-size: 1.2em;">
-                    <p><strong>Configure um ambiente de trabalho em equipe!</strong></p>
-                    <p style="margin-top: 10px; opacity: 0.8;">Aplicando tudo que você aprendeu no bimestre</p>
-                </div>
-                <div class="server-diagram" style="margin-top: 30px;">
-                    <div class="server-box" style="background: #dbeafe; color: #1e40af;">🗂️ FHS<br><small>Aula 02</small></div>
-                    <div class="server-box" style="background: #fef3c7; color: #92400e;">⌨️ Comandos<br><small>Aula 03</small></div>
-                    <div class="server-box" style="background: #e0e7ff; color: #3730a3;">👥 Usuários<br><small>Aula 04</small></div>
-                    <div class="server-box" style="background: #d1fae5; color: #065f46;">🔐 Permissões<br><small>Aula 05</small></div>
-                </div>
-                <div class="server-diagram">
-                    <div class="server-box" style="background: #cffafe; color: #0e7490;">💾 Montagem<br><small>Aula 08</small></div>
-                    <div class="server-box" style="background: #f3e8ff; color: #7c3aed;">🔍 Regex<br><small>Aula 09</small></div>
-                </div>
-                <div class="content-box box-info" style="margin-top: 20px;">💡 Ao final, você terá um <strong>ambiente colaborativo completo</strong> para uma equipe!</div>
+
+        <div class="req-grid">
+            <div class="req-box">
+                <h4>&#x1F4DD; Requisitos</h4>
+                <ul>
+                    <li>3 desenvolvedores (dev1, dev2, dev3)</li>
+                    <li>1 gerente de projeto</li>
+                    <li>Pasta compartilhada do projeto</li>
+                    <li>Pendrive para backup</li>
+                    <li>Logs de acesso para an&aacute;lise</li>
+                </ul>
+            </div>
+            <div class="req-box">
+                <h4>&#x1F3D7;&#xFE0F; O que vamos criar</h4>
+                <ul>
+                    <li>Grupos: <code>devs</code> e <code>gestao</code></li>
+                    <li>Estrutura em <code>/projetos</code></li>
+                    <li>Permiss&otilde;es colaborativas (SGID)</li>
+                    <li>Pendrive montado para backup</li>
+                    <li>An&aacute;lise de logs com regex</li>
+                </ul>
             </div>
         </div>
 
-        <!-- SLIDE 2: Cenário -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">📋 Cenário do Projeto</h2>
-            <div class="mission-badge"><h3>🎯 SUA MISSÃO</h3><p>Configurar um ambiente de trabalho para a equipe de desenvolvimento da "TechCorp"</p></div>
-            <div class="grid-2">
-                <div class="content-box box-info">
-                    <h3>📝 Requisitos</h3>
-                    <div class="bullet-point">3 desenvolvedores (dev1, dev2, dev3)</div>
-                    <div class="bullet-point">1 gerente de projeto</div>
-                    <div class="bullet-point">Pasta compartilhada do projeto</div>
-                    <div class="bullet-point">Pendrive para backup</div>
-                    <div class="bullet-point">Logs de acesso para análise</div>
-                </div>
-                <div class="content-box box-success">
-                    <h3>🏗️ O que vamos criar</h3>
-                    <div class="bullet-point">Grupos: <code>devs</code> e <code>gestao</code></div>
-                    <div class="bullet-point">Estrutura em <code>/projetos</code></div>
-                    <div class="bullet-point">Permissões colaborativas</div>
-                    <div class="bullet-point">Pendrive montado para backup</div>
-                    <div class="bullet-point">Análise de logs com regex</div>
-                </div>
-            </div>
-            <div class="content-box box-highlight" style="margin-top: 15px; text-align: center;"><h3>⏱️ 5 Etapas • Aproximadamente 30-40 minutos</h3></div>
+        <div class="highlight-box">
+            <p>&#x23F1;&#xFE0F; <strong>5 Etapas &bull; Aproximadamente 30&ndash;40 minutos</strong> &mdash; Ao final voc&ecirc; ter&aacute; um ambiente colaborativo completo, aplicando conte&uacute;dos das aulas 2 ao 9.</p>
         </div>
+    </div>
 
-        <!-- SLIDE 3: Estrutura -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">📁 Estrutura do Projeto</h2>
-            <div class="section-divider">Visão geral do que vamos criar</div>
-            <div class="grid-2">
-                <div>
-                    <h3>🗂️ Estrutura de Pastas</h3>
-                    <div class="structure-tree"><span class="folder">/projetos/</span>
-├── <span class="folder">techcorp/</span>
-│   ├── <span class="folder">codigo/</span>
-│   ├── <span class="folder">documentos/</span>
-│   └── <span class="folder">logs/</span>
-└── <span class="folder">backup/</span> <span class="file">→ pendrive</span></div>
-                </div>
-                <div>
-                    <h3>👥 Usuários e Grupos</h3>
-                    <div class="content-box box-info">
-                        <p><strong>Grupo devs:</strong> dev1, dev2, dev3</p>
-                        <p style="margin-top: 10px;"><strong>Grupo gestao:</strong> gerente</p>
-                        <p style="margin-top: 10px;"><strong>Permissões:</strong></p>
-                        <p>• devs: rwx em codigo/</p>
-                        <p>• gestao: rwx em documentos/</p>
-                        <p>• Todos: r em logs/</p>
-                    </div>
-                </div>
-            </div>
+    <!-- CARD 2 — Visão Geral -->
+    <div class="content-card">
+        <h2>&#x1F4C1; Vis&atilde;o Geral da Estrutura</h2>
+
+        <h3>Hierarquia de diret&oacute;rios</h3>
+        <div class="structure-tree"><span class="sf">/projetos/</span>
+├── <span class="sf">techcorp/</span>
+│   ├── <span class="sf">codigo/</span>        ← grupo <span class="sf">devs</span>   (chmod 2775)
+│   ├── <span class="sf">documentos/</span>    ← grupo <span class="sf">gestao</span> (chmod 2775)
+│   └── <span class="sf">logs/</span>          ← somente leitura (chmod 755)
+└── <span class="sf">backup/</span>            <span class="sa">→ pendrive montado aqui</span></div>
+
+        <h3>Usu&aacute;rios e grupos</h3>
+        <ul>
+            <li><strong>Grupo devs:</strong> dev1, dev2, dev3 &mdash; acesso total a <code>codigo/</code></li>
+            <li><strong>Grupo gestao:</strong> gerente &mdash; acesso total a <code>documentos/</code></li>
+            <li><strong>gerente</strong> pertence aos dois grupos (devs + gestao)</li>
+        </ul>
+
+        <div class="tip-box">
+            <p>&#x1F4A1; O <strong>SGID (bit 2)</strong> em <code>codigo/</code> e <code>documentos/</code> garante que todos os arquivos criados dentro dessas pastas herdem automaticamente o grupo correto &mdash; essencial para a colabora&ccedil;&atilde;o funcionar.</p>
         </div>
-        <!-- SLIDE 4: Etapa 1 - Usuários -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">👥 Etapa 1: Usuários e Grupos</h2>
-            <div class="section-divider">Criando a equipe TechCorp</div>
-            <div class="box-terminal"><span class="cmt"># 1. Criar os grupos</span>
-<span class="root">root@linux</span>:~# <span class="cmd">groupadd devs</span>
-<span class="root">root@linux</span>:~# <span class="cmd">groupadd gestao</span>
+    </div>
 
-<span class="cmt"># 2. Criar os desenvolvedores</span>
-<span class="root">root@linux</span>:~# <span class="cmd">useradd -m -s /bin/bash -G devs dev1</span>
-<span class="root">root@linux</span>:~# <span class="cmd">useradd -m -s /bin/bash -G devs dev2</span>
-<span class="root">root@linux</span>:~# <span class="cmd">useradd -m -s /bin/bash -G devs dev3</span>
+    <!-- CARD 3 — Etapa 1 -->
+    <div class="content-card">
+        <span class="etapa-badge">ETAPA 1 DE 5</span>
+        <h2>&#x1F465; Usu&aacute;rios e Grupos</h2>
+        <p>Crie os grupos e usu&aacute;rios que formar&atilde;o a equipe da TechCorp.</p>
 
-<span class="cmt"># 3. Criar o gerente (pertence aos dois grupos!)</span>
-<span class="root">root@linux</span>:~# <span class="cmd">useradd -m -s /bin/bash -G gestao,devs gerente</span>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">bash &mdash; root</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-comment"># 1. Criar os grupos</span>
+<span class="t-root">root@linux:~#</span> <span class="t-cmd">groupadd</span> <span class="t-arg">devs</span>
+<span class="t-root">root@linux:~#</span> <span class="t-cmd">groupadd</span> <span class="t-arg">gestao</span>
 
-<span class="cmt"># 4. Definir senhas</span>
-<span class="root">root@linux</span>:~# <span class="cmd">passwd dev1</span>
-<span class="root">root@linux</span>:~# <span class="cmd">passwd dev2</span>
-<span class="root">root@linux</span>:~# <span class="cmd">passwd dev3</span>
-<span class="root">root@linux</span>:~# <span class="cmd">passwd gerente</span>
+<span class="t-comment"># 2. Criar os desenvolvedores</span>
+<span class="t-root">root@linux:~#</span> <span class="t-cmd">useradd</span> <span class="t-flag">-m -s /bin/bash -G</span> <span class="t-arg">devs dev1</span>
+<span class="t-root">root@linux:~#</span> <span class="t-cmd">useradd</span> <span class="t-flag">-m -s /bin/bash -G</span> <span class="t-arg">devs dev2</span>
+<span class="t-root">root@linux:~#</span> <span class="t-cmd">useradd</span> <span class="t-flag">-m -s /bin/bash -G</span> <span class="t-arg">devs dev3</span>
 
-<span class="cmt"># 5. Verificar</span>
-<span class="root">root@linux</span>:~# <span class="cmd">grep -E "devs|gestao" /etc/group</span>
-<span class="out">devs:x:1001:dev1,dev2,dev3,gerente</span>
-<span class="out">gestao:x:1002:gerente</span></div>
-            <div class="checklist">
-                <div class="checklist-item"><input type="checkbox" id="c1"><label for="c1">Grupos devs e gestao criados</label><span class="aula-ref">Aula 04</span></div>
-                <div class="checklist-item"><input type="checkbox" id="c2"><label for="c2">Usuários dev1, dev2, dev3 criados</label><span class="aula-ref">Aula 04</span></div>
-                <div class="checklist-item"><input type="checkbox" id="c3"><label for="c3">Gerente nos dois grupos</label><span class="aula-ref">Aula 04</span></div>
+<span class="t-comment"># 3. Criar o gerente (pertence aos dois grupos!)</span>
+<span class="t-root">root@linux:~#</span> <span class="t-cmd">useradd</span> <span class="t-flag">-m -s /bin/bash -G</span> <span class="t-arg">gestao,devs gerente</span>
+
+<span class="t-comment"># 4. Definir senhas</span>
+<span class="t-root">root@linux:~#</span> <span class="t-cmd">passwd</span> <span class="t-arg">dev1</span>
+<span class="t-root">root@linux:~#</span> <span class="t-cmd">passwd</span> <span class="t-arg">dev2</span>
+<span class="t-root">root@linux:~#</span> <span class="t-cmd">passwd</span> <span class="t-arg">dev3</span>
+<span class="t-root">root@linux:~#</span> <span class="t-cmd">passwd</span> <span class="t-arg">gerente</span>
+
+<span class="t-comment"># 5. Verificar</span>
+<span class="t-root">root@linux:~#</span> <span class="t-cmd">grep</span> <span class="t-flag">-E</span> <span class="t-arg">"devs|gestao"</span> /etc/group
+<span class="t-out">devs:x:1001:dev1,dev2,dev3,gerente</span>
+<span class="t-out">gestao:x:1002:gerente</span>
             </div>
         </div>
 
-        <!-- SLIDE 5: Etapa 2 - Pastas -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">📁 Etapa 2: Estrutura de Pastas</h2>
-            <div class="section-divider">Criando a árvore de diretórios</div>
-            <div class="box-terminal"><span class="cmt"># 1. Criar estrutura principal</span>
-<span class="root">root@linux</span>:~# <span class="cmd">mkdir -p /projetos/techcorp/{codigo,documentos,logs}</span>
-<span class="root">root@linux</span>:~# <span class="cmd">mkdir -p /projetos/backup</span>
-
-<span class="cmt"># 2. Verificar estrutura criada</span>
-<span class="root">root@linux</span>:~# <span class="cmd">ls -la /projetos/</span>
-<span class="out">drwxr-xr-x  3 root root 4096 jan 20 techcorp</span>
-<span class="out">drwxr-xr-x  2 root root 4096 jan 20 backup</span>
-
-<span class="cmt"># 3. Ver subpastas</span>
-<span class="root">root@linux</span>:~# <span class="cmd">ls -la /projetos/techcorp/</span>
-<span class="out">drwxr-xr-x  2 root root 4096 jan 20 codigo</span>
-<span class="out">drwxr-xr-x  2 root root 4096 jan 20 documentos</span>
-<span class="out">drwxr-xr-x  2 root root 4096 jan 20 logs</span></div>
-            <div class="content-box box-info" style="margin-top: 15px;"><h3>💡 Dica: mkdir -p</h3><p>O <code>-p</code> cria pastas intermediárias. As chaves <code>{}</code> criam múltiplas pastas de uma vez!</p></div>
-            <div class="checklist">
-                <div class="checklist-item"><input type="checkbox" id="c4"><label for="c4">Pasta /projetos criada</label><span class="aula-ref">Aula 03</span></div>
-                <div class="checklist-item"><input type="checkbox" id="c5"><label for="c5">Subpastas codigo, documentos, logs</label><span class="aula-ref">Aula 02</span></div>
+        <div class="checklist-card">
+            <h4>&#x2705; Progresso da Etapa 1</h4>
+            <div class="check-item">
+                <input type="checkbox" id="c1">
+                <label for="c1">Grupos <code>devs</code> e <code>gestao</code> criados</label>
+                <span class="aula-ref">Aula 04</span>
             </div>
-        </div>
-
-        <!-- SLIDE 6: Etapa 3 - Permissões -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🔐 Etapa 3: Configurar Permissões</h2>
-            <div class="section-divider">Definindo quem pode acessar o quê</div>
-            <div class="box-terminal"><span class="cmt"># 1. Pasta codigo: grupo devs com acesso total</span>
-<span class="root">root@linux</span>:~# <span class="cmd">chown root:devs /projetos/techcorp/codigo</span>
-<span class="root">root@linux</span>:~# <span class="cmd">chmod 2775 /projetos/techcorp/codigo</span>
-
-<span class="cmt"># 2. Pasta documentos: grupo gestao com acesso total</span>
-<span class="root">root@linux</span>:~# <span class="cmd">chown root:gestao /projetos/techcorp/documentos</span>
-<span class="root">root@linux</span>:~# <span class="cmd">chmod 2775 /projetos/techcorp/documentos</span>
-
-<span class="cmt"># 3. Pasta logs: todos leem, só root escreve</span>
-<span class="root">root@linux</span>:~# <span class="cmd">chmod 755 /projetos/techcorp/logs</span>
-
-<span class="cmt"># 4. Verificar permissões</span>
-<span class="root">root@linux</span>:~# <span class="cmd">ls -la /projetos/techcorp/</span>
-<span class="out">drwxrws<span class="hl">r-x</span>  2 root <span class="hl">devs</span>   4096 codigo</span>
-<span class="out">drwxrws<span class="hl">r-x</span>  2 root <span class="hl">gestao</span> 4096 documentos</span>
-<span class="out">drwxr-xr-x  2 root root   4096 logs</span></div>
-            <div class="content-box box-highlight" style="margin-top: 15px;"><h3>💡 Por que 2775?</h3><p><strong>2</strong> = SGID (arquivos herdam o grupo) | <strong>775</strong> = rwx para dono e grupo, rx para outros</p></div>
-            <div class="checklist">
-                <div class="checklist-item"><input type="checkbox" id="c6"><label for="c6">codigo/ com grupo devs</label><span class="aula-ref">Aula 05</span></div>
-                <div class="checklist-item"><input type="checkbox" id="c7"><label for="c7">documentos/ com grupo gestao</label><span class="aula-ref">Aula 05</span></div>
-                <div class="checklist-item"><input type="checkbox" id="c8"><label for="c8">SGID ativado nas pastas</label><span class="aula-ref">Aula 05</span></div>
+            <div class="check-item">
+                <input type="checkbox" id="c2">
+                <label for="c2">Usu&aacute;rios dev1, dev2, dev3 criados no grupo devs</label>
+                <span class="aula-ref">Aula 04</span>
             </div>
-        </div>
-        <!-- SLIDE 7: Etapa 4 - Montar Pendrive -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">💾 Etapa 4: Montar Pendrive</h2>
-            <div class="section-divider">Configurando armazenamento para backup</div>
-            <div class="box-terminal"><span class="cmt"># 1. Identificar o pendrive</span>
-<span class="root">root@linux</span>:~# <span class="cmd">lsblk</span>
-<span class="out">NAME   SIZE TYPE MOUNTPOINT</span>
-<span class="out">sda    500G disk</span>
-<span class="out">└─sda1 500G part /</span>
-<span class="out"><span class="hl">sdb</span>     16G disk</span>
-<span class="out">└─<span class="hl">sdb1</span>  16G part</span>            <span class="cmt"># ← Pendrive!</span>
-
-<span class="cmt"># 2. Ver informações do pendrive</span>
-<span class="root">root@linux</span>:~# <span class="cmd">blkid /dev/sdb1</span>
-<span class="out">/dev/sdb1: UUID="<span class="hl">1234-ABCD</span>" TYPE="vfat"</span>
-
-<span class="cmt"># 3. Montar na pasta de backup</span>
-<span class="root">root@linux</span>:~# <span class="cmd">mount /dev/sdb1 /projetos/backup</span>
-
-<span class="cmt"># 4. Verificar montagem</span>
-<span class="root">root@linux</span>:~# <span class="cmd">df -h | grep backup</span>
-<span class="out">/dev/sdb1  16G  1.2G  15G  8% /projetos/backup</span>
-
-<span class="cmt"># 5. Fazer backup dos arquivos</span>
-<span class="root">root@linux</span>:~# <span class="cmd">cp -r /projetos/techcorp/codigo /projetos/backup/</span></div>
-            <div class="checklist">
-                <div class="checklist-item"><input type="checkbox" id="c9"><label for="c9">Pendrive identificado (lsblk)</label><span class="aula-ref">Aula 08</span></div>
-                <div class="checklist-item"><input type="checkbox" id="c10"><label for="c10">Montado em /projetos/backup</label><span class="aula-ref">Aula 08</span></div>
-                <div class="checklist-item"><input type="checkbox" id="c11"><label for="c11">Backup realizado</label><span class="aula-ref">Aula 03</span></div>
-            </div>
-        </div>
-
-        <!-- SLIDE 8: Etapa 5 - Análise de Logs -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🔍 Etapa 5: Análise de Logs</h2>
-            <div class="section-divider">Usando grep, awk e sed para investigar</div>
-            <div class="box-terminal"><span class="cmt"># 1. Criar arquivo de log simulado</span>
-<span class="root">root@linux</span>:~# <span class="cmd">cat > /projetos/techcorp/logs/acessos.log</span>
-<span class="out">2025-01-20 08:15:32 LOGIN dev1 success</span>
-<span class="out">2025-01-20 08:20:45 LOGIN dev2 success</span>
-<span class="out">2025-01-20 09:00:12 LOGIN gerente success</span>
-<span class="out">2025-01-20 09:15:00 LOGIN hacker failed</span>
-<span class="out">2025-01-20 09:15:05 LOGIN hacker failed</span>
-<span class="out">2025-01-20 10:00:00 LOGIN dev3 success</span>
-<span class="out">2025-01-20 10:05:33 LOGIN admin failed</span>
-
-<span class="cmt"># 2. Encontrar tentativas que falharam</span>
-<span class="root">root@linux</span>:~# <span class="cmd">grep "failed" /projetos/techcorp/logs/acessos.log</span>
-<span class="out">2025-01-20 09:15:00 LOGIN <span class="hl">hacker</span> failed</span>
-<span class="out">2025-01-20 09:15:05 LOGIN <span class="hl">hacker</span> failed</span>
-<span class="out">2025-01-20 10:05:33 LOGIN <span class="hl">admin</span> failed</span>
-
-<span class="cmt"># 3. Contar quantas falhas</span>
-<span class="root">root@linux</span>:~# <span class="cmd">grep -c "failed" /projetos/techcorp/logs/acessos.log</span>
-<span class="out">3</span></div>
-        </div>
-
-        <!-- SLIDE 9: Análises Avançadas -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🔍 Análises Avançadas</h2>
-            <div class="section-divider">Extraindo informações importantes</div>
-            <div class="box-terminal"><span class="cmt"># 4. Listar apenas os nomes que falharam (awk)</span>
-<span class="root">root@linux</span>:~# <span class="cmd">grep "failed" acessos.log | awk '{print $4}'</span>
-<span class="out">hacker</span>
-<span class="out">hacker</span>
-<span class="out">admin</span>
-
-<span class="cmt"># 5. Contar tentativas por usuário</span>
-<span class="root">root@linux</span>:~# <span class="cmd">grep "failed" acessos.log | awk '{print $4}' | sort | uniq -c</span>
-<span class="out">   1 admin</span>
-<span class="out">   2 hacker</span>
-
-<span class="cmt"># 6. Encontrar logins entre 09:00 e 10:00 (regex)</span>
-<span class="root">root@linux</span>:~# <span class="cmd">grep -E " 09:[0-9]{2}:" acessos.log</span>
-<span class="out">2025-01-20 09:00:12 LOGIN gerente success</span>
-<span class="out">2025-01-20 09:15:00 LOGIN hacker failed</span>
-<span class="out">2025-01-20 09:15:05 LOGIN hacker failed</span>
-
-<span class="cmt"># 7. Substituir "failed" por "🚫 BLOQUEADO"</span>
-<span class="root">root@linux</span>:~# <span class="cmd">sed 's/failed/🚫 BLOQUEADO/g' acessos.log</span></div>
-            <div class="checklist">
-                <div class="checklist-item"><input type="checkbox" id="c12"><label for="c12">grep para filtrar falhas</label><span class="aula-ref">Aula 09</span></div>
-                <div class="checklist-item"><input type="checkbox" id="c13"><label for="c13">awk para extrair colunas</label><span class="aula-ref">Aula 09</span></div>
-                <div class="checklist-item"><input type="checkbox" id="c14"><label for="c14">Regex para padrões</label><span class="aula-ref">Aula 09</span></div>
-            </div>
-        </div>
-        <!-- SLIDE 10: Teste Final -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🧪 Teste Final: Colaboração</h2>
-            <div class="section-divider">Verificando se dev1 e dev2 podem colaborar</div>
-            <div class="box-terminal"><span class="cmt"># 1. Logar como dev1</span>
-<span class="root">root@linux</span>:~# <span class="cmd">su - dev1</span>
-
-<span class="cmt"># 2. Criar arquivo na pasta de código</span>
-<span class="prompt">dev1@linux</span>:~$ <span class="cmd">echo "# Projeto TechCorp" > /projetos/techcorp/codigo/README.md</span>
-
-<span class="cmt"># 3. Verificar permissões (grupo deve ser devs!)</span>
-<span class="prompt">dev1@linux</span>:~$ <span class="cmd">ls -l /projetos/techcorp/codigo/</span>
-<span class="out">-rw-rw-r-- 1 dev1 <span class="hl">devs</span> 18 jan 20 README.md</span>
-
-<span class="cmt"># 4. Sair e testar com dev2</span>
-<span class="prompt">dev1@linux</span>:~$ <span class="cmd">exit</span>
-<span class="root">root@linux</span>:~# <span class="cmd">su - dev2</span>
-
-<span class="cmt"># 5. dev2 consegue editar arquivo de dev1?</span>
-<span class="prompt">dev2@linux</span>:~$ <span class="cmd">echo "Editado por dev2" >> /projetos/techcorp/codigo/README.md</span>
-<span class="prompt">dev2@linux</span>:~$ <span class="cmd">cat /projetos/techcorp/codigo/README.md</span>
-<span class="out"># Projeto TechCorp</span>
-<span class="out">Editado por dev2</span>
-<span class="cmt"># ✅ Funciona! Colaboração OK!</span></div>
-            <div class="content-box box-success" style="margin-top: 15px;"><h3>✅ Ambiente colaborativo funcionando!</h3><p>O SGID garante que todos do grupo <code>devs</code> possam editar os mesmos arquivos!</p></div>
-        </div>
-
-        <!-- SLIDE 11: Checklist Final -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">✅ Checklist Final do Projeto</h2>
-            <div class="grid-2">
-                <div class="checklist" style="background: #f0fdf4;">
-                    <h3 style="color: #065f46; margin-bottom: 15px;">👥 Usuários (Aula 04)</h3>
-                    <div class="checklist-item"><input type="checkbox" id="f1"><label for="f1">Grupo devs criado</label></div>
-                    <div class="checklist-item"><input type="checkbox" id="f2"><label for="f2">Grupo gestao criado</label></div>
-                    <div class="checklist-item"><input type="checkbox" id="f3"><label for="f3">dev1, dev2, dev3 criados</label></div>
-                    <div class="checklist-item"><input type="checkbox" id="f4"><label for="f4">gerente nos dois grupos</label></div>
-                </div>
-                <div class="checklist" style="background: #f4f7fe;">
-                    <h3 style="color: #1e40af; margin-bottom: 15px;">🔐 Permissões (Aula 05)</h3>
-                    <div class="checklist-item"><input type="checkbox" id="f5"><label for="f5">codigo/ com grupo devs</label></div>
-                    <div class="checklist-item"><input type="checkbox" id="f6"><label for="f6">documentos/ com grupo gestao</label></div>
-                    <div class="checklist-item"><input type="checkbox" id="f7"><label for="f7">SGID ativado (2775)</label></div>
-                    <div class="checklist-item"><input type="checkbox" id="f8"><label for="f8">Colaboração testada OK</label></div>
-                </div>
-                <div class="checklist" style="background: #fffaf0;">
-                    <h3 style="color: #92400e; margin-bottom: 15px;">💾 Montagem (Aula 08)</h3>
-                    <div class="checklist-item"><input type="checkbox" id="f9"><label for="f9">Pendrive identificado</label></div>
-                    <div class="checklist-item"><input type="checkbox" id="f10"><label for="f10">Montado em /projetos/backup</label></div>
-                    <div class="checklist-item"><input type="checkbox" id="f11"><label for="f11">Backup dos arquivos feito</label></div>
-                </div>
-                <div class="checklist" style="background: #f3e8ff;">
-                    <h3 style="color: #7c3aed; margin-bottom: 15px;">🔍 Regex (Aula 09)</h3>
-                    <div class="checklist-item"><input type="checkbox" id="f12"><label for="f12">grep para filtrar logs</label></div>
-                    <div class="checklist-item"><input type="checkbox" id="f13"><label for="f13">awk para extrair dados</label></div>
-                    <div class="checklist-item"><input type="checkbox" id="f14"><label for="f14">sed para substituir texto</label></div>
-                </div>
-            </div>
-            <div class="content-box box-highlight" style="margin-top: 20px; text-align: center;"><h3>🎯 Meta: Todos os itens marcados!</h3></div>
-        </div>
-
-        <!-- SLIDE 12: Conclusão -->
-        <div class="slide-card">
-            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center;">
-                <div style="font-size: 4em; margin-bottom: 20px;">🎓🏆</div>
-                <h2 class="slide-subtitle" style="border: none;">Parabéns! Projeto Concluído!</h2>
-                <div class="content-box box-success" style="max-width: 800px;">
-                    <h3>🚀 O que você construiu:</h3>
-                    <div class="server-diagram" style="margin: 20px 0;">
-                        <div class="server-box" style="background: #d1fae5; color: #065f46;">👥 4 Usuários<br>2 Grupos</div>
-                        <div class="server-box" style="background: #dbeafe; color: #1e40af;">📁 Estrutura<br>Organizada</div>
-                        <div class="server-box" style="background: #fef3c7; color: #92400e;">🔐 Permissões<br>Colaborativas</div>
-                        <div class="server-box" style="background: #e0e7ff; color: #3730a3;">💾 Backup<br>Configurado</div>
-                    </div>
-                </div>
-                <div class="content-box box-highlight" style="max-width: 800px; margin-top: 20px;">
-                    <h3>📚 Aulas aplicadas neste projeto:</h3>
-                    <p style="margin-top: 10px;">
-                        <span class="aula-tag">Aula 02 - FHS</span>
-                        <span class="aula-tag">Aula 03 - Comandos</span>
-                        <span class="aula-tag">Aula 04 - Usuários</span>
-                        <span class="aula-tag">Aula 05 - Permissões</span>
-                        <span class="aula-tag">Aula 08 - Montagem</span>
-                        <span class="aula-tag">Aula 09 - Regex</span>
-                    </p>
-                </div>
-                <div class="content-box box-info" style="max-width: 800px; margin-top: 20px;">
-                    <h3>💼 Você está pronto para o próximo nível!</h3>
-                    <p>No próximo bimestre: Shell Script, Servidores, Redes e muito mais!</p>
-                </div>
-                <div style="margin-top: 30px;">
-                    <a href="index.html" class="nav-btn" style="font-size: 1.2em; padding: 15px 40px;">Voltar ao Dashboard 🏠</a>
-                </div>
+            <div class="check-item">
+                <input type="checkbox" id="c3">
+                <label for="c3">Gerente adicionado aos dois grupos</label>
+                <span class="aula-ref">Aula 04</span>
             </div>
         </div>
     </div>
 
-    <div class="nav-controls">
-        <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">⬅️ Anterior</button>
-        <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Próximo ➡️</button>
+    <!-- CARD 4 — Etapa 2 -->
+    <div class="content-card">
+        <span class="etapa-badge">ETAPA 2 DE 5</span>
+        <h2>&#x1F4C1; Estrutura de Pastas</h2>
+        <p>Crie a &aacute;rvore de diret&oacute;rios do projeto usando expans&atilde;o de chaves para agilizar.</p>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">bash &mdash; root</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-comment"># 1. Criar estrutura principal (chaves criam múltiplas pastas de uma vez)</span>
+<span class="t-root">root@linux:~#</span> <span class="t-cmd">mkdir</span> <span class="t-flag">-p</span> <span class="t-arg">/projetos/techcorp/{codigo,documentos,logs}</span>
+<span class="t-root">root@linux:~#</span> <span class="t-cmd">mkdir</span> <span class="t-flag">-p</span> <span class="t-arg">/projetos/backup</span>
+
+<span class="t-comment"># 2. Verificar estrutura criada</span>
+<span class="t-root">root@linux:~#</span> <span class="t-cmd">ls</span> <span class="t-flag">-la</span> <span class="t-arg">/projetos/</span>
+<span class="t-out">drwxr-xr-x  3 root root 4096 jan 20 techcorp</span>
+<span class="t-out">drwxr-xr-x  2 root root 4096 jan 20 backup</span>
+
+<span class="t-comment"># 3. Ver subpastas</span>
+<span class="t-root">root@linux:~#</span> <span class="t-cmd">ls</span> <span class="t-flag">-la</span> <span class="t-arg">/projetos/techcorp/</span>
+<span class="t-out">drwxr-xr-x  2 root root 4096 jan 20 codigo</span>
+<span class="t-out">drwxr-xr-x  2 root root 4096 jan 20 documentos</span>
+<span class="t-out">drwxr-xr-x  2 root root 4096 jan 20 logs</span>
+            </div>
+        </div>
+
+        <div class="tip-box">
+            <p>&#x1F4A1; O <code>-p</code> no <code>mkdir</code> cria pastas intermedi&aacute;rias automaticamente. As chaves <code>{codigo,documentos,logs}</code> s&atilde;o <strong>expans&atilde;o de brace</strong> do bash &mdash; criam todas as subpastas de uma s&oacute; vez.</p>
+        </div>
+
+        <div class="checklist-card">
+            <h4>&#x2705; Progresso da Etapa 2</h4>
+            <div class="check-item">
+                <input type="checkbox" id="c4">
+                <label for="c4">Pasta <code>/projetos/techcorp/</code> criada</label>
+                <span class="aula-ref">Aula 03</span>
+            </div>
+            <div class="check-item">
+                <input type="checkbox" id="c5">
+                <label for="c5">Subpastas <code>codigo</code>, <code>documentos</code> e <code>logs</code> criadas</label>
+                <span class="aula-ref">Aula 02</span>
+            </div>
+            <div class="check-item">
+                <input type="checkbox" id="c6">
+                <label for="c6">Pasta <code>/projetos/backup</code> criada</label>
+                <span class="aula-ref">Aula 03</span>
+            </div>
+        </div>
     </div>
 
-    <script>
-        let currentSlide = 0;
-        const slides = document.querySelectorAll('.slide-card');
-        const totalSlides = slides.length;
-        document.getElementById('total-slides').textContent = totalSlides;
+    <!-- CARD 5 — Etapa 3 -->
+    <div class="content-card">
+        <span class="etapa-badge">ETAPA 3 DE 5</span>
+        <h2>&#x1F510; Configurar Permiss&otilde;es</h2>
+        <p>Aplique donos, grupos e permiss&otilde;es com SGID para garantir a colabora&ccedil;&atilde;o entre os membros da equipe.</p>
 
-        function showSlide(index) {
-            slides.forEach((slide, i) => slide.classList.toggle('active', i === index));
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            document.getElementById('current-slide').textContent = index + 1;
-            document.getElementById('prevBtn').disabled = index === 0;
-            document.getElementById('nextBtn').disabled = index === totalSlides - 1;
-        }
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">bash &mdash; root</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-comment"># 1. Pasta codigo: grupo devs com acesso total</span>
+<span class="t-root">root@linux:~#</span> <span class="t-cmd">chown</span> <span class="t-arg">root:devs /projetos/techcorp/codigo</span>
+<span class="t-root">root@linux:~#</span> <span class="t-cmd">chmod</span> <span class="t-arg">2775 /projetos/techcorp/codigo</span>
 
-        function changeSlide(direction) {
-            const newSlide = currentSlide + direction;
-            if (newSlide >= 0 && newSlide < totalSlides) {
-                currentSlide = newSlide;
-                showSlide(currentSlide);
-            }
-        }
+<span class="t-comment"># 2. Pasta documentos: grupo gestao com acesso total</span>
+<span class="t-root">root@linux:~#</span> <span class="t-cmd">chown</span> <span class="t-arg">root:gestao /projetos/techcorp/documentos</span>
+<span class="t-root">root@linux:~#</span> <span class="t-cmd">chmod</span> <span class="t-arg">2775 /projetos/techcorp/documentos</span>
 
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowLeft') changeSlide(-1);
-            if (e.key === 'ArrowRight') changeSlide(1);
-        });
+<span class="t-comment"># 3. Pasta logs: todos leem, só root escreve</span>
+<span class="t-root">root@linux:~#</span> <span class="t-cmd">chmod</span> <span class="t-arg">755 /projetos/techcorp/logs</span>
 
-        document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-            const saved = localStorage.getItem('proj_' + cb.id);
-            if (saved === 'true') cb.checked = true;
-            cb.addEventListener('change', () => localStorage.setItem('proj_' + cb.id, cb.checked));
-        });
-    </script>
+<span class="t-comment"># 4. Verificar (s = SGID ativo!)</span>
+<span class="t-root">root@linux:~#</span> <span class="t-cmd">ls</span> <span class="t-flag">-la</span> <span class="t-arg">/projetos/techcorp/</span>
+<span class="t-out">drwxrw<span class="t-hl">s</span>r-x  2 root <span class="t-hl">devs</span>   4096 codigo</span>
+<span class="t-out">drwxrw<span class="t-hl">s</span>r-x  2 root <span class="t-hl">gestao</span> 4096 documentos</span>
+<span class="t-out">drwxr-xr-x  2 root root   4096 logs</span>
+            </div>
+        </div>
+
+        <div class="highlight-box">
+            <p>&#x1F4A1; <strong>Por que <code>2775</code>?</strong> O <strong>2</strong> ativa o SGID (arquivos criados dentro herdam o grupo da pasta). O <strong>775</strong> d&aacute; <code>rwx</code> para dono e grupo, <code>r-x</code> para outros &mdash; permitindo leitura geral mas escrita restrita ao grupo.</p>
+        </div>
+
+        <div class="checklist-card">
+            <h4>&#x2705; Progresso da Etapa 3</h4>
+            <div class="check-item">
+                <input type="checkbox" id="c7">
+                <label for="c7"><code>codigo/</code> com grupo devs e chmod 2775</label>
+                <span class="aula-ref">Aula 05</span>
+            </div>
+            <div class="check-item">
+                <input type="checkbox" id="c8">
+                <label for="c8"><code>documentos/</code> com grupo gestao e chmod 2775</label>
+                <span class="aula-ref">Aula 05</span>
+            </div>
+            <div class="check-item">
+                <input type="checkbox" id="c9">
+                <label for="c9">SGID ativo (letra <code>s</code> nas permiss&otilde;es)</label>
+                <span class="aula-ref">Aula 05</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARD 6 — Etapa 4 -->
+    <div class="content-card">
+        <span class="etapa-badge">ETAPA 4 DE 5</span>
+        <h2>&#x1F4BE; Montar Pendrive para Backup</h2>
+        <p>Identifique o pendrive com <code>lsblk</code>, obtenha seu UUID com <code>blkid</code> e monte-o em <code>/projetos/backup</code>.</p>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">bash &mdash; root</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-comment"># 1. Identificar o pendrive</span>
+<span class="t-root">root@linux:~#</span> <span class="t-cmd">lsblk</span>
+<span class="t-out">NAME   SIZE TYPE MOUNTPOINT</span>
+<span class="t-out">sda    500G disk</span>
+<span class="t-out">└─sda1 500G part /</span>
+<span class="t-out"><span class="t-hl">sdb</span>     16G disk</span>
+<span class="t-out">└─<span class="t-hl">sdb1</span>  16G part          </span><span class="t-comment"># ← Pendrive!</span>
+
+<span class="t-comment"># 2. Ver UUID do pendrive</span>
+<span class="t-root">root@linux:~#</span> <span class="t-cmd">blkid</span> <span class="t-arg">/dev/sdb1</span>
+<span class="t-out">/dev/sdb1: UUID="<span class="t-hl">1234-ABCD</span>" TYPE="vfat"</span>
+
+<span class="t-comment"># 3. Montar na pasta de backup</span>
+<span class="t-root">root@linux:~#</span> <span class="t-cmd">mount</span> <span class="t-arg">/dev/sdb1 /projetos/backup</span>
+
+<span class="t-comment"># 4. Verificar montagem</span>
+<span class="t-root">root@linux:~#</span> <span class="t-cmd">df</span> <span class="t-flag">-h</span> | grep backup
+<span class="t-out">/dev/sdb1  16G  1.2G  15G  8% /projetos/backup</span>
+
+<span class="t-comment"># 5. Fazer backup dos arquivos de código</span>
+<span class="t-root">root@linux:~#</span> <span class="t-cmd">cp</span> <span class="t-flag">-r</span> <span class="t-arg">/projetos/techcorp/codigo /projetos/backup/</span>
+            </div>
+        </div>
+
+        <div class="checklist-card">
+            <h4>&#x2705; Progresso da Etapa 4</h4>
+            <div class="check-item">
+                <input type="checkbox" id="c10">
+                <label for="c10">Pendrive identificado com <code>lsblk</code></label>
+                <span class="aula-ref">Aula 08</span>
+            </div>
+            <div class="check-item">
+                <input type="checkbox" id="c11">
+                <label for="c11">Montado em <code>/projetos/backup</code></label>
+                <span class="aula-ref">Aula 08</span>
+            </div>
+            <div class="check-item">
+                <input type="checkbox" id="c12">
+                <label for="c12">Backup realizado com <code>cp -r</code></label>
+                <span class="aula-ref">Aula 03</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARD 7 — Etapa 5 -->
+    <div class="content-card">
+        <span class="etapa-badge">ETAPA 5 DE 5</span>
+        <h2>&#x1F50D; An&aacute;lise de Logs</h2>
+        <p>Crie um arquivo de log simulado e use <code>grep</code>, <code>awk</code> e <code>sed</code> para extrair e tratar informa&ccedil;&otilde;es de acesso.</p>
+
+        <h3>Criar o log e filtrar tentativas falhas</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">bash &mdash; root</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-comment"># 1. Criar arquivo de log simulado</span>
+<span class="t-root">root@linux:~#</span> <span class="t-cmd">cat</span> &gt; /projetos/techcorp/logs/acessos.log
+<span class="t-out">2025-01-20 08:15:32 LOGIN dev1 success</span>
+<span class="t-out">2025-01-20 08:20:45 LOGIN dev2 success</span>
+<span class="t-out">2025-01-20 09:00:12 LOGIN gerente success</span>
+<span class="t-out">2025-01-20 09:15:00 LOGIN hacker failed</span>
+<span class="t-out">2025-01-20 09:15:05 LOGIN hacker failed</span>
+<span class="t-out">2025-01-20 10:00:00 LOGIN dev3 success</span>
+<span class="t-out">2025-01-20 10:05:33 LOGIN admin failed</span>
+
+<span class="t-comment"># 2. Encontrar tentativas que falharam</span>
+<span class="t-root">root@linux:~#</span> <span class="t-cmd">grep</span> <span class="t-arg">"failed"</span> /projetos/techcorp/logs/acessos.log
+<span class="t-out">2025-01-20 09:15:00 LOGIN <span class="t-hl">hacker</span> failed</span>
+<span class="t-out">2025-01-20 09:15:05 LOGIN <span class="t-hl">hacker</span> failed</span>
+<span class="t-out">2025-01-20 10:05:33 LOGIN <span class="t-hl">admin</span> failed</span>
+
+<span class="t-comment"># 3. Contar quantas falhas</span>
+<span class="t-root">root@linux:~#</span> <span class="t-cmd">grep</span> <span class="t-flag">-c</span> <span class="t-arg">"failed"</span> /projetos/techcorp/logs/acessos.log
+<span class="t-out">3</span>
+            </div>
+        </div>
+
+        <h3>An&aacute;lises avan&ccedil;adas com awk e sed</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">bash &mdash; root</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-comment"># 4. Listar apenas os nomes que falharam (awk extrai coluna 4)</span>
+<span class="t-root">root@linux:~#</span> <span class="t-cmd">grep</span> <span class="t-arg">"failed"</span> acessos.log | <span class="t-cmd">awk</span> <span class="t-arg">'{print $4}'</span>
+<span class="t-out">hacker</span>
+<span class="t-out">hacker</span>
+<span class="t-out">admin</span>
+
+<span class="t-comment"># 5. Contar tentativas por usuário (sort + uniq -c)</span>
+<span class="t-root">root@linux:~#</span> <span class="t-cmd">grep</span> <span class="t-arg">"failed"</span> acessos.log | <span class="t-cmd">awk</span> <span class="t-arg">'{print $4}'</span> | sort | <span class="t-cmd">uniq</span> <span class="t-flag">-c</span>
+<span class="t-out">   1 admin</span>
+<span class="t-out">   2 hacker</span>
+
+<span class="t-comment"># 6. Encontrar logins entre 09:00 e 09:59 (regex)</span>
+<span class="t-root">root@linux:~#</span> <span class="t-cmd">grep</span> <span class="t-flag">-E</span> <span class="t-arg">" 09:[0-9]{2}:"</span> acessos.log
+<span class="t-out">2025-01-20 09:00:12 LOGIN gerente success</span>
+<span class="t-out">2025-01-20 09:15:00 LOGIN hacker failed</span>
+<span class="t-out">2025-01-20 09:15:05 LOGIN hacker failed</span>
+
+<span class="t-comment"># 7. Substituir "failed" por "BLOQUEADO" e salvar relatório</span>
+<span class="t-root">root@linux:~#</span> <span class="t-cmd">sed</span> <span class="t-arg">'s/failed/BLOQUEADO/g'</span> acessos.log &gt; relatorio.log
+            </div>
+        </div>
+
+        <div class="checklist-card">
+            <h4>&#x2705; Progresso da Etapa 5</h4>
+            <div class="check-item">
+                <input type="checkbox" id="c13">
+                <label for="c13"><code>grep</code> para filtrar tentativas falhas</label>
+                <span class="aula-ref">Aula 09</span>
+            </div>
+            <div class="check-item">
+                <input type="checkbox" id="c14">
+                <label for="c14"><code>awk</code> para extrair e contar por usu&aacute;rio</label>
+                <span class="aula-ref">Aula 09</span>
+            </div>
+            <div class="check-item">
+                <input type="checkbox" id="c15">
+                <label for="c15">Regex para filtrar por per&iacute;odo de tempo</label>
+                <span class="aula-ref">Aula 09</span>
+            </div>
+            <div class="check-item">
+                <input type="checkbox" id="c16">
+                <label for="c16"><code>sed</code> para substituir e gerar relat&oacute;rio</label>
+                <span class="aula-ref">Aula 09</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARD 8 — Teste de Colaboração -->
+    <div class="content-card">
+        <h2>&#x1F9EA; Teste Final: Colabora&ccedil;&atilde;o entre Devs</h2>
+        <p>Verifique se dev1 e dev2 conseguem colaborar no mesmo arquivo &mdash; prova de que o SGID funcionou corretamente.</p>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">bash</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-comment"># 1. Logar como dev1 e criar arquivo</span>
+<span class="t-root">root@linux:~#</span> <span class="t-cmd">su</span> <span class="t-flag">-</span> <span class="t-arg">dev1</span>
+<span class="t-prompt">dev1@linux:~$</span> <span class="t-cmd">echo</span> <span class="t-arg">"# Projeto TechCorp"</span> &gt; /projetos/techcorp/codigo/README.md
+
+<span class="t-comment"># 2. Verificar permissões (grupo deve ser devs!)</span>
+<span class="t-prompt">dev1@linux:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-l</span> <span class="t-arg">/projetos/techcorp/codigo/</span>
+<span class="t-out">-rw-rw-r-- 1 dev1 <span class="t-hl">devs</span> 18 jan 20 README.md</span>
+
+<span class="t-comment"># 3. Sair e logar como dev2</span>
+<span class="t-prompt">dev1@linux:~$</span> <span class="t-cmd">exit</span>
+<span class="t-root">root@linux:~#</span> <span class="t-cmd">su</span> <span class="t-flag">-</span> <span class="t-arg">dev2</span>
+
+<span class="t-comment"># 4. dev2 consegue editar arquivo de dev1?</span>
+<span class="t-prompt">dev2@linux:~$</span> <span class="t-cmd">echo</span> <span class="t-arg">"Editado por dev2"</span> &gt;&gt; /projetos/techcorp/codigo/README.md
+<span class="t-prompt">dev2@linux:~$</span> <span class="t-cmd">cat</span> <span class="t-arg">/projetos/techcorp/codigo/README.md</span>
+<span class="t-out"># Projeto TechCorp</span>
+<span class="t-out">Editado por dev2</span>
+<span class="t-ok"># ✅ Funciona! Colaboração OK!</span>
+            </div>
+        </div>
+
+        <div class="tip-box">
+            <p>&#x2705; <strong>Ambiente colaborativo funcionando!</strong> O SGID garante que todos os arquivos criados em <code>codigo/</code> herdem o grupo <code>devs</code>, permitindo que qualquer membro do grupo edite &mdash; mesmo que n&atilde;o seja o dono do arquivo.</p>
+        </div>
+    </div>
+
+    <!-- CARD 9 — Checklist Final -->
+    <div class="content-card">
+        <h2>&#x2705; Checklist Final do Projeto</h2>
+        <p>Confirme que todas as etapas foram conclu&iacute;das com sucesso. Seu progresso &eacute; salvo automaticamente no navegador.</p>
+
+        <div class="checklist-final-grid">
+            <div class="check-group green">
+                <h4>&#x1F465; Usu&aacute;rios &mdash; Aula 04</h4>
+                <div class="check-item"><input type="checkbox" id="f1"><label for="f1">Grupo devs criado</label></div>
+                <div class="check-item"><input type="checkbox" id="f2"><label for="f2">Grupo gestao criado</label></div>
+                <div class="check-item"><input type="checkbox" id="f3"><label for="f3">dev1, dev2, dev3 criados</label></div>
+                <div class="check-item"><input type="checkbox" id="f4"><label for="f4">gerente nos dois grupos</label></div>
+            </div>
+            <div class="check-group blue">
+                <h4>&#x1F510; Permiss&otilde;es &mdash; Aula 05</h4>
+                <div class="check-item"><input type="checkbox" id="f5"><label for="f5">codigo/ com grupo devs</label></div>
+                <div class="check-item"><input type="checkbox" id="f6"><label for="f6">documentos/ com grupo gestao</label></div>
+                <div class="check-item"><input type="checkbox" id="f7"><label for="f7">SGID ativado (2775)</label></div>
+                <div class="check-item"><input type="checkbox" id="f8"><label for="f8">Colabora&ccedil;&atilde;o testada OK</label></div>
+            </div>
+            <div class="check-group orange">
+                <h4>&#x1F4BE; Montagem &mdash; Aula 08</h4>
+                <div class="check-item"><input type="checkbox" id="f9"><label for="f9">Pendrive identificado</label></div>
+                <div class="check-item"><input type="checkbox" id="f10"><label for="f10">Montado em /projetos/backup</label></div>
+                <div class="check-item"><input type="checkbox" id="f11"><label for="f11">Backup dos arquivos feito</label></div>
+            </div>
+            <div class="check-group purple">
+                <h4>&#x1F50D; Regex/Logs &mdash; Aula 09</h4>
+                <div class="check-item"><input type="checkbox" id="f12"><label for="f12">grep para filtrar logs</label></div>
+                <div class="check-item"><input type="checkbox" id="f13"><label for="f13">awk para extrair dados</label></div>
+                <div class="check-item"><input type="checkbox" id="f14"><label for="f14">sed para substituir texto</label></div>
+            </div>
+        </div>
+
+        <div class="highlight-box">
+            <p>&#x1F3AF; <strong>Meta: todos os itens marcados!</strong> Se completou todas as etapas, voc&ecirc; domina o essencial de administra&ccedil;&atilde;o Linux.</p>
+        </div>
+    </div>
+
+    <!-- CARD 10 — Conclusão -->
+    <div class="content-card">
+        <h2>&#x1F393; Parab&eacute;ns! Projeto Conclu&iacute;do</h2>
+        <p>Voc&ecirc; configurou do zero um ambiente de trabalho colaborativo completo, aplicando conte&uacute;dos de seis aulas diferentes.</p>
+
+        <div class="result-grid">
+            <div class="result-box">
+                <div class="r-icon">&#x1F465;</div>
+                <strong>4 Usu&aacute;rios</strong>
+                <span>2 Grupos</span>
+            </div>
+            <div class="result-box">
+                <div class="r-icon">&#x1F4C1;</div>
+                <strong>Estrutura</strong>
+                <span>Organizada</span>
+            </div>
+            <div class="result-box">
+                <div class="r-icon">&#x1F510;</div>
+                <strong>Permiss&otilde;es</strong>
+                <span>Colaborativas</span>
+            </div>
+            <div class="result-box">
+                <div class="r-icon">&#x1F4BE;</div>
+                <strong>Backup</strong>
+                <span>Configurado</span>
+            </div>
+            <div class="result-box">
+                <div class="r-icon">&#x1F50D;</div>
+                <strong>Logs</strong>
+                <span>Analisados</span>
+            </div>
+        </div>
+
+        <h3>Aulas aplicadas neste projeto</h3>
+        <div class="tag-list">
+            <span class="aula-tag">Aula 02 &mdash; FHS</span>
+            <span class="aula-tag">Aula 03 &mdash; Comandos</span>
+            <span class="aula-tag">Aula 04 &mdash; Usu&aacute;rios</span>
+            <span class="aula-tag">Aula 05 &mdash; Permiss&otilde;es</span>
+            <span class="aula-tag">Aula 08 &mdash; Montagem</span>
+            <span class="aula-tag">Aula 09 &mdash; Regex</span>
+        </div>
+
+        <div class="highlight-box" style="margin-top: 20px;">
+            <p>&#x1F4BC; <strong>Voc&ecirc; est&aacute; pronto para o pr&oacute;ximo n&iacute;vel!</strong> No pr&oacute;ximo bimestre: Shell Script, Servidores, Redes e muito mais.</p>
+        </div>
+    </div>
+
+    <!-- EXERCÍCIO -->
+    <div class="content-card exercise-card">
+        <h2>&#x1F3AF; Exerc&iacute;cio &mdash; Arraste e Conecte</h2>
+        <p style="color:#475569;font-size:.9em;margin-bottom:4px;">Relacione cada comando utilizado no projeto com sua finalidade.</p>
+
+        <div class="ex-drag-root" data-ex="ex01">
+            <div class="ex-drag">
+                <div>
+                    <div class="ex-col-title">Finalidade</div>
+                    <div class="ex-pool" data-pool="ex01">
+                        <div class="drag-chip" data-id="c1">Cria um novo grupo de usu&aacute;rios no sistema</div>
+                        <div class="drag-chip" data-id="c2">Ativa o SGID para que arquivos herdem o grupo da pasta</div>
+                        <div class="drag-chip" data-id="c3">Exibe dispositivos de armazenamento e suas parti&ccedil;&otilde;es</div>
+                        <div class="drag-chip" data-id="c4">Filtra linhas de texto usando um padr&atilde;o ou express&atilde;o regular</div>
+                        <div class="drag-chip" data-id="c5">Extrai campos espec&iacute;ficos de colunas em um arquivo de texto</div>
+                        <div class="drag-chip" data-id="c6">Substitui padr&otilde;es de texto em um arquivo ou sa&iacute;da</div>
+                    </div>
+                </div>
+                <div>
+                    <div class="ex-col-title">Comando</div>
+                    <div class="ex-zones" data-zones="ex01">
+                        <div class="drop-zone" data-zone="ex01-z1" data-accept="c1">
+                            <span class="zone-name"><code>groupadd</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z2" data-accept="c2">
+                            <span class="zone-name"><code>chmod 2775</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z3" data-accept="c3">
+                            <span class="zone-name"><code>lsblk</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z4" data-accept="c4">
+                            <span class="zone-name"><code>grep</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z5" data-accept="c5">
+                            <span class="zone-name"><code>awk</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z6" data-accept="c6">
+                            <span class="zone-name"><code>sed</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ex-actions">
+            <button class="btn-verificar" onclick="dragVerify('ex01')">Verificar</button>
+            <button class="btn-refazer"  onclick="dragReset('ex01')">Refazer</button>
+        </div>
+        <div class="ex-result" id="ex01-result"></div>
+    </div>
+
+    <div class="nav-footer">
+        <a href="aula09-regex.html" class="nav-link">&#x2B05; Anterior: Regex/Grep</a>
+        <a href="index.html" class="nav-link">Voltar ao Dashboard &#x1F3E0;</a>
+    </div>
+
+</div>
+
+<script src="slide-mode.js"></script>
+<script src="exercise-drag.js"></script>
+<script src="exercise-print.js"></script>
+<script>
+    // Persistência dos checklists via localStorage
+    document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+        const key = 'proj10_' + cb.id;
+        if (localStorage.getItem(key) === 'true') cb.checked = true;
+        cb.addEventListener('change', () => localStorage.setItem(key, cb.checked));
+    });
+</script>
 </body>
 </html>
