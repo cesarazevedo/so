@@ -3,1288 +3,620 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aula 06 - Shell Script: Primeiros Passos</title>
+    <title>Aula 2.1 — Shell Script: Primeiros Passos</title>
+    <link rel="stylesheet" href="slide-mode.css">
+    <link rel="stylesheet" href="exercise.css">
     <style>
-        /* --- VARIÁVEIS GLOBAIS --- */
         :root {
-            --primary: #667eea;
-            --secondary: #764ba2;
-            --bg-light: #f4f7fe;
+            --primary:   #11998e;
+            --secondary: #38ef7d;
+            --bg-light:  #f4f7fe;
             --text-dark: #2d3748;
-            --text-light: #718096;
-            --accent-green: #38ef7d;
-            --accent-red: #ff758c;
-            --accent-orange: #f39c12;
-            --accent-cyan: #17a2b8;
         }
 
-        /* --- RESET E BASE --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-light);
-            color: var(--text-dark);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: var(--bg-light); color: var(--text-dark); line-height: 1.7; }
 
-        /* --- HEADER DA SALA DE AULA --- */
-        .classroom-header {
-            background: white;
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 1000;
-        }
+        /* ── TOP BAR ── */
+        .top-bar { background: white; padding: 15px 30px; display: flex; align-items: center; gap: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 10; }
+        .back-btn { text-decoration: none; color: var(--primary); font-weight: 600; display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 8px; transition: background .3s; }
+        .back-btn:hover { background: rgba(17,153,142,.08); }
+        .page-badge { font-size: .8em; padding: 4px 12px; border-radius: 20px; background: rgba(17,153,142,.12); color: var(--primary); font-weight: 600; }
 
-        .back-btn {
-            text-decoration: none;
-            color: var(--text-dark);
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            border-radius: 50px;
-            transition: all 0.2s;
-            background: #f0f2f5;
-        }
-        .back-btn:hover { background: #e2e8f0; color: var(--primary); }
+        /* ── LAYOUT ── */
+        .content-wrapper { max-width: 800px; margin: 40px auto; padding: 0 30px; }
+        .lesson-hero { background: white; border-radius: 16px; padding: 40px; box-shadow: 0 5px 15px rgba(0,0,0,.05); margin-bottom: 30px; border-top: 4px solid var(--primary); }
+        .lesson-hero h1 { font-size: 2em; margin-bottom: 10px; color: var(--primary); }
+        .lesson-hero .subtitle { font-size: 1.05em; color: #718096; }
+        .content-card { background: white; border-radius: 16px; padding: 35px; box-shadow: 0 5px 15px rgba(0,0,0,.05); margin-bottom: 25px; }
+        .content-card h2 { font-size: 1.4em; color: var(--primary); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
+        .content-card h3 { font-size: 1.05em; color: #0d7a72; margin: 20px 0 10px; }
+        .content-card p { margin-bottom: 15px; text-align: justify; }
+        ul, ol { margin: 10px 0 15px 25px; }
+        li { margin-bottom: 8px; }
 
-        .lesson-info h1 { font-size: 1.1em; margin: 0; color: var(--text-dark); }
-        .lesson-info span { font-size: 0.85em; color: var(--text-light); }
+        /* ── CAIXAS ── */
+        .highlight-box { background: linear-gradient(135deg,rgba(17,153,142,.05),rgba(56,239,125,.06)); border-left: 4px solid var(--primary); padding: 20px 25px; border-radius: 0 12px 12px 0; margin: 20px 0; }
+        .highlight-box p { margin-bottom: 0; font-style: italic; }
+        .alert-box { background: #fff8e1; border-left: 4px solid #f59e0b; padding: 18px 22px; border-radius: 0 12px 12px 0; margin: 20px 0; }
+        .alert-box p { margin: 0; color: #78350f; font-size: .93em; }
+        .tip-box { background: #f0fdf4; border-left: 4px solid #16a34a; padding: 18px 22px; border-radius: 0 12px 12px 0; margin: 20px 0; }
+        .tip-box p { margin: 0; color: #14532d; font-size: .93em; }
 
-        .slide-counter {
-            background: var(--primary);
-            color: white;
-            padding: 5px 12px;
-            border-radius: 12px;
-            font-size: 0.9em;
-            font-weight: bold;
-        }
+        .kbd-sm { background: #1e293b; color: #e2e8f0; border-radius: 4px; padding: 2px 6px; font-family:'Consolas',monospace; font-size:.82em; white-space:nowrap; }
 
-        /* --- CONTAINER PRINCIPAL --- */
-        .viewer-container {
-            margin-top: 80px;
-            padding: 20px;
-            padding-bottom: 100px;
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-        }
+        /* ══════════════════════════════════════════
+           TERMINAIS LINUX
+           ══════════════════════════════════════════ */
+        .terminal { background: #1a202c; border-radius: 12px; overflow: hidden; margin: 16px 0; box-shadow: 0 4px 20px rgba(0,0,0,.3); }
+        .terminal-bar { background: #2d3748; padding: 8px 16px; display: flex; align-items: center; gap: 8px; }
+        .term-dot { width: 12px; height: 12px; border-radius: 50%; }
+        .term-dot.red    { background: #fc8181; }
+        .term-dot.yellow { background: #f6e05e; }
+        .term-dot.green  { background: #68d391; }
+        .term-title { font-size: .75em; color: #718096; margin-left: 8px; font-family: 'Consolas', monospace; }
+        .terminal-body { padding: 20px 24px; font-family: 'Courier New','Consolas',monospace; font-size: .92em; line-height: 2; color: #a0aec0; }
+        .t-prompt  { color: #63b3ed; }
+        .t-root    { color: #fc8181; }
+        .t-cmd     { color: #38ef7d; }
+        .t-flag    { color: #f6e05e; }
+        .t-path    { color: #fc8181; }
+        .t-arg     { color: #90cdf4; }
+        .t-out     { color: #a0aec0; }
+        .t-comment { color: #4a5568; font-style: italic; }
+        .t-string  { color: #68d391; }
+        .t-var     { color: #b794f4; }
+        .t-shebang { color: #f687b3; }
+        .t-ok      { color: #38ef7d; font-weight: bold; }
+        .t-err     { color: #fc8181; font-weight: bold; }
 
-        .slide-card {
-            background: white;
-            width: 100%;
-            max-width: 1000px;
-            min-height: 80vh;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            padding: 50px;
-            padding-bottom: 100px;
-            position: relative;
-            display: none;
-            flex-direction: column;
-            animation: fadeIn 0.4s ease;
-        }
-        .slide-card.active { display: flex; }
+        /* ── Analogia ── */
+        .analogy-grid { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px; margin: 16px 0; }
+        .analogy-box { border-radius: 12px; padding: 20px; text-align: center; }
+        .analogy-box .icon { font-size: 2.5em; margin-bottom: 8px; }
+        .analogy-box strong { display: block; font-size: .9em; margin-bottom: 4px; }
+        .analogy-box span { font-size: .8em; color: #475569; }
+        .analogy-arrow { font-size: 2em; color: var(--primary); text-align: center; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* ── Fluxo de trabalho ── */
+        .flow-steps { display: flex; align-items: center; gap: 8px; margin: 16px 0; flex-wrap: wrap; justify-content: center; }
+        .flow-step { border-radius: 12px; padding: 14px 16px; text-align: center; min-width: 130px; }
+        .flow-step .f-icon { font-size: 1.8em; margin-bottom: 4px; }
+        .flow-step strong { display: block; font-size: .84em; color: #1e293b; margin-bottom: 4px; }
+        .flow-step code { font-family: 'Consolas',monospace; font-size: .78em; background: rgba(0,0,0,.08); padding: 2px 6px; border-radius: 4px; }
+        .flow-arrow { font-size: 1.5em; color: var(--primary); }
 
-        /* --- ESTILOS DO CONTEÚDO --- */
-        h1.slide-title {
-            font-size: 2.8em;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-align: center;
-            margin-bottom: 30px;
-        }
+        /* ── Tabela Vim ── */
+        .vim-table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: .86em; }
+        .vim-table th { background: var(--primary); color: white; padding: 8px 12px; text-align: left; }
+        .vim-table th:first-child { border-radius: 6px 0 0 0; }
+        .vim-table th:last-child  { border-radius: 0 6px 0 0; }
+        .vim-table td { padding: 7px 12px; border-bottom: 1px solid #e5e7eb; }
+        .vim-table tr:nth-child(even) td { background: #f0fdf4; }
+        .vim-table td code { font-family: 'Consolas',monospace; background: #1e293b; color: #38ef7d; padding: 1px 6px; border-radius: 4px; font-size: .9em; }
 
-        h2.slide-subtitle {
-            font-size: 2.2em;
-            color: var(--text-dark);
-            border-bottom: 3px solid #e2e8f0;
-            padding-bottom: 15px;
-            margin-bottom: 30px;
-        }
+        /* ── Passo a passo ── */
+        .steps-list { display: flex; flex-direction: column; gap: 10px; margin: 14px 0; }
+        .step-row { display: flex; gap: 14px; align-items: flex-start; background: #f8fafc; border-radius: 10px; padding: 12px 16px; }
+        .step-num-badge { background: var(--primary); color: white; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: .82em; font-weight: 700; flex-shrink: 0; margin-top: 2px; }
+        .step-body-row strong { display: block; font-size: .9em; color: #1e293b; margin-bottom: 3px; }
+        .step-body-row span { font-size: .82em; color: #475569; }
 
-        h3 { color: var(--primary); margin: 20px 0 10px; font-size: 1.5em; }
+        /* ── Boas práticas ── */
+        .boas-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(200px,1fr)); gap: 12px; margin: 16px 0; }
+        .boa-item { background: #f0fdf4; border-radius: 10px; padding: 16px; display: flex; gap: 12px; align-items: flex-start; border-left: 4px solid var(--primary); }
+        .boa-icon { font-size: 1.5em; flex-shrink: 0; }
+        .boa-text strong { display: block; font-size: .88em; color: var(--primary); margin-bottom: 3px; }
+        .boa-text span   { font-size: .8em; color: #475569; }
 
-        /* Boxes de Conteúdo */
-        .content-box {
-            padding: 20px;
-            border-radius: 12px;
-            margin: 15px 0;
-            border-left: 5px solid;
-            background: #f8fafc;
-        }
-        
-        .box-highlight { border-color: #f39c12; background: #fffaf0; }
-        .box-info { border-color: var(--primary); background: #f4f7fe; }
-        .box-success { border-color: var(--accent-green); background: #f0fdf4; }
-        .box-warning { border-color: var(--accent-red); background: #fff5f5; }
-        .box-tip { border-color: var(--accent-cyan); background: #e6fffa; }
-        
-        .box-terminal { 
-            background: #1a202c; 
-            color: #38ef7d; 
-            font-family: 'Courier New', monospace; 
-            border-left: 5px solid #38ef7d;
-            padding: 25px;
-            border-radius: 12px;
-            font-size: 1.05em;
-            line-height: 1.8;
-        }
-        .box-terminal .prompt { color: #63b3ed; }
-        .box-terminal .command { color: #38ef7d; }
-        .box-terminal .output { color: #a0aec0; }
-        .box-terminal .comment { color: #718096; font-style: italic; }
-        .box-terminal .root-prompt { color: #fc8181; }
-        .box-terminal .highlight { color: #f6e05e; }
-        .box-terminal .shebang { color: #f687b3; }
-        .box-terminal .string { color: #68d391; }
-        .box-terminal .variable { color: #90cdf4; }
+        /* ── nav ── */
+        .nav-footer { display: flex; justify-content: space-between; margin-top: 40px; padding-bottom: 40px; }
+        .nav-link { text-decoration: none; color: var(--primary); font-weight: 600; padding: 12px 24px; border-radius: 10px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,.05); transition: all .3s; }
+        .nav-link:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.1); }
 
-        /* Layouts de Colunas */
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
-        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
-        .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 15px; }
-
-        .bullet-point {
-            display: flex;
-            align-items: flex-start;
-            margin: 8px 0;
-            font-size: 1.05em;
-            line-height: 1.4;
-        }
-        .bullet-point::before {
-            content: "•";
-            color: var(--primary);
-            margin-right: 10px;
-            flex-shrink: 0;
-            font-weight: bold;
-            font-size: 1.3em;
-        }
-
-        /* Cards de Comando */
-        .command-card {
-            background: white;
-            border-radius: 15px;
-            padding: 18px;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
-        }
-        .command-card:hover { transform: translateY(-5px); }
-        .command-card .cmd { 
-            font-family: 'Courier New', monospace;
-            font-size: 1.4em; 
-            color: var(--primary);
-            background: #f4f7fe;
-            padding: 8px 16px;
-            border-radius: 8px;
-            margin-bottom: 12px;
-            display: inline-block;
-        }
-        .command-card h4 { color: var(--text-dark); margin-bottom: 8px; font-size: 0.95em; }
-        .command-card p { font-size: 0.85em; color: var(--text-light); }
-
-        /* Tabela de Referência */
-        .reference-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 15px 0;
-            font-size: 0.95em;
-        }
-        .reference-table th {
-            background: var(--primary);
-            color: white;
-            padding: 10px;
-            text-align: left;
-        }
-        .reference-table td {
-            padding: 10px;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        .reference-table tr:hover {
-            background: #f4f7fe;
-        }
-        .reference-table code {
-            background: #e2e8f0;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-family: 'Courier New', monospace;
-        }
-
-        /* Diagrama de Fluxo */
-        .flow-diagram {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            flex-wrap: wrap;
-            margin: 20px 0;
-        }
-        .flow-box {
-            padding: 15px 25px;
-            border-radius: 10px;
-            text-align: center;
-            font-weight: bold;
-            min-width: 120px;
-        }
-        .flow-arrow {
-            font-size: 1.5em;
-            color: var(--primary);
-        }
-
-        /* Step boxes */
-        .step-box {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 1.2em;
-            flex-shrink: 0;
-        }
-
-        .step-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 15px;
-            margin: 12px 0;
-            padding: 12px;
-            background: #f8fafc;
-            border-radius: 10px;
-        }
-
-        .step-content {
-            flex: 1;
-        }
-
-        .step-content h4 {
-            color: var(--primary);
-            margin-bottom: 8px;
-        }
-
-        /* Analogia Visual */
-        .analogy-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 25px;
-            margin: 25px 0;
-            flex-wrap: wrap;
-        }
-
-        .analogy-box {
-            text-align: center;
-            padding: 20px;
-            border-radius: 12px;
-            min-width: 180px;
-        }
-
-        .analogy-box .icon {
-            font-size: 3.5em;
-            margin-bottom: 12px;
-        }
-
-        .analogy-arrow {
-            font-size: 2.5em;
-            color: var(--primary);
-        }
-
-        /* --- CONTROLES DE NAVEGAÇÃO --- */
-        .nav-controls {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 15px;
-            background: white;
-            padding: 10px 20px;
-            border-radius: 50px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            z-index: 100;
-        }
-
-        .nav-btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 25px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
-        }
-        .nav-btn:hover { background: var(--secondary); transform: translateY(-2px); }
-        .nav-btn:disabled { background: #cbd5e0; cursor: not-allowed; transform: none; }
-
-        /* --- DRAG AND DROP QUIZ --- */
-        .drag-drop-container { display: flex; gap: 30px; margin-top: 20px; }
-        .col-questions, .col-answers { flex: 1; }
-
-        .question-item {
-            background: white;
-            border: 2px solid #e2e8f0;
-            padding: 12px;
-            margin-bottom: 12px;
-            border-radius: 12px;
-            transition: all 0.3s;
-        }
-        .question-text { font-weight: bold; margin-bottom: 8px; color: var(--text-dark); font-size: 0.95em; }
-        
-        .drop-zone {
-            background: #f8fafc;
-            border: 2px dashed #cbd5e0;
-            border-radius: 8px;
-            min-height: 45px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.85em;
-            color: var(--text-light);
-            transition: all 0.2s;
-        }
-        .drop-zone.drag-over { background: #e6fffa; border-color: var(--accent-green); }
-        .drop-zone.has-answer { border-style: solid; background: white; border-color: var(--primary); }
-
-        .answer-item {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            padding: 10px 18px;
-            margin-bottom: 8px;
-            border-radius: 8px;
-            cursor: grab;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            font-size: 0.9em;
-            user-select: none;
-            font-family: 'Courier New', monospace;
-        }
-        .answer-item:active { cursor: grabbing; }
-        .answer-item.dragging { opacity: 0.5; }
-        .answer-item.in-drop-zone { margin: 0; width: 100%; box-shadow: none; }
-
-        .quiz-result {
-            margin-top: 25px;
-            padding: 18px;
-            border-radius: 15px;
-            text-align: center;
-            display: none;
-            background: linear-gradient(135deg, #f6ad55 0%, #ed8936 100%);
-            color: white;
-        }
-
-        /* Responsivo */
         @media (max-width: 768px) {
-            .viewer-container { padding: 10px; margin-top: 70px; }
-            .slide-card { padding: 25px; padding-bottom: 100px; min-height: 70vh; }
-            .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
-            .drag-drop-container { flex-direction: column; }
-            .classroom-header { padding: 10px 15px; }
-            h1.slide-title { font-size: 2em; }
-            h2.slide-subtitle { font-size: 1.5em; }
-            .flow-diagram { flex-direction: column; }
-            .flow-arrow { transform: rotate(90deg); }
-            .analogy-container { flex-direction: column; }
+            .content-wrapper { padding: 0 15px; }
+            .lesson-hero, .content-card { padding: 25px; }
+            .lesson-hero h1 { font-size: 1.5em; }
+            .analogy-grid { grid-template-columns: 1fr; }
             .analogy-arrow { transform: rotate(90deg); }
+            .flow-steps { flex-direction: column; }
         }
     </style>
 </head>
 <body>
 
-    <header class="classroom-header">
-        <div style="display: flex; align-items: center; gap: 20px;">
-            <a href="index.html" class="back-btn">
-                <span>←</span> Voltar
-            </a>
-            <div class="lesson-info">
-                <h1>Fundamentos do Linux</h1>
-                <span>Módulo 1 • Aula 06</span>
-            </div>
-        </div>
-        <div class="slide-counter">
-            <span id="current-slide">1</span> / <span id="total-slides">14</span>
-        </div>
-    </header>
+<div class="top-bar">
+    <a href="index.html" class="back-btn">&#x2B05; Voltar ao Dashboard</a>
+    <span class="page-badge">M&oacute;dulo 2 &mdash; Shell Script</span>
+    <button class="slide-toggle" id="slideToggleBtn">&#x1F4FA; Modo Slide</button>
+</div>
 
-    <div class="viewer-container">
-        
-        <!-- SLIDE 1: Capa -->
-        <div class="slide-card active">
-            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
-                <div style="font-size: 5em;">📜</div>
-                <h1 class="slide-title">Shell Script: Primeiros Passos</h1>
-                <div class="content-box box-highlight" style="text-align: center; font-size: 1.2em;">
-                    <p><strong>Automatização de Tarefas no Linux</strong></p>
-                    <p style="margin-top: 10px; opacity: 0.8;">Crie seus próprios "robôs assistentes"!</p>
-                </div>
-                <div class="box-terminal" style="margin-top: 30px; max-width: 600px;">
-                    <span class="shebang">#!/bin/bash</span><br>
-                    <span class="comment"># Meu primeiro script!</span><br>
-                    <span class="command">echo</span> <span class="string">"Olá, mundo da automação!"</span><br>
-                    <span class="comment"># Vamos aprender a criar robôs! 🤖</span>
-                </div>
-                <div class="content-box box-info" style="margin-top: 30px;">
-                    💡 Aprenda a automatizar tarefas repetitivas como um verdadeiro SysAdmin!
-                </div>
-            </div>
-        </div>
+<div class="content-wrapper">
 
-        <!-- SLIDE 2: Por que Shell Script + Analogia -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🤔 Por que Aprender Shell Script?</h2>
-            
-            <div class="analogy-container">
-                <div class="analogy-box" style="background: #fee2e2;">
-                    <div class="icon">😫</div>
-                    <h3>Sem Script</h3>
-                    <p>Fazer backup manualmente<br>todo dia às 6h</p>
-                </div>
-                <div class="analogy-arrow">→</div>
-                <div class="analogy-box" style="background: #d1fae5;">
-                    <div class="icon">🤖</div>
-                    <h3>Com Script</h3>
-                    <p>O computador faz sozinho<br>enquanto você dorme!</p>
-                </div>
-            </div>
-
-            <div class="grid-2">
-                <div class="content-box box-info">
-                    <h3>👨‍🍳 Analogia: Receita de Bolo</h3>
-                    <div class="bullet-point"><strong>Ingredientes</strong> = Comandos (ls, cp, mkdir...)</div>
-                    <div class="bullet-point"><strong>Receita</strong> = Script (arquivo com passos)</div>
-                    <div class="bullet-point"><strong>Cozinheiro</strong> = Shell (executa)</div>
-                    <div class="bullet-point"><strong>Bolo Pronto</strong> = Tarefa automatizada!</div>
-                </div>
-                <div class="content-box box-success">
-                    <h3>📋 Situações Práticas</h3>
-                    <div class="bullet-point">Backup diário automático</div>
-                    <div class="bullet-point">Limpeza de arquivos temporários</div>
-                    <div class="bullet-point">Instalação de programas em lote</div>
-                    <div class="bullet-point">Monitoramento de servidores</div>
-                    <div class="bullet-point">Relatórios automáticos</div>
-                    <p style="margin-top: 15px; font-weight: bold; color: var(--primary);">10 min/dia × 365 dias = 60 horas/ano economizadas!</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 3: Estrutura do Script -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">📝 Estrutura de um Shell Script</h2>
-            <div class="content-box box-highlight" style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 1.2em;"><strong>Arquivo de texto</strong> com comandos para o Linux executar em sequência</p>
-            </div>
-            
-            <div class="grid-2">
-                <div>
-                    <div class="content-box box-info">
-                        <h3>🔧 Componentes Principais</h3>
-                        <div class="bullet-point"><code>#!/bin/bash</code> → Shebang (interpretador)</div>
-                        <div class="bullet-point"><code># comentário</code> → Anotações</div>
-                        <div class="bullet-point"><code>echo, mkdir, cp...</code> → Comandos</div>
-                        <div class="bullet-point"><code>./script.sh</code> → Executar</div>
-                    </div>
-                    
-                    <div class="content-box box-warning">
-                        <h3>⚠️ Shebang - Regras</h3>
-                        <div class="bullet-point">SEMPRE na primeira linha</div>
-                        <div class="bullet-point">Sem espaço antes do #</div>
-                        <div class="bullet-point">Sem espaço entre # e !</div>
-                        <div class="bullet-point">Como escolher o chef da cozinha!</div>
-                    </div>
-                </div>
-                
-                <div>
-                    <div class="box-terminal" style="font-size: 1em;">
-                        <span class="shebang">#!/bin/bash</span> <span class="comment"># Linha 1: Obrigatório!</span><br>
-                        <span class="comment"># Linha 2: Comentário explicativo</span><br>
-                        <span class="comment"># Script: Informações do Sistema</span><br><br>
-                        <span class="command">echo</span> <span class="string">"==== INFO DO SISTEMA ===="</span><br>
-                        <span class="command">echo</span> <span class="string">"Usuário: $(whoami)"</span><br>
-                        <span class="command">echo</span> <span class="string">"Pasta: $(pwd)"</span><br>
-                        <span class="command">echo</span> <span class="string">"Data: $(date)"</span><br><br>
-                        <span class="comment"># ✅ Correto</span><br>
-                        <span class="shebang">#!/bin/bash</span><br><br>
-                        <span class="comment"># ❌ Errado - espaço antes</span><br>
-                        <span class="output"> #!/bin/bash</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 4: Criando seu Primeiro Script -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🚀 Criando seu Primeiro Script</h2>
-            
-            <div class="grid-2">
-                <div>
-                    <div class="step-item">
-                        <div class="step-box">1</div>
-                        <div class="step-content">
-                            <h4>Criar com vim</h4>
-                            <div class="box-terminal" style="padding: 12px; font-size: 0.95em;">
-                                <span class="prompt">$</span> <span class="command">vim primeiro.sh</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="step-item">
-                        <div class="step-box">2</div>
-                        <div class="step-content">
-                            <h4>Modo de inserção</h4>
-                            <p>Pressione <code>i</code> para digitar</p>
-                        </div>
-                    </div>
-
-                    <div class="step-item">
-                        <div class="step-box">3</div>
-                        <div class="step-content">
-                            <h4>Escrever conteúdo</h4>
-                            <div class="box-terminal" style="padding: 12px; font-size: 0.85em;">
-                                <span class="shebang">#!/bin/bash</span><br>
-                                <span class="comment"># Meu primeiro script</span><br>
-                                <span class="command">echo</span> <span class="string">"Olá, Linux!"</span><br>
-                                <span class="command">echo</span> <span class="string">"Pasta: $(pwd)"</span><br>
-                                <span class="command">date</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="step-item">
-                        <div class="step-box">4</div>
-                        <div class="step-content">
-                            <h4>Salvar e sair</h4>
-                            <p><code>Esc</code> → <code>:wq</code> → <code>Enter</code></p>
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <div class="step-item">
-                        <div class="step-box">5</div>
-                        <div class="step-content">
-                            <h4>Dar permissão</h4>
-                            <div class="box-terminal" style="padding: 12px; font-size: 0.95em;">
-                                <span class="prompt">$</span> <span class="command">chmod +x primeiro.sh</span>
-                            </div>
-                            <p>Como assinar: "pode executar!"</p>
-                        </div>
-                    </div>
-
-                    <div class="step-item">
-                        <div class="step-box">6</div>
-                        <div class="step-content">
-                            <h4>Executar!</h4>
-                            <div class="box-terminal" style="padding: 12px; font-size: 0.95em;">
-                                <span class="prompt">$</span> <span class="command">./primeiro.sh</span><br>
-                                <span class="output">Olá, Linux!</span><br>
-                                <span class="output">Pasta: /home/usuario</span><br>
-                                <span class="output">Qui Dez 25 10:30 2025</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="content-box box-tip">
-                        <h3>❓ Por que <code>./</code>?</h3>
-                        <p>Significa "procure aqui no diretório atual"</p>
-                        <p style="margin-top: 8px;">Sem ele, Linux procura só nas pastas do sistema!</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 5: Fluxo Completo + Vim Essencial -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🔄 Fluxo Completo + Comandos Vim</h2>
-            
-            <div class="content-box box-highlight" style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 1.2em;">Memorize: <strong>VIM → CHMOD → EXECUTAR</strong></p>
-            </div>
-            
-            <div class="flow-diagram">
-                <div class="flow-box" style="background: #dbeafe; color: #1e40af;">
-                    <div style="font-size: 2em;">📝</div>
-                    <strong>1. Criar</strong><br>
-                    <code>vim script.sh</code>
-                </div>
-                <div class="flow-arrow">→</div>
-                <div class="flow-box" style="background: #fef3c7; color: #92400e;">
-                    <div style="font-size: 2em;">🔓</div>
-                    <strong>2. Permitir</strong><br>
-                    <code>chmod +x script.sh</code>
-                </div>
-                <div class="flow-arrow">→</div>
-                <div class="flow-box" style="background: #dcfce7; color: #166534;">
-                    <div style="font-size: 2em;">▶️</div>
-                    <strong>3. Executar</strong><br>
-                    <code>./script.sh</code>
-                </div>
-            </div>
-
-            <div class="grid-2" style="margin-top: 25px;">
-                <div class="content-box box-info">
-                    <h3>⌨️ Vim Essencial</h3>
-                    <table class="reference-table">
-                        <tr><th>Tecla</th><th>Ação</th></tr>
-                        <tr><td><code>i</code></td><td>Modo INSERT (digitar)</td></tr>
-                        <tr><td><code>Esc</code></td><td>Sair do INSERT</td></tr>
-                        <tr><td><code>:w</code></td><td>Salvar (write)</td></tr>
-                        <tr><td><code>:q</code></td><td>Sair (quit)</td></tr>
-                        <tr><td><code>:wq</code></td><td>Salvar e sair</td></tr>
-                        <tr><td><code>:q!</code></td><td>Sair SEM salvar</td></tr>
-                    </table>
-                </div>
-                <div class="content-box box-success">
-                    <h3>🛠️ Comandos Úteis</h3>
-                    <table class="reference-table">
-                        <tr><th>Tecla</th><th>Ação</th></tr>
-                        <tr><td><code>dd</code></td><td>Deleta linha</td></tr>
-                        <tr><td><code>u</code></td><td>Desfaz (undo)</td></tr>
-                        <tr><td><code>yy</code></td><td>Copia linha</td></tr>
-                        <tr><td><code>p</code></td><td>Cola</td></tr>
-                        <tr><td><code>a</code></td><td>INSERT após cursor</td></tr>
-                        <tr><td><code>o</code></td><td>Nova linha abaixo</td></tr>
-                    </table>
-                </div>
-            </div>
-
-            <div class="content-box box-warning" style="margin-top: 15px;">
-                <h3>🆘 Travou no Vim?</h3>
-                <p>Pressione <code>Esc</code> várias vezes → digite <code>:q!</code> → <code>Enter</code></p>
-            </div>
-        </div>
-
-        <!-- SLIDE 6: Comentários e echo -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">💬 Comentários e 📢 echo</h2>
-            
-            <div class="grid-2">
-                <div>
-                    <div class="content-box box-info">
-                        <h3>💬 Comentários</h3>
-                        <p>Começam com <code>#</code> e são ignorados pelo sistema</p>
-                        <div class="bullet-point">Explicam o que o código faz</div>
-                        <div class="bullet-point">Ajudam você e outros a entender</div>
-                        <div class="bullet-point">Podem desativar código temporariamente</div>
-                        <div class="box-terminal" style="padding: 12px; margin-top: 10px; font-size: 0.9em;">
-                            <span class="comment"># Isso é um comentário</span><br>
-                            <span class="command">echo</span> <span class="string">"Oi"</span>  <span class="comment"># Comentário na linha</span>
-                        </div>
-                    </div>
-                    
-                    <div class="content-box box-success">
-                        <h3>📢 Comando echo</h3>
-                        <p>"Eco" → Repete o que você mandar!</p>
-                        <div class="box-terminal" style="padding: 12px; margin-top: 10px; font-size: 0.9em;">
-                            <span class="comment"># Texto simples</span><br>
-                            <span class="command">echo</span> <span class="string">"Olá, mundo!"</span><br><br>
-                            <span class="comment"># Com variável</span><br>
-                            <span class="command">echo</span> <span class="string">"Usuário: $(whoami)"</span><br><br>
-                            <span class="comment"># Sem pular linha</span><br>
-                            <span class="command">echo -n</span> <span class="string">"Nome: "</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <div class="box-terminal" style="font-size: 0.95em;">
-                        <span class="shebang">#!/bin/bash</span><br><br>
-                        <span class="comment"># ============================</span><br>
-                        <span class="comment"># Script de Backup Diário</span><br>
-                        <span class="comment"># Autor: João Silva</span><br>
-                        <span class="comment"># Data: 25/12/2025</span><br>
-                        <span class="comment"># ============================</span><br><br>
-                        <span class="comment"># Limpar a tela primeiro</span><br>
-                        <span class="command">clear</span><br><br>
-                        <span class="comment"># Mostrar cabeçalho</span><br>
-                        <span class="command">echo</span> <span class="string">"==================================="</span><br>
-                        <span class="command">echo</span> <span class="string">"     BACKUP DO SISTEMA"</span><br>
-                        <span class="command">echo</span> <span class="string">"==================================="</span><br>
-                        <span class="command">echo</span><br><br>
-                        <span class="comment"># Pasta de origem</span><br>
-                        <span class="variable">ORIGEM</span>=<span class="string">"/home/usuario"</span><br><br>
-                        <span class="comment"># Executar backup</span><br>
-                        <span class="command">cp</span> -r <span class="variable">$ORIGEM</span> /backup/<br><br>
-                        <span class="comment"># Mensagem final</span><br>
-                        <span class="command">echo</span> <span class="string">"✅ Backup concluído!"</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 7: Comandos Úteis + Formatação de Data -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🧰 Comandos Úteis e 📅 Data</h2>
-            
-            <div class="grid-3" style="margin-bottom: 20px;">
-                <div class="command-card">
-                    <div class="cmd">date</div>
-                    <h4>Data e Hora</h4>
-                    <p>Mostra data atual</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">whoami</div>
-                    <h4>Usuário</h4>
-                    <p>Nome do usuário</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">pwd</div>
-                    <h4>Diretório</h4>
-                    <p>Pasta atual</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">hostname</div>
-                    <h4>Nome PC</h4>
-                    <p>Nome da máquina</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">uptime</div>
-                    <h4>Tempo</h4>
-                    <p>Tempo ligado</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">clear</div>
-                    <h4>Limpar</h4>
-                    <p>Limpa terminal</p>
-                </div>
-            </div>
-
-            <div class="grid-2">
-                <div class="content-box box-info">
-                    <h3>📅 Formatando Data</h3>
-                    <table class="reference-table">
-                        <tr><th>Código</th><th>Resultado</th></tr>
-                        <tr><td><code>%d</code></td><td>Dia (01-31)</td></tr>
-                        <tr><td><code>%m</code></td><td>Mês (01-12)</td></tr>
-                        <tr><td><code>%Y</code></td><td>Ano (4 dígitos)</td></tr>
-                        <tr><td><code>%H:%M:%S</code></td><td>Hora completa</td></tr>
-                    </table>
-                </div>
-                <div>
-                    <div class="box-terminal" style="font-size: 0.95em;">
-                        <span class="comment"># Formato brasileiro</span><br>
-                        <span class="prompt">$</span> <span class="command">date</span> +<span class="string">"%d/%m/%Y"</span><br>
-                        <span class="output">25/12/2025</span><br><br>
-                        
-                        <span class="comment"># Para arquivos</span><br>
-                        <span class="prompt">$</span> <span class="command">date</span> +<span class="string">"%Y-%m-%d"</span><br>
-                        <span class="output">2025-12-25</span><br><br>
-                        
-                        <span class="comment"># Backup com data</span><br>
-                        <span class="prompt">$</span> <span class="command">mkdir</span> backup_<span class="variable">$(date +%Y-%m-%d)</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 8: Erros Comuns -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🚨 Erros Comuns e Soluções</h2>
-            
-            <div class="grid-2">
-                <div class="content-box box-warning">
-                    <h3>❌ Erro 1: Permission denied</h3>
-                    <p><strong>Causa:</strong> Esqueceu chmod +x</p>
-                    <div class="box-terminal" style="padding: 12px; font-size: 0.9em; margin-top: 8px;">
-                        <span class="output" style="color: #fc8181;">bash: ./script.sh: Permission denied</span><br><br>
-                        <span class="comment"># Solução:</span><br>
-                        <span class="command">chmod +x script.sh</span>
-                    </div>
-                </div>
-                <div class="content-box box-warning">
-                    <h3>❌ Erro 2: Command not found</h3>
-                    <p><strong>Causa:</strong> Esqueceu ./ antes</p>
-                    <div class="box-terminal" style="padding: 12px; font-size: 0.9em; margin-top: 8px;">
-                        <span class="output" style="color: #fc8181;">bash: script.sh: command not found</span><br><br>
-                        <span class="comment"># Solução:</span><br>
-                        <span class="command">./script.sh</span> <span class="comment"># Com ./</span>
-                    </div>
-                </div>
-                <div class="content-box box-warning">
-                    <h3>❌ Erro 3: bad interpreter</h3>
-                    <p><strong>Causa:</strong> Shebang errado</p>
-                    <div class="box-terminal" style="padding: 12px; font-size: 0.9em; margin-top: 8px;">
-                        <span class="output" style="color: #fc8181;">bad interpreter: No such file</span><br><br>
-                        <span class="comment"># Verifique linha 1:</span><br>
-                        <span class="shebang">#!/bin/bash</span> <span class="comment"># Sem espaços!</span>
-                    </div>
-                </div>
-                <div class="content-box box-warning">
-                    <h3>❌ Erro 4: Script não faz nada</h3>
-                    <p><strong>Causa:</strong> Arquivo do Windows</p>
-                    <div class="box-terminal" style="padding: 12px; font-size: 0.9em; margin-top: 8px;">
-                        <span class="comment"># Windows usa \r\n</span><br>
-                        <span class="comment"># Linux usa \n</span><br><br>
-                        <span class="comment"># Solução:</span><br>
-                        <span class="command">sed -i 's/\r$//' script.sh</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="content-box box-tip" style="margin-top: 15px;">
-                <h3>🔍 Dica de Debug</h3>
-                <p>Use <code>bash -x script.sh</code> para ver cada linha sendo executada passo a passo!</p>
-            </div>
-        </div>
-
-        <!-- SLIDE 9: Boas Práticas -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">⭐ Boas Práticas</h2>
-            
-            <div class="grid-2">
-                <div>
-                    <div class="content-box box-success">
-                        <h3>✅ 1. Sempre Comente</h3>
-                        <div class="bullet-point">Explique O QUE faz</div>
-                        <div class="bullet-point">Explique POR QUE fez assim</div>
-                        <div class="bullet-point">Você vai esquecer em 1 mês!</div>
-                    </div>
-                    
-                    <div class="content-box box-info">
-                        <h3>✅ 2. Nomes Descritivos</h3>
-                        <div class="bullet-point">❌ <code>script1.sh</code></div>
-                        <div class="bullet-point">✅ <code>backup_fotos.sh</code></div>
-                        <div class="bullet-point">✅ <code>limpar_logs.sh</code></div>
-                        <div class="bullet-point">✅ <code>relatorio_sistema.sh</code></div>
-                    </div>
-
-                    <div class="content-box box-highlight">
-                        <h3>✅ 3. Teste Sempre</h3>
-                        <div class="bullet-point">Execute após criar</div>
-                        <div class="bullet-point">Teste com dados pequenos</div>
-                        <div class="bullet-point">Verifique se não quebra nada</div>
-                    </div>
-                </div>
-
-                <div>
-                    <div class="content-box box-tip">
-                        <h3>✅ 4. Organize scripts</h3>
-                        <div class="box-terminal" style="padding: 12px; font-size: 0.85em;">
-                            <span class="prompt">$</span> <span class="command">mkdir</span> ~/scripts<br>
-                            <span class="prompt">$</span> <span class="command">mkdir</span> ~/scripts/backup<br>
-                            <span class="prompt">$</span> <span class="command">mkdir</span> ~/scripts/sistema
-                        </div>
-                    </div>
-                    
-                    <div class="content-box box-success">
-                        <h3>✅ 5. Cabeçalho Padrão</h3>
-                        <div class="box-terminal" style="padding: 12px; font-size: 0.8em;">
-                            <span class="shebang">#!/bin/bash</span><br>
-                            <span class="comment"># ==========================</span><br>
-                            <span class="comment"># Nome: backup_diario.sh</span><br>
-                            <span class="comment"># Descrição: Faz backup</span><br>
-                            <span class="comment"># Autor: Seu Nome</span><br>
-                            <span class="comment"># Data: 25/12/2025</span><br>
-                            <span class="comment"># ==========================</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 10: Exemplo Completo -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">📋 Exemplo Completo: Relatório Sistema</h2>
-            
-            <div class="box-terminal" style="font-size: 0.95em; line-height: 1.7;">
-                <span class="shebang">#!/bin/bash</span><br>
-                <span class="comment"># ================================================</span><br>
-                <span class="comment"># Script: relatorio_sistema.sh</span><br>
-                <span class="comment"># Descrição: Gera relatório completo do sistema</span><br>
-                <span class="comment"># Autor: Aluno IFRN</span><br>
-                <span class="comment"># Data: 25/12/2025</span><br>
-                <span class="comment"># ================================================</span><br><br>
-                
-                <span class="comment"># Limpar tela</span><br>
-                <span class="command">clear</span><br><br>
-                
-                <span class="comment"># Cabeçalho</span><br>
-                <span class="command">echo</span> <span class="string">"╔══════════════════════════════════════╗"</span><br>
-                <span class="command">echo</span> <span class="string">"║     RELATÓRIO DO SISTEMA             ║"</span><br>
-                <span class="command">echo</span> <span class="string">"║     Gerado: $(date +%d/%m/%Y)              ║"</span><br>
-                <span class="command">echo</span> <span class="string">"╚══════════════════════════════════════╝"</span><br>
-                <span class="command">echo</span><br><br>
-                
-                <span class="comment"># Informações do usuário</span><br>
-                <span class="command">echo</span> <span class="string">"👤 USUÁRIO"</span><br>
-                <span class="command">echo</span> <span class="string">"   Nome: $(whoami)"</span><br>
-                <span class="command">echo</span> <span class="string">"   Diretório: $(pwd)"</span><br>
-                <span class="command">echo</span><br><br>
-                
-                <span class="comment"># Informações do sistema</span><br>
-                <span class="command">echo</span> <span class="string">"💻 SISTEMA"</span><br>
-                <span class="command">echo</span> <span class="string">"   Hostname: $(hostname)"</span><br>
-                <span class="command">echo</span> <span class="string">"   Uptime: $(uptime -p)"</span><br>
-                <span class="command">echo</span><br><br>
-                
-                <span class="comment"># Finalização</span><br>
-                <span class="command">echo</span> <span class="string">"✅ Relatório gerado com sucesso!"</span>
-            </div>
-
-            <div class="content-box box-success" style="margin-top: 20px;">
-                <h3>💡 Como executar:</h3>
-                <div class="box-terminal" style="padding: 12px; font-size: 0.95em;">
-                    <span class="prompt">$</span> <span class="command">chmod +x relatorio_sistema.sh</span><br>
-                    <span class="prompt">$</span> <span class="command">./relatorio_sistema.sh</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 11: Exercícios Práticos -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🎯 Exercícios Práticos</h2>
-            
-            <div class="grid-2">
-                <div class="content-box box-info">
-                    <h3>📝 Exercício 1: Boas-vindas</h3>
-                    <p>Crie <code>boas_vindas.sh</code>:</p>
-                    <div class="bullet-point">Mostra "Bem-vindo ao Linux!"</div>
-                    <div class="bullet-point">Mostra nome de usuário</div>
-                    <div class="bullet-point">Mostra diretório atual</div>
-                    <div class="bullet-point">Mostra data de hoje</div>
-                </div>
-                
-                <div class="content-box box-success">
-                    <h3>📝 Exercício 2: Info Sistema</h3>
-                    <p>Crie <code>info_sistema.sh</code>:</p>
-                    <div class="bullet-point">Limpa a tela</div>
-                    <div class="bullet-point">Mostra nome do computador</div>
-                    <div class="bullet-point">Mostra tempo ligado (uptime)</div>
-                    <div class="bullet-point">Mostra espaço em disco (df -h)</div>
-                </div>
-            </div>
-
-            <div class="content-box box-highlight" style="margin-top: 20px;">
-                <h3>📝 Exercício 3: Organizador de Pastas</h3>
-                <p>Crie <code>organizador.sh</code> que cria pastas Backup, Documentos, Imagens e lista elas:</p>
-                <div class="box-terminal" style="margin-top: 10px; padding: 15px; font-size: 0.95em;">
-                    <span class="shebang">#!/bin/bash</span><br>
-                    <span class="comment"># Organizador de pastas</span><br>
-                    <span class="command">echo</span> <span class="string">"Criando pastas..."</span><br>
-                    <span class="command">mkdir</span> -p Backup Documentos Imagens<br>
-                    <span class="command">echo</span> <span class="string">"✅ Pastas criadas:"</span><br>
-                    <span class="command">ls</span> -d */
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 12: Quiz Interativo -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🎯 Desafio Interativo</h2>
-            <p style="text-align: center; margin-bottom: 15px;">Arraste os conceitos para suas definições corretas!</p>
-            
-            <div class="drag-drop-container">
-                <div class="col-questions">
-                    <div class="question-item">
-                        <div class="question-text">Indica qual interpretador usar</div>
-                        <div class="drop-zone" data-correct="#!/bin/bash">Arraste aqui</div>
-                    </div>
-                    <div class="question-item">
-                        <div class="question-text">Dá permissão de execução</div>
-                        <div class="drop-zone" data-correct="chmod +x">Arraste aqui</div>
-                    </div>
-                    <div class="question-item">
-                        <div class="question-text">Mostra mensagens na tela</div>
-                        <div class="drop-zone" data-correct="echo">Arraste aqui</div>
-                    </div>
-                    <div class="question-item">
-                        <div class="question-text">Executa o script</div>
-                        <div class="drop-zone" data-correct="./script.sh">Arraste aqui</div>
-                    </div>
-                    <div class="question-item">
-                        <div class="question-text">Cria anotações no código</div>
-                        <div class="drop-zone" data-correct="# comentário">Arraste aqui</div>
-                    </div>
-                    <div class="question-item">
-                        <div class="question-text">Salva e sai do vim</div>
-                        <div class="drop-zone" data-correct=":wq">Arraste aqui</div>
-                    </div>
-                </div>
-
-                <div class="col-answers" id="answersPool">
-                </div>
-            </div>
-
-            <div style="text-align: center; margin-top: 18px; display: flex; gap: 10px; justify-content: center;">
-                <button onclick="checkAnswers()" class="nav-btn" style="background: var(--accent-green);">✅ Verificar</button>
-                <button onclick="resetQuiz()" class="nav-btn" style="background: var(--accent-red);">🔄 Reiniciar</button>
-            </div>
-
-            <div id="quizResult" class="quiz-result"></div>
-        </div>
-
-        <!-- SLIDE 13: Resumo -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">📋 Resumo: Comandos Essenciais</h2>
-            
-            <div class="grid-3" style="margin-bottom: 25px;">
-                <div class="command-card">
-                    <div class="cmd">vim</div>
-                    <h4>Criar/Editar</h4>
-                    <p>Abre o editor</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">chmod +x</div>
-                    <h4>Permissão</h4>
-                    <p>Permite execução</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">./script.sh</div>
-                    <h4>Executar</h4>
-                    <p>Roda o script</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">echo</div>
-                    <h4>Mostrar</h4>
-                    <p>Exibe mensagens</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">date</div>
-                    <h4>Data/Hora</h4>
-                    <p>Mostra ou formata</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">bash -x</div>
-                    <h4>Debug</h4>
-                    <p>Mostra execução</p>
-                </div>
-            </div>
-
-            <div class="content-box box-highlight">
-                <h3>🎯 Fluxo para Decorar</h3>
-                <div class="flow-diagram">
-                    <div class="flow-box" style="background: #dbeafe; color: #1e40af;">
-                        <strong>vim</strong> → i → escreve
-                    </div>
-                    <div class="flow-arrow">→</div>
-                    <div class="flow-box" style="background: #fef3c7; color: #92400e;">
-                        <strong>Esc</strong> → :wq
-                    </div>
-                    <div class="flow-arrow">→</div>
-                    <div class="flow-box" style="background: #dcfce7; color: #166534;">
-                        <strong>chmod +x</strong> → ./
-                    </div>
-                </div>
-            </div>
-
-            <div class="grid-2" style="margin-top: 20px;">
-                <div class="content-box box-success">
-                    <h3>✅ Estrutura Básica</h3>
-                    <div class="bullet-point"><code>#!/bin/bash</code> → Shebang</div>
-                    <div class="bullet-point"><code># comentário</code> → Explicações</div>
-                    <div class="bullet-point">Comandos → Ações</div>
-                </div>
-                <div class="content-box box-info">
-                    <h3>💡 Lembre-se</h3>
-                    <div class="bullet-point">Sempre comente seu código</div>
-                    <div class="bullet-point">Use nomes descritivos</div>
-                    <div class="bullet-point">Teste antes de usar</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 14: Conclusão -->
-        <div class="slide-card">
-            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center;">
-                <div style="font-size: 4em; margin-bottom: 20px;">🎓📜</div>
-                <h2 class="slide-subtitle" style="border: none;">Parabéns!</h2>
-                <div class="content-box box-success" style="max-width: 700px;">
-                    <h3>📚 O que aprendemos:</h3>
-                    <div class="grid-2" style="text-align: left; margin-top: 15px;">
-                        <div>
-                            <div class="bullet-point">O que é Shell Script</div>
-                            <div class="bullet-point">Por que automatizar</div>
-                            <div class="bullet-point">Shebang (#!/bin/bash)</div>
-                            <div class="bullet-point">Criar, permitir, executar</div>
-                        </div>
-                        <div>
-                            <div class="bullet-point">Comandos do vim</div>
-                            <div class="bullet-point">Comentários</div>
-                            <div class="bullet-point">Boas práticas</div>
-                            <div class="bullet-point">Erros comuns</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="content-box box-info" style="max-width: 700px; margin-top: 20px;">
-                    <h3>🔜 Na próxima aula:</h3>
-                    <p><strong>Variáveis em Shell Script!</strong> Aprenda a criar "caixinhas" para guardar informações e fazer scripts dinâmicos.</p>
-                </div>
-                <div class="content-box box-tip" style="max-width: 700px; margin-top: 20px;">
-                    <h3>💡 Pratique!</h3>
-                    <p>Crie scripts simples todo dia. A prática leva à perfeição! 🚀</p>
-                    <p style="margin-top: 10px;"><code>vim → chmod +x → ./</code></p>
-                </div>
-                <div style="margin-top: 35px;">
-                    <a href="index.html" class="nav-btn" style="font-size: 1.2em; padding: 15px 40px;">
-                        Voltar ao Dashboard 🏠
-                    </a>
-                </div>
-            </div>
-        </div>
-
+    <div class="lesson-hero">
+        <h1>&#x1F4DC; Shell Script: Primeiros Passos</h1>
+        <p class="subtitle">Aula 2.1 &mdash; Automatiza&ccedil;&atilde;o de tarefas no Linux: shebang, echo, coment&aacute;rios, Vim e o fluxo criar&ndash;permitir&ndash;executar</p>
     </div>
 
-    <div class="nav-controls">
-        <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">⬅️ Anterior</button>
-        <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Próximo ➡️</button>
+    <!-- CARD 1 — Por que aprender? -->
+    <div class="content-card">
+        <h2>&#x1F916; Por que Aprender Shell Script?</h2>
+        <p>Shell Script &eacute; um arquivo de texto com comandos Linux que o sistema executa em sequ&ecirc;ncia, como uma receita autom&aacute;tica. Em vez de digitar os mesmos 10 comandos toda manh&atilde; para fazer backup, voc&ecirc; escreve o script uma vez &mdash; e ele faz tudo sozinho, para sempre.</p>
+
+        <div class="analogy-grid">
+            <div class="analogy-box" style="background:#fee2e2;">
+                <div class="icon">&#x1F62B;</div>
+                <strong>Sem Script</strong>
+                <span>Fazer backup manualmente todo dia &agrave;s 6h</span>
+            </div>
+            <div class="analogy-arrow">&#x27A1;</div>
+            <div class="analogy-box" style="background:#d1fae5;">
+                <div class="icon">&#x1F916;</div>
+                <strong>Com Script</strong>
+                <span>O computador faz sozinho enquanto voc&ecirc; dorme!</span>
+            </div>
+        </div>
+
+        <h3>&#x1F373; Analogia: Receita de Bolo</h3>
+        <ul>
+            <li><strong>Ingredientes</strong> &rarr; Comandos Linux (<code>ls</code>, <code>cp</code>, <code>mkdir</code>&hellip;)</li>
+            <li><strong>Receita escrita</strong> &rarr; O arquivo de script (<code>.sh</code>)</li>
+            <li><strong>Cozinheiro</strong> &rarr; O Shell (interpreta e executa)</li>
+            <li><strong>Bolo pronto</strong> &rarr; Tarefa automatizada!</li>
+        </ul>
+
+        <div class="highlight-box">
+            <p>&#x23F1; <strong>10 minutos por dia &times; 365 dias = 60 horas por ano economizadas!</strong> Um sysadmin que sabe Shell Script faz em segundos o que um iniciante faz em horas.</p>
+        </div>
+
+        <h3>&#x1F4CB; Situa&ccedil;&otilde;es pr&aacute;ticas onde Shell Script &eacute; usado</h3>
+        <ul>
+            <li>Backup di&aacute;rio autom&aacute;tico de arquivos e bancos de dados</li>
+            <li>Limpeza de arquivos tempor&aacute;rios e logs antigos</li>
+            <li>Instala&ccedil;&atilde;o e configura&ccedil;&atilde;o de programas em lote em novos servidores</li>
+            <li>Monitoramento de servi&ccedil;os (reiniciar automaticamente se cair)</li>
+            <li>Gera&ccedil;&atilde;o autom&aacute;tica de relat&oacute;rios e alertas por e-mail</li>
+        </ul>
     </div>
 
-    <script>
-        // === LÓGICA DE NAVEGAÇÃO ===
-        let currentSlide = 0;
-        const slides = document.querySelectorAll('.slide-card');
-        const totalSlides = slides.length;
+    <!-- CARD 2 — Estrutura do script -->
+    <div class="content-card">
+        <h2>&#x1F4DD; Estrutura de um Shell Script</h2>
+        <p>Um script Shell &eacute; um arquivo de texto simples (com extens&atilde;o <code>.sh</code>) que cont&eacute;m comandos Linux, um por linha. Tr&ecirc;s elementos formam a base de qualquer script.</p>
 
-        document.getElementById('total-slides').textContent = totalSlides;
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div>
+                <div class="term-dot yellow"></div>
+                <div class="term-dot green"></div>
+                <span class="term-title">meu_script.sh</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-shebang">#!/bin/bash</span>                   <span class="t-comment"># ① Shebang — SEMPRE na 1ª linha</span>
+<span class="t-comment"># Script: Informações do Sistema</span>  <span class="t-comment"># ② Comentário — explicação</span>
+<span class="t-comment"># Autor: César Azevedo</span>
 
-        function showSlide(index) {
-            slides.forEach((slide, i) => {
-                slide.classList.toggle('active', i === index);
-            });
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            
-            document.getElementById('current-slide').textContent = index + 1;
-            document.getElementById('prevBtn').disabled = index === 0;
-            document.getElementById('nextBtn').disabled = index === totalSlides - 1;
-        }
+<span class="t-cmd">echo</span> <span class="t-string">"==== INFO DO SISTEMA ===="</span>    <span class="t-comment"># ③ Comandos</span>
+<span class="t-cmd">echo</span> <span class="t-string">"Usuário: $(whoami)"</span>
+<span class="t-cmd">echo</span> <span class="t-string">"Pasta:   $(pwd)"</span>
+<span class="t-cmd">echo</span> <span class="t-string">"Data:    $(date)"</span>
+            </div>
+        </div>
 
-        function changeSlide(direction) {
-            const newSlide = currentSlide + direction;
-            if (newSlide >= 0 && newSlide < totalSlides) {
-                currentSlide = newSlide;
-                showSlide(currentSlide);
-            }
-        }
+        <h3>&#x2460; Shebang &mdash; <code>#!/bin/bash</code></h3>
+        <p>A primeira linha do script declara <strong>qual interpretador</strong> deve executar o arquivo. <code>#!</code> &eacute; o prefixo obrigat&oacute;rio; <code>/bin/bash</code> &eacute; o caminho do Bash.</p>
 
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowLeft') changeSlide(-1);
-            if (e.key === 'ArrowRight') changeSlide(1);
-        });
+        <div class="alert-box">
+            <p>&#x26A0;&#xFE0F; <strong>Regras do Shebang:</strong> deve estar exatamente na <strong>primeira linha</strong>, sem nenhum espa&ccedil;o antes do <code>#</code> e sem espa&ccedil;o entre <code>#</code> e <code>!</code>. <span style="color:#dc2626;">&#x274C; &nbsp;<code> #!/bin/bash</code></span> (espa&ccedil;o antes) invalida o shebang.</p>
+        </div>
 
-        // === LÓGICA DO QUIZ ===
-        const answersData = [
-            { id: '#!/bin/bash', text: '#!/bin/bash' },
-            { id: 'chmod +x', text: 'chmod +x' },
-            { id: 'echo', text: 'echo' },
-            { id: './script.sh', text: './script.sh' },
-            { id: '# comentário', text: '# comentário' },
-            { id: ':wq', text: ':wq' }
-        ];
+        <h3>&#x2461; Coment&aacute;rios &mdash; <code>#</code></h3>
+        <p>Linhas que come&ccedil;am com <code>#</code> (ap&oacute;s o shebang) s&atilde;o ignoradas pelo Shell. Use para documentar o que cada parte faz, quem escreveu e quando.</p>
 
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
-        }
+        <h3>&#x2462; Comandos</h3>
+        <p>Os mesmos comandos que voc&ecirc; digita no terminal funcionam nos scripts. O Shell executa-os linha por linha, de cima para baixo.</p>
+    </div>
 
-        let draggedItem = null;
+    <!-- CARD 3 — Criando o primeiro script (passo a passo) -->
+    <div class="content-card">
+        <h2>&#x1F680; Criando seu Primeiro Script</h2>
+        <p>O fluxo de trabalho &eacute; sempre o mesmo: <strong>criar &rarr; dar permiss&atilde;o &rarr; executar</strong>. Veja passo a passo:</p>
 
-        function initQuiz() {
-            const pool = document.getElementById('answersPool');
-            pool.innerHTML = '';
-            const shuffled = shuffleArray([...answersData]);
-            
-            shuffled.forEach(ans => {
-                const div = document.createElement('div');
-                div.className = 'answer-item';
-                div.draggable = true;
-                div.textContent = ans.text;
-                div.dataset.id = ans.id;
-                
-                div.addEventListener('dragstart', (e) => {
-                    draggedItem = e.target;
-                    e.target.classList.add('dragging');
-                });
-                div.addEventListener('dragend', (e) => {
-                    e.target.classList.remove('dragging');
-                    draggedItem = null;
-                });
-                
-                pool.appendChild(div);
-            });
+        <div class="steps-list">
+            <div class="step-row">
+                <div class="step-num-badge">1</div>
+                <div class="step-body-row">
+                    <strong>Criar o arquivo com o Vim</strong>
+                    <div class="terminal" style="margin:6px 0 0;">
+                        <div class="terminal-bar"><div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div><span class="term-title">bash</span></div>
+                        <div class="terminal-body" style="padding:10px 16px;line-height:1.8;">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">vim</span> <span class="t-arg">primeiro.sh</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="step-row">
+                <div class="step-num-badge">2</div>
+                <div class="step-body-row">
+                    <strong>Entrar em modo de inser&ccedil;&atilde;o no Vim</strong>
+                    <span>Pressione <span class="kbd-sm">i</span> para come&ccedil;ar a digitar.</span>
+                </div>
+            </div>
+            <div class="step-row">
+                <div class="step-num-badge">3</div>
+                <div class="step-body-row">
+                    <strong>Digitar o conte&uacute;do do script</strong>
+                    <div class="terminal" style="margin:6px 0 0;">
+                        <div class="terminal-bar"><div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div><span class="term-title">primeiro.sh — INSERT</span></div>
+                        <div class="terminal-body" style="padding:10px 16px;line-height:1.8;">
+<span class="t-shebang">#!/bin/bash</span>
+<span class="t-comment"># Meu primeiro script!</span>
+<span class="t-cmd">echo</span> <span class="t-string">"Olá, Linux!"</span>
+<span class="t-cmd">echo</span> <span class="t-string">"Usuário: $(whoami)"</span>
+<span class="t-cmd">echo</span> <span class="t-string">"Pasta: $(pwd)"</span>
+<span class="t-cmd">date</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="step-row">
+                <div class="step-num-badge">4</div>
+                <div class="step-body-row">
+                    <strong>Salvar e sair do Vim</strong>
+                    <span>Pressione <span class="kbd-sm">Esc</span> para sair do modo INSERT, depois digite <span class="kbd-sm">:wq</span> e pressione <span class="kbd-sm">Enter</span>.</span>
+                </div>
+            </div>
+            <div class="step-row">
+                <div class="step-num-badge">5</div>
+                <div class="step-body-row">
+                    <strong>Dar permiss&atilde;o de execu&ccedil;&atilde;o</strong>
+                    <div class="terminal" style="margin:6px 0 0;">
+                        <div class="terminal-bar"><div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div><span class="term-title">bash</span></div>
+                        <div class="terminal-body" style="padding:10px 16px;line-height:1.8;">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">chmod</span> <span class="t-flag">+x</span> <span class="t-arg">primeiro.sh</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="step-row">
+                <div class="step-num-badge">6</div>
+                <div class="step-body-row">
+                    <strong>Executar o script!</strong>
+                    <div class="terminal" style="margin:6px 0 0;">
+                        <div class="terminal-bar"><div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div><span class="term-title">bash</span></div>
+                        <div class="terminal-body" style="padding:10px 16px;line-height:1.8;">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">./primeiro.sh</span>
+<span class="t-out">Olá, Linux!</span>
+<span class="t-out">Usuário: usuario</span>
+<span class="t-out">Pasta: /home/usuario</span>
+<span class="t-out">Qui Dez 25 10:30:00 -03 2025</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-            document.querySelectorAll('.drop-zone').forEach(zone => {
-                zone.innerHTML = 'Arraste aqui';
-                zone.classList.remove('has-answer');
-                zone.style.background = '#f8fafc';
-                
-                zone.addEventListener('dragover', (e) => {
-                    e.preventDefault();
-                    zone.classList.add('drag-over');
-                });
-                
-                zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
-                
-                zone.addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    zone.classList.remove('drag-over');
-                    
-                    const jaTemResposta = zone.querySelector('.answer-item');
-                    
-                    if (draggedItem && !jaTemResposta) {
-                        zone.innerHTML = '';
-                        zone.appendChild(draggedItem);
-                        draggedItem.classList.add('in-drop-zone');
-                        zone.classList.add('has-answer');
-                    }
-                });
-            });
-            
-            document.getElementById('quizResult').style.display = 'none';
-        }
+        <div class="tip-box">
+            <p>&#x2753; <strong>Por que <code>./</code> antes do nome?</strong> Significa &ldquo;procure o arquivo aqui, nesta pasta&rdquo;. Sem ele, o Shell procuraria apenas nas pastas do sistema (<code>$PATH</code>) e n&atilde;o encontraria seu script.</p>
+        </div>
+    </div>
 
-        function checkAnswers() {
-            let correct = 0;
-            const zones = document.querySelectorAll('.drop-zone');
-            const total = zones.length;
-            
-            zones.forEach(zone => {
-                const answer = zone.querySelector('.answer-item');
-                if (answer && answer.dataset.id === zone.dataset.correct) {
-                    correct++;
-                    zone.style.background = '#d1fae5';
-                } else {
-                    zone.style.background = '#fee2e2';
-                }
-            });
+    <!-- CARD 4 — Fluxo + Vim -->
+    <div class="content-card">
+        <h2>&#x1F504; Fluxo de Trabalho e Vim Essencial</h2>
+        <p>Memorize o fluxo de tr&ecirc;s etapas que se repete em <em>todos</em> os scripts que voc&ecirc; criar:</p>
 
-            const resultDiv = document.getElementById('quizResult');
-            resultDiv.style.display = 'block';
-            resultDiv.innerHTML = `<h3>Você acertou ${correct} de ${total}!</h3>`;
-            
-            if(correct === total) resultDiv.innerHTML += '<p>🎉 Perfeito! Você domina Shell Script!</p>';
-            else if(correct >= total/2) resultDiv.innerHTML += '<p>👍 Bom trabalho! Revise os erros.</p>';
-            else resultDiv.innerHTML += '<p>📚 Continue praticando!</p>';
-        }
+        <div class="flow-steps">
+            <div class="flow-step" style="background:#dbeafe;">
+                <div class="f-icon">&#x1F4DD;</div>
+                <strong>1. Criar</strong>
+                <code>vim script.sh</code>
+            </div>
+            <div class="flow-arrow">&#x27A1;</div>
+            <div class="flow-step" style="background:#fef3c7;">
+                <div class="f-icon">&#x1F513;</div>
+                <strong>2. Permitir</strong>
+                <code>chmod +x script.sh</code>
+            </div>
+            <div class="flow-arrow">&#x27A1;</div>
+            <div class="flow-step" style="background:#dcfce7;">
+                <div class="f-icon">&#x25B6;&#xFE0F;</div>
+                <strong>3. Executar</strong>
+                <code>./script.sh</code>
+            </div>
+        </div>
 
-        function resetQuiz() {
-            initQuiz();
-        }
+        <h3>&#x2328;&#xFE0F; Vim Essencial &mdash; Comandos que voc&ecirc; precisa saber</h3>
 
-        // Inicia tudo
-        initQuiz();
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px;">
+            <div>
+                <p style="font-weight:700;font-size:.85em;color:#475569;margin-bottom:6px;">NAVEGA&Ccedil;&Atilde;O E EDI&Ccedil;&Atilde;O</p>
+                <table class="vim-table">
+                    <tr><th>Tecla</th><th>A&ccedil;&atilde;o</th></tr>
+                    <tr><td><code>i</code></td><td>Modo INSERT (digitar)</td></tr>
+                    <tr><td><code>a</code></td><td>INSERT ap&oacute;s cursor</td></tr>
+                    <tr><td><code>o</code></td><td>Nova linha abaixo</td></tr>
+                    <tr><td><code>Esc</code></td><td>Sair do INSERT</td></tr>
+                    <tr><td><code>dd</code></td><td>Deletar linha</td></tr>
+                    <tr><td><code>yy</code></td><td>Copiar linha</td></tr>
+                    <tr><td><code>p</code></td><td>Colar</td></tr>
+                    <tr><td><code>u</code></td><td>Desfazer (undo)</td></tr>
+                </table>
+            </div>
+            <div>
+                <p style="font-weight:700;font-size:.85em;color:#475569;margin-bottom:6px;">SALVAR E SAIR</p>
+                <table class="vim-table">
+                    <tr><th>Comando</th><th>A&ccedil;&atilde;o</th></tr>
+                    <tr><td><code>:w</code></td><td>Salvar (write)</td></tr>
+                    <tr><td><code>:q</code></td><td>Sair (quit)</td></tr>
+                    <tr><td><code>:wq</code></td><td>Salvar e sair</td></tr>
+                    <tr><td><code>:q!</code></td><td>Sair SEM salvar</td></tr>
+                    <tr><td><code>:wq!</code></td><td>For&ccedil;ar salvar e sair</td></tr>
+                </table>
+                <div class="alert-box" style="margin-top:12px;">
+                    <p>&#x1F198; <strong>Travou no Vim?</strong> Pressione <span class="kbd-sm">Esc</span> v&aacute;rias vezes &rarr; digite <span class="kbd-sm">:q!</span> &rarr; <span class="kbd-sm">Enter</span>.</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    </script>
+    <!-- CARD 5 — echo e Substituição de Comandos -->
+    <div class="content-card">
+        <h2>&#x1F4E2; <code>echo</code> e Substitui&ccedil;&atilde;o de Comandos</h2>
+        <p>O comando <code>echo</code> exibe texto na tela. &Eacute; o principal meio de comunicar o script com o usu&aacute;rio. Dentro das aspas, voc&ecirc; pode usar <strong>substitui&ccedil;&atilde;o de comandos</strong> com <code>$(comando)</code> para inserir a sa&iacute;da de outro comando dinamicamente.</p>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div>
+                <div class="term-dot yellow"></div>
+                <div class="term-dot green"></div>
+                <span class="term-title">exemplos-echo.sh</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-shebang">#!/bin/bash</span>
+
+<span class="t-comment"># Texto simples</span>
+<span class="t-cmd">echo</span> <span class="t-string">"Olá, mundo!"</span>
+
+<span class="t-comment"># Substituição de comando: $(comando)</span>
+<span class="t-cmd">echo</span> <span class="t-string">"Usuário logado: $(whoami)"</span>
+<span class="t-cmd">echo</span> <span class="t-string">"Diretório atual: $(pwd)"</span>
+<span class="t-cmd">echo</span> <span class="t-string">"Data e hora: $(date)"</span>
+<span class="t-cmd">echo</span> <span class="t-string">"Arquivos aqui: $(ls | wc -l) arquivos"</span>
+
+<span class="t-comment"># echo -n: sem quebra de linha ao final</span>
+<span class="t-cmd">echo</span> <span class="t-flag">-n</span> <span class="t-string">"Digite seu nome: "</span>
+<span class="t-comment"># (cursor fica na mesma linha, aguardando input)</span>
+
+<span class="t-comment"># echo -e: interpreta sequências especiais</span>
+<span class="t-cmd">echo</span> <span class="t-flag">-e</span> <span class="t-string">"Linha 1\nLinha 2\nLinha 3"</span>
+<span class="t-out">Linha 1</span>
+<span class="t-out">Linha 2</span>
+<span class="t-out">Linha 3</span>
+            </div>
+        </div>
+
+        <div class="tip-box">
+            <p>&#x1F4A1; <strong>Aspas simples vs duplas:</strong> aspas duplas (<code>"</code>) <em>interpretam</em> variáveis e substitui&ccedil;&otilde;es. Aspas simples (<code>'</code>) tratam tudo como literal. <code>echo "$USER"</code> &rarr; <code>usuario</code>. <code>echo '$USER'</code> &rarr; <code>$USER</code>.</p>
+        </div>
+    </div>
+
+    <!-- CARD 6 — Variáveis -->
+    <div class="content-card">
+        <h2>&#x1F4E6; Vari&aacute;veis no Shell Script</h2>
+        <p>Vari&aacute;veis armazenam valores para reutilizar ao longo do script. No Bash, n&atilde;o h&aacute; espa&ccedil;o entre o nome, o <code>=</code> e o valor. Para usar o valor, prefixe com <code>$</code>.</p>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div>
+                <div class="term-dot yellow"></div>
+                <div class="term-dot green"></div>
+                <span class="term-title">variaveis.sh</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-shebang">#!/bin/bash</span>
+
+<span class="t-comment"># Declarar variável — SEM espaços ao redor do =</span>
+<span class="t-var">NOME</span>=<span class="t-string">"Alice"</span>
+<span class="t-var">IDADE</span>=<span class="t-string">"22"</span>
+<span class="t-var">SERVIDOR</span>=<span class="t-string">"192.168.1.10"</span>
+<span class="t-var">HOJE</span>=<span class="t-string">$(date +%d/%m/%Y)</span>   <span class="t-comment"># variável com substituição</span>
+
+<span class="t-comment"># Usar variável — prefixe com $</span>
+<span class="t-cmd">echo</span> <span class="t-string">"Olá, <span class="t-var">$NOME</span>! Você tem <span class="t-var">$IDADE</span> anos."</span>
+<span class="t-cmd">echo</span> <span class="t-string">"Servidor: <span class="t-var">$SERVIDOR</span>"</span>
+<span class="t-cmd">echo</span> <span class="t-string">"Relatório gerado em: <span class="t-var">$HOJE</span>"</span>
+
+<span class="t-out">Olá, Alice! Você tem 22 anos.</span>
+<span class="t-out">Servidor: 192.168.1.10</span>
+<span class="t-out">Relatório gerado em: 25/12/2025</span>
+            </div>
+        </div>
+
+        <div class="alert-box">
+            <p>&#x26A0;&#xFE0F; <strong>Erro comum:</strong> <code>NOME = "Alice"</code> (com espa&ccedil;os) causa erro. O Bash interpreta <code>NOME</code> como um comando. Sempre use <code>NOME="Alice"</code> sem espa&ccedil;os.</p>
+        </div>
+    </div>
+
+    <!-- CARD 7 — Boas Práticas -->
+    <div class="content-card">
+        <h2>&#x2705; Boas Pr&aacute;ticas em Shell Script</h2>
+        <div class="boas-grid">
+            <div class="boa-item">
+                <div class="boa-icon">&#x1F4DC;</div>
+                <div class="boa-text">
+                    <strong>Sempre use shebang</strong>
+                    <span>A primeira linha deve ser <code>#!/bin/bash</code> em todos os scripts, sem exce&ccedil;&otilde;es.</span>
+                </div>
+            </div>
+            <div class="boa-item">
+                <div class="boa-icon">&#x1F4AC;</div>
+                <div class="boa-text">
+                    <strong>Comente com propósito</strong>
+                    <span>Comente o "por qu&ecirc;", n&atilde;o o "o qu&ecirc;". <code># incrementa x</code> &eacute; &oacute;bvio; <code># necessário para evitar race condition</code> &eacute; &uacute;til.</span>
+                </div>
+            </div>
+            <div class="boa-item">
+                <div class="boa-icon">&#x1F524;</div>
+                <div class="boa-text">
+                    <strong>Nomes em mai&uacute;sculas para vari&aacute;veis</strong>
+                    <span>Convention: <code>NOME_ARQUIVO</code> em mai&uacute;sculo para vari&aacute;veis globais. Facilita distinguir de comandos.</span>
+                </div>
+            </div>
+            <div class="boa-item">
+                <div class="boa-icon">&#x1F9EA;</div>
+                <div class="boa-text">
+                    <strong>Teste antes de automatizar</strong>
+                    <span>Execute o script manualmente com dados reais antes de agendar com cron. Um erro em produção pode ser catastr&oacute;fico.</span>
+                </div>
+            </div>
+            <div class="boa-item">
+                <div class="boa-icon">&#x1F4BE;</div>
+                <div class="boa-text">
+                    <strong>Use controle de vers&atilde;o</strong>
+                    <span>Scripts s&atilde;o c&oacute;digo. Use Git para rastrear mudan&ccedil;as, especialmente em scripts de produ&ccedil;&atilde;o.</span>
+                </div>
+            </div>
+            <div class="boa-item">
+                <div class="boa-icon">&#x1F512;</div>
+                <div class="boa-text">
+                    <strong>Permiss&atilde;o m&iacute;nima</strong>
+                    <span>Use <code>chmod 750</code> (ou <code>700</code>) em vez de <code>777</code>. D&ecirc; execu&ccedil;&atilde;o apenas a quem realmente precisa.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- EXERCÍCIO -->
+    <div class="content-card exercise-card">
+        <h2>&#x1F3AF; Exerc&iacute;cio &mdash; Arraste e Conecte</h2>
+        <p style="color:#475569;font-size:.9em;margin-bottom:4px;">Arraste cada descri&ccedil;&atilde;o para o comando ou conceito correto do Shell Script.</p>
+
+        <div class="ex-drag-root" data-ex="ex01">
+            <div class="ex-drag">
+                <div>
+                    <div class="ex-col-title">Descri&ccedil;&atilde;o</div>
+                    <div class="ex-pool" data-pool="ex01">
+                        <div class="drag-chip" data-id="c1">Primeira linha obrigat&oacute;ria do script que indica ao sistema qual interpretador usar para executar o arquivo</div>
+                        <div class="drag-chip" data-id="c2">Comando que exibe texto na tela; principal forma de comunicar o script com o usu&aacute;rio</div>
+                        <div class="drag-chip" data-id="c3">Comando que concede permiss&atilde;o de execu&ccedil;&atilde;o ao arquivo de script antes de rod&aacute;-lo pela primeira vez</div>
+                        <div class="drag-chip" data-id="c4">Prefixo <code>./</code> indica ao Shell que deve procurar o script <strong>no diret&oacute;rio atual</strong>, e n&atilde;o no PATH do sistema</div>
+                        <div class="drag-chip" data-id="c5">Linha come&ccedil;ando com <code>#</code> que &eacute; ignorada pelo interpretador e serve para documentar o c&oacute;digo</div>
+                        <div class="drag-chip" data-id="c6">Teclas usadas no Vim para <strong>salvar e sair</strong> do editor ap&oacute;s digitar o conte&uacute;do do script</div>
+                    </div>
+                </div>
+                <div>
+                    <div class="ex-col-title">Comando / Conceito</div>
+                    <div class="ex-zones" data-zones="ex01">
+                        <div class="drop-zone" data-zone="ex01-z1" data-accept="c1">
+                            <span class="zone-name">Shebang (<code>#!/bin/bash</code>)</span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z2" data-accept="c2">
+                            <span class="zone-name"><code>echo</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z3" data-accept="c3">
+                            <span class="zone-name"><code>chmod +x</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z4" data-accept="c4">
+                            <span class="zone-name">Execu&ccedil;&atilde;o com <code>./</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z5" data-accept="c5">
+                            <span class="zone-name">Coment&aacute;rio (<code>#</code>)</span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z6" data-accept="c6">
+                            <span class="zone-name">Vim: <code>Esc</code> &rarr; <code>:wq</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ex-actions">
+            <button class="btn-verificar" onclick="dragVerify('ex01')">Verificar</button>
+            <button class="btn-refazer"  onclick="dragReset('ex01')">Refazer</button>
+        </div>
+        <div class="ex-result" id="ex01-result"></div>
+    </div>
+
+    <!-- ATIVIDADE PRÁTICA -->
+    <div class="content-card practical-card" id="prat-01">
+        <h2>&#x1F6E0;&#xFE0F; Atividade Pr&aacute;tica &mdash; Meu Primeiro Script de Rel&oacute;rio</h2>
+        <div class="prat-meta">
+            <span class="prat-tag">&#x23F1; ~30 min</span>
+            <span class="prat-tag">&#x1F4BB; Ubuntu Server / Terminal</span>
+            <span class="prat-tag">&#x1F4F8; Tirar screenshot da sa&iacute;da</span>
+        </div>
+
+        <div class="prat-steps">
+            <div class="prat-step">
+                <div class="step-num">1</div>
+                <div class="step-body">
+                    <div class="step-label">Crie o diret&oacute;rio de scripts e o arquivo</div>
+                    <div class="step-desc">No terminal, crie uma pasta dedicada e o script: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">mkdir -p ~/scripts && vim ~/scripts/relatorio.sh</code>. Dentro do Vim, pressione <strong>i</strong> para entrar em modo INSERT.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">2</div>
+                <div class="step-body">
+                    <div class="step-label">Escreva o script de relat&oacute;rio do sistema</div>
+                    <div class="step-desc">Digite o seguinte conte&uacute;do (adapte com seu nome):<br>
+                    <code style="background:#f1f5f9;padding:2px 5px;border-radius:3px;font-family:monospace;display:block;margin-top:6px;">#!/bin/bash<br># Relatório do Sistema — Autor: Seu Nome<br>echo "==============================="<br>echo "   RELATÓRIO DO SISTEMA"<br>echo "==============================="<br>echo "Usuário: $(whoami)"<br>echo "Hostname: $(hostname)"<br>echo "Data/Hora: $(date)"<br>echo "Uptime: $(uptime -p)"<br>echo "Memória: $(free -h | grep Mem)"<br>echo "==============================="</code></div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">3</div>
+                <div class="step-body">
+                    <div class="step-label">Salve, d&ecirc; permiss&atilde;o e execute</div>
+                    <div class="step-desc">Pressione <strong>Esc</strong>, digite <strong>:wq</strong> e Enter para salvar. Depois: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">chmod +x ~/scripts/relatorio.sh && ~/scripts/relatorio.sh</code>. O relat&oacute;rio deve aparecer formatado na tela.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">4</div>
+                <div class="step-body">
+                    <div class="step-label">Adicione uma vari&aacute;vel e salve a sa&iacute;da em arquivo</div>
+                    <div class="step-desc">Edite o script novamente (<code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">vim ~/scripts/relatorio.sh</code>). Adicione no in&iacute;cio (logo ap&oacute;s o shebang): <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">ARQUIVO_LOG="$HOME/relatorio_$(date +%Y%m%d).txt"</code>. No final do script, adicione: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">echo "Log salvo em: $ARQUIVO_LOG"</code>. Execute redirecionando a sa&iacute;da: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">./relatorio.sh > $HOME/relatorio_$(date +%Y%m%d).txt</code>. Verifique o arquivo criado com <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">cat</code>.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">5</div>
+                <div class="step-body">
+                    <div class="step-label">Verifique as permiss&otilde;es e tire screenshot</div>
+                    <div class="step-desc">Execute <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">ls -la ~/scripts/</code> para ver as permiss&otilde;es do script (deve mostrar <code>-rwxr-xr-x</code> ou similar com o <code>x</code> ativo). Tire um screenshot mostrando: a listagem de permiss&otilde;es, a sa&iacute;da do script e o arquivo de log criado.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="prat-observe">
+            <strong>&#x1F4CC; Para refletir:</strong> Um script Shell &eacute; essencialmente uma lista de comandos que voc&ecirc; j&aacute; sabe usar. A grande transforma&ccedil;&atilde;o &eacute; que esses comandos passam a ser executados <em>automaticamente, na ordem certa, toda vez</em>, sem interven&ccedil;&atilde;o humana. Voc&ecirc; acabou de criar seu primeiro rob&ocirc; administrador de sistemas.
+        </div>
+
+        <div class="ex-actions">
+            <button class="btn-print" onclick="printPractical('prat-01', 'Aula 2.1 \u2014 Shell Script: Primeiros Passos')">&#x1F5A8;&#xFE0F; Imprimir roteiro</button>
+        </div>
+    </div>
+
+    <div class="nav-footer">
+        <a href="index.html" class="nav-link">&#x2B05; Voltar ao Dashboard</a>
+        <a href="aula08-variaveis-interacao.html" class="nav-link">Pr&oacute;xima: Vari&aacute;veis e Intera&ccedil;&atilde;o &#x27A1;</a>
+    </div>
+
+</div>
+
+<script src="slide-mode.js"></script>
+<script src="exercise-drag.js"></script>
+<script src="exercise-print.js"></script>
 </body>
 </html>

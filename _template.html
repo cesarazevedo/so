@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<!-- =============================================================
+     TEMPLATE DE AULA — SOR (Sistemas Operacionais de Redes)
+     Duplicar este arquivo para criar novas aulas.
+     Variáveis a substituir:
+       - NUMERO_AULA   ex: 1.1
+       - TITULO_AULA   ex: Shell Script: Primeiros Passos
+       - SUBTITULO     ex: Fundamentos, shebang, echo, chmod e Vim
+       - MODULO        ex: Módulo 2 — Shell Script
+       - ARQUIVO_PREV  ex: aula01-shell-script.html
+       - ARQUIVO_NEXT  ex: aula03-condicionais.html
+       - LABEL_PREV    ex: Shell Script: Primeiros Passos
+       - LABEL_NEXT    ex: Condicionais IF/ELSE
+       - ID_EX         ex: ex02   (identificador único do exercício)
+       - ID_PRAT       ex: prat-02 (id da div da atividade prática)
+     Cores por módulo:
+       Módulo 1 Linux        --primary:#667eea  --secondary:#764ba2
+       Módulo 2 Shell Script --primary:#11998e  --secondary:#38ef7d
+       Módulo 3 Serviços     --primary:#f7971e  --secondary:#e35d5b
+       Módulo 4 Win Server   --primary:#ff758c  --secondary:#c94b4b
+     ============================================================= -->
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula NUMERO_AULA — TITULO_AULA</title>
+    <link rel="stylesheet" href="slide-mode.css">
+    <link rel="stylesheet" href="exercise.css">
+    <style>
+        :root {
+            /* ── ALTERE AQUI AS CORES DO MÓDULO ── */
+            --primary:   #11998e;
+            --secondary: #38ef7d;
+            --bg-light:  #f4f7fe;
+            --text-dark: #2d3748;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.7;
+        }
+
+        /* ── TOP BAR ── */
+        .top-bar {
+            background: white;
+            padding: 15px 30px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .back-btn { text-decoration: none; color: var(--primary); font-weight: 600; display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 8px; transition: background 0.3s; }
+        .back-btn:hover { background: rgba(17,153,142,0.08); }
+        .page-badge { font-size: 0.8em; padding: 4px 12px; border-radius: 20px; background: rgba(17,153,142,0.12); color: var(--primary); font-weight: 600; }
+
+        /* ── CARDS ── */
+        .content-wrapper { max-width: 800px; margin: 40px auto; padding: 0 30px; }
+
+        .lesson-hero { background: white; border-radius: 16px; padding: 40px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin-bottom: 30px; border-top: 4px solid var(--primary); }
+        .lesson-hero h1 { font-size: 2em; margin-bottom: 10px; color: var(--primary); }
+        .lesson-hero .subtitle { font-size: 1.05em; color: #718096; }
+
+        .content-card { background: white; border-radius: 16px; padding: 35px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); margin-bottom: 25px; }
+        .content-card h2 { font-size: 1.4em; color: var(--primary); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
+        .content-card h3 { font-size: 1.05em; color: var(--secondary); margin: 20px 0 10px; }
+        .content-card p  { margin-bottom: 15px; text-align: justify; }
+
+        /* ── CAIXAS DE DESTAQUE ── */
+        .highlight-box { background: linear-gradient(135deg,rgba(17,153,142,.05),rgba(56,239,125,.06)); border-left: 4px solid var(--primary); padding: 20px 25px; border-radius: 0 12px 12px 0; margin: 20px 0; }
+        .highlight-box p { margin-bottom: 0; font-style: italic; }
+        .alert-box { background: #fff8e1; border-left: 4px solid #f59e0b; padding: 18px 22px; border-radius: 0 12px 12px 0; margin: 20px 0; }
+        .alert-box p { margin: 0; color: #78350f; font-size: .93em; }
+        .tip-box { background: #f0fdf4; border-left: 4px solid #16a34a; padding: 18px 22px; border-radius: 0 12px 12px 0; margin: 20px 0; }
+        .tip-box p { margin: 0; color: #14532d; font-size: .93em; }
+
+        ul, ol { margin: 10px 0 15px 25px; }
+        li { margin-bottom: 8px; }
+
+        .kbd-sm { background: #1e293b; color: #e2e8f0; border-radius: 4px; padding: 2px 6px; font-family: 'Consolas',monospace; font-size: .82em; white-space: nowrap; }
+
+        /* ══════════════════════════════════════════
+           TERMINAIS LINUX — identidade do curso SOR
+           ══════════════════════════════════════════ */
+        .terminal {
+            background: #1a202c;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 16px 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        .terminal-bar {
+            background: #2d3748;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .term-dot { width: 12px; height: 12px; border-radius: 50%; }
+        .term-dot.red    { background: #fc8181; }
+        .term-dot.yellow { background: #f6e05e; }
+        .term-dot.green  { background: #68d391; }
+        .term-title { font-size: .75em; color: #718096; margin-left: 8px; font-family: 'Consolas', monospace; }
+        .terminal-body {
+            padding: 20px 24px;
+            font-family: 'Courier New', 'Consolas', monospace;
+            font-size: .92em;
+            line-height: 2;
+            color: #a0aec0;
+        }
+        /* Cores de sintaxe do terminal */
+        .t-prompt  { color: #63b3ed; }           /* usuário@host:~$  */
+        .t-root    { color: #fc8181; }           /* root@host:#      */
+        .t-cmd     { color: #38ef7d; }           /* comandos         */
+        .t-flag    { color: #f6e05e; }           /* flags (-a, -l)   */
+        .t-path    { color: #fc8181; }           /* /caminhos/       */
+        .t-arg     { color: #90cdf4; }           /* argumentos       */
+        .t-out     { color: #a0aec0; }           /* saída do comando */
+        .t-comment { color: #4a5568; font-style: italic; } /* # comentários */
+        .t-string  { color: #68d391; }           /* "strings"        */
+        .t-var     { color: #b794f4; }           /* $VARIAVEL        */
+        .t-pipe    { color: #f6e05e; font-weight: bold; } /* | pipe  */
+        .t-redir   { color: #fc8181; font-weight: bold; } /* > >> < */
+        .t-shebang { color: #f687b3; }           /* #!/bin/bash      */
+        .t-ok      { color: #38ef7d; font-weight: bold; } /* OK / sucesso */
+        .t-err     { color: #fc8181; font-weight: bold; } /* ERRO         */
+
+        /* ── nav ── */
+        .nav-footer { display: flex; justify-content: space-between; margin-top: 40px; padding-bottom: 40px; }
+        .nav-link { text-decoration: none; color: var(--primary); font-weight: 600; padding: 12px 24px; border-radius: 10px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,.05); transition: all .3s; }
+        .nav-link:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.1); }
+
+        @media (max-width: 768px) {
+            .content-wrapper { padding: 0 15px; }
+            .lesson-hero, .content-card { padding: 25px; }
+            .lesson-hero h1 { font-size: 1.5em; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-bar">
+    <a href="index.html" class="back-btn">&#x2B05; Voltar ao Dashboard</a>
+    <span class="page-badge">MODULO</span>
+    <button class="slide-toggle" id="slideToggleBtn">&#x1F4FA; Modo Slide</button>
+</div>
+
+<div class="content-wrapper">
+
+    <div class="lesson-hero">
+        <h1>&#x1F4BB; TITULO_AULA</h1>
+        <p class="subtitle">Aula NUMERO_AULA &mdash; SUBTITULO</p>
+    </div>
+
+    <!-- ════════════════════════════
+         CARD 1 — Conceito/Introdução
+         ════════════════════════════ -->
+    <div class="content-card">
+        <h2>&#x1F4D6; T&iacute;tulo do Card 1</h2>
+        <p>Parágrafo introdutório do conceito.</p>
+
+        <!-- EXEMPLO DE TERMINAL LINUX -->
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div>
+                <div class="term-dot yellow"></div>
+                <div class="term-dot green"></div>
+                <span class="term-title">bash &mdash; usuario@servidor:~</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-comment"># Exemplo de comando</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-la</span> <span class="t-path">/etc</span>
+<span class="t-out">total 240</span>
+<span class="t-out">drwxr-xr-x  2 root root 4096 jan 15 10:23 .</span>
+<span class="t-out">drwxr-xr-x 18 root root 4096 jan 15 10:23 ..</span>
+            </div>
+        </div>
+
+        <div class="highlight-box">
+            <p>&#x1F4A1; Dica importante sobre o conceito.</p>
+        </div>
+    </div>
+
+    <!-- ════════════════════════════
+         CARD 2 — Exemplo prático
+         ════════════════════════════ -->
+    <div class="content-card">
+        <h2>&#x2699;&#xFE0F; T&iacute;tulo do Card 2</h2>
+        <p>Explicação do exemplo prático.</p>
+
+        <h3>&#x1F449; Passo a passo</h3>
+        <ol>
+            <li>Primeiro passo.</li>
+            <li>Segundo passo.</li>
+            <li>Terceiro passo.</li>
+        </ol>
+
+        <!-- TERMINAL COM SCRIPT -->
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div>
+                <div class="term-dot yellow"></div>
+                <div class="term-dot green"></div>
+                <span class="term-title">script.sh</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-shebang">#!/bin/bash</span>
+<span class="t-comment"># Meu primeiro script</span>
+<span class="t-var">$NOME</span>=<span class="t-string">"Mundo"</span>
+<span class="t-cmd">echo</span> <span class="t-string">"Olá, <span class="t-var">$NOME</span>!"</span>
+            </div>
+        </div>
+
+        <div class="tip-box">
+            <p>&#x1F4A1; Dica adicional sobre boas práticas.</p>
+        </div>
+
+        <div class="alert-box">
+            <p>&#x26A0;&#xFE0F; Atenção: cuidado com esse detalhe importante.</p>
+        </div>
+    </div>
+
+    <!-- Adicione mais cards conforme necessário -->
+    <!-- Cards sugeridos: 6-8 de conteúdo + 1 exercício + 1 prática -->
+
+    <!-- ════════════════════════════
+         EXERCÍCIO DRAG-AND-DROP
+         ════════════════════════════ -->
+    <div class="content-card exercise-card">
+        <h2>&#x1F3AF; Exerc&iacute;cio &mdash; Arraste e Conecte</h2>
+        <p style="color:#475569;font-size:.9em;margin-bottom:4px;">Arraste cada descri&ccedil;&atilde;o para o comando ou conceito correto.</p>
+
+        <div class="ex-drag-root" data-ex="ID_EX">
+            <div class="ex-drag">
+                <div>
+                    <div class="ex-col-title">Descri&ccedil;&atilde;o</div>
+                    <div class="ex-pool" data-pool="ID_EX">
+                        <!-- CHIPS — data-id deve coincidir com data-accept nas zonas -->
+                        <div class="drag-chip" data-id="c1">Descrição do chip 1</div>
+                        <div class="drag-chip" data-id="c2">Descrição do chip 2</div>
+                        <div class="drag-chip" data-id="c3">Descrição do chip 3</div>
+                        <div class="drag-chip" data-id="c4">Descrição do chip 4</div>
+                        <div class="drag-chip" data-id="c5">Descrição do chip 5</div>
+                        <div class="drag-chip" data-id="c6">Descrição do chip 6</div>
+                    </div>
+                </div>
+                <div>
+                    <div class="ex-col-title">Comando / Conceito</div>
+                    <div class="ex-zones" data-zones="ID_EX">
+                        <div class="drop-zone" data-zone="ID_EX-z1" data-accept="c1">
+                            <span class="zone-name">Zona 1</span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ID_EX-z2" data-accept="c2">
+                            <span class="zone-name">Zona 2</span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ID_EX-z3" data-accept="c3">
+                            <span class="zone-name">Zona 3</span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ID_EX-z4" data-accept="c4">
+                            <span class="zone-name">Zona 4</span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ID_EX-z5" data-accept="c5">
+                            <span class="zone-name">Zona 5</span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ID_EX-z6" data-accept="c6">
+                            <span class="zone-name">Zona 6</span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ex-actions">
+            <button class="btn-verificar" onclick="dragVerify('ID_EX')">Verificar</button>
+            <button class="btn-refazer"  onclick="dragReset('ID_EX')">Refazer</button>
+        </div>
+        <div class="ex-result" id="ID_EX-result"></div>
+    </div>
+
+    <!-- ════════════════════════════
+         ATIVIDADE PRÁTICA
+         ════════════════════════════ -->
+    <div class="content-card practical-card" id="ID_PRAT">
+        <h2>&#x1F6E0;&#xFE0F; Atividade Pr&aacute;tica &mdash; T&iacute;tulo da Atividade</h2>
+        <div class="prat-meta">
+            <span class="prat-tag">&#x23F1; ~XX min</span>
+            <span class="prat-tag">&#x1F4BB; Ubuntu Server / VirtualBox</span>
+            <span class="prat-tag">&#x1F4BE; Salvar screenshot</span>
+        </div>
+
+        <div class="prat-steps">
+            <div class="prat-step">
+                <div class="step-num">1</div>
+                <div class="step-body">
+                    <div class="step-label">Título do passo 1</div>
+                    <div class="step-desc">Descrição detalhada do que o aluno deve fazer neste passo, incluindo comandos a executar e resultado esperado.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">2</div>
+                <div class="step-body">
+                    <div class="step-label">Título do passo 2</div>
+                    <div class="step-desc">Descrição do passo 2. Use <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;font-size:.9em;">comandos inline</code> quando necessário.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">3</div>
+                <div class="step-body">
+                    <div class="step-label">Título do passo 3</div>
+                    <div class="step-desc">Descrição do passo 3.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="prat-observe">
+            <strong>&#x1F4CC; Para refletir:</strong> Texto de reflexão sobre o que foi aprendido e sua aplicação prática no contexto de administração de sistemas.
+        </div>
+
+        <div class="ex-actions">
+            <button class="btn-print" onclick="printPractical('ID_PRAT', 'Aula NUMERO_AULA \u2014 TITULO_AULA')">&#x1F5A8;&#xFE0F; Imprimir roteiro</button>
+        </div>
+    </div>
+
+    <div class="nav-footer">
+        <a href="ARQUIVO_PREV" class="nav-link">&#x2B05; Anterior: LABEL_PREV</a>
+        <a href="ARQUIVO_NEXT" class="nav-link">Pr&oacute;xima: LABEL_NEXT &#x27A1;</a>
+    </div>
+
+</div>
+
+<script src="slide-mode.js"></script>
+<script src="exercise-drag.js"></script>
+<script src="exercise-print.js"></script>
+</body>
+</html>
