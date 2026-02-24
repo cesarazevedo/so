@@ -1,19 +1,19 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Sistemas Operacionais de Redes</title>
+    <title>Dashboard — Sistemas Operacionais de Redes</title>
     <style>
-        /* --- RESET E BASE --- */
         :root {
-            --primary: #667eea;
+            --primary:   #667eea;
             --secondary: #764ba2;
-            --bg-light: #f4f7fe;
-            --text-dark: #2d3748;
+            --bg-light:  #f0f4f8;
+            --text-dark: #1a202c;
         }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-light);
@@ -23,7 +23,7 @@
             flex-direction: column;
         }
 
-        /* --- HEADER SUPERIOR --- */
+        /* --- HEADER --- */
         .top-header {
             background: white;
             padding: 15px 30px;
@@ -33,6 +33,7 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
             z-index: 10;
         }
+
         .brand {
             font-size: 1.5em;
             font-weight: 700;
@@ -40,21 +41,16 @@
             align-items: center;
             gap: 10px;
         }
-        /* CORREÇÃO: Separar emojis do texto com gradiente */
-        .brand-icons {
-            /* Emojis mantêm cor original */
-        }
+
         .brand-text {
             background: linear-gradient(to right, var(--primary), var(--secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-        
-        .search-box {
-            position: relative;
-            width: 400px;
-        }
+
+        .search-box { position: relative; width: 400px; }
+
         .search-input {
             width: 100%;
             padding: 10px 20px 10px 40px;
@@ -64,7 +60,13 @@
             outline: none;
             transition: all 0.3s;
         }
-        .search-input:focus { background: white; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); }
+
+        .search-input:focus {
+            background: white;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
         .search-icon {
             position: absolute;
             left: 15px;
@@ -72,11 +74,9 @@
             transform: translateY(-50%);
             color: #a0aec0;
         }
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+
+        .user-profile { display: flex; align-items: center; gap: 10px; }
+
         .user-avatar {
             width: 40px;
             height: 40px;
@@ -89,68 +89,87 @@
             font-weight: bold;
         }
 
-        /* --- CONTAINER PRINCIPAL (ABAS) --- */
+        /* --- SIDEBAR --- */
         .main-container {
             flex: 1;
             display: flex;
-            flex-direction: column;
-            padding: 20px 30px;
+            flex-direction: row;
             overflow: hidden;
         }
 
-        /* NAVEGAÇÃO POR ABAS */
         .tabs-nav {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 2px;
+            flex-direction: column;
+            width: 230px;
+            flex-shrink: 0;
+            background: white;
+            border-right: 1px solid #e2e8f0;
+            overflow-y: auto;
+            padding: 20px 0;
+            gap: 2px;
         }
+
+        .sidebar-label {
+            font-size: 0.7em;
+            font-weight: 700;
+            color: #a0aec0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 0 18px 8px;
+        }
+
+        .sidebar-sep { height: 1px; background: #e2e8f0; margin: 10px 18px; }
+
         .tab-btn {
-            padding: 12px 24px;
+            padding: 9px 16px 9px 22px;
             background: transparent;
             border: none;
-            font-size: 1em;
+            border-left: 3px solid transparent;
+            font-size: 0.87em;
             font-weight: 600;
             color: #718096;
             cursor: pointer;
-            position: relative;
-            transition: all 0.3s;
-            border-radius: 8px 8px 0 0;
+            transition: all 0.2s;
+            border-radius: 0 8px 8px 0;
+            text-align: left;
+            width: 100%;
         }
-        .tab-btn:hover { color: var(--primary); background: rgba(102, 126, 234, 0.05); }
+
+        .tab-btn:hover { color: var(--primary); background: rgba(102,126,234,0.06); }
+
         .tab-btn.active {
             color: var(--primary);
-            background: white;
+            background: rgba(102,126,234,0.08);
+            border-left-color: var(--primary);
         }
-        .tab-btn.active::after {
-            content: '';
-            position: absolute;
-            bottom: -4px;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: var(--primary);
-            border-radius: 4px 4px 0 0;
-        }
-        /* Cores específicas das abas */
-        .tab-btn[data-target="bimestre1"].active::after { background: #667eea; }
-        .tab-btn[data-target="bimestre2"].active::after { background: #38ef7d; }
-        .tab-btn[data-target="bimestre3"].active::after { background: #f7971e; }
-        .tab-btn[data-target="bimestre4"].active::after { background: #ff758c; }
 
+        /* Cores por bimestre */
+        .tab-btn[data-target="bim1"].active { border-left-color: #667eea; color: #667eea; background: rgba(102,126,234,.08); }
+        .tab-btn[data-target="bim2"].active { border-left-color: #11998e; color: #11998e; background: rgba(17,153,142,.08); }
+        .tab-btn[data-target="bim3"].active { border-left-color: #f7971e; color: #f7971e; background: rgba(247,151,30,.08); }
+        .tab-btn[data-target="bim4"].active { border-left-color: #ff758c; color: #ff758c; background: rgba(255,117,140,.08); }
 
-        /* CONTEÚDO DAS ABAS */
+        /* Badges */
+        .badge-bim1 { background: rgba(102,126,234,.15); color: #667eea; }
+        .badge-bim2 { background: rgba(17,153,142,.15);  color: #11998e; }
+        .badge-bim3 { background: rgba(247,151,30,.15);  color: #f7971e; }
+        .badge-bim4 { background: rgba(255,117,140,.15); color: #ff758c; }
+
+        /* --- CONTEÚDO DAS ABAS --- */
         .tab-content {
             flex: 1;
             overflow-y: auto;
             display: none;
             animation: fadeIn 0.4s ease;
-            padding-bottom: 50px; /* Espaço extra no final */
+            padding: 25px 30px 50px;
         }
+
         .tab-content.active { display: block; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
 
         /* --- DASHBOARD --- */
         .dashboard-grid {
@@ -158,27 +177,36 @@
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 25px;
         }
+
         .dash-card {
             background: white;
             padding: 25px;
             border-radius: 16px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.05);
         }
-        .dash-card h3 { margin-bottom: 15px; color: var(--text-dark); display: flex; align-items: center; gap: 10px;}
-        
+
+        .dash-card h3 {
+            margin-bottom: 15px;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
         .progress-circular {
+            --prog: 0%;
             width: 120px;
             height: 120px;
             border-radius: 50%;
-            background: conic-gradient(var(--primary) 25%, #e2e8f0 0);
+            background: conic-gradient(var(--primary) var(--prog), #e2e8f0 0);
             margin: 0 auto;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
         }
-        .progress-circular::before {
-            content: '25%';
+
+        .prog-text {
             position: absolute;
             background: white;
             width: 100px;
@@ -192,14 +220,41 @@
             color: var(--primary);
         }
 
+        .chapter-check-list { list-style: none; }
+        .chapter-check-list li { margin-bottom: 6px; }
+        .chapter-check-list label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: default;
+            padding: 4px 6px;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+        .chapter-check-list label:hover { background: #f0f4f8; }
+        .chapter-check-list input[type="checkbox"] {
+            width: 16px; height: 16px;
+            accent-color: var(--primary);
+            cursor: default;
+            flex-shrink: 0;
+        }
+        .chapter-check-list .ch-name { font-size: 0.92em; }
+
         /* --- CARDS DE AULA --- */
         .bimestre-title {
             font-size: 1.8em;
-            margin-bottom: 20px;
+            margin-bottom: 8px;
             display: flex;
             align-items: center;
             gap: 15px;
         }
+
+        .bimestre-subtitle {
+            font-size: 0.95em;
+            color: #718096;
+            margin-bottom: 24px;
+        }
+
         .bimestre-badge {
             font-size: 0.6em;
             padding: 5px 12px;
@@ -207,16 +262,22 @@
             text-transform: uppercase;
             letter-spacing: 1px;
         }
-        .badge-b1 { background: rgba(102, 126, 234, 0.1); color: #667eea; }
-        .badge-b2 { background: rgba(56, 239, 125, 0.1); color: #11998e; }
-        .badge-b3 { background: rgba(247, 151, 30, 0.1); color: #f7971e; }
-        .badge-b4 { background: rgba(255, 117, 140, 0.1); color: #ff758c; }
+
+        .section-label {
+            font-size: 0.75em;
+            font-weight: 700;
+            color: #a0aec0;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin: 28px 0 12px;
+        }
 
         .lessons-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 20px;
         }
+
         .lesson-card {
             background: white;
             border-radius: 12px;
@@ -229,366 +290,876 @@
             display: flex;
             flex-direction: column;
         }
-        .lesson-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); border-color: var(--primary); }
-        .lesson-header { display: flex; justify-content: space-between; margin-bottom: 15px; }
+
+        a.lesson-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-color: var(--primary);
+        }
+
+        .lesson-card.coming-soon {
+            opacity: 0.58;
+            cursor: not-allowed;
+            border-style: dashed;
+            border-color: #cbd5e0;
+        }
+
+        .lesson-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
         .lesson-id { font-weight: 700; color: #a0aec0; }
         .lesson-status { font-size: 1.2em; }
-        .lesson-title { font-size: 1.1em; font-weight: 600; margin-bottom: 10px; line-height: 1.4; }
-        .lesson-desc { font-size: 0.9em; color: #718096; margin-bottom: 15px; flex-grow: 1; }
-        .lesson-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: auto;}
-        .mini-tag { font-size: 0.75em; padding: 3px 8px; background: #edf2f7; color: #718096; border-radius: 6px; }
-        .lesson-card.done .lesson-status { color: #38ef7d; }
-        
+
+        .lesson-title {
+            font-size: 1.05em;
+            font-weight: 600;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .lesson-desc {
+            font-size: 0.88em;
+            color: #718096;
+            margin-bottom: 15px;
+            flex-grow: 1;
+            line-height: 1.6;
+        }
+
+        .lesson-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: auto;
+        }
+
+        .mini-tag {
+            font-size: 0.75em;
+            padding: 3px 8px;
+            background: #edf2f7;
+            color: #718096;
+            border-radius: 6px;
+        }
+
+        a.lesson-card.done .lesson-status { color: #38b000; }
+
+        /* --- DARK MODE TOGGLE --- */
+        .dark-toggle-index {
+            padding: 7px 11px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            font-size: 1.15em;
+            line-height: 1;
+            transition: all 0.2s;
+        }
+        .dark-toggle-index:hover { background: #eef4fb; border-color: var(--primary); }
+
+        /* --- DARK MODE --- */
+        body.dark-mode { background-color: #0f172a; color: #e2e8f0; }
+        body.dark-mode .top-header { background: #1e293b; box-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+        body.dark-mode .brand-text { background: linear-gradient(to right, #93c5fd, #c4b5fd); -webkit-background-clip: text; background-clip: text; }
+        body.dark-mode .dark-toggle-index { background: #334155; border-color: #475569; }
+        body.dark-mode .dark-toggle-index:hover { background: #475569; border-color: #93c5fd; }
+        body.dark-mode .tabs-nav { background: #1e293b; border-right-color: #334155; }
+        body.dark-mode .sidebar-sep { background: #334155; }
+        body.dark-mode .tab-btn { color: #94a3b8; }
+        body.dark-mode .tab-btn:hover { color: #e2e8f0; background: rgba(255,255,255,0.05); }
+        body.dark-mode .tab-btn.active { background: rgba(102,126,234,.18); }
+        body.dark-mode .dash-card { background: #1e293b; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        body.dark-mode .dash-card h3 { color: #e2e8f0; }
+        body.dark-mode #motivationText { color: #94a3b8 !important; }
+        body.dark-mode .progress-circular { background: conic-gradient(var(--primary) var(--prog), #334155 0); }
+        body.dark-mode .prog-text { background: #1e293b; color: #93c5fd; }
+        body.dark-mode .chapter-check-list label:hover { background: #334155; }
+        body.dark-mode .lesson-card { background: #1e293b; border-color: #334155; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+        body.dark-mode a.lesson-card:hover { border-color: #93c5fd; box-shadow: 0 8px 25px rgba(0,0,0,0.3); }
+        body.dark-mode .lesson-card.coming-soon { border-color: #334155; }
+        body.dark-mode .lesson-title { color: #e2e8f0; }
+        body.dark-mode .lesson-desc { color: #94a3b8; }
+        body.dark-mode .mini-tag { background: #334155; color: #94a3b8; }
+        body.dark-mode .bimestre-title { color: #e2e8f0; }
+        body.dark-mode .bimestre-subtitle { color: #64748b; }
+        body.dark-mode .section-label { color: #475569; }
+        body.dark-mode .search-input { background: #334155; border-color: #475569; color: #e2e8f0; }
+        body.dark-mode .search-input::placeholder { color: #64748b; }
+        body.dark-mode .search-input:focus { background: #3d4f66; border-color: #93c5fd; box-shadow: 0 0 0 3px rgba(147,197,253,0.1); }
+        body.dark-mode .search-icon { color: #64748b; }
+
         @media (max-width: 768px) {
             .top-header { flex-direction: column; gap: 15px; padding: 15px; }
             .search-box { width: 100%; }
-            .tabs-nav { overflow-x: auto; padding-bottom: 5px; }
-            .tab-btn { white-space: nowrap; }
+            .main-container { flex-direction: column; }
+            .tabs-nav {
+                flex-direction: row;
+                width: 100%;
+                overflow-x: auto;
+                overflow-y: hidden;
+                padding: 8px 10px;
+                gap: 4px;
+                border-right: none;
+                border-bottom: 1px solid #e2e8f0;
+            }
+            .sidebar-label, .sidebar-sep { display: none; }
+            .tab-btn {
+                border-left: none;
+                border-bottom: 3px solid transparent;
+                border-radius: 8px 8px 0 0;
+                white-space: nowrap;
+                width: auto;
+                padding: 8px 14px;
+            }
+            .tab-btn.active,
+            .tab-btn[data-target="bim1"].active,
+            .tab-btn[data-target="bim2"].active,
+            .tab-btn[data-target="bim3"].active,
+            .tab-btn[data-target="bim4"].active {
+                border-left-color: transparent;
+                border-bottom-color: currentColor;
+                background: rgba(102,126,234,0.06);
+            }
+            .tab-content { padding: 20px 15px 40px; }
         }
     </style>
 </head>
 <body>
 
-    <header class="top-header">
+    <!-- HEADER -->
+    <div class="top-header">
         <div class="brand">
-            <!-- CORREÇÃO: Emojis separados do texto com gradiente -->
-            <span class="brand-icons">🐧🪟</span>
+            <span>&#x1F427;&#x1FA9F;</span>
             <span class="brand-text">SOR Dashboard</span>
         </div>
         <div class="search-box">
-            <span class="search-icon">🔍</span>
-            <input type="text" id="globalSearch" class="search-input" placeholder="Filtrar aulas na aba atual..." onkeyup="performGlobalSearch()">
+            <span class="search-icon">&#x1F50D;</span>
+            <input
+                type="text"
+                id="globalSearch"
+                class="search-input"
+                placeholder="Buscar aula..."
+                onkeyup="performGlobalSearch()"
+            >
         </div>
         <div class="user-profile">
-            <div style="text-align: right;">
-                <div style="font-weight: bold;">Prof. César Azevedo</div>
-                <div style="font-size: 0.8em; color: #718096;">Administrador</div>
+            <button class="dark-toggle-index" id="darkToggleIndexBtn" title="Alternar modo escuro">&#x1F319;</button>
+            <div>
+                <div style="font-weight: 600;">Prof. C&eacute;sar Azevedo</div>
+                <div style="font-size: 0.85em; color: #718096;">Administrador</div>
             </div>
             <div class="user-avatar">CA</div>
         </div>
-    </header>
+    </div>
 
-    <main class="main-container">
-        <nav class="tabs-nav">
-            <button class="tab-btn active" data-target="overview">📊 Visão Geral</button>
-            <button class="tab-btn" data-target="bimestre1">🐧 1º Bimestre</button>
-            <button class="tab-btn" data-target="bimestre2">🤖 2º Bimestre</button>
-            <button class="tab-btn" data-target="bimestre3">🌐 3º Bimestre</button>
-            <button class="tab-btn" data-target="bimestre4">🪟 4º Bimestre</button>
-        </nav>
+    <!-- MAIN CONTAINER -->
+    <div class="main-container">
 
-        <section id="overview" class="tab-content active">
+        <!-- SIDEBAR -->
+        <div class="tabs-nav">
+            <div class="sidebar-label">Dashboard</div>
+            <button class="tab-btn active" data-target="visao-geral">&#x1F4CA; Vis&atilde;o Geral</button>
+            <div class="sidebar-sep"></div>
+            <div class="sidebar-label">Bimestres</div>
+            <button class="tab-btn" data-target="bim1">&#x1F427; 1&ordm; Bim &mdash; Linux</button>
+            <button class="tab-btn" data-target="bim2">&#x1F916; 2&ordm; Bim &mdash; Shell Script</button>
+            <button class="tab-btn" data-target="bim3">&#x1F310; 3&ordm; Bim &mdash; Servi&ccedil;os</button>
+            <button class="tab-btn" data-target="bim4">&#x1FA9F; 4&ordm; Bim &mdash; Windows</button>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════ -->
+        <!-- VISÃO GERAL                                         -->
+        <!-- ═══════════════════════════════════════════════════ -->
+        <div id="visao-geral" class="tab-content active">
             <div class="dashboard-grid">
+
+                <!-- Progresso -->
                 <div class="dash-card">
-                    <h3>📈 Progresso da Turma</h3>
-                    <div style="text-align: center; padding: 20px 0;">
-                        <div class="progress-circular"></div>
-                        <p style="margin-top: 15px; color: #718096;"></p>
+                    <h3>&#x1F4C8; Progresso do Curso</h3>
+                    <div class="progress-circular" id="progressCircle">
+                        <span class="prog-text" id="progText">0%</span>
                     </div>
+                    <p style="text-align:center; margin-top:12px; color:#718096; font-size:0.9em;" id="progLabel">0 de 4 bimestres</p>
                 </div>
-                <div class="dash-card" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white;">
-                    <h3 style="color: white;">👨‍🏫 Contato do Professor</h3>
-                    <p style="font-size: 1.2em; font-weight: bold; margin-bottom: 10px;">César Azevedo</p>
-                    <p style="opacity: 0.9;">📧 cesar.augusto@escolar.ifrn.edu.br</p>
-                </div>
+
+                <!-- Contato + Dica -->
                 <div class="dash-card">
-                    <h3>📅 Status Atual</h3>
-                    <ul style="list-style: none; padding-left: 0;">
-                        <li style="margin-bottom: 15px; padding-left: 20px; border-left: 3px solid #38ef7d;">
-                            <strong>Módulo Linux</strong><br>
-                            <span style="font-size: 0.9em; color: #718096;">✅ Concluído com sucesso</span>
-                        </li>
-                        <li style="margin-bottom: 15px; padding-left: 20px; border-left: 3px solid #38ef7d;">
-                            <strong>Módulo Shell Script</strong><br>
-                            <span style="font-size: 0.9em; color: #718096;">✅ Concluído com sucesso</span>
-                        </li>
-                         <li style="margin-bottom: 15px; padding-left: 20px; border-left: 3px solid #f7971e;">
-                            <strong>Módulo Serviços de Rede</strong><br>
-                            <span style="font-size: 0.9em; color: #718096;">✅ Projeto Final Publicado</span>
-                        </li>
-                        <li style="padding-left: 20px; border-left: 3px solid #ff758c;">
-                            <strong>Módulo Windows Server</strong><br>
-                            <span style="font-size: 0.9em; color: #718096;">⏳ Em andamento (4º Bimestre)</span>
-                        </li>
-                    </ul>
+                    <h3>&#x1F468;&#x200D;&#x1F3EB; Contato do Professor</h3>
+                    <p><strong>C&eacute;sar Azevedo</strong></p>
+                    <p style="margin-top:8px;">&#x1F4E7; cesar.augusto@escolar.ifrn.edu.br</p>
+                    <p style="margin-top:4px; font-size:0.9em; color:#718096;">IFRN &mdash; Sistemas Operacionais de Redes</p>
+                    <hr style="border:none; border-top:1px solid #e2e8f0; margin:16px 0;">
+                    <p style="font-size:0.8em; font-weight:700; color:#a0aec0; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;">&#x1F4A1; Dica do dia</p>
+                    <p id="motivationText" style="font-style: italic; color: #4a5568; line-height: 1.7; font-size:0.92em;"></p>
                 </div>
-            </div>
-        </section>
 
-        <section id="bimestre1" class="tab-content">
-            <h2 class="bimestre-title">Fundamentos Linux <span class="bimestre-badge badge-b1">Módulo 1</span></h2>
+                <!-- Status dos Bimestres -->
+                <div class="dash-card">
+                    <h3>&#x1F4C5; Status dos Bimestres</h3>
+                    <ul class="chapter-check-list" id="chapterList">
+                        <li><label><input type="checkbox" class="chapter-check" id="ch1"><span class="ch-name">1&ordm; Bimestre &mdash; Fundamentos Linux</span></label></li>
+                        <li><label><input type="checkbox" class="chapter-check" id="ch2"><span class="ch-name">2&ordm; Bimestre &mdash; Shell Script</span></label></li>
+                        <li><label><input type="checkbox" class="chapter-check" id="ch3"><span class="ch-name">3&ordm; Bimestre &mdash; Servi&ccedil;os de Rede</span></label></li>
+                        <li><label><input type="checkbox" class="chapter-check" id="ch4"><span class="ch-name">4&ordm; Bimestre &mdash; Windows Server</span></label></li>
+                    </ul>
+                    <hr style="border:none; border-top:1px solid #e2e8f0; margin:16px 0;">
+                    <p style="font-size:0.8em; color:#a0aec0;">
+                        &#x1F4D8; <strong>25 aulas planejadas</strong> &middot; 4 bimestres tem&aacute;ticos
+                    </p>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════ -->
+        <!-- BIMESTRE 1 — FUNDAMENTOS LINUX                      -->
+        <!-- ═══════════════════════════════════════════════════ -->
+        <div id="bim1" class="tab-content">
+            <div class="bimestre-title">
+                Fundamentos Linux
+                <span class="bimestre-badge badge-bim1">1&ordm; Bimestre</span>
+            </div>
+            <p class="bimestre-subtitle">Linha de comando, hierarquia de diretórios, permissões, gerenciamento de pacotes, processos e sistema de arquivos.</p>
+
             <div class="lessons-grid">
-                <a href="intro_so.html" class="lesson-card done">
-                    <div class="lesson-header"><span class="lesson-id">#01</span><span class="lesson-status">🐧</span></div>
+
+                <a href="intro_so.html" class="lesson-card">
+                    <div class="lesson-header">
+                        <span class="lesson-id">#01 &#x1F427;</span>
+                        <span class="lesson-status"></span>
+                    </div>
                     <h4 class="lesson-title">Introdução ao Linux</h4>
-                    <p class="lesson-desc">Do sonho de um estudante finlandês ao sistema que move o mundo. Linus Torvalds e GNU.</p>
-                    <div class="lesson-tags"><span class="mini-tag">História</span><span class="mini-tag">Kernel</span></div>
+                    <p class="lesson-desc">Do sonho de um estudante finlandês ao sistema que move o mundo. Linus Torvalds, GNU e o ecossistema de distribuições.</p>
+                    <div class="lesson-tags">
+                        <span class="mini-tag">Hist&oacute;ria</span>
+                        <span class="mini-tag">Kernel</span>
+                        <span class="mini-tag">GNU</span>
+                    </div>
                 </a>
+
                 <a href="aula02-fhs.html" class="lesson-card">
-                    <div class="lesson-header"><span class="lesson-id">#02</span><span class="lesson-status">🗂️</span></div>
+                    <div class="lesson-header">
+                        <span class="lesson-id">#02 &#x1F5C2;&#xFE0F;</span>
+                        <span class="lesson-status"></span>
+                    </div>
                     <h4 class="lesson-title">Arquitetura e FHS</h4>
-                    <p class="lesson-desc">Conheça os diretórios do Linux: /etc, /bin, /home, /var, /dev, /tmp e outros.</p>
-                    <div class="lesson-tags"><span class="mini-tag">FHS</span><span class="mini-tag">Sistema</span></div>
+                    <p class="lesson-desc">Conheça os diretórios do Linux: /etc, /bin, /home, /var, /dev, /tmp e a hierarquia padrão do sistema de arquivos.</p>
+                    <div class="lesson-tags">
+                        <span class="mini-tag">FHS</span>
+                        <span class="mini-tag">Diret&oacute;rios</span>
+                        <span class="mini-tag">Sistema</span>
+                    </div>
                 </a>
+
                 <a href="aula03-comandos-produtividade.html" class="lesson-card">
-                    <div class="lesson-header"><span class="lesson-id">#03</span><span class="lesson-status">⌨️</span></div>
+                    <div class="lesson-header">
+                        <span class="lesson-id">#03 &#x2328;&#xFE0F;</span>
+                        <span class="lesson-status"></span>
+                    </div>
                     <h4 class="lesson-title">Comandos Essenciais e Produtividade</h4>
-                    <p class="lesson-desc">ls, cd, cp, mv, rm + atalhos, pipes (|) e redirecionamentos (> >>).</p>
-                    <div class="lesson-tags"><span class="mini-tag">Terminal</span><span class="mini-tag">CLI</span></div>
+                    <p class="lesson-desc">ls, cd, cp, mv, rm, grep, find + pipes (|) e redirecionamentos (> >>). Domine o terminal Linux.</p>
+                    <div class="lesson-tags">
+                        <span class="mini-tag">Terminal</span>
+                        <span class="mini-tag">CLI</span>
+                        <span class="mini-tag">Pipes</span>
+                    </div>
                 </a>
+
                 <a href="aula04-gerenciamento-usuarios.html" class="lesson-card">
-                    <div class="lesson-header"><span class="lesson-id">#04</span><span class="lesson-status">👥</span></div>
+                    <div class="lesson-header">
+                        <span class="lesson-id">#04 &#x1F465;</span>
+                        <span class="lesson-status"></span>
+                    </div>
                     <h4 class="lesson-title">Gerenciamento de Usuários</h4>
-                    <p class="lesson-desc">Crie, modifique e organize contas. Configure permissões e use sudo com segurança.</p>
-                    <div class="lesson-tags"><span class="mini-tag">Admin</span><span class="mini-tag">Sudo</span></div>
+                    <p class="lesson-desc">Crie, modifique e organize contas. Configure grupos e use sudo com segurança no servidor.</p>
+                    <div class="lesson-tags">
+                        <span class="mini-tag">useradd</span>
+                        <span class="mini-tag">Grupos</span>
+                        <span class="mini-tag">sudo</span>
+                    </div>
                 </a>
+
                 <a href="aula05-permissoes.html" class="lesson-card">
-                    <div class="lesson-header"><span class="lesson-id">#05</span><span class="lesson-status">🔐</span></div>
+                    <div class="lesson-header">
+                        <span class="lesson-id">#05 &#x1F510;</span>
+                        <span class="lesson-status"></span>
+                    </div>
                     <h4 class="lesson-title">Permissões e ACL</h4>
-                    <p class="lesson-desc">Controle de acesso: chmod, chown, chgrp e umask. Sistema octal (rwx).</p>
-                    <div class="lesson-tags"><span class="mini-tag">Segurança</span><span class="mini-tag">Permissões</span></div>
+                    <p class="lesson-desc">Controle de acesso: chmod, chown, chgrp e umask. Sistema octal e notação simbólica (rwx).</p>
+                    <div class="lesson-tags">
+                        <span class="mini-tag">chmod</span>
+                        <span class="mini-tag">chown</span>
+                        <span class="mini-tag">Seguran&ccedil;a</span>
+                    </div>
                 </a>
+
                 <a href="aula06-pacotes.html" class="lesson-card">
-                    <div class="lesson-header"><span class="lesson-id">#06</span><span class="lesson-status">📦</span></div>
+                    <div class="lesson-header">
+                        <span class="lesson-id">#06 &#x1F4E6;</span>
+                        <span class="lesson-status"></span>
+                    </div>
                     <h4 class="lesson-title">Pacotes e Repositórios</h4>
-                    <p class="lesson-desc">Gerenciamento de software: apt, dpkg, update, install, remove.</p>
-                    <div class="lesson-tags"><span class="mini-tag">apt</span><span class="mini-tag">dpkg</span></div>
+                    <p class="lesson-desc">Gerenciamento de software com apt e dpkg: update, install, remove, purge. Repositórios e PPAs.</p>
+                    <div class="lesson-tags">
+                        <span class="mini-tag">apt</span>
+                        <span class="mini-tag">dpkg</span>
+                        <span class="mini-tag">Reposit&oacute;rios</span>
+                    </div>
                 </a>
+
                 <a href="aula07-processos.html" class="lesson-card">
-                    <div class="lesson-header"><span class="lesson-id">#07</span><span class="lesson-status">⚙️</span></div>
+                    <div class="lesson-header">
+                        <span class="lesson-id">#07 &#x2699;&#xFE0F;</span>
+                        <span class="lesson-status"></span>
+                    </div>
                     <h4 class="lesson-title">Processos e Serviços</h4>
-                    <p class="lesson-desc">ps, top, kill, nice, systemctl. Monitoramento e controle do sistema.</p>
-                    <div class="lesson-tags"><span class="mini-tag">Processos</span><span class="mini-tag">systemd</span></div>
+                    <p class="lesson-desc">ps, top, kill, nice, systemctl. Monitore e controle o que está sendo executado no servidor.</p>
+                    <div class="lesson-tags">
+                        <span class="mini-tag">Processos</span>
+                        <span class="mini-tag">systemd</span>
+                        <span class="mini-tag">journalctl</span>
+                    </div>
                 </a>
+
                 <a href="aula08-filesystem.html" class="lesson-card">
-                    <div class="lesson-header"><span class="lesson-id">#08</span><span class="lesson-status">💾</span></div>
+                    <div class="lesson-header">
+                        <span class="lesson-id">#08 &#x1F4BE;</span>
+                        <span class="lesson-status"></span>
+                    </div>
                     <h4 class="lesson-title">Sistema de Arquivos e Montagem</h4>
-                    <p class="lesson-desc">mount, umount, fstab, UUID. Conecte discos e pendrives.</p>
-                    <div class="lesson-tags"><span class="mini-tag">Filesystem</span><span class="mini-tag">mount</span></div>
+                    <p class="lesson-desc">mount, umount, /etc/fstab e UUID. Formate partições e conecte discos e pendrives ao servidor.</p>
+                    <div class="lesson-tags">
+                        <span class="mini-tag">ext4</span>
+                        <span class="mini-tag">mount</span>
+                        <span class="mini-tag">fstab</span>
+                    </div>
                 </a>
+
                 <a href="aula09-regex.html" class="lesson-card">
-                    <div class="lesson-header"><span class="lesson-id">#09</span><span class="lesson-status">🔍</span></div>
+                    <div class="lesson-header">
+                        <span class="lesson-id">#09 &#x1F50D;</span>
+                        <span class="lesson-status"></span>
+                    </div>
                     <h4 class="lesson-title">Regex, Filtros e Metacaracteres</h4>
-                    <p class="lesson-desc">grep, sed, awk. Expressões regulares e processamento de texto.</p>
-                    <div class="lesson-tags"><span class="mini-tag">Regex</span><span class="mini-tag">Filtros</span></div>
+                    <p class="lesson-desc">grep, sed, awk e expressões regulares. Processe e filtre texto como um administrador de sistemas.</p>
+                    <div class="lesson-tags">
+                        <span class="mini-tag">grep</span>
+                        <span class="mini-tag">sed</span>
+                        <span class="mini-tag">awk</span>
+                    </div>
                 </a>
+
                 <a href="aula10-projeto-final.html" class="lesson-card">
-                    <div class="lesson-header"><span class="lesson-id">#10</span><span class="lesson-status"></span></div>
+                    <div class="lesson-header">
+                        <span class="lesson-id">#10 &#x1F3C6;</span>
+                        <span class="lesson-status"></span>
+                    </div>
                     <h4 class="lesson-title">Projeto Final: Ambiente Colaborativo</h4>
-                    <p class="lesson-desc">Configure um ambiente de equipe aplicando tudo que aprendeu!</p>
-                    <div class="lesson-tags"><span class="mini-tag">Projeto</span><span class="mini-tag">Integrado</span></div>
+                    <p class="lesson-desc">Configure um servidor Linux completo para uma equipe: usuários, grupos, permissões e automação integrados.</p>
+                    <div class="lesson-tags">
+                        <span class="mini-tag">Projeto</span>
+                        <span class="mini-tag">Integrado</span>
+                        <span class="mini-tag">Avalia&ccedil;&atilde;o</span>
+                    </div>
                 </a>
-                
-            </div>
-        </section>
 
-        <section id="bimestre2" class="tab-content">
-            <h2 class="bimestre-title">Automação com Shell Script <span class="bimestre-badge badge-b2">Módulo 2</span></h2>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════ -->
+        <!-- BIMESTRE 2 — SHELL SCRIPT                           -->
+        <!-- ═══════════════════════════════════════════════════ -->
+        <div id="bim2" class="tab-content">
+            <div class="bimestre-title">
+                Automa&ccedil;&atilde;o com Shell Script
+                <span class="bimestre-badge badge-bim2">2&ordm; Bimestre</span>
+            </div>
+            <p class="bimestre-subtitle">Criação de scripts Bash para automatizar tarefas: variáveis, condicionais, loops e funções.</p>
+
             <div class="lessons-grid">
-                <a href="aula01-shell-script.html" class="lesson-card done">
-                    <div class="lesson-header"><span class="lesson-id">#01</span><span class="lesson-status">✅</span></div>
+
+                <a href="aula01-shell-script.html" class="lesson-card">
+                    <div class="lesson-header">
+                        <span class="lesson-id">#01 &#x1F4DC;</span>
+                        <span class="lesson-status"></span>
+                    </div>
                     <h4 class="lesson-title">Shell Script: Primeiros Passos</h4>
-                    <p class="lesson-desc">Crie seus primeiros robôs! Fundamentos da automação e uso do editor Vim.</p>
-                    <div class="lesson-tags"><span class="mini-tag">Bash</span><span class="mini-tag">Vim</span></div>
+                    <p class="lesson-desc">Crie seus primeiros scripts! Shebang, echo, chmod +x e o editor Vim. Do arquivo ao robô automatizado.</p>
+                    <div class="lesson-tags">
+                        <span class="mini-tag">Bash</span>
+                        <span class="mini-tag">Vim</span>
+                        <span class="mini-tag">Shebang</span>
+                    </div>
                 </a>
-                <a href="aula08-variaveis-interacao.html" class="lesson-card done">
-                    <div class="lesson-header"><span class="lesson-id">#02</span><span class="lesson-status">✅</span></div>
+
+                <a href="aula08-variaveis-interacao.html" class="lesson-card">
+                    <div class="lesson-header">
+                        <span class="lesson-id">#02 &#x1F4DD;</span>
+                        <span class="lesson-status"></span>
+                    </div>
                     <h4 class="lesson-title">Variáveis e Interação</h4>
-                    <p class="lesson-desc">Scripts que conversam com usuários, processam dados e usam exit codes.</p>
-                    <div class="lesson-tags"><span class="mini-tag">Variáveis</span><span class="mini-tag">Input</span></div>
+                    <p class="lesson-desc">Scripts que conversam com usuários: read, variáveis especiais ($1 $# $?), export e exit codes.</p>
+                    <div class="lesson-tags">
+                        <span class="mini-tag">Vari&aacute;veis</span>
+                        <span class="mini-tag">read</span>
+                        <span class="mini-tag">Input</span>
+                    </div>
                 </a>
-                <a href="aula09-condicionais-if.html" class="lesson-card done">
-                    <div class="lesson-header"><span class="lesson-id">#03</span><span class="lesson-status">✅</span></div>
+
+                <a href="aula09-condicionais-if.html" class="lesson-card">
+                    <div class="lesson-header">
+                        <span class="lesson-id">#03 &#x1F9E0;</span>
+                        <span class="lesson-status"></span>
+                    </div>
                     <h4 class="lesson-title">Condicionais (IF/ELSE)</h4>
-                    <p class="lesson-desc">Dê inteligência aos scripts. Tomada de decisão baseada em testes lógicos.</p>
-                    <div class="lesson-tags"><span class="mini-tag">Lógica</span><span class="mini-tag">Decisão</span></div>
+                    <p class="lesson-desc">Dê inteligência aos scripts: if, elif, else, testes de arquivo (-f -d -e) e operadores de comparação.</p>
+                    <div class="lesson-tags">
+                        <span class="mini-tag">if/else</span>
+                        <span class="mini-tag">L&oacute;gica</span>
+                        <span class="mini-tag">Testes</span>
+                    </div>
                 </a>
-                <a href="aula10-estrutura-case.html" class="lesson-card done">
-                    <div class="lesson-header"><span class="lesson-id">#04</span><span class="lesson-status">✅</span></div>
+
+                <a href="aula10-estrutura-case.html" class="lesson-card">
+                    <div class="lesson-header">
+                        <span class="lesson-id">#04 &#x1F4CB;</span>
+                        <span class="lesson-status"></span>
+                    </div>
                     <h4 class="lesson-title">Estrutura CASE</h4>
-                    <p class="lesson-desc">Múltiplas escolhas de forma elegante. Criação de menus interativos.</p>
-                    <div class="lesson-tags"><span class="mini-tag">Menu</span><span class="mini-tag">Case</span></div>
+                    <p class="lesson-desc">Múltiplas escolhas de forma elegante. Criação de menus interativos com case/esac e padrões.</p>
+                    <div class="lesson-tags">
+                        <span class="mini-tag">case/esac</span>
+                        <span class="mini-tag">Menu</span>
+                        <span class="mini-tag">Padr&otilde;es</span>
+                    </div>
                 </a>
-                <a href="aula11-loops-for.html" class="lesson-card done">
-                    <div class="lesson-header"><span class="lesson-id">#05</span><span class="lesson-status">✅</span></div>
+
+                <a href="aula11-loops-for.html" class="lesson-card">
+                    <div class="lesson-header">
+                        <span class="lesson-id">#05 &#x1F504;</span>
+                        <span class="lesson-status"></span>
+                    </div>
                     <h4 class="lesson-title">Loops FOR</h4>
-                    <p class="lesson-desc">Automatize tarefas repetitivas e processe arquivos em lote.</p>
-                    <div class="lesson-tags"><span class="mini-tag">Loop</span><span class="mini-tag">Repetição</span></div>
+                    <p class="lesson-desc">Automatize tarefas repetitivas e processe arquivos em lote com for, seq e expansão de listas.</p>
+                    <div class="lesson-tags">
+                        <span class="mini-tag">for</span>
+                        <span class="mini-tag">seq</span>
+                        <span class="mini-tag">Lote</span>
+                    </div>
                 </a>
-                <a href="aula12-loops-while.html" class="lesson-card done">
-                    <div class="lesson-header"><span class="lesson-id">#06</span><span class="lesson-status">✅</span></div>
+
+                <a href="aula12-loops-while.html" class="lesson-card">
+                    <div class="lesson-header">
+                        <span class="lesson-id">#06 &#x267E;&#xFE0F;</span>
+                        <span class="lesson-status"></span>
+                    </div>
                     <h4 class="lesson-title">Loops WHILE</h4>
-                    <p class="lesson-desc">Repetição condicional. Scripts que monitoram o sistema constantemente.</p>
-                    <div class="lesson-tags"><span class="mini-tag">Loop</span><span class="mini-tag">While</span></div>
+                    <p class="lesson-desc">Repetição condicional: while, until, break e continue. Scripts que monitoram o sistema continuamente.</p>
+                    <div class="lesson-tags">
+                        <span class="mini-tag">while</span>
+                        <span class="mini-tag">until</span>
+                        <span class="mini-tag">Monitor</span>
+                    </div>
                 </a>
-                <a href="aula13-funcoes.html" class="lesson-card done">
-                    <div class="lesson-header"><span class="lesson-id">#07</span><span class="lesson-status">✅</span></div>
+
+                <a href="aula13-funcoes.html" class="lesson-card">
+                    <div class="lesson-header">
+                        <span class="lesson-id">#07 &#x1F9E9;</span>
+                        <span class="lesson-status"></span>
+                    </div>
                     <h4 class="lesson-title">Funções no Shell</h4>
-                    <p class="lesson-desc">Organize e reutilize código. Scripts modulares e profissionais.</p>
-                    <div class="lesson-tags"><span class="mini-tag">Modular</span><span class="mini-tag">Funções</span></div>
+                    <p class="lesson-desc">Scripts modulares e reutilizáveis: declare funções, passe parâmetros, use variáveis locais e source.</p>
+                    <div class="lesson-tags">
+                        <span class="mini-tag">function</span>
+                        <span class="mini-tag">Modular</span>
+                        <span class="mini-tag">source</span>
+                    </div>
                 </a>
-            </div>
-        </section>
 
-        <section id="bimestre3" class="tab-content">
-            <h2 class="bimestre-title">Serviços de Rede <span class="bimestre-badge badge-b3">Módulo 3</span></h2>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════ -->
+        <!-- BIMESTRE 3 — SERVIÇOS DE REDE                       -->
+        <!-- ═══════════════════════════════════════════════════ -->
+        <div id="bim3" class="tab-content">
+            <div class="bimestre-title">
+                Servi&ccedil;os de Rede
+                <span class="bimestre-badge badge-bim3">3&ordm; Bimestre</span>
+            </div>
+            <p class="bimestre-subtitle">Configuração e administração de serviços de rede no Linux: IP, DHCP, DNS, Samba, Apache, Proxy e Docker.</p>
+
+            <p class="section-label">&#x1F5A7; Infraestrutura de Rede</p>
             <div class="lessons-grid">
-                <a href="aula14-ip-estatico-netplan.html" class="lesson-card done">
-                    <div class="lesson-header"><span class="lesson-id">#14</span><span class="lesson-status">📍</span></div>
-                    <h4 class="lesson-title">IP Estático (Netplan)</h4>
-                    <p class="lesson-desc">Configure endereços IP fixos no Linux para servidores.</p>
-                    <div class="lesson-tags"><span class="mini-tag">Rede</span><span class="mini-tag">Netplan</span></div>
+
+                <a href="aula14-ip-estatico-netplan.html" class="lesson-card">
+                    <div class="lesson-header">
+                        <span class="lesson-id">#14 &#x1F4CD;</span>
+                        <span class="lesson-status"></span>
+                    </div>
+                    <h4 class="lesson-title">IP Estático com Netplan</h4>
+                    <p class="lesson-desc">Configure endereços IP fixos no Ubuntu Server com Netplan: YAML, gateway, DNS e netplan apply.</p>
+                    <div class="lesson-tags">
+                        <span class="mini-tag">Netplan</span>
+                        <span class="mini-tag">IP Est&aacute;tico</span>
+                        <span class="mini-tag">YAML</span>
+                    </div>
                 </a>
-                <a href="aula15-servidor-dhcp.html" class="lesson-card done">
-                    <div class="lesson-header"><span class="lesson-id">#15</span><span class="lesson-status">🔢</span></div>
+
+                <a href="aula15-servidor-dhcp.html" class="lesson-card">
+                    <div class="lesson-header">
+                        <span class="lesson-id">#15 &#x1F522;</span>
+                        <span class="lesson-status"></span>
+                    </div>
                     <h4 class="lesson-title">Servidor DHCP</h4>
-                    <p class="lesson-desc">Distribua IPs automaticamente na rede com ISC-DHCP.</p>
-                    <div class="lesson-tags"><span class="mini-tag">DHCP</span><span class="mini-tag">Infra</span></div>
+                    <p class="lesson-desc">Distribua IPs automaticamente com ISC-DHCP: faixas, reservas por MAC, leases e opções de rede.</p>
+                    <div class="lesson-tags">
+                        <span class="mini-tag">DHCP</span>
+                        <span class="mini-tag">ISC</span>
+                        <span class="mini-tag">Leases</span>
+                    </div>
                 </a>
-                <a href="aula16-servidor-samba.html" class="lesson-card done">
-                    <div class="lesson-header"><span class="lesson-id">#16</span><span class="lesson-status">📁</span></div>
-                    <h4 class="lesson-title">Servidor de Arquivos SAMBA</h4>
-                    <p class="lesson-desc">Compartilhe arquivos entre Windows e Linux de forma transparente.</p>
-                    <div class="lesson-tags"><span class="mini-tag">Samba</span><span class="mini-tag">Arquivos</span></div>
-                </a>
-                <a href="aula17-servidor-apache.html" class="lesson-card done">
-                    <div class="lesson-header"><span class="lesson-id">#17</span><span class="lesson-status">🌐</span></div>
-                    <h4 class="lesson-title">Servidor Web Apache</h4>
-                    <p class="lesson-desc">Hospede sites! Configure Virtual Hosts, HTTP e DocumentRoot.</p>
-                    <div class="lesson-tags"><span class="mini-tag">Web</span><span class="mini-tag">Apache</span></div>
-                </a>
-                <a href="aula18-servidor-dns-bind9.html" class="lesson-card done">
-                    <div class="lesson-header"><span class="lesson-id">#18</span><span class="lesson-status">🔤</span></div>
-                    <h4 class="lesson-title">Servidor DNS (BIND9)</h4>
-                    <p class="lesson-desc">Transforme nomes em IPs. Configure zonas e resolução de nomes.</p>
-                    <div class="lesson-tags"><span class="mini-tag">DNS</span><span class="mini-tag">Bind9</span></div>
-                </a>
-                <a href="aula19-servidor-proxy-squid.html" class="lesson-card done">
-                    <div class="lesson-header"><span class="lesson-id">#19</span><span class="lesson-status">🛡️</span></div>
-                    <h4 class="lesson-title">Proxy SQUID</h4>
-                    <p class="lesson-desc">Controle o acesso à internet, faça cache e crie bloqueios (ACLs).</p>
-                    <div class="lesson-tags"><span class="mini-tag">Proxy</span><span class="mini-tag">Segurança</span></div>
-                </a>
-                <a href="aula20-webmin.html" class="lesson-card done">
-                    <div class="lesson-header"><span class="lesson-id">#20</span><span class="lesson-status">🖥️</span></div>
-                    <h4 class="lesson-title">Webmin Management</h4>
-                    <p class="lesson-desc">Gerenciamento visual do servidor Linux via navegador.</p>
-                    <div class="lesson-tags"><span class="mini-tag">GUI</span><span class="mini-tag">Admin</span></div>
-                </a>
-                <a href="aula21-docker-basico.html" class="lesson-card done">
-                    <div class="lesson-header"><span class="lesson-id">#21</span><span class="lesson-status">🐳</span></div>
-                    <h4 class="lesson-title">Docker Básico</h4>
-                    <p class="lesson-desc">Introdução a containers. Crie, execute e gerencie aplicações isoladas.</p>
-                    <div class="lesson-tags"><span class="mini-tag">Containers</span><span class="mini-tag">DevOps</span></div>
-                </a>
-            </div>
-        </section>
 
-        <section id="bimestre4" class="tab-content">
-            <h2 class="bimestre-title">Windows Server <span class="bimestre-badge badge-b4">Módulo 4</span></h2>
+            </div>
+
+            <p class="section-label">&#x1F5A5; Servi&ccedil;os de Arquivo e Web</p>
             <div class="lessons-grid">
-                <a href="Windows_Server_Conceitos.html" class="lesson-card">
-                    <div class="lesson-header"><span class="lesson-id">#22</span><span class="lesson-status">⏳</span></div>
-                    <h4 class="lesson-title">Windows Server: Conceitos</h4>
-                    <p class="lesson-desc">Histórico, versões e papel do Active Directory na empresa.</p>
-                    <div class="lesson-tags"><span class="mini-tag">Microsoft</span><span class="mini-tag">Teoria</span></div>
-                </a>
-                <a href="Windows_Server_2025_Instalacao.html" class="lesson-card">
-                    <div class="lesson-header"><span class="lesson-id">#23</span><span class="lesson-status">⏳</span></div>
-                    <h4 class="lesson-title">Instalação Win Server 2025</h4>
-                    <p class="lesson-desc">Instalação passo a passo em Máquina Virtual (VirtualBox).</p>
-                    <div class="lesson-tags"><span class="mini-tag">VM</span><span class="mini-tag">Instalação</span></div>
-                </a>
-                <a href="Windows_Server_Nome_IP_Estatico.html" class="lesson-card">
-                    <div class="lesson-header"><span class="lesson-id">#24</span><span class="lesson-status">⏳</span></div>
-                    <h4 class="lesson-title">Configuração Inicial</h4>
-                    <p class="lesson-desc">Nome do host, IP estático e uso do Server Manager.</p>
-                    <div class="lesson-tags"><span class="mini-tag">Config</span><span class="mini-tag">Rede</span></div>
-                </a>
-            </div>
-        </section>
 
-    </main>
+                <a href="aula16-servidor-samba.html" class="lesson-card">
+                    <div class="lesson-header">
+                        <span class="lesson-id">#16 &#x1F4C1;</span>
+                        <span class="lesson-status"></span>
+                    </div>
+                    <h4 class="lesson-title">Servidor de Arquivos Samba</h4>
+                    <p class="lesson-desc">Compartilhe arquivos entre Windows e Linux com Samba: smb.conf, smbpasswd, permissões e testparm.</p>
+                    <div class="lesson-tags">
+                        <span class="mini-tag">Samba</span>
+                        <span class="mini-tag">SMB</span>
+                        <span class="mini-tag">Compartilhamento</span>
+                    </div>
+                </a>
+
+                <a href="aula17-servidor-apache.html" class="lesson-card">
+                    <div class="lesson-header">
+                        <span class="lesson-id">#17 &#x1F30D;</span>
+                        <span class="lesson-status"></span>
+                    </div>
+                    <h4 class="lesson-title">Servidor Web Apache</h4>
+                    <p class="lesson-desc">Hospede sites no Linux: Virtual Hosts, a2ensite, DocumentRoot e logs de acesso/erro.</p>
+                    <div class="lesson-tags">
+                        <span class="mini-tag">Apache</span>
+                        <span class="mini-tag">VirtualHost</span>
+                        <span class="mini-tag">HTTP</span>
+                    </div>
+                </a>
+
+            </div>
+
+            <p class="section-label">&#x1F512; DNS, Proxy e Containers</p>
+            <div class="lessons-grid">
+
+                <a href="aula18-servidor-dns-bind9.html" class="lesson-card">
+                    <div class="lesson-header">
+                        <span class="lesson-id">#18 &#x1F524;</span>
+                        <span class="lesson-status"></span>
+                    </div>
+                    <h4 class="lesson-title">Servidor DNS (BIND9)</h4>
+                    <p class="lesson-desc">Transforme nomes em IPs: zonas diretas, reversas, registros A/CNAME/MX e ferramentas dig/nslookup.</p>
+                    <div class="lesson-tags">
+                        <span class="mini-tag">DNS</span>
+                        <span class="mini-tag">BIND9</span>
+                        <span class="mini-tag">Zonas</span>
+                    </div>
+                </a>
+
+                <a href="aula19-servidor-proxy-squid.html" class="lesson-card">
+                    <div class="lesson-header">
+                        <span class="lesson-id">#19 &#x1F6E1;&#xFE0F;</span>
+                        <span class="lesson-status"></span>
+                    </div>
+                    <h4 class="lesson-title">Proxy Squid</h4>
+                    <p class="lesson-desc">Controle o acesso à internet, crie bloqueios com ACLs e monitore o tráfego via Squid Proxy.</p>
+                    <div class="lesson-tags">
+                        <span class="mini-tag">Squid</span>
+                        <span class="mini-tag">ACL</span>
+                        <span class="mini-tag">Cache</span>
+                    </div>
+                </a>
+
+                <a href="aula20-webmin.html" class="lesson-card">
+                    <div class="lesson-header">
+                        <span class="lesson-id">#20 &#x1F5A5;&#xFE0F;</span>
+                        <span class="lesson-status"></span>
+                    </div>
+                    <h4 class="lesson-title">Webmin</h4>
+                    <p class="lesson-desc">Gerenciamento visual do servidor Linux via navegador: usuários, serviços, rede e arquivos pela porta 10000.</p>
+                    <div class="lesson-tags">
+                        <span class="mini-tag">Webmin</span>
+                        <span class="mini-tag">GUI</span>
+                        <span class="mini-tag">Admin</span>
+                    </div>
+                </a>
+
+                <a href="aula21-docker-basico.html" class="lesson-card">
+                    <div class="lesson-header">
+                        <span class="lesson-id">#21 &#x1F433;</span>
+                        <span class="lesson-status"></span>
+                    </div>
+                    <h4 class="lesson-title">Docker Básico</h4>
+                    <p class="lesson-desc">Introdução a containers: docker pull, run, ps, stop, volumes e docker-compose para múltiplos serviços.</p>
+                    <div class="lesson-tags">
+                        <span class="mini-tag">Docker</span>
+                        <span class="mini-tag">Containers</span>
+                        <span class="mini-tag">DevOps</span>
+                    </div>
+                </a>
+
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════ -->
+        <!-- BIMESTRE 4 — WINDOWS SERVER                         -->
+        <!-- ═══════════════════════════════════════════════════ -->
+        <div id="bim4" class="tab-content">
+            <div class="bimestre-title">
+                Windows Server
+                <span class="bimestre-badge badge-bim4">4&ordm; Bimestre</span>
+            </div>
+            <p class="bimestre-subtitle">Implantação e administração de servidores Microsoft: Active Directory, instalação e configuração inicial.</p>
+
+            <div class="lessons-grid">
+
+                <a href="Windows_Server_Conceitos.html" class="lesson-card coming-soon">
+                    <div class="lesson-header">
+                        <span class="lesson-id">#22 &#x1FA9F;</span>
+                        <span class="lesson-status"></span>
+                    </div>
+                    <h4 class="lesson-title">Windows Server: Conceitos</h4>
+                    <p class="lesson-desc">Histórico, versões e o papel do Active Directory na infraestrutura corporativa Microsoft.</p>
+                    <div class="lesson-tags">
+                        <span class="mini-tag">Microsoft</span>
+                        <span class="mini-tag">AD</span>
+                        <span class="mini-tag">Teoria</span>
+                    </div>
+                </a>
+
+                <a href="Windows_Server_2025_Instalacao.html" class="lesson-card coming-soon">
+                    <div class="lesson-header">
+                        <span class="lesson-id">#23 &#x1F4BF;</span>
+                        <span class="lesson-status"></span>
+                    </div>
+                    <h4 class="lesson-title">Instalação Windows Server 2025</h4>
+                    <p class="lesson-desc">Instalação passo a passo em Máquina Virtual (VirtualBox): configurações, particionamento e primeiro boot.</p>
+                    <div class="lesson-tags">
+                        <span class="mini-tag">VM</span>
+                        <span class="mini-tag">VirtualBox</span>
+                        <span class="mini-tag">Instala&ccedil;&atilde;o</span>
+                    </div>
+                </a>
+
+                <a href="Windows_Server_Nome_IP_Estatico.html" class="lesson-card coming-soon">
+                    <div class="lesson-header">
+                        <span class="lesson-id">#24 &#x1F527;</span>
+                        <span class="lesson-status"></span>
+                    </div>
+                    <h4 class="lesson-title">Configuração Inicial</h4>
+                    <p class="lesson-desc">Nome do servidor, IP estático e uso do Server Manager: primeiros passos após a instalação.</p>
+                    <div class="lesson-tags">
+                        <span class="mini-tag">Server Manager</span>
+                        <span class="mini-tag">IP Est&aacute;tico</span>
+                        <span class="mini-tag">Config</span>
+                    </div>
+                </a>
+
+            </div>
+        </div>
+
+    </div><!-- fim .main-container -->
 
     <script>
-        // SCRIPT PARA CONTROLAR AS ABAS
+        // ─── CONFIGURAÇÃO (Google Sheets) ────────────────────────────────
+        // Crie uma planilha Google com:
+        //   Aba padrão: 4 linhas, coluna B = TRUE/FALSE para cada bimestre
+        //   Aba "aulas": coluna A = nome do arquivo da aula, coluna B = TRUE/FALSE
+        // Depois substitua o valor abaixo pelo ID da sua planilha.
+        const SHEET_ID  = 'COLOQUE_SEU_SHEET_ID_AQUI';
+        const SHEET_URL = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID
+                        + '/gviz/tq?tqx=out:csv&t=' + Date.now();
+        const AULAS_URL = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID
+                        + '/gviz/tq?tqx=out:csv&sheet=aulas&t=' + Date.now();
+        // ─────────────────────────────────────────────────────────────────
+
+        function updateProgress() {
+            const boxes   = document.querySelectorAll('.chapter-check');
+            const total   = boxes.length;
+            const checked = Array.from(boxes).filter(cb => cb.checked).length;
+            const pct     = Math.round(checked / total * 100);
+
+            document.getElementById('progressCircle').style.setProperty('--prog', pct + '%');
+            document.getElementById('progText').textContent  = pct + '%';
+            document.getElementById('progLabel').textContent = checked + ' de ' + total + ' bimestres';
+        }
+
+        function updateLessonCards(csv) {
+            const linhas = csv.trim().split('\n').slice(1);
+            linhas.forEach(linha => {
+                const partes = linha.split(',');
+                if (partes.length < 2) return;
+                const aula   = partes[0].trim().replace(/"/g, '');
+                const status = partes[1].trim().replace(/"/g, '').toUpperCase();
+                if (status !== 'TRUE') return;
+
+                const card = document.querySelector('a.lesson-card[href*="' + aula + '"]');
+                if (card) {
+                    card.classList.add('done');
+                    card.classList.remove('coming-soon');
+                    const statusEl = card.querySelector('.lesson-status');
+                    if (statusEl) statusEl.textContent = '\u2705';
+                }
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
-            const tabButtons = document.querySelectorAll('.tab-btn');
+            // Checkboxes somente leitura
+            document.querySelectorAll('.chapter-check').forEach(cb => cb.disabled = true);
+
+            // Busca status dos bimestres
+            fetch(SHEET_URL)
+                .then(r => r.text())
+                .then(csv => {
+                    const linhas = csv.trim().split('\n').slice(1);
+                    const boxes  = document.querySelectorAll('.chapter-check');
+                    linhas.forEach((linha, i) => {
+                        if (i >= boxes.length) return;
+                        boxes[i].checked = linha.toUpperCase().includes('TRUE');
+                    });
+                    updateProgress();
+                })
+                .catch(() => {
+                    console.warn('Planilha não configurada. Progresso zerado.');
+                    updateProgress();
+                });
+
+            // Busca status das aulas
+            fetch(AULAS_URL)
+                .then(r => r.text())
+                .then(csv => updateLessonCards(csv))
+                .catch(() => {});
+        });
+
+        // ─── NAVEGAÇÃO POR ABAS + URL HASH ──────────────────────────────
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabButtons  = document.querySelectorAll('.tab-btn');
             const tabContents = document.querySelectorAll('.tab-content');
+
+            function activateTab(targetId) {
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                tabContents.forEach(c   => c.classList.remove('active'));
+                const btn     = document.querySelector('[data-target="' + targetId + '"]');
+                const content = document.getElementById(targetId);
+                if (btn)     btn.classList.add('active');
+                if (content) content.classList.add('active');
+            }
 
             tabButtons.forEach(button => {
                 button.addEventListener('click', () => {
-                    tabButtons.forEach(btn => btn.classList.remove('active'));
-                    button.classList.add('active');
-                    tabContents.forEach(content => content.classList.remove('active'));
                     const targetId = button.getAttribute('data-target');
-                    document.getElementById(targetId).classList.add('active');
+                    activateTab(targetId);
+                    history.replaceState(null, '', '#' + targetId);
                 });
             });
+
+            const hash = location.hash.slice(1);
+            if (hash && document.getElementById(hash)) activateTab(hash);
         });
 
-        // SCRIPT DE BUSCA GLOBAL (Filtra dentro da aba ativa)
-        function performGlobalSearch() {
-            const input = document.getElementById('globalSearch');
-            const filter = input.value.toUpperCase();
-            // Busca apenas na aba que está visível no momento
-            const activeSection = document.querySelector('.tab-content.active');
-            
-            if(activeSection) {
-                const cards = activeSection.querySelectorAll('.lesson-card');
-                cards.forEach(card => {
-                    const title = card.querySelector('.lesson-title').innerText;
-                    const desc = card.querySelector('.lesson-desc').innerText;
-                    const tags = card.querySelector('.lesson-tags').innerText;
-                    
-                    if (title.toUpperCase().indexOf(filter) > -1 || 
-                        desc.toUpperCase().indexOf(filter) > -1 || 
-                        tags.toUpperCase().indexOf(filter) > -1) {
-                        card.style.display = "";
-                    } else {
-                        card.style.display = "none";
-                    }
+        // ─── DICAS MOTIVACIONAIS ─────────────────────────────────────────
+        (function() {
+            const dicas = [
+                "O Linux é o sistema operacional de mais de 95% dos servidores web do mundo. Aprender Linux é aprender a língua da internet.",
+                "Shell Script não é programação avançada — é automação inteligente. Se você faz algo três vezes no terminal, escreva um script.",
+                "DNS é como a agenda de contatos da internet. Sem ele, você precisaria memorizar IPs para acessar qualquer site.",
+                "Permissões Unix têm 50 anos e ainda são fundamentais. rwx para dono, grupo e outros: simples, poderoso e seguro.",
+                "Docker não eliminou o servidor — ele tornou o servidor mais flexível. Containers são o futuro do deploy de aplicações.",
+                "chmod 777 é o erro mais comum de iniciantes. Liberar tudo para todos é resolver o problema criando dez novos.",
+                "O log é a memória do servidor. journalctl, syslog, auth.log: quando algo falhar, os logs vão te dizer o que aconteceu.",
+                "DHCP parece mágica — na verdade é um protocolo de 4 etapas: Discover, Offer, Request, Acknowledge. Nada de mágica, só protocolo.",
+                "Um proxy bem configurado não é censura — é controle de qualidade da rede. ACLs definem quem acessa o quê.",
+                "Apache existe desde 1995 e ainda serve mais de 30% da web. Às vezes, o mais antigo é o mais confiável.",
+                "systemctl status é o comando mais importante para um sysadmin: em segundos, você sabe se o serviço está saudável.",
+                "Samba foi criado em 1992 e ainda conecta Windows e Linux de forma transparente. As melhores soluções resistem ao tempo.",
+                "Todo servidor começa com uma boa configuração de rede. IP, máscara, gateway e DNS: esse conjunto é o mapa do servidor no mundo.",
+                "Regex não é intimidante quando você começa pelo básico: . * ^ $ [] são suficientes para 80% dos casos reais.",
+                "O arquivo /etc/fstab é a memória de montagem do Linux. Conhecê-lo é garantir que os discos montem automaticamente no boot.",
+                "Backup não é paranoia — é prudência. No servidor, não espere falhar para pensar em recuperação.",
+                "Um sysadmin que sabe Shell Script faz em segundos o que um iniciante faz em horas. Automatize tudo que for repetitivo.",
+                "Windows Server e Linux não são inimigos — em ambientes corporativos, eles colaboram. Samba e Active Directory coexistem.",
+                "Entender o ciclo DORA do DHCP é entender como qualquer dispositivo obtém seu endereço IP ao conectar na rede.",
+                "A diferença entre um servidor seguro e um vulnerável muitas vezes está em três letras: rwx. Cuide das permissões.",
+                "journalctl -f é o equivalente do servidor ao tail -f: você vê os logs surgindo em tempo real enquanto depura um problema.",
+                "Netplan simplificou a configuração de rede no Ubuntu — YAML bem indentado é a diferença entre conectar e não conectar.",
+                "Um Virtual Host mal configurado no Apache pode servir o site errado para o cliente certo. Atenção aos detalhes do ServerName.",
+                "Docker Compose transforma a complexidade de múltiplos containers em um único arquivo yml — infraestrutura como código.",
+                "O conhecimento de redes é o alicerce de tudo: sem entender IP, máscara e gateway, nenhum serviço vai funcionar corretamente."
+            ];
+            document.addEventListener('DOMContentLoaded', function() {
+                const el = document.getElementById('motivationText');
+                if (el) el.textContent = dicas[Math.floor(Math.random() * dicas.length)];
+            });
+        })();
+
+        // ─── MODO ESCURO ─────────────────────────────────────────────────
+        (function() {
+            if (localStorage.getItem('darkMode') === '1') {
+                document.body.classList.add('dark-mode');
+            }
+            document.addEventListener('DOMContentLoaded', function() {
+                const btn = document.getElementById('darkToggleIndexBtn');
+                if (!btn) return;
+                btn.textContent = document.body.classList.contains('dark-mode') ? '\u2600\uFE0F' : '\uD83C\uDF19';
+                btn.addEventListener('click', function() {
+                    const isDark = document.body.classList.toggle('dark-mode');
+                    btn.textContent = isDark ? '\u2600\uFE0F' : '\uD83C\uDF19';
+                    localStorage.setItem('darkMode', isDark ? '1' : '0');
                 });
+            });
+        })();
+
+        // ─── BUSCA GLOBAL ────────────────────────────────────────────────
+        function performGlobalSearch() {
+            const filter = document.getElementById('globalSearch').value.toUpperCase().trim();
+            let firstMatch = null;
+
+            document.querySelectorAll('.lesson-card').forEach(card => {
+                const title = (card.querySelector('.lesson-title') || {}).innerText || '';
+                const desc  = (card.querySelector('.lesson-desc')  || {}).innerText || '';
+                const tags  = (card.querySelector('.lesson-tags')  || {}).innerText || '';
+                const match = !filter
+                    || title.toUpperCase().includes(filter)
+                    || desc.toUpperCase().includes(filter)
+                    || tags.toUpperCase().includes(filter);
+
+                card.style.display = match ? '' : 'none';
+                if (match && filter && !firstMatch) firstMatch = card.closest('.tab-content');
+            });
+
+            // Ocultar/mostrar section-labels sem cards visíveis
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.querySelectorAll('.section-label').forEach(label => {
+                    const grid = label.nextElementSibling;
+                    if (!grid) return;
+                    const anyVisible = Array.from(grid.querySelectorAll('.lesson-card'))
+                                           .some(c => c.style.display !== 'none');
+                    label.style.display = anyVisible ? '' : 'none';
+                });
+            });
+
+            if (firstMatch && filter) {
+                const btn = document.querySelector('[data-target="' + firstMatch.id + '"]');
+                if (btn) btn.click();
             }
         }
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
