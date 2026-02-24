@@ -979,21 +979,20 @@
 
     <script>
         // ─── CONFIGURAÇÃO (Google Sheets) ────────────────────────────────
-        // Crie uma planilha Google com:
-        //   Aba padrão: 4 linhas, coluna B = TRUE/FALSE para cada bimestre
-        //   Aba "aulas": coluna A = nome do arquivo da aula, coluna B = TRUE/FALSE
+        // Crie uma planilha Google com a aba "aulas":
+        //   Coluna A = nome do arquivo da aula (ex: aula01-shell-script.html)
+        //   Coluna B = TRUE ou FALSE
         // Depois substitua o valor abaixo pelo ID da sua planilha.
         const SHEET_ID  = '1IAUYCR2W7CNkET2w23Lhl3YLNWND4lKuoPinIH06Yxo';
-        const SHEET_URL = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID
-                        + '/gviz/tq?tqx=out:csv&t=' + Date.now();
         const AULAS_URL = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID
                         + '/gviz/tq?tqx=out:csv&sheet=aulas&t=' + Date.now();
         // ─────────────────────────────────────────────────────────────────
 
         function updateProgress() {
-            const allCards  = document.querySelectorAll('a.lesson-card');
-            const doneCards = document.querySelectorAll('a.lesson-card.done');
-            const total   = allCards.length;
+            // Conta apenas aulas ativas (exclui coming-soon ainda não liberadas)
+            const totalCards = document.querySelectorAll('a.lesson-card:not(.coming-soon)');
+            const doneCards  = document.querySelectorAll('a.lesson-card.done');
+            const total   = totalCards.length;
             const checked = doneCards.length;
             const pct     = total > 0 ? Math.round(checked / total * 100) : 0;
 
@@ -1002,9 +1001,21 @@
             document.getElementById('progLabel').textContent = checked + ' de ' + total + ' aulas';
         }
 
+        function updateBimestreChecks() {
+            // Checkbox de cada bimestre só fica marcado quando TODAS as aulas do bimestre estão concluídas
+            ['bim1', 'bim2', 'bim3', 'bim4'].forEach(function(bim, i) {
+                const tab  = document.getElementById(bim);
+                const cb   = document.getElementById('ch' + (i + 1));
+                if (!tab || !cb) return;
+                const cards = tab.querySelectorAll('a.lesson-card:not(.coming-soon)');
+                const done  = tab.querySelectorAll('a.lesson-card.done');
+                cb.checked = (cards.length > 0 && done.length === cards.length);
+            });
+        }
+
         function updateLessonCards(csv) {
             const linhas = csv.trim().split('\n').slice(1);
-            linhas.forEach(linha => {
+            linhas.forEach(function(linha) {
                 const partes = linha.split(',');
                 if (partes.length < 2) return;
                 const aula   = partes[0].trim().replace(/"/g, '');
@@ -1019,33 +1030,19 @@
                     if (statusEl) statusEl.textContent = '\u2705';
                 }
             });
+            updateBimestreChecks();
             updateProgress();
         }
 
         document.addEventListener('DOMContentLoaded', function() {
             // Checkboxes somente leitura
-            document.querySelectorAll('.chapter-check').forEach(cb => cb.disabled = true);
+            document.querySelectorAll('.chapter-check').forEach(function(cb) { cb.disabled = true; });
 
-            // Busca status dos bimestres (atualiza apenas os checkboxes)
-            fetch(SHEET_URL)
-                .then(r => r.text())
-                .then(csv => {
-                    const linhas = csv.trim().split('\n').slice(1);
-                    const boxes  = document.querySelectorAll('.chapter-check');
-                    linhas.forEach((linha, i) => {
-                        if (i >= boxes.length) return;
-                        boxes[i].checked = linha.toUpperCase().includes('TRUE');
-                    });
-                })
-                .catch(() => {
-                    console.warn('Planilha não configurada.');
-                });
-
-            // Busca status das aulas
+            // Busca status das aulas e deriva tudo a partir daí
             fetch(AULAS_URL)
-                .then(r => r.text())
-                .then(csv => updateLessonCards(csv))
-                .catch(() => {});
+                .then(function(r) { return r.text(); })
+                .then(function(csv) { updateLessonCards(csv); })
+                .catch(function() { updateProgress(); });
         });
 
         // ─── NAVEGAÇÃO POR ABAS + URL HASH ──────────────────────────────
