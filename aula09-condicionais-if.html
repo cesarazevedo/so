@@ -3,1113 +3,695 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aula 09 - Shell Script: Instruções Condicionais (IF)</title>
+    <title>Aula 9 &mdash; Instru&ccedil;&otilde;es Condicionais (if)</title>
+    <link rel="stylesheet" href="slide-mode.css">
+    <link rel="stylesheet" href="exercise.css">
     <style>
-        /* --- VARIÁVEIS GLOBAIS --- */
         :root {
-            --primary: #667eea;
+            --primary:   #667eea;
             --secondary: #764ba2;
-            --bg-light: #f4f7fe;
+            --bg-light:  #f4f7fe;
             --text-dark: #2d3748;
-            --text-light: #718096;
-            --accent-green: #38ef7d;
-            --accent-red: #ff758c;
-            --accent-orange: #f39c12;
-            --accent-cyan: #17a2b8;
         }
 
-        /* --- RESET E BASE --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-light);
-            color: var(--text-dark);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: var(--bg-light); color: var(--text-dark); line-height: 1.7; }
 
-        /* --- HEADER DA SALA DE AULA --- */
-        .classroom-header {
-            background: white;
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 1000;
-        }
+        /* ── TOP BAR ── */
+        .top-bar { background: white; padding: 15px 30px; display: flex; align-items: center; gap: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 10; }
+        .back-btn { text-decoration: none; color: var(--primary); font-weight: 600; display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 8px; transition: background .3s; }
+        .back-btn:hover { background: rgba(102,126,234,.08); }
+        .page-badge { font-size: .8em; padding: 4px 12px; border-radius: 20px; background: rgba(102,126,234,.12); color: var(--primary); font-weight: 600; }
 
-        .back-btn {
-            text-decoration: none;
-            color: var(--text-dark);
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            border-radius: 50px;
-            transition: all 0.2s;
-            background: #f0f2f5;
-        }
-        .back-btn:hover { background: #e2e8f0; color: var(--primary); }
+        /* ── LAYOUT ── */
+        .content-wrapper { max-width: 800px; margin: 40px auto; padding: 0 30px; }
+        .lesson-hero { background: white; border-radius: 16px; padding: 40px; box-shadow: 0 5px 15px rgba(0,0,0,.05); margin-bottom: 30px; border-top: 4px solid var(--primary); }
+        .lesson-hero h1 { font-size: 2em; margin-bottom: 10px; color: var(--primary); }
+        .lesson-hero .subtitle { font-size: 1.05em; color: #718096; }
+        .content-card { background: white; border-radius: 16px; padding: 35px; box-shadow: 0 5px 15px rgba(0,0,0,.05); margin-bottom: 25px; }
+        .content-card h2 { font-size: 1.4em; color: var(--primary); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
+        .content-card h3 { font-size: 1.05em; color: #5a67d8; margin: 20px 0 10px; }
+        .content-card p { margin-bottom: 15px; text-align: justify; }
+        ul, ol { margin: 10px 0 15px 25px; }
+        li { margin-bottom: 8px; }
 
-        .lesson-info h1 { font-size: 1.1em; margin: 0; color: var(--text-dark); }
-        .lesson-info span { font-size: 0.85em; color: var(--text-light); }
+        /* ── CAIXAS ── */
+        .highlight-box { background: linear-gradient(135deg,rgba(102,126,234,.05),rgba(118,75,162,.06)); border-left: 4px solid var(--primary); padding: 20px 25px; border-radius: 0 12px 12px 0; margin: 20px 0; }
+        .highlight-box p { margin-bottom: 0; font-style: italic; }
+        .alert-box { background: #fff8e1; border-left: 4px solid #f59e0b; padding: 18px 22px; border-radius: 0 12px 12px 0; margin: 20px 0; }
+        .alert-box p { margin: 0; color: #78350f; font-size: .93em; }
+        .tip-box { background: #f0fdf4; border-left: 4px solid #16a34a; padding: 18px 22px; border-radius: 0 12px 12px 0; margin: 20px 0; }
+        .tip-box p { margin: 0; color: #14532d; font-size: .93em; }
 
-        .slide-counter {
-            background: var(--primary);
-            color: white;
-            padding: 5px 12px;
-            border-radius: 12px;
-            font-size: 0.9em;
-            font-weight: bold;
-        }
+        /* ── TERMINAIS ── */
+        .terminal { background: #1a202c; border-radius: 12px; overflow: hidden; margin: 16px 0; box-shadow: 0 4px 20px rgba(0,0,0,.3); }
+        .terminal-bar { background: #2d3748; padding: 8px 16px; display: flex; align-items: center; gap: 8px; }
+        .term-dot { width: 12px; height: 12px; border-radius: 50%; }
+        .term-dot.red    { background: #fc8181; }
+        .term-dot.yellow { background: #f6e05e; }
+        .term-dot.green  { background: #68d391; }
+        .term-title { font-size: .75em; color: #718096; margin-left: 8px; font-family: 'Consolas', monospace; }
+        .terminal-body { padding: 20px 24px; font-family: 'Courier New','Consolas',monospace; font-size: .92em; line-height: 2; color: #a0aec0; }
+        .t-prompt  { color: #63b3ed; }
+        .t-root    { color: #fc8181; }
+        .t-cmd     { color: #38ef7d; }
+        .t-flag    { color: #f6e05e; }
+        .t-arg     { color: #90cdf4; }
+        .t-out     { color: #a0aec0; }
+        .t-comment { color: #4a5568; font-style: italic; }
+        .t-hl      { color: #f6e05e; font-weight: bold; }
+        .t-ok      { color: #38ef7d; font-weight: bold; }
+        /* Shell script específico */
+        .t-kw      { color: #f687b3; font-weight: bold; }   /* if then else fi */
+        .t-str     { color: #68d391; }                       /* "strings" */
+        .t-var     { color: #fbd38d; }                       /* $VARIAVEL */
+        .t-shebang { color: #f687b3; }                       /* #!/bin/bash */
 
-        /* --- CONTAINER PRINCIPAL --- */
-        .viewer-container {
-            margin-top: 80px;
-            padding: 20px;
-            padding-bottom: 100px;
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-        }
+        /* ── TABELA ── */
+        .cmp-table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: .88em; }
+        .cmp-table th { background: var(--primary); color: white; padding: 10px 14px; text-align: left; }
+        .cmp-table th:first-child { border-radius: 6px 0 0 0; }
+        .cmp-table th:last-child  { border-radius: 0 6px 0 0; }
+        .cmp-table td { padding: 9px 14px; border-bottom: 1px solid #e5e7eb; }
+        .cmp-table tr:nth-child(even) td { background: #f8f7ff; }
+        .cmp-table td code { font-family: 'Consolas',monospace; background: #1e293b; color: #a78bfa; padding: 1px 6px; border-radius: 4px; font-size: .88em; }
 
-        .slide-card {
-            background: white;
-            width: 100%;
-            max-width: 1000px;
-            min-height: 80vh;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            padding: 50px;
-            padding-bottom: 100px;
-            position: relative;
-            display: none;
-            flex-direction: column;
-            animation: fadeIn 0.4s ease;
-        }
-        .slide-card.active { display: flex; }
+        /* ── GRID RESUMO ── */
+        .cmd-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(140px,1fr)); gap: 12px; margin: 16px 0; }
+        .cmd-card { background: #f8f7ff; border-radius: 10px; padding: 16px; text-align: center; border-top: 3px solid var(--primary); }
+        .cmd-card .cmd { font-family: 'Consolas',monospace; font-size: .9em; color: var(--primary); font-weight: 700; display: block; margin-bottom: 6px; }
+        .cmd-card strong { display: block; font-size: .82em; color: #1e293b; margin-bottom: 4px; }
+        .cmd-card span { font-size: .76em; color: #475569; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* ── DIAGRAMA FLUXO ── */
+        .flow-if { display: flex; flex-direction: column; align-items: center; gap: 6px; margin: 16px 0; }
+        .flow-diamond { background: #fef3c7; border: 2px solid #f59e0b; border-radius: 8px; padding: 12px 24px; text-align: center; font-weight: 600; font-size: .95em; }
+        .flow-branch { display: flex; gap: 40px; align-items: flex-start; justify-content: center; }
+        .flow-branch-item { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+        .flow-action-true  { background: #d1fae5; border: 2px solid #10b981; border-radius: 8px; padding: 10px 20px; font-size: .88em; text-align: center; }
+        .flow-action-false { background: #fee2e2; border: 2px solid #ef4444; border-radius: 8px; padding: 10px 20px; font-size: .88em; text-align: center; }
+        .flow-arrow { font-size: 1.2em; color: #718096; }
+        .flow-label { font-size: .78em; color: #718096; }
 
-        /* --- ESTILOS DO CONTEÚDO --- */
-        h1.slide-title {
-            font-size: 2.8em;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-align: center;
-            margin-bottom: 30px;
-        }
+        /* ── NAV ── */
+        .nav-footer { display: flex; justify-content: space-between; margin-top: 40px; padding-bottom: 40px; }
+        .nav-link { text-decoration: none; color: var(--primary); font-weight: 600; padding: 12px 24px; border-radius: 10px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,.05); transition: all .3s; }
+        .nav-link:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.1); }
 
-        h2.slide-subtitle {
-            font-size: 2.2em;
-            color: var(--text-dark);
-            border-bottom: 3px solid #e2e8f0;
-            padding-bottom: 15px;
-            margin-bottom: 30px;
-        }
-
-        h3 { color: var(--primary); margin: 20px 0 10px; font-size: 1.5em; }
-
-        /* Boxes de Conteúdo */
-        .content-box {
-            padding: 20px;
-            border-radius: 12px;
-            margin: 15px 0;
-            border-left: 5px solid;
-            background: #f8fafc;
-        }
-        
-        .box-highlight { border-color: #f39c12; background: #fffaf0; }
-        .box-info { border-color: var(--primary); background: #f4f7fe; }
-        .box-success { border-color: var(--accent-green); background: #f0fdf4; }
-        .box-warning { border-color: var(--accent-red); background: #fff5f5; }
-        .box-tip { border-color: var(--accent-cyan); background: #e6fffa; }
-        
-        .box-terminal { 
-            background: #1a202c; 
-            color: #38ef7d; 
-            font-family: 'Courier New', monospace; 
-            border-left: 5px solid #38ef7d;
-            padding: 25px;
-            border-radius: 12px;
-            font-size: 1.05em;
-            line-height: 1.7;
-        }
-        .box-terminal .prompt { color: #63b3ed; }
-        .box-terminal .command { color: #38ef7d; }
-        .box-terminal .output { color: #a0aec0; }
-        .box-terminal .comment { color: #718096; font-style: italic; }
-        .box-terminal .shebang { color: #f687b3; }
-        .box-terminal .string { color: #68d391; }
-        .box-terminal .variable { color: #fbd38d; }
-        .box-terminal .keyword { color: #f687b3; font-weight: bold; }
-
-        /* Layouts de Colunas */
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
-
-        .bullet-point {
-            display: flex;
-            align-items: flex-start;
-            margin: 10px 0;
-            font-size: 1.1em;
-            line-height: 1.4;
-        }
-        .bullet-point::before {
-            content: "🔀";
-            margin-right: 10px;
-            flex-shrink: 0;
-        }
-
-        /* Cards de Comando */
-        .command-card {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
-        }
-        .command-card:hover { transform: translateY(-5px); }
-        .command-card .cmd { 
-            font-family: 'Courier New', monospace;
-            font-size: 1.3em; 
-            color: var(--primary);
-            background: #f4f7fe;
-            padding: 10px 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            display: inline-block;
-        }
-        .command-card h4 { color: var(--text-dark); margin-bottom: 10px; }
-        .command-card p { font-size: 0.9em; color: var(--text-light); }
-
-        /* Tabela de Referência */
-        .reference-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 15px 0;
-            font-size: 0.95em;
-        }
-        .reference-table th {
-            background: var(--primary);
-            color: white;
-            padding: 12px;
-            text-align: left;
-        }
-        .reference-table td {
-            padding: 10px 12px;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        .reference-table tr:hover {
-            background: #f4f7fe;
-        }
-        .reference-table code {
-            background: #e2e8f0;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-family: 'Courier New', monospace;
-        }
-
-        /* Diagrama de Fluxo */
-        .flow-diagram {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-            margin: 20px 0;
-            padding: 20px;
-            background: #f8fafc;
-            border-radius: 12px;
-        }
-        .flow-box {
-            padding: 15px 30px;
-            border-radius: 10px;
-            text-align: center;
-            font-weight: bold;
-            min-width: 200px;
-        }
-        .flow-diamond {
-            background: #fef3c7;
-            border: 3px solid #f59e0b;
-            transform: rotate(0deg);
-            padding: 20px;
-        }
-        .flow-action {
-            background: #dbeafe;
-            border: 2px solid #3b82f6;
-        }
-        .flow-arrow {
-            font-size: 1.5em;
-            color: var(--primary);
-        }
-
-        /* --- CONTROLES DE NAVEGAÇÃO --- */
-        .nav-controls {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 15px;
-            background: white;
-            padding: 10px 20px;
-            border-radius: 50px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            z-index: 100;
-        }
-
-        .nav-btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 25px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
-        }
-        .nav-btn:hover { background: var(--secondary); transform: translateY(-2px); }
-        .nav-btn:disabled { background: #cbd5e0; cursor: not-allowed; transform: none; }
-
-        /* --- DRAG AND DROP QUIZ --- */
-        .drag-drop-container { display: flex; gap: 30px; margin-top: 20px; }
-        .col-questions, .col-answers { flex: 1; }
-
-        .question-item {
-            background: white;
-            border: 2px solid #e2e8f0;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 12px;
-        }
-        .question-text { font-weight: bold; margin-bottom: 10px; color: var(--text-dark); }
-        
-        .drop-zone {
-            background: #f8fafc;
-            border: 2px dashed #cbd5e0;
-            border-radius: 8px;
-            min-height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.9em;
-            color: var(--text-light);
-            transition: all 0.2s;
-        }
-        .drop-zone.drag-over { background: #e6fffa; border-color: var(--accent-green); }
-        .drop-zone.has-answer { border-style: solid; background: white; border-color: var(--primary); }
-
-        .answer-item {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            padding: 12px 20px;
-            margin-bottom: 10px;
-            border-radius: 8px;
-            cursor: grab;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            font-size: 0.95em;
-            user-select: none;
-            font-family: 'Courier New', monospace;
-        }
-        .answer-item:active { cursor: grabbing; }
-        .answer-item.dragging { opacity: 0.5; }
-        .answer-item.in-drop-zone { margin: 0; width: 100%; box-shadow: none; }
-
-        .quiz-result {
-            margin-top: 30px;
-            padding: 20px;
-            border-radius: 15px;
-            text-align: center;
-            display: none;
-            background: linear-gradient(135deg, #f6ad55 0%, #ed8936 100%);
-            color: white;
-        }
-
-        /* Responsivo */
         @media (max-width: 768px) {
-            .viewer-container { padding: 10px; margin-top: 70px; }
-            .slide-card { padding: 25px; padding-bottom: 100px; min-height: 70vh; }
-            .grid-2, .grid-3 { grid-template-columns: 1fr; }
-            .drag-drop-container { flex-direction: column; }
-            .classroom-header { padding: 10px 15px; }
-            h1.slide-title { font-size: 2em; }
-            h2.slide-subtitle { font-size: 1.5em; }
+            .content-wrapper { padding: 0 15px; }
+            .lesson-hero, .content-card { padding: 25px; }
+            .lesson-hero h1 { font-size: 1.5em; }
+            .flow-branch { gap: 20px; }
         }
     </style>
 </head>
 <body>
 
-    <header class="classroom-header">
-        <div style="display: flex; align-items: center; gap: 20px;">
-            <a href="index.html" class="back-btn">
-                <span>←</span> Voltar
-            </a>
-            <div class="lesson-info">
-                <h1>Fundamentos do Linux</h1>
-                <span>Módulo 2 • Aula 09</span>
-            </div>
-        </div>
-        <div class="slide-counter">
-            <span id="current-slide">1</span> / <span id="total-slides">14</span>
-        </div>
-    </header>
+<div class="top-bar">
+    <a href="index.html" class="back-btn">&#x2B05; Voltar ao Dashboard</a>
+    <span class="page-badge">2&ordm; Bimestre &mdash; Shell Script</span>
+    <button class="slide-toggle" id="slideToggleBtn">&#x1F4FA; Modo Slide</button>
+</div>
 
-    <div class="viewer-container">
-        
-        <!-- SLIDE 1: Capa -->
-        <div class="slide-card active">
-            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
-                <div style="font-size: 5em;">🔀</div>
-                <h1 class="slide-title">Shell Script: Instruções Condicionais</h1>
-                <div class="content-box box-highlight" style="text-align: center; font-size: 1.2em;">
-                    <p><strong>Ensinando seu script a tomar decisões!</strong></p>
-                    <p style="margin-top: 10px; opacity: 0.8;">if, then, else, fi</p>
-                </div>
-                <div class="box-terminal" style="margin-top: 30px; max-width: 600px;">
-                    <span class="keyword">if</span> [ <span class="variable">$NOTA</span> -ge 70 ]<br>
-                    <span class="keyword">then</span><br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"Aprovado! 🎉"</span><br>
-                    <span class="keyword">else</span><br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"Reprovado 😞"</span><br>
-                    <span class="keyword">fi</span>
-                </div>
-                <div class="content-box box-info" style="margin-top: 30px;">
-                    💡 Scripts inteligentes que reagem a diferentes situações!
-                </div>
-            </div>
-        </div>
+<div class="content-wrapper">
 
-        <!-- SLIDE 2: O que é IF? -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🚦 O que é uma Instrução Condicional?</h2>
-            <div class="content-box box-highlight" style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 1.3em;">É como um <strong>semáforo</strong> para seu script!</p>
-            </div>
-            <div class="grid-2">
-                <div>
-                    <div class="content-box box-info">
-                        <h3>🎯 Analogia do Semáforo</h3>
-                        <div class="bullet-point"><strong>🟢 Verde (verdadeiro):</strong> Execute!</div>
-                        <div class="bullet-point"><strong>🔴 Vermelho (falso):</strong> Pare ou faça outra coisa!</div>
-                        <p style="margin-top: 15px;"><strong>Na vida real:</strong><br>"Se estiver chovendo, pegue o guarda-chuva"</p>
-                        <p style="margin-top: 10px;"><strong>No script:</strong><br>"Se o arquivo existir, faça backup"</p>
-                    </div>
-                    <div class="content-box box-success">
-                        <h3>📝 Estrutura Básica</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.95em;">
-                            <span class="keyword">if</span> [ condição ]<br>
-                            <span class="keyword">then</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;comandos<br>
-                            <span class="keyword">fi</span>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <div class="flow-diagram">
-                        <div class="flow-box flow-diamond">❓ Condição</div>
-                        <div style="display: flex; gap: 50px;">
-                            <div style="text-align: center;">
-                                <div class="flow-arrow">↙️</div>
-                                <small>Verdadeiro</small>
-                                <div class="flow-box flow-action" style="background: #d1fae5;">✅ Executa</div>
-                            </div>
-                            <div style="text-align: center;">
-                                <div class="flow-arrow">↘️</div>
-                                <small>Falso</small>
-                                <div class="flow-box flow-action" style="background: #fee2e2;">⏭️ Pula</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="content-box box-tip">
-                        <h3>💡 Palavras-Chave</h3>
-                        <p><strong>if</strong> = se<br>
-                        <strong>then</strong> = então<br>
-                        <strong>fi</strong> = fim (if ao contrário!)</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 3: IF simples -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">✅ IF Simples - Primeiro Exemplo</h2>
-            <div class="grid-2">
-                <div>
-                    <div class="content-box box-info">
-                        <h3>🎂 Exemplo: Verificar Idade</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.95em;">
-                            <span class="shebang">#!/bin/bash</span><br><br>
-                            <span class="variable">IDADE</span>=<span class="string">20</span><br><br>
-                            <span class="keyword">if</span> [ <span class="variable">$IDADE</span> -ge 18 ]<br>
-                            <span class="keyword">then</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"Maior de idade! ✅"</span><br>
-                            <span class="keyword">fi</span>
-                        </div>
-                    </div>
-                    <div class="content-box box-success">
-                        <h3>▶️ Resultado</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.95em;">
-                            <span class="output">Maior de idade! ✅</span>
-                        </div>
-                        <p style="margin-top: 10px;"><strong>Por quê?</strong> 20 ≥ 18 é <strong>verdadeiro</strong>!</p>
-                    </div>
-                </div>
-                <div>
-                    <div class="content-box box-highlight">
-                        <h3>🔍 Entendendo o Código</h3>
-                        <table class="reference-table">
-                            <tr><th>Parte</th><th>Significado</th></tr>
-                            <tr><td><code>if</code></td><td>Inicia a condição</td></tr>
-                            <tr><td><code>[ ]</code></td><td>Colchetes = teste</td></tr>
-                            <tr><td><code>$IDADE</code></td><td>Valor da variável (20)</td></tr>
-                            <tr><td><code>-ge</code></td><td>Greater or Equal (≥)</td></tr>
-                            <tr><td><code>18</code></td><td>Valor a comparar</td></tr>
-                            <tr><td><code>then</code></td><td>Então faça...</td></tr>
-                            <tr><td><code>fi</code></td><td>Fim do if</td></tr>
-                        </table>
-                    </div>
-                    <div class="content-box box-warning">
-                        <h3>⚠️ Regra dos Espaços</h3>
-                        <p>✅ <code>[ $IDADE -ge 18 ]</code><br>
-                        ❌ <code>[$IDADE -ge 18]</code><br>
-                        <strong>Sempre espaços</strong> após [ e antes de ]</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 4: IF com ELSE -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">⚖️ IF com ELSE - Duas Opções</h2>
-            <div class="content-box box-highlight" style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 1.2em;">E se a condição for <strong>falsa</strong>? Use o <strong>else</strong>!</p>
-            </div>
-            <div class="grid-2">
-                <div>
-                    <div class="content-box box-info">
-                        <h3>📝 Estrutura IF-ELSE</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.95em;">
-                            <span class="keyword">if</span> [ condição ]<br>
-                            <span class="keyword">then</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Se verdadeiro</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;comando1<br>
-                            <span class="keyword">else</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Se falso</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;comando2<br>
-                            <span class="keyword">fi</span>
-                        </div>
-                    </div>
-                    <div class="content-box box-tip">
-                        <h3>💡 Leitura</h3>
-                        <p>"<strong>Se</strong> condição, <strong>então</strong> faça isso, <strong>senão</strong> faça aquilo, <strong>fim</strong>."</p>
-                    </div>
-                </div>
-                <div>
-                    <div class="content-box box-success">
-                        <h3>🌤️ Exemplo: Bom dia / Boa tarde</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.95em;">
-                            <span class="variable">HORA</span>=<span class="string">14</span><br><br>
-                            <span class="keyword">if</span> [ <span class="variable">$HORA</span> -lt 12 ]<br>
-                            <span class="keyword">then</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"Bom dia! ☀️"</span><br>
-                            <span class="keyword">else</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"Boa tarde! 🌤️"</span><br>
-                            <span class="keyword">fi</span>
-                        </div>
-                    </div>
-                    <div class="box-terminal" style="padding: 15px; font-size: 0.95em;">
-                        <span class="comment"># HORA=14, então 14 < 12?</span><br>
-                        <span class="comment"># NÃO! Vai para o else</span><br>
-                        <span class="output">Boa tarde! 🌤️</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 5: Operadores Numéricos -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🔢 Operadores Numéricos</h2>
-            <div class="content-box box-highlight" style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 1.2em;">Como comparar <strong>números</strong> no Shell Script</p>
-            </div>
-            <div class="grid-2">
-                <div>
-                    <div class="content-box box-info">
-                        <h3>📊 Tabela de Operadores</h3>
-                        <table class="reference-table">
-                            <tr><th>Operador</th><th>Significado</th><th>Exemplo</th></tr>
-                            <tr><td><code>-eq</code></td><td>Igual (=)</td><td>[ 5 -eq 5 ]</td></tr>
-                            <tr><td><code>-ne</code></td><td>Diferente (≠)</td><td>[ 5 -ne 3 ]</td></tr>
-                            <tr><td><code>-gt</code></td><td>Maior que (>)</td><td>[ 10 -gt 5 ]</td></tr>
-                            <tr><td><code>-ge</code></td><td>Maior ou igual (≥)</td><td>[ 10 -ge 10 ]</td></tr>
-                            <tr><td><code>-lt</code></td><td>Menor que (<)</td><td>[ 3 -lt 5 ]</td></tr>
-                            <tr><td><code>-le</code></td><td>Menor ou igual (≤)</td><td>[ 3 -le 5 ]</td></tr>
-                        </table>
-                    </div>
-                </div>
-                <div>
-                    <div class="content-box box-success">
-                        <h3>🧠 Dica de Memorização</h3>
-                        <p><strong>eq</strong> = equal (igual)<br>
-                        <strong>ne</strong> = not equal (diferente)<br>
-                        <strong>gt</strong> = greater than (maior)<br>
-                        <strong>ge</strong> = greater or equal<br>
-                        <strong>lt</strong> = lower than (menor)<br>
-                        <strong>le</strong> = lower or equal</p>
-                    </div>
-                    <div class="box-terminal" style="padding: 15px; font-size: 0.95em;">
-                        <span class="comment"># Exemplo: Sistema de notas</span><br>
-                        <span class="variable">NOTA</span>=<span class="string">75</span><br><br>
-                        <span class="keyword">if</span> [ <span class="variable">$NOTA</span> -ge 70 ]<br>
-                        <span class="keyword">then</span><br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"Aprovado!"</span><br>
-                        <span class="keyword">fi</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 6: Operadores de String -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🔤 Operadores de String (Texto)</h2>
-            <div class="content-box box-highlight" style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 1.2em;">Como comparar <strong>textos</strong> no Shell Script</p>
-            </div>
-            <div class="grid-2">
-                <div>
-                    <div class="content-box box-info">
-                        <h3>📝 Tabela de Operadores</h3>
-                        <table class="reference-table">
-                            <tr><th>Operador</th><th>Significado</th></tr>
-                            <tr><td><code>=</code></td><td>Textos iguais</td></tr>
-                            <tr><td><code>!=</code></td><td>Textos diferentes</td></tr>
-                            <tr><td><code>-z</code></td><td>String vazia (zero)</td></tr>
-                            <tr><td><code>-n</code></td><td>String NÃO vazia</td></tr>
-                        </table>
-                    </div>
-                    <div class="content-box box-warning">
-                        <h3>⚠️ Sempre Use Aspas!</h3>
-                        <p>✅ <code>[ "$VAR" = "valor" ]</code><br>
-                        ❌ <code>[ $VAR = valor ]</code><br>
-                        Aspas protegem espaços e vazios!</p>
-                    </div>
-                </div>
-                <div>
-                    <div class="content-box box-success">
-                        <h3>🔐 Exemplo: Verificar Senha</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.9em;">
-                            <span class="variable">SENHA</span>=<span class="string">"abc123"</span><br><br>
-                            <span class="keyword">if</span> [ <span class="string">"$SENHA"</span> = <span class="string">"abc123"</span> ]<br>
-                            <span class="keyword">then</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"Acesso liberado! 🔓"</span><br>
-                            <span class="keyword">else</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"Senha incorreta! 🔒"</span><br>
-                            <span class="keyword">fi</span>
-                        </div>
-                    </div>
-                    <div class="box-terminal" style="padding: 15px; font-size: 0.9em;">
-                        <span class="comment"># Verificar se campo está vazio</span><br>
-                        <span class="keyword">if</span> [ -z <span class="string">"$NOME"</span> ]<br>
-                        <span class="keyword">then</span><br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"Nome obrigatório!"</span><br>
-                        <span class="keyword">fi</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 7: Operadores de Arquivo -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">📁 Operadores de Arquivo</h2>
-            <div class="content-box box-highlight" style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 1.2em;">Investigando arquivos e pastas como um <strong>detetive</strong>! 🕵️</p>
-            </div>
-            <div class="grid-2">
-                <div>
-                    <div class="content-box box-info">
-                        <h3>🔍 Tabela de Operadores</h3>
-                        <table class="reference-table">
-                            <tr><th>Operador</th><th>Verifica se...</th></tr>
-                            <tr><td><code>-f</code></td><td>É um arquivo</td></tr>
-                            <tr><td><code>-d</code></td><td>É um diretório</td></tr>
-                            <tr><td><code>-e</code></td><td>Existe (arquivo ou pasta)</td></tr>
-                            <tr><td><code>-r</code></td><td>Tem permissão de leitura</td></tr>
-                            <tr><td><code>-w</code></td><td>Tem permissão de escrita</td></tr>
-                            <tr><td><code>-x</code></td><td>Tem permissão de execução</td></tr>
-                            <tr><td><code>-s</code></td><td>Tamanho > 0 (não vazio)</td></tr>
-                        </table>
-                    </div>
-                </div>
-                <div>
-                    <div class="content-box box-success">
-                        <h3>💾 Exemplo: Backup Seguro</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.9em;">
-                            <span class="variable">ARQUIVO</span>=<span class="string">"dados.txt"</span><br><br>
-                            <span class="keyword">if</span> [ -f <span class="string">"$ARQUIVO"</span> ]<br>
-                            <span class="keyword">then</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"Arquivo existe! ✅"</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">cp</span> <span class="string">"$ARQUIVO"</span> backup/<br>
-                            <span class="keyword">else</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"Arquivo não encontrado! ❌"</span><br>
-                            <span class="keyword">fi</span>
-                        </div>
-                    </div>
-                    <div class="content-box box-tip">
-                        <h3>💡 Uso Comum</h3>
-                        <p>Sempre verifique se arquivo/pasta existe <strong>antes</strong> de usar!</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 8: Operadores Lógicos -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🔗 Operadores Lógicos</h2>
-            <div class="content-box box-highlight" style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 1.2em;">Combinando múltiplas condições!</p>
-            </div>
-            <div class="grid-2">
-                <div>
-                    <div class="content-box box-info">
-                        <h3>🧩 Os Três Operadores</h3>
-                        <table class="reference-table">
-                            <tr><th>Operador</th><th>Nome</th><th>Significado</th></tr>
-                            <tr><td><code>-a</code></td><td>AND</td><td>E (ambas verdadeiras)</td></tr>
-                            <tr><td><code>-o</code></td><td>OR</td><td>OU (uma verdadeira)</td></tr>
-                            <tr><td><code>!</code></td><td>NOT</td><td>NÃO (inverte)</td></tr>
-                        </table>
-                    </div>
-                    <div class="content-box box-success">
-                        <h3>🤝 Exemplo AND</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.9em;">
-                            <span class="comment"># Pode dirigir se maior E habilitado</span><br>
-                            <span class="keyword">if</span> [ <span class="variable">$IDADE</span> -ge 18 -a <span class="string">"$CNH"</span> = <span class="string">"sim"</span> ]<br>
-                            <span class="keyword">then</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"Pode dirigir! 🚗"</span><br>
-                            <span class="keyword">fi</span>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <div class="content-box box-highlight">
-                        <h3>🔀 Exemplo OR</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.9em;">
-                            <span class="comment"># Desconto se VIP OU compra alta</span><br>
-                            <span class="keyword">if</span> [ <span class="string">"$VIP"</span> = <span class="string">"sim"</span> -o <span class="variable">$VALOR</span> -ge 100 ]<br>
-                            <span class="keyword">then</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"Ganhou desconto! 🎉"</span><br>
-                            <span class="keyword">fi</span>
-                        </div>
-                    </div>
-                    <div class="content-box box-warning">
-                        <h3>🚫 Exemplo NOT</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.9em;">
-                            <span class="comment"># Se NÃO for admin</span><br>
-                            <span class="keyword">if</span> [ ! <span class="string">"$USER"</span> = <span class="string">"root"</span> ]<br>
-                            <span class="keyword">then</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"Acesso negado!"</span><br>
-                            <span class="keyword">fi</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 9: Exit Codes e IF -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🚦 Exit Codes e o IF</h2>
-            <div class="content-box box-highlight" style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 1.2em;">O IF usa o <strong>código de saída</strong> para decidir!</p>
-            </div>
-            <div class="grid-2">
-                <div>
-                    <div class="content-box box-info">
-                        <h3>📊 A Regra</h3>
-                        <p><strong>Exit Code 0</strong> = Verdadeiro → executa THEN<br>
-                        <strong>Exit Code 1+</strong> = Falso → executa ELSE</p>
-                    </div>
-                    <div class="content-box box-success">
-                        <h3>✅ Comando que funciona</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.9em;">
-                            <span class="keyword">if</span> <span class="command">ls</span> /home<br>
-                            <span class="keyword">then</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"Pasta existe!"</span><br>
-                            <span class="keyword">fi</span><br><br>
-                            <span class="comment"># ls retorna 0 = sucesso</span><br>
-                            <span class="comment"># IF entende como verdadeiro</span>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <div class="content-box box-warning">
-                        <h3>❌ Comando que falha</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.9em;">
-                            <span class="keyword">if</span> <span class="command">ls</span> /pasta_inexistente 2>/dev/null<br>
-                            <span class="keyword">then</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"Existe!"</span><br>
-                            <span class="keyword">else</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"Não existe!"</span><br>
-                            <span class="keyword">fi</span><br><br>
-                            <span class="comment"># ls retorna 2 = erro</span><br>
-                            <span class="comment"># IF executa o else</span>
-                        </div>
-                    </div>
-                    <div class="content-box box-tip">
-                        <h3>💡 O 2>/dev/null</h3>
-                        <p>Esconde mensagens de erro do comando</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 10: Exemplo Prático - Login -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🔐 Exemplo Prático: Sistema de Login</h2>
-            <div class="box-terminal" style="font-size: 0.95em; line-height: 1.6;">
-                <span class="shebang">#!/bin/bash</span><br>
-                <span class="comment"># login.sh - Sistema de login simples</span><br><br>
-                <span class="command">echo</span> <span class="string">"╔═══════════════════════════╗"</span><br>
-                <span class="command">echo</span> <span class="string">"║      SISTEMA DE LOGIN     ║"</span><br>
-                <span class="command">echo</span> <span class="string">"╚═══════════════════════════╝"</span><br>
-                <span class="command">echo</span><br><br>
-                <span class="command">read</span> -p <span class="string">"Usuário: "</span> USUARIO<br>
-                <span class="command">read</span> -s -p <span class="string">"Senha: "</span> SENHA<br>
-                <span class="command">echo</span><br><br>
-                <span class="comment"># Verificação</span><br>
-                <span class="keyword">if</span> [ <span class="string">"$USUARIO"</span> = <span class="string">"admin"</span> -a <span class="string">"$SENHA"</span> = <span class="string">"123456"</span> ]<br>
-                <span class="keyword">then</span><br>
-                &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"✅ Login realizado com sucesso!"</span><br>
-                &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"Bem-vindo, $USUARIO!"</span><br>
-                <span class="keyword">else</span><br>
-                &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"❌ Usuário ou senha incorretos!"</span><br>
-                <span class="keyword">fi</span>
-            </div>
-            <div class="grid-2" style="margin-top: 20px;">
-                <div class="content-box box-success">
-                    <h3>✅ Login correto</h3>
-                    <p>Usuário: admin | Senha: 123456</p>
-                </div>
-                <div class="content-box box-warning">
-                    <h3>❌ Login errado</h3>
-                    <p>Qualquer outro usuário/senha</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 11: Exemplo Prático - Verificador -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">📊 Exemplo: Verificador de Sistema</h2>
-            <div class="box-terminal" style="font-size: 0.9em; line-height: 1.5;">
-                <span class="shebang">#!/bin/bash</span><br>
-                <span class="comment"># verificador.sh - Verifica estado do sistema</span><br><br>
-                <span class="command">echo</span> <span class="string">"=== VERIFICAÇÃO DO SISTEMA ==="</span><br>
-                <span class="command">echo</span><br><br>
-                <span class="comment"># 1. Verificar se pasta backup existe</span><br>
-                <span class="keyword">if</span> [ -d <span class="string">"/backup"</span> ]<br>
-                <span class="keyword">then</span><br>
-                &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"✅ Pasta /backup existe"</span><br>
-                <span class="keyword">else</span><br>
-                &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"⚠️ Pasta /backup NÃO existe"</span><br>
-                <span class="keyword">fi</span><br><br>
-                <span class="comment"># 2. Verificar espaço em disco</span><br>
-                <span class="variable">ESPACO</span>=<span class="string">$(df / | tail -1 | awk '{print $5}' | tr -d '%')</span><br><br>
-                <span class="keyword">if</span> [ <span class="variable">$ESPACO</span> -gt 90 ]<br>
-                <span class="keyword">then</span><br>
-                &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"🔴 ALERTA: Disco com $ESPACO% de uso!"</span><br>
-                <span class="keyword">else</span><br>
-                &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"✅ Disco OK: $ESPACO% de uso"</span><br>
-                <span class="keyword">fi</span><br><br>
-                <span class="command">echo</span><br>
-                <span class="command">echo</span> <span class="string">"=== FIM DA VERIFICAÇÃO ==="</span>
-            </div>
-        </div>
-
-        <!-- SLIDE 12: Resumo dos Operadores -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">📋 Resumo: Operadores</h2>
-            <div class="grid-3">
-                <div class="command-card">
-                    <div class="cmd">-eq -ne</div>
-                    <h4>Igual / Diferente</h4>
-                    <p>Números</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">-gt -lt</div>
-                    <h4>Maior / Menor</h4>
-                    <p>Números</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">-ge -le</div>
-                    <h4>≥ e ≤</h4>
-                    <p>Números</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">= !=</div>
-                    <h4>Igual / Diferente</h4>
-                    <p>Strings</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">-z -n</div>
-                    <h4>Vazia / Não vazia</h4>
-                    <p>Strings</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">-f -d</div>
-                    <h4>Arquivo / Diretório</h4>
-                    <p>Arquivos</p>
-                </div>
-            </div>
-            <div class="grid-3" style="margin-top: 15px;">
-                <div class="command-card">
-                    <div class="cmd">-r -w -x</div>
-                    <h4>Permissões</h4>
-                    <p>Ler/Escrever/Executar</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">-a -o</div>
-                    <h4>AND / OR</h4>
-                    <p>Lógicos</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">!</div>
-                    <h4>NOT</h4>
-                    <p>Negação</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 13: Quiz Interativo -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🎯 Desafio Interativo</h2>
-            <p style="text-align: center; margin-bottom: 20px;">Arraste os operadores para seus significados!</p>
-            
-            <div class="drag-drop-container">
-                <div class="col-questions">
-                    <div class="question-item">
-                        <div class="question-text">Maior que (números)</div>
-                        <div class="drop-zone" data-correct="-gt">Arraste aqui</div>
-                    </div>
-                    <div class="question-item">
-                        <div class="question-text">String vazia</div>
-                        <div class="drop-zone" data-correct="-z">Arraste aqui</div>
-                    </div>
-                    <div class="question-item">
-                        <div class="question-text">É um arquivo</div>
-                        <div class="drop-zone" data-correct="-f">Arraste aqui</div>
-                    </div>
-                    <div class="question-item">
-                        <div class="question-text">É um diretório</div>
-                        <div class="drop-zone" data-correct="-d">Arraste aqui</div>
-                    </div>
-                    <div class="question-item">
-                        <div class="question-text">AND (E lógico)</div>
-                        <div class="drop-zone" data-correct="-a">Arraste aqui</div>
-                    </div>
-                </div>
-
-                <div class="col-answers" id="answersPool">
-                </div>
-            </div>
-
-            <div style="text-align: center; margin-top: 20px; display: flex; gap: 10px; justify-content: center;">
-                <button onclick="checkAnswers()" class="nav-btn" style="background: var(--accent-green);">✅ Verificar</button>
-                <button onclick="resetQuiz()" class="nav-btn" style="background: var(--accent-red);">🔄 Reiniciar</button>
-            </div>
-
-            <div id="quizResult" class="quiz-result"></div>
-        </div>
-
-        <!-- SLIDE 14: Conclusão -->
-        <div class="slide-card">
-            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center;">
-                <div style="font-size: 4em; margin-bottom: 20px;">🎓🔀</div>
-                <h2 class="slide-subtitle" style="border: none;">Parabéns! Você completou a Aula 09!</h2>
-                <div class="content-box box-success" style="max-width: 700px;">
-                    <h3>📚 O que aprendemos hoje:</h3>
-                    <div class="grid-2" style="text-align: left; margin-top: 15px;">
-                        <div>
-                            <div class="bullet-point">Estrutura if/then/else/fi</div>
-                            <div class="bullet-point">Operadores numéricos</div>
-                            <div class="bullet-point">Operadores de string</div>
-                        </div>
-                        <div>
-                            <div class="bullet-point">Operadores de arquivo</div>
-                            <div class="bullet-point">Operadores lógicos</div>
-                            <div class="bullet-point">Exit codes no IF</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="content-box box-info" style="max-width: 700px; margin-top: 20px;">
-                    <h3>🔜 Na próxima aula:</h3>
-                    <p><strong>Estruturas de Repetição (Loops)</strong> - for, while e until!</p>
-                </div>
-                <div class="content-box box-tip" style="max-width: 700px; margin-top: 20px;">
-                    <h3>💡 Lembre-se</h3>
-                    <p>Espaços nos [ ] | Aspas em strings | Teste antes de usar!</p>
-                </div>
-                <div style="margin-top: 40px;">
-                    <a href="dashboard.html" class="nav-btn" style="font-size: 1.2em; padding: 15px 40px;">
-                        Voltar para o Dashboard 🏠
-                    </a>
-                </div>
-            </div>
-        </div>
-
+    <div class="lesson-hero">
+        <h1>&#x1F500; Instru&ccedil;&otilde;es Condicionais (if)</h1>
+        <p class="subtitle">Aula 9 &mdash; Ensine seu script a tomar decis&otilde;es com <code>if</code>, <code>then</code>, <code>else</code> e <code>fi</code></p>
     </div>
 
-    <div class="nav-controls">
-        <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">⬅️ Anterior</button>
-        <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Próximo ➡️</button>
+    <!-- CARD 1 — O que é IF? -->
+    <div class="content-card">
+        <h2>&#x1F6A6; O que &eacute; uma Instru&ccedil;&atilde;o Condicional?</h2>
+        <p>Uma instrução condicional permite que o script <strong>tome decisões</strong>: execute um bloco de comandos se uma condição for verdadeira, e outro (ou nenhum) se for falsa. &Eacute; como um semáforo &mdash; verde executa, vermelho desvia.</p>
+
+        <h3>Estrutura b&aacute;sica</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">sintaxe</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-comment"># if simples</span>
+<span class="t-kw">if</span> [ condição ]
+<span class="t-kw">then</span>
+    comandos
+<span class="t-kw">fi</span>
+
+<span class="t-comment"># if com else</span>
+<span class="t-kw">if</span> [ condição ]
+<span class="t-kw">then</span>
+    <span class="t-comment"># se verdadeiro</span>
+    comando_a
+<span class="t-kw">else</span>
+    <span class="t-comment"># se falso</span>
+    comando_b
+<span class="t-kw">fi</span>
+
+<span class="t-comment"># if com elif (múltiplos caminhos)</span>
+<span class="t-kw">if</span> [ condição1 ]
+<span class="t-kw">then</span>
+    comando_a
+<span class="t-kw">elif</span> [ condição2 ]
+<span class="t-kw">then</span>
+    comando_b
+<span class="t-kw">else</span>
+    comando_c
+<span class="t-kw">fi</span>
+            </div>
+        </div>
+
+        <h3>Diagrama de fluxo</h3>
+        <div class="flow-if">
+            <div class="flow-diamond">&#x2753; Condição</div>
+            <div class="flow-branch">
+                <div class="flow-branch-item">
+                    <span class="flow-label">Verdadeiro</span>
+                    <div class="flow-arrow">&#x2198;</div>
+                    <div class="flow-action-true">&#x2705; Executa bloco then</div>
+                </div>
+                <div class="flow-branch-item">
+                    <span class="flow-label">Falso</span>
+                    <div class="flow-arrow">&#x2199;</div>
+                    <div class="flow-action-false">&#x23ED;&#xFE0F; Pula ou executa else</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="alert-box">
+            <p>&#x26A0;&#xFE0F; <strong>Espa&ccedil;os obrigat&oacute;rios nos colchetes!</strong><br>
+            &#x2705; <code>[ $IDADE -ge 18 ]</code> &nbsp;&nbsp; &#x274C; <code>[$IDADE -ge 18]</code><br>
+            Sempre um espa&ccedil;o depois de <code>[</code> e antes de <code>]</code>. E <code>fi</code> &eacute; <em>if</em> ao contr&aacute;rio &mdash; fecha o bloco.</p>
+        </div>
     </div>
 
-    <script>
-        // === LÓGICA DE NAVEGAÇÃO ===
-        let currentSlide = 0;
-        const slides = document.querySelectorAll('.slide-card');
-        const totalSlides = slides.length;
+    <!-- CARD 2 — Exemplos básicos -->
+    <div class="content-card">
+        <h2>&#x1F4DD; Primeiros Exemplos</h2>
 
-        document.getElementById('total-slides').textContent = totalSlides;
+        <h3>if simples &mdash; verificar idade</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">idade.sh</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-shebang">#!/bin/bash</span>
 
-        function showSlide(index) {
-            slides.forEach((slide, i) => {
-                slide.classList.toggle('active', i === index);
-            });
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            
-            document.getElementById('current-slide').textContent = index + 1;
-            document.getElementById('prevBtn').disabled = index === 0;
-            document.getElementById('nextBtn').disabled = index === totalSlides - 1;
-        }
+<span class="t-var">IDADE</span>=<span class="t-str">20</span>
 
-        function changeSlide(direction) {
-            const newSlide = currentSlide + direction;
-            if (newSlide >= 0 && newSlide < totalSlides) {
-                currentSlide = newSlide;
-                showSlide(currentSlide);
-            }
-        }
+<span class="t-kw">if</span> [ <span class="t-var">$IDADE</span> <span class="t-flag">-ge</span> <span class="t-str">18</span> ]
+<span class="t-kw">then</span>
+    <span class="t-cmd">echo</span> <span class="t-str">"Maior de idade! ✅"</span>
+<span class="t-kw">fi</span>
+<span class="t-out">Maior de idade! ✅</span>
+<span class="t-comment"># 20 ≥ 18 é verdadeiro → executa o then</span>
+            </div>
+        </div>
 
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowLeft') changeSlide(-1);
-            if (e.key === 'ArrowRight') changeSlide(1);
-        });
+        <h3>if/else &mdash; bom dia ou boa tarde</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">saudacao.sh</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-shebang">#!/bin/bash</span>
 
-        // === LÓGICA DO QUIZ ===
-        const answersData = [
-            { id: '-gt', text: '-gt' },
-            { id: '-z', text: '-z' },
-            { id: '-f', text: '-f' },
-            { id: '-d', text: '-d' },
-            { id: '-a', text: '-a' }
-        ];
+<span class="t-var">HORA</span>=<span class="t-str">14</span>
 
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
-        }
+<span class="t-kw">if</span> [ <span class="t-var">$HORA</span> <span class="t-flag">-lt</span> <span class="t-str">12</span> ]
+<span class="t-kw">then</span>
+    <span class="t-cmd">echo</span> <span class="t-str">"Bom dia! ☀️"</span>
+<span class="t-kw">else</span>
+    <span class="t-cmd">echo</span> <span class="t-str">"Boa tarde! 🌤️"</span>
+<span class="t-kw">fi</span>
+<span class="t-out">Boa tarde! 🌤️</span>
+<span class="t-comment"># 14 &lt; 12 é falso → executa o else</span>
+            </div>
+        </div>
 
-        let draggedItem = null;
+        <h3>if/elif/else &mdash; sistema de notas</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">notas.sh</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-shebang">#!/bin/bash</span>
 
-        function initQuiz() {
-            const pool = document.getElementById('answersPool');
-            pool.innerHTML = '';
-            const shuffled = shuffleArray([...answersData]);
-            
-            shuffled.forEach(ans => {
-                const div = document.createElement('div');
-                div.className = 'answer-item';
-                div.draggable = true;
-                div.textContent = ans.text;
-                div.dataset.id = ans.id;
-                
-                div.addEventListener('dragstart', (e) => {
-                    draggedItem = e.target;
-                    e.target.classList.add('dragging');
-                });
-                div.addEventListener('dragend', (e) => {
-                    e.target.classList.remove('dragging');
-                    draggedItem = null;
-                });
-                
-                pool.appendChild(div);
-            });
+<span class="t-var">NOTA</span>=<span class="t-str">65</span>
 
-            document.querySelectorAll('.drop-zone').forEach(zone => {
-                zone.innerHTML = 'Arraste aqui';
-                zone.classList.remove('has-answer');
-                zone.style.background = '#f8fafc';
-                
-                zone.addEventListener('dragover', (e) => {
-                    e.preventDefault();
-                    zone.classList.add('drag-over');
-                });
-                
-                zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
-                
-                zone.addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    zone.classList.remove('drag-over');
-                    
-                    const jaTemResposta = zone.querySelector('.answer-item');
-                    
-                    if (draggedItem && !jaTemResposta) {
-                        zone.innerHTML = '';
-                        zone.appendChild(draggedItem);
-                        draggedItem.classList.add('in-drop-zone');
-                        zone.classList.add('has-answer');
-                    }
-                });
-            });
-            
-            document.getElementById('quizResult').style.display = 'none';
-        }
+<span class="t-kw">if</span> [ <span class="t-var">$NOTA</span> <span class="t-flag">-ge</span> <span class="t-str">70</span> ]
+<span class="t-kw">then</span>
+    <span class="t-cmd">echo</span> <span class="t-str">"Aprovado! 🎉"</span>
+<span class="t-kw">elif</span> [ <span class="t-var">$NOTA</span> <span class="t-flag">-ge</span> <span class="t-str">50</span> ]
+<span class="t-kw">then</span>
+    <span class="t-cmd">echo</span> <span class="t-str">"Recuperação 📚"</span>
+<span class="t-kw">else</span>
+    <span class="t-cmd">echo</span> <span class="t-str">"Reprovado 😞"</span>
+<span class="t-kw">fi</span>
+<span class="t-out">Recuperação 📚</span>
+            </div>
+        </div>
+    </div>
 
-        function checkAnswers() {
-            let correct = 0;
-            const zones = document.querySelectorAll('.drop-zone');
-            const total = zones.length;
-            
-            zones.forEach(zone => {
-                const answer = zone.querySelector('.answer-item');
-                if (answer && answer.dataset.id === zone.dataset.correct) {
-                    correct++;
-                    zone.style.background = '#d1fae5';
-                } else {
-                    zone.style.background = '#fee2e2';
-                }
-            });
+    <!-- CARD 3 — Operadores Numéricos -->
+    <div class="content-card">
+        <h2>&#x1F522; Operadores Num&eacute;ricos</h2>
+        <p>Use estes operadores para comparar <strong>n&uacute;meros inteiros</strong> dentro dos colchetes <code>[ ]</code>.</p>
 
-            const resultDiv = document.getElementById('quizResult');
-            resultDiv.style.display = 'block';
-            resultDiv.innerHTML = `<h3>Você acertou ${correct} de ${total}!</h3>`;
-            
-            if(correct === total) resultDiv.innerHTML += '<p>🎉 Perfeito! Você domina os operadores!</p>';
-            else if(correct >= total/2) resultDiv.innerHTML += '<p>👍 Bom trabalho! Revise os erros.</p>';
-            else resultDiv.innerHTML += '<p>📚 Continue praticando!</p>';
-        }
+        <table class="cmp-table">
+            <thead>
+                <tr><th>Operador</th><th>Significado</th><th>Exemplo</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>-eq</code></td><td>Igual (=)</td><td><code>[ 5 -eq 5 ]</code></td></tr>
+                <tr><td><code>-ne</code></td><td>Diferente (&ne;)</td><td><code>[ 5 -ne 3 ]</code></td></tr>
+                <tr><td><code>-gt</code></td><td>Maior que (&gt;)</td><td><code>[ 10 -gt 5 ]</code></td></tr>
+                <tr><td><code>-ge</code></td><td>Maior ou igual (&ge;)</td><td><code>[ 10 -ge 10 ]</code></td></tr>
+                <tr><td><code>-lt</code></td><td>Menor que (&lt;)</td><td><code>[ 3 -lt 5 ]</code></td></tr>
+                <tr><td><code>-le</code></td><td>Menor ou igual (&le;)</td><td><code>[ 3 -le 5 ]</code></td></tr>
+            </tbody>
+        </table>
 
-        function resetQuiz() {
-            initQuiz();
-        }
+        <div class="tip-box">
+            <p>&#x1F4A1; <strong>Dica de memoriza&ccedil;&atilde;o:</strong> <code>eq</code> = equal &bull; <code>ne</code> = not equal &bull; <code>gt</code> = greater than &bull; <code>lt</code> = lower than &bull; <code>ge</code>/<code>le</code> = or equal</p>
+        </div>
+    </div>
 
-        // Inicia tudo
-        initQuiz();
-    </script>
+    <!-- CARD 4 — Operadores de String -->
+    <div class="content-card">
+        <h2>&#x1F524; Operadores de String (Texto)</h2>
+        <p>Para comparar <strong>textos</strong>, use estes operadores. Sempre coloque vari&aacute;veis entre aspas para evitar erros com strings vazias ou com espa&ccedil;os.</p>
+
+        <table class="cmp-table">
+            <thead>
+                <tr><th>Operador</th><th>Significado</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>=</code></td><td>Strings iguais</td></tr>
+                <tr><td><code>!=</code></td><td>Strings diferentes</td></tr>
+                <tr><td><code>-z</code></td><td>String vazia (zero length)</td></tr>
+                <tr><td><code>-n</code></td><td>String n&atilde;o vazia (non-zero)</td></tr>
+            </tbody>
+        </table>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">strings.sh</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-comment"># Verificar senha</span>
+<span class="t-var">SENHA</span>=<span class="t-str">"abc123"</span>
+
+<span class="t-kw">if</span> [ <span class="t-str">"$SENHA"</span> = <span class="t-str">"abc123"</span> ]
+<span class="t-kw">then</span>
+    <span class="t-cmd">echo</span> <span class="t-str">"Acesso liberado! 🔓"</span>
+<span class="t-kw">else</span>
+    <span class="t-cmd">echo</span> <span class="t-str">"Senha incorreta! 🔒"</span>
+<span class="t-kw">fi</span>
+
+<span class="t-comment"># Verificar se campo está vazio</span>
+<span class="t-kw">if</span> [ <span class="t-flag">-z</span> <span class="t-str">"$NOME"</span> ]
+<span class="t-kw">then</span>
+    <span class="t-cmd">echo</span> <span class="t-str">"Nome é obrigatório!"</span>
+<span class="t-kw">fi</span>
+            </div>
+        </div>
+
+        <div class="alert-box">
+            <p>&#x26A0;&#xFE0F; <strong>Sempre use aspas em vari&aacute;veis de texto!</strong><br>
+            &#x2705; <code>[ "$VAR" = "valor" ]</code> &nbsp;&nbsp; &#x274C; <code>[ $VAR = valor ]</code><br>
+            Sem aspas, uma vari&aacute;vel vazia quebra a sintaxe do teste.</p>
+        </div>
+    </div>
+
+    <!-- CARD 5 — Operadores de Arquivo -->
+    <div class="content-card">
+        <h2>&#x1F4C1; Operadores de Arquivo</h2>
+        <p>Esses operadores testam <strong>propriedades de arquivos e diret&oacute;rios</strong> &mdash; essenciais para scripts que manipulam o sistema de arquivos com seguran&ccedil;a.</p>
+
+        <table class="cmp-table">
+            <thead>
+                <tr><th>Operador</th><th>Verdadeiro se&hellip;</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>-f</code></td><td>For um arquivo regular</td></tr>
+                <tr><td><code>-d</code></td><td>For um diret&oacute;rio</td></tr>
+                <tr><td><code>-e</code></td><td>Existir (arquivo ou pasta)</td></tr>
+                <tr><td><code>-r</code></td><td>Tiver permiss&atilde;o de leitura</td></tr>
+                <tr><td><code>-w</code></td><td>Tiver permiss&atilde;o de escrita</td></tr>
+                <tr><td><code>-x</code></td><td>Tiver permiss&atilde;o de execu&ccedil;&atilde;o</td></tr>
+                <tr><td><code>-s</code></td><td>N&atilde;o estiver vazio (size &gt; 0)</td></tr>
+            </tbody>
+        </table>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">backup.sh</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-shebang">#!/bin/bash</span>
+
+<span class="t-var">ARQUIVO</span>=<span class="t-str">"dados.txt"</span>
+
+<span class="t-kw">if</span> [ <span class="t-flag">-f</span> <span class="t-str">"$ARQUIVO"</span> ]
+<span class="t-kw">then</span>
+    <span class="t-cmd">echo</span> <span class="t-str">"Arquivo existe! Fazendo backup..."</span>
+    <span class="t-cmd">cp</span> <span class="t-str">"$ARQUIVO"</span> <span class="t-arg">backup/</span>
+<span class="t-kw">else</span>
+    <span class="t-cmd">echo</span> <span class="t-str">"Arquivo não encontrado! ❌"</span>
+<span class="t-kw">fi</span>
+
+<span class="t-comment"># Criar pasta se não existir</span>
+<span class="t-kw">if</span> [ ! <span class="t-flag">-d</span> <span class="t-str">"backup"</span> ]
+<span class="t-kw">then</span>
+    <span class="t-cmd">mkdir</span> <span class="t-arg">backup</span>
+<span class="t-kw">fi</span>
+            </div>
+        </div>
+
+        <div class="tip-box">
+            <p>&#x1F4A1; Sempre verifique se arquivo ou pasta <strong>existe antes de usar</strong>. Tentar ler um arquivo inexistente gera erro e interrompe o script.</p>
+        </div>
+    </div>
+
+    <!-- CARD 6 — Operadores Lógicos + Exit Codes -->
+    <div class="content-card">
+        <h2>&#x1F517; Operadores L&oacute;gicos e Exit Codes</h2>
+
+        <h3>Combinando condi&ccedil;&otilde;es</h3>
+        <table class="cmp-table">
+            <thead>
+                <tr><th>Operador</th><th>Nome</th><th>Significado</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>-a</code></td><td>AND</td><td>Ambas as condi&ccedil;&otilde;es verdadeiras</td></tr>
+                <tr><td><code>-o</code></td><td>OR</td><td>Pelo menos uma verdadeira</td></tr>
+                <tr><td><code>!</code></td><td>NOT</td><td>Inverte o resultado</td></tr>
+            </tbody>
+        </table>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">logicos.sh</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-comment"># AND: pode dirigir se maior de idade E habilitado</span>
+<span class="t-kw">if</span> [ <span class="t-var">$IDADE</span> <span class="t-flag">-ge 18 -a</span> <span class="t-str">"$CNH"</span> = <span class="t-str">"sim"</span> ]
+<span class="t-kw">then</span>
+    <span class="t-cmd">echo</span> <span class="t-str">"Pode dirigir! 🚗"</span>
+<span class="t-kw">fi</span>
+
+<span class="t-comment"># OR: desconto se VIP OU compra acima de R$100</span>
+<span class="t-kw">if</span> [ <span class="t-str">"$VIP"</span> = <span class="t-str">"sim"</span> <span class="t-flag">-o</span> <span class="t-var">$VALOR</span> <span class="t-flag">-ge</span> <span class="t-str">100</span> ]
+<span class="t-kw">then</span>
+    <span class="t-cmd">echo</span> <span class="t-str">"Desconto aplicado! 🎉"</span>
+<span class="t-kw">fi</span>
+
+<span class="t-comment"># NOT: acesso negado se não for root</span>
+<span class="t-kw">if</span> [ ! <span class="t-str">"$USER"</span> = <span class="t-str">"root"</span> ]
+<span class="t-kw">then</span>
+    <span class="t-cmd">echo</span> <span class="t-str">"Acesso negado!"</span>
+<span class="t-kw">fi</span>
+            </div>
+        </div>
+
+        <h3>Exit codes e o if</h3>
+        <p>O <code>if</code> pode testar diretamente o <strong>código de saída</strong> de qualquer comando &mdash; sem precisar de colchetes. Exit code <code>0</code> = verdadeiro; qualquer outro valor = falso.</p>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">exit-code.sh</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-comment"># ls retorna 0 se a pasta existe</span>
+<span class="t-kw">if</span> <span class="t-cmd">ls</span> <span class="t-arg">/home</span> &gt;/dev/null 2&gt;&amp;1
+<span class="t-kw">then</span>
+    <span class="t-cmd">echo</span> <span class="t-str">"Pasta /home existe!"</span>
+<span class="t-kw">else</span>
+    <span class="t-cmd">echo</span> <span class="t-str">"Pasta não encontrada"</span>
+<span class="t-kw">fi</span>
+
+<span class="t-comment"># grep retorna 0 se encontra o padrão</span>
+<span class="t-kw">if</span> <span class="t-cmd">grep</span> <span class="t-flag">-q</span> <span class="t-str">"root"</span> <span class="t-arg">/etc/passwd</span>
+<span class="t-kw">then</span>
+    <span class="t-cmd">echo</span> <span class="t-str">"Usuário root existe"</span>
+<span class="t-kw">fi</span>
+            </div>
+        </div>
+
+        <div class="highlight-box">
+            <p>&#x1F4A1; <code>2&gt;/dev/null</code> suprime mensagens de erro. <code>-q</code> no grep deixa o comando silencioso &mdash; só o exit code importa. Essa técnica &eacute; muito usada em scripts de verificação.</p>
+        </div>
+    </div>
+
+    <!-- CARD 7 — Exemplos Práticos -->
+    <div class="content-card">
+        <h2>&#x1F527; Exemplos Pr&aacute;ticos Completos</h2>
+
+        <h3>Sistema de login simples</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">login.sh</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-shebang">#!/bin/bash</span>
+<span class="t-comment"># login.sh — sistema de autenticação simples</span>
+
+<span class="t-cmd">echo</span> <span class="t-str">"=== SISTEMA DE LOGIN ==="</span>
+<span class="t-cmd">read</span> <span class="t-flag">-p</span> <span class="t-str">"Usuário: "</span> <span class="t-var">USUARIO</span>
+<span class="t-cmd">read</span> <span class="t-flag">-s -p</span> <span class="t-str">"Senha: "</span> <span class="t-var">SENHA</span>
+<span class="t-cmd">echo</span>
+
+<span class="t-kw">if</span> [ <span class="t-str">"$USUARIO"</span> = <span class="t-str">"admin"</span> <span class="t-flag">-a</span> <span class="t-str">"$SENHA"</span> = <span class="t-str">"123456"</span> ]
+<span class="t-kw">then</span>
+    <span class="t-cmd">echo</span> <span class="t-str">"✅ Login realizado com sucesso!"</span>
+    <span class="t-cmd">echo</span> <span class="t-str">"Bem-vindo, $USUARIO!"</span>
+<span class="t-kw">else</span>
+    <span class="t-cmd">echo</span> <span class="t-str">"❌ Usuário ou senha incorretos!"</span>
+<span class="t-kw">fi</span>
+            </div>
+        </div>
+
+        <h3>Verificador de sistema</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">verificador.sh</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-shebang">#!/bin/bash</span>
+<span class="t-comment"># verificador.sh — checa estado do sistema</span>
+
+<span class="t-cmd">echo</span> <span class="t-str">"=== VERIFICAÇÃO DO SISTEMA ==="</span>
+
+<span class="t-comment"># 1. Pasta de backup existe?</span>
+<span class="t-kw">if</span> [ <span class="t-flag">-d</span> <span class="t-str">"/backup"</span> ]
+<span class="t-kw">then</span>
+    <span class="t-cmd">echo</span> <span class="t-str">"✅ Pasta /backup existe"</span>
+<span class="t-kw">else</span>
+    <span class="t-cmd">echo</span> <span class="t-str">"⚠️  Pasta /backup NÃO existe"</span>
+<span class="t-kw">fi</span>
+
+<span class="t-comment"># 2. Uso do disco acima de 90%?</span>
+<span class="t-var">ESPACO</span>=<span class="t-str">$(df / | tail -1 | awk '{print $5}' | tr -d '%')</span>
+
+<span class="t-kw">if</span> [ <span class="t-var">$ESPACO</span> <span class="t-flag">-gt</span> <span class="t-str">90</span> ]
+<span class="t-kw">then</span>
+    <span class="t-cmd">echo</span> <span class="t-str">"🔴 ALERTA: disco com ${ESPACO}% de uso!"</span>
+<span class="t-kw">else</span>
+    <span class="t-cmd">echo</span> <span class="t-str">"✅ Disco OK: ${ESPACO}% de uso"</span>
+<span class="t-kw">fi</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARD 8 — Resumo -->
+    <div class="content-card">
+        <h2>&#x1F4CB; Resumo: Operadores</h2>
+
+        <div class="cmd-grid">
+            <div class="cmd-card">
+                <span class="cmd">-eq / -ne</span>
+                <strong>Igual / Diferente</strong>
+                <span>N&uacute;meros</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">-gt / -lt</span>
+                <strong>Maior / Menor</strong>
+                <span>N&uacute;meros</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">-ge / -le</span>
+                <strong>&ge; e &le;</strong>
+                <span>N&uacute;meros</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">= / !=</span>
+                <strong>Igual / Diferente</strong>
+                <span>Strings</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">-z / -n</span>
+                <strong>Vazia / N&atilde;o vazia</strong>
+                <span>Strings</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">-f / -d</span>
+                <strong>Arquivo / Diret&oacute;rio</strong>
+                <span>Arquivos</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">-e / -s</span>
+                <strong>Existe / N&atilde;o vazio</strong>
+                <span>Arquivos</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">-r / -w / -x</span>
+                <strong>Permiss&otilde;es</strong>
+                <span>Arquivos</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">-a / -o / !</span>
+                <strong>AND / OR / NOT</strong>
+                <span>L&oacute;gicos</span>
+            </div>
+        </div>
+
+        <div class="highlight-box">
+            <p>&#x23F0; <strong>Regras de ouro:</strong> espa&ccedil;os dentro dos <code>[ ]</code> &bull; aspas em vari&aacute;veis de string &bull; verifique arquivos antes de usar &bull; <code>fi</code> sempre fecha o bloco</p>
+        </div>
+    </div>
+
+    <!-- EXERCÍCIO -->
+    <div class="content-card exercise-card">
+        <h2>&#x1F3AF; Exerc&iacute;cio &mdash; Arraste e Conecte</h2>
+        <p style="color:#475569;font-size:.9em;margin-bottom:4px;">Arraste cada descri&ccedil;&atilde;o para o operador correto.</p>
+
+        <div class="ex-drag-root" data-ex="ex01">
+            <div class="ex-drag">
+                <div>
+                    <div class="ex-col-title">Descri&ccedil;&atilde;o</div>
+                    <div class="ex-pool" data-pool="ex01">
+                        <div class="drag-chip" data-id="c1">Verdadeiro se o n&uacute;mero for maior que outro</div>
+                        <div class="drag-chip" data-id="c2">Verdadeiro se a string estiver vazia</div>
+                        <div class="drag-chip" data-id="c3">Verdadeiro se o caminho for um arquivo regular</div>
+                        <div class="drag-chip" data-id="c4">Verdadeiro se o caminho for um diret&oacute;rio</div>
+                        <div class="drag-chip" data-id="c5">Exige que <strong>ambas</strong> as condi&ccedil;&otilde;es sejam verdadeiras</div>
+                        <div class="drag-chip" data-id="c6">Inverte o resultado da condi&ccedil;&atilde;o</div>
+                    </div>
+                </div>
+                <div>
+                    <div class="ex-col-title">Operador</div>
+                    <div class="ex-zones" data-zones="ex01">
+                        <div class="drop-zone" data-zone="ex01-z1" data-accept="c1">
+                            <span class="zone-name"><code>-gt</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z2" data-accept="c2">
+                            <span class="zone-name"><code>-z</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z3" data-accept="c3">
+                            <span class="zone-name"><code>-f</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z4" data-accept="c4">
+                            <span class="zone-name"><code>-d</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z5" data-accept="c5">
+                            <span class="zone-name"><code>-a</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z6" data-accept="c6">
+                            <span class="zone-name"><code>!</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ex-actions">
+            <button class="btn-verificar" onclick="dragVerify('ex01')">Verificar</button>
+            <button class="btn-refazer"  onclick="dragReset('ex01')">Refazer</button>
+        </div>
+        <div class="ex-result" id="ex01-result"></div>
+    </div>
+
+    <!-- ATIVIDADE PRÁTICA -->
+    <div class="content-card practical-card" id="prat-01">
+        <h2>&#x1F6E0;&#xFE0F; Atividade Pr&aacute;tica &mdash; Scripts com Condicionais</h2>
+        <div class="prat-meta">
+            <span class="prat-tag">&#x23F1; ~25 min</span>
+            <span class="prat-tag">&#x1F4BB; Terminal Bash</span>
+            <span class="prat-tag">&#x1F4F8; Tirar screenshot da sa&iacute;da</span>
+        </div>
+
+        <div class="prat-steps">
+            <div class="prat-step">
+                <div class="step-num">1</div>
+                <div class="step-body">
+                    <div class="step-label">Crie o script de notas</div>
+                    <div class="step-desc">Crie <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">notas.sh</code> com <code>if/elif/else</code> que classifica uma nota: &ge;70 "Aprovado", &ge;50 "Recupera&ccedil;&atilde;o", caso contr&aacute;rio "Reprovado". Teste com tr&ecirc;s valores diferentes.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">2</div>
+                <div class="step-body">
+                    <div class="step-label">Teste operadores de arquivo</div>
+                    <div class="step-desc">Crie <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">checa_arquivo.sh</code> que recebe um caminho e verifica: se &eacute; arquivo (<code>-f</code>), se &eacute; diret&oacute;rio (<code>-d</code>) ou se n&atilde;o existe (<code>-e</code> negado). Use <code>read -p</code> para pedir o caminho.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">3</div>
+                <div class="step-body">
+                    <div class="step-label">Script com operadores l&oacute;gicos</div>
+                    <div class="step-desc">Crie <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">acesso.sh</code> que pergunta usu&aacute;rio e senha. Use <code>-a</code> (AND) para s&oacute; liberar acesso se os dois valores estiverem corretos. Teste com credenciais certas e erradas.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">4</div>
+                <div class="step-body">
+                    <div class="step-label">Verificador de sistema com exit code</div>
+                    <div class="step-desc">Crie <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">verifica_servico.sh</code> que usa <code>if systemctl is-active nginx</code> (sem <code>[ ]</code>) para checar se o nginx est&aacute; ativo. Se estiver, mostre "OK"; sen&atilde;o, mostre "Inativo".</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="prat-observe">
+            <strong>&#x1F4CC; Para refletir:</strong> O <code>if</code> &eacute; a base de scripts inteligentes. Combinando operadores num&eacute;ricos, de string e de arquivo com operadores l&oacute;gicos, voc&ecirc; consegue criar scripts que se adaptam a qualquer cen&aacute;rio &mdash; do simples backup ao monitoramento de servidores.
+        </div>
+
+        <div class="ex-actions">
+            <button class="btn-print" onclick="printPractical('prat-01', 'Aula 9 \u2014 Instru\u00e7\u00f5es Condicionais (if)')">&#x1F5A8;&#xFE0F; Imprimir roteiro</button>
+        </div>
+    </div>
+
+    <div class="nav-footer">
+        <a href="aula08-variaveis-interacao.html" class="nav-link">&#x2B05; Anterior: Vari&aacute;veis e Intera&ccedil;&atilde;o</a>
+        <a href="aula10-estrutura-case.html" class="nav-link">Pr&oacute;xima: Estrutura case &#x27A1;</a>
+    </div>
+
+</div>
+
+<script src="slide-mode.js"></script>
+<script src="exercise-drag.js"></script>
+<script src="exercise-print.js"></script>
 </body>
 </html>
