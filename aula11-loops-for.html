@@ -3,1045 +3,709 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aula 11 - Shell Script: Loops FOR</title>
+    <title>Aula 11 &mdash; Loops FOR</title>
+    <link rel="stylesheet" href="slide-mode.css">
+    <link rel="stylesheet" href="exercise.css">
     <style>
         :root {
-            --primary: #667eea;
+            --primary:   #667eea;
             --secondary: #764ba2;
-            --bg-light: #f4f7fe;
+            --bg-light:  #f4f7fe;
             --text-dark: #2d3748;
-            --text-light: #718096;
-            --accent-green: #38ef7d;
-            --accent-red: #ff758c;
-            --accent-orange: #f39c12;
-            --accent-cyan: #17a2b8;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-light);
-            color: var(--text-dark);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: var(--bg-light); color: var(--text-dark); line-height: 1.7; }
 
-        .classroom-header {
-            background: white;
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 1000;
-        }
+        /* ── TOP BAR ── */
+        .top-bar { background: white; padding: 15px 30px; display: flex; align-items: center; gap: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 10; }
+        .back-btn { text-decoration: none; color: var(--primary); font-weight: 600; display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 8px; transition: background .3s; }
+        .back-btn:hover { background: rgba(102,126,234,.08); }
+        .page-badge { font-size: .8em; padding: 4px 12px; border-radius: 20px; background: rgba(102,126,234,.12); color: var(--primary); font-weight: 600; }
 
-        .back-btn {
-            text-decoration: none;
-            color: var(--text-dark);
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            border-radius: 50px;
-            transition: all 0.2s;
-            background: #f0f2f5;
-        }
-        .back-btn:hover { background: #e2e8f0; color: var(--primary); }
+        /* ── LAYOUT ── */
+        .content-wrapper { max-width: 800px; margin: 40px auto; padding: 0 30px; }
+        .lesson-hero { background: white; border-radius: 16px; padding: 40px; box-shadow: 0 5px 15px rgba(0,0,0,.05); margin-bottom: 30px; border-top: 4px solid var(--primary); }
+        .lesson-hero h1 { font-size: 2em; margin-bottom: 10px; color: var(--primary); }
+        .lesson-hero .subtitle { font-size: 1.05em; color: #718096; }
+        .content-card { background: white; border-radius: 16px; padding: 35px; box-shadow: 0 5px 15px rgba(0,0,0,.05); margin-bottom: 25px; }
+        .content-card h2 { font-size: 1.4em; color: var(--primary); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
+        .content-card h3 { font-size: 1.05em; color: #5a67d8; margin: 20px 0 10px; }
+        .content-card p { margin-bottom: 15px; text-align: justify; }
+        ul, ol { margin: 10px 0 15px 25px; }
+        li { margin-bottom: 8px; }
 
-        .lesson-info h1 { font-size: 1.1em; margin: 0; color: var(--text-dark); }
-        .lesson-info span { font-size: 0.85em; color: var(--text-light); }
+        /* ── CAIXAS ── */
+        .highlight-box { background: linear-gradient(135deg,rgba(102,126,234,.05),rgba(118,75,162,.06)); border-left: 4px solid var(--primary); padding: 20px 25px; border-radius: 0 12px 12px 0; margin: 20px 0; }
+        .highlight-box p { margin-bottom: 0; font-style: italic; }
+        .alert-box { background: #fff8e1; border-left: 4px solid #f59e0b; padding: 18px 22px; border-radius: 0 12px 12px 0; margin: 20px 0; }
+        .alert-box p { margin: 0; color: #78350f; font-size: .93em; }
+        .tip-box { background: #f0fdf4; border-left: 4px solid #16a34a; padding: 18px 22px; border-radius: 0 12px 12px 0; margin: 20px 0; }
+        .tip-box p { margin: 0; color: #14532d; font-size: .93em; }
 
-        .slide-counter {
-            background: var(--primary);
-            color: white;
-            padding: 5px 12px;
-            border-radius: 12px;
-            font-size: 0.9em;
-            font-weight: bold;
-        }
+        /* ── TERMINAIS ── */
+        .terminal { background: #1a202c; border-radius: 12px; overflow: hidden; margin: 16px 0; box-shadow: 0 4px 20px rgba(0,0,0,.3); }
+        .terminal-bar { background: #2d3748; padding: 8px 16px; display: flex; align-items: center; gap: 8px; }
+        .term-dot { width: 12px; height: 12px; border-radius: 50%; }
+        .term-dot.red    { background: #fc8181; }
+        .term-dot.yellow { background: #f6e05e; }
+        .term-dot.green  { background: #68d391; }
+        .term-title { font-size: .75em; color: #718096; margin-left: 8px; font-family: 'Consolas', monospace; }
+        .terminal-body { padding: 20px 24px; font-family: 'Courier New','Consolas',monospace; font-size: .92em; line-height: 2; color: #a0aec0; white-space: pre-wrap; }
+        .t-prompt  { color: #63b3ed; }
+        .t-root    { color: #fc8181; }
+        .t-cmd     { color: #38ef7d; }
+        .t-flag    { color: #f6e05e; }
+        .t-arg     { color: #90cdf4; }
+        .t-out     { color: #a0aec0; }
+        .t-comment { color: #4a5568; font-style: italic; }
+        .t-hl      { color: #f6e05e; font-weight: bold; }
+        .t-ok      { color: #38ef7d; font-weight: bold; }
+        .t-kw      { color: #f687b3; font-weight: bold; }
+        .t-str     { color: #68d391; }
+        .t-var     { color: #fbd38d; }
+        .t-shebang { color: #f687b3; }
 
-        .viewer-container {
-            margin-top: 80px;
-            padding: 20px;
-            padding-bottom: 100px;
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-        }
+        /* ── TABELA ── */
+        .cmp-table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: .88em; }
+        .cmp-table th { background: var(--primary); color: white; padding: 10px 14px; text-align: left; }
+        .cmp-table th:first-child { border-radius: 6px 0 0 0; }
+        .cmp-table th:last-child  { border-radius: 0 6px 0 0; }
+        .cmp-table td { padding: 9px 14px; border-bottom: 1px solid #e5e7eb; }
+        .cmp-table tr:nth-child(even) td { background: #f8f7ff; }
+        .cmp-table td code { font-family: 'Consolas',monospace; background: #1e293b; color: #a78bfa; padding: 1px 6px; border-radius: 4px; font-size: .88em; }
 
-        .slide-card {
-            background: white;
-            width: 100%;
-            max-width: 1000px;
-            min-height: 80vh;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            padding: 50px;
-            padding-bottom: 100px;
-            position: relative;
-            display: none;
-            flex-direction: column;
-            animation: fadeIn 0.4s ease;
-        }
-        .slide-card.active { display: flex; }
+        /* ── GRID RESUMO ── */
+        .cmd-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(130px,1fr)); gap: 12px; margin: 16px 0; }
+        .cmd-card { background: #f8f7ff; border-radius: 10px; padding: 16px; text-align: center; border-top: 3px solid var(--primary); }
+        .cmd-card .cmd { font-family: 'Consolas',monospace; font-size: .82em; color: var(--primary); font-weight: 700; display: block; margin-bottom: 6px; }
+        .cmd-card strong { display: block; font-size: .82em; color: #1e293b; margin-bottom: 4px; }
+        .cmd-card span { font-size: .76em; color: #475569; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* ── COMPARAÇÃO ── */
+        .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+        .compare-box { border-radius: 12px; padding: 18px; }
+        .compare-box.green { background: #f0fdf4; border-top: 3px solid #16a34a; }
+        .compare-box.red   { background: #fff5f5; border-top: 3px solid #ef4444; }
+        .compare-box h4 { font-size: .95em; margin-bottom: 10px; }
+        .compare-box.green h4 { color: #065f46; }
+        .compare-box.red   h4 { color: #7f1d1d; }
 
-        h1.slide-title {
-            font-size: 2.8em;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        h2.slide-subtitle {
-            font-size: 2.2em;
-            color: var(--text-dark);
-            border-bottom: 3px solid #e2e8f0;
-            padding-bottom: 15px;
-            margin-bottom: 30px;
-        }
-
-        h3 { color: var(--primary); margin: 20px 0 10px; font-size: 1.4em; }
-
-        .content-box {
-            padding: 20px;
-            border-radius: 12px;
-            margin: 15px 0;
-            border-left: 5px solid;
-            background: #f8fafc;
-        }
-        
-        .box-highlight { border-color: #f39c12; background: #fffaf0; }
-        .box-info { border-color: var(--primary); background: #f4f7fe; }
-        .box-success { border-color: var(--accent-green); background: #f0fdf4; }
-        .box-warning { border-color: var(--accent-red); background: #fff5f5; }
-        .box-tip { border-color: var(--accent-cyan); background: #e6fffa; }
-        
-        .box-terminal { 
-            background: #1a202c; 
-            color: #38ef7d; 
-            font-family: 'Courier New', monospace; 
-            border-left: 5px solid #38ef7d;
-            padding: 25px;
-            border-radius: 12px;
-            font-size: 1em;
-            line-height: 1.6;
-        }
-        .box-terminal .prompt { color: #63b3ed; }
-        .box-terminal .command { color: #38ef7d; }
-        .box-terminal .output { color: #a0aec0; }
-        .box-terminal .comment { color: #718096; font-style: italic; }
-        .box-terminal .shebang { color: #f687b3; }
-        .box-terminal .string { color: #68d391; }
-        .box-terminal .variable { color: #fbd38d; }
-        .box-terminal .keyword { color: #f687b3; font-weight: bold; }
-
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
-
-        .bullet-point {
-            display: flex;
-            align-items: flex-start;
-            margin: 10px 0;
-            font-size: 1.1em;
-            line-height: 1.4;
-        }
-        .bullet-point::before {
-            content: "🔁";
-            margin-right: 10px;
-            flex-shrink: 0;
-        }
-
-        .command-card {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
-        }
-        .command-card:hover { transform: translateY(-5px); }
-        .command-card .cmd { 
-            font-family: 'Courier New', monospace;
-            font-size: 1.2em; 
-            color: var(--primary);
-            background: #f4f7fe;
-            padding: 10px 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            display: inline-block;
-        }
-        .command-card h4 { color: var(--text-dark); margin-bottom: 10px; }
-        .command-card p { font-size: 0.9em; color: var(--text-light); }
-
-        .reference-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 15px 0;
-            font-size: 0.95em;
-        }
-        .reference-table th {
-            background: var(--primary);
-            color: white;
-            padding: 12px;
-            text-align: left;
-        }
-        .reference-table td {
-            padding: 10px 12px;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        .reference-table tr:hover { background: #f4f7fe; }
-        .reference-table code {
-            background: #e2e8f0;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-family: 'Courier New', monospace;
-        }
-
-        .nav-controls {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 15px;
-            background: white;
-            padding: 10px 20px;
-            border-radius: 50px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            z-index: 100;
-        }
-
-        .nav-btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 25px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
-        }
-        .nav-btn:hover { background: var(--secondary); transform: translateY(-2px); }
-        .nav-btn:disabled { background: #cbd5e0; cursor: not-allowed; transform: none; }
-
-        .drag-drop-container { display: flex; gap: 30px; margin-top: 20px; }
-        .col-questions, .col-answers { flex: 1; }
-
-        .question-item {
-            background: white;
-            border: 2px solid #e2e8f0;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 12px;
-        }
-        .question-text { font-weight: bold; margin-bottom: 10px; color: var(--text-dark); }
-        
-        .drop-zone {
-            background: #f8fafc;
-            border: 2px dashed #cbd5e0;
-            border-radius: 8px;
-            min-height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.9em;
-            color: var(--text-light);
-            transition: all 0.2s;
-        }
-        .drop-zone.drag-over { background: #e6fffa; border-color: var(--accent-green); }
-        .drop-zone.has-answer { border-style: solid; background: white; border-color: var(--primary); }
-
-        .answer-item {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            padding: 12px 20px;
-            margin-bottom: 10px;
-            border-radius: 8px;
-            cursor: grab;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            font-size: 0.95em;
-            user-select: none;
-            font-family: 'Courier New', monospace;
-        }
-        .answer-item:active { cursor: grabbing; }
-        .answer-item.dragging { opacity: 0.5; }
-        .answer-item.in-drop-zone { margin: 0; width: 100%; box-shadow: none; }
-
-        .quiz-result {
-            margin-top: 30px;
-            padding: 20px;
-            border-radius: 15px;
-            text-align: center;
-            display: none;
-            background: linear-gradient(135deg, #f6ad55 0%, #ed8936 100%);
-            color: white;
-        }
+        /* ── NAV ── */
+        .nav-footer { display: flex; justify-content: space-between; margin-top: 40px; padding-bottom: 40px; }
+        .nav-link { text-decoration: none; color: var(--primary); font-weight: 600; padding: 12px 24px; border-radius: 10px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,.05); transition: all .3s; }
+        .nav-link:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.1); }
 
         @media (max-width: 768px) {
-            .viewer-container { padding: 10px; margin-top: 70px; }
-            .slide-card { padding: 25px; padding-bottom: 100px; min-height: 70vh; }
-            .grid-2, .grid-3 { grid-template-columns: 1fr; }
-            .drag-drop-container { flex-direction: column; }
-            .classroom-header { padding: 10px 15px; }
-            h1.slide-title { font-size: 2em; }
-            h2.slide-subtitle { font-size: 1.5em; }
+            .content-wrapper { padding: 0 15px; }
+            .lesson-hero, .content-card { padding: 25px; }
+            .lesson-hero h1 { font-size: 1.5em; }
+            .compare-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-    <header class="classroom-header">
-        <div style="display: flex; align-items: center; gap: 20px;">
-            <a href="index.html" class="back-btn">
-                <span>←</span> Voltar
-            </a>
-            <div class="lesson-info">
-                <h1>Fundamentos do Linux</h1>
-                <span>Módulo 2 • Aula 11</span>
-            </div>
-        </div>
-        <div class="slide-counter">
-            <span id="current-slide">1</span> / <span id="total-slides">14</span>
-        </div>
-    </header>
+<div class="top-bar">
+    <a href="index.html" class="back-btn">&#x2B05; Voltar ao Dashboard</a>
+    <span class="page-badge">2&ordm; Bimestre &mdash; Shell Script</span>
+    <button class="slide-toggle" id="slideToggleBtn">&#x1F4FA; Modo Slide</button>
+</div>
 
-    <div class="viewer-container">
-        
-        <!-- SLIDE 1: Capa -->
-        <div class="slide-card active">
-            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
-                <div style="font-size: 5em;">🔁</div>
-                <h1 class="slide-title">Shell Script: Loops FOR</h1>
-                <div class="content-box box-highlight" style="text-align: center; font-size: 1.2em;">
-                    <p><strong>Repetindo tarefas de forma inteligente!</strong></p>
-                    <p style="margin-top: 10px; opacity: 0.8;">for, do, done - Automação poderosa</p>
-                </div>
-                <div class="box-terminal" style="margin-top: 30px; max-width: 500px;">
-                    <span class="keyword">for</span> <span class="variable">ARQUIVO</span> <span class="keyword">in</span> *.txt<br>
-                    <span class="keyword">do</span><br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"Processando: $ARQUIVO"</span><br>
-                    <span class="keyword">done</span>
-                </div>
-                <div class="content-box box-info" style="margin-top: 30px;">
-                    💡 Para cada item da lista, faça isso... Automação sem limite!
-                </div>
-            </div>
-        </div>
+<div class="content-wrapper">
 
-        <!-- SLIDE 2: O que são Loops? -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🎡 O que são Loops?</h2>
-            <div class="content-box box-highlight" style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 1.3em;">Loop é como uma <strong>roda gigante</strong> - executa voltas até terminar!</p>
-            </div>
-            <div class="grid-2">
-                <div>
-                    <div class="content-box box-info">
-                        <h3>🎯 Por que usar Loops?</h3>
-                        <div class="bullet-point">Evita repetir código</div>
-                        <div class="bullet-point">Processa listas de arquivos</div>
-                        <div class="bullet-point">Automatiza tarefas</div>
-                        <div class="bullet-point">Trabalha com sequências</div>
-                    </div>
-                    <div class="content-box box-warning">
-                        <h3>❌ Sem Loop (ruim)</h3>
-                        <div class="box-terminal" style="padding: 10px; font-size: 0.85em;">
-                            <span class="command">echo</span> <span class="string">"Arquivo1"</span><br>
-                            <span class="command">echo</span> <span class="string">"Arquivo2"</span><br>
-                            <span class="command">echo</span> <span class="string">"Arquivo3"</span><br>
-                            <span class="comment"># 50 linhas iguais!</span>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <div class="content-box box-success">
-                        <h3>✅ Com Loop (bom)</h3>
-                        <div class="box-terminal" style="padding: 10px; font-size: 0.85em;">
-                            <span class="keyword">for</span> <span class="variable">ARQ</span> <span class="keyword">in</span> arq1 arq2 arq3<br>
-                            <span class="keyword">do</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"$ARQ"</span><br>
-                            <span class="keyword">done</span>
-                        </div>
-                    </div>
-                    <div class="content-box box-tip">
-                        <h3>💡 O Princípio do FOR</h3>
-                        <p><strong>"Para cada item da lista, faça isso..."</strong></p>
-                        <p>Como dar a mesma instrução para cada pessoa de uma fila!</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 3: Sintaxe Básica -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">📝 Sintaxe Básica do FOR</h2>
-            <div class="grid-2">
-                <div>
-                    <div class="content-box box-info">
-                        <h3>🏗️ Estrutura</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.95em;">
-                            <span class="keyword">for</span> <span class="variable">VARIAVEL</span> <span class="keyword">in</span> lista<br>
-                            <span class="keyword">do</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;comandos<br>
-                            <span class="keyword">done</span>
-                        </div>
-                    </div>
-                    <div class="content-box box-highlight">
-                        <h3>🔍 Cada Parte</h3>
-                        <p><strong>for</strong> = inicia o loop<br>
-                        <strong>VARIAVEL</strong> = recebe cada valor<br>
-                        <strong>in</strong> = "nos valores:"<br>
-                        <strong>do</strong> = "execute:"<br>
-                        <strong>done</strong> = fim do loop</p>
-                    </div>
-                </div>
-                <div>
-                    <div class="content-box box-success">
-                        <h3>🎯 Exemplo com Números</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.95em;">
-                            <span class="keyword">for</span> <span class="variable">NUM</span> <span class="keyword">in</span> 1 2 3 4 5<br>
-                            <span class="keyword">do</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"Número: $NUM"</span><br>
-                            <span class="keyword">done</span>
-                        </div>
-                    </div>
-                    <div class="box-terminal" style="padding: 15px; font-size: 0.95em;">
-                        <span class="output">Número: 1</span><br>
-                        <span class="output">Número: 2</span><br>
-                        <span class="output">Número: 3</span><br>
-                        <span class="output">Número: 4</span><br>
-                        <span class="output">Número: 5</span>
-                    </div>
-                </div>
-            </div>
-            <div class="content-box box-tip" style="margin-top: 15px;">
-                <h3>⚠️ Regra</h3>
-                <p>Espaços separam itens: <code>a b c</code> = 3 itens | Sempre termine com <code>done</code>!</p>
-            </div>
-        </div>
-
-        <!-- SLIDE 4: FOR com Strings -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🔤 FOR com Palavras (Strings)</h2>
-            <div class="grid-2">
-                <div>
-                    <div class="content-box box-info">
-                        <h3>🍎 Exemplo: Lista de Frutas</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.95em;">
-                            <span class="shebang">#!/bin/bash</span><br><br>
-                            <span class="keyword">for</span> <span class="variable">FRUTA</span> <span class="keyword">in</span> maçã banana laranja<br>
-                            <span class="keyword">do</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"Eu gosto de $FRUTA"</span><br>
-                            <span class="keyword">done</span><br><br>
-                            <span class="command">echo</span> <span class="string">"Fim!"</span>
-                        </div>
-                    </div>
-                    <div class="box-terminal" style="padding: 15px; font-size: 0.95em;">
-                        <span class="output">Eu gosto de maçã</span><br>
-                        <span class="output">Eu gosto de banana</span><br>
-                        <span class="output">Eu gosto de laranja</span><br>
-                        <span class="output">Fim!</span>
-                    </div>
-                </div>
-                <div>
-                    <div class="content-box box-success">
-                        <h3>👥 Exemplo: Lista de Nomes</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.95em;">
-                            <span class="keyword">for</span> <span class="variable">NOME</span> <span class="keyword">in</span> Ana Pedro Maria<br>
-                            <span class="keyword">do</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"Olá, $NOME!"</span><br>
-                            <span class="keyword">done</span>
-                        </div>
-                    </div>
-                    <div class="box-terminal" style="padding: 15px; font-size: 0.95em;">
-                        <span class="output">Olá, Ana!</span><br>
-                        <span class="output">Olá, Pedro!</span><br>
-                        <span class="output">Olá, Maria!</span>
-                    </div>
-                    <div class="content-box box-tip">
-                        <h3>💡 Dica</h3>
-                        <p>Cada palavra separada por espaço vira um item!</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 5: FOR com Wildcards -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🌟 FOR com Wildcards (Arquivos)</h2>
-            <div class="content-box box-highlight" style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 1.2em;">Processe arquivos automaticamente com <strong>padrões</strong>!</p>
-            </div>
-            <div class="grid-2">
-                <div>
-                    <div class="content-box box-info">
-                        <h3>📁 Processar todos os .txt</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.95em;">
-                            <span class="keyword">for</span> <span class="variable">ARQ</span> <span class="keyword">in</span> *.txt<br>
-                            <span class="keyword">do</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"Arquivo: $ARQ"</span><br>
-                            <span class="keyword">done</span>
-                        </div>
-                    </div>
-                    <div class="content-box box-success">
-                        <h3>🃏 Wildcards Comuns</h3>
-                        <table class="reference-table">
-                            <tr><th>Padrão</th><th>Significado</th></tr>
-                            <tr><td><code>*.txt</code></td><td>Arquivos .txt</td></tr>
-                            <tr><td><code>foto*</code></td><td>Começam com "foto"</td></tr>
-                            <tr><td><code>*2024*</code></td><td>Contém "2024"</td></tr>
-                            <tr><td><code>*</code></td><td>Todos os arquivos</td></tr>
-                        </table>
-                    </div>
-                </div>
-                <div>
-                    <div class="content-box box-highlight">
-                        <h3>💾 Exemplo: Backup</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.9em;">
-                            <span class="shebang">#!/bin/bash</span><br><br>
-                            <span class="command">mkdir</span> -p backup<br><br>
-                            <span class="keyword">for</span> <span class="variable">ARQ</span> <span class="keyword">in</span> *.txt<br>
-                            <span class="keyword">do</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"Copiando $ARQ..."</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">cp</span> <span class="string">"$ARQ"</span> backup/<br>
-                            <span class="keyword">done</span><br><br>
-                            <span class="command">echo</span> <span class="string">"Backup completo!"</span>
-                        </div>
-                    </div>
-                    <div class="content-box box-warning">
-                        <h3>⚠️ Sempre use aspas</h3>
-                        <p><code>"$ARQ"</code> protege nomes com espaços!</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 6: Sequências com Chaves -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🔢 Sequências com Chaves { }</h2>
-            <div class="content-box box-highlight" style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 1.2em;">Gere sequências <strong>rápidas</strong> sem comandos externos!</p>
-            </div>
-            <div class="grid-2">
-                <div>
-                    <div class="content-box box-info">
-                        <h3>📐 Sintaxe das Chaves</h3>
-                        <table class="reference-table">
-                            <tr><th>Sintaxe</th><th>Resultado</th></tr>
-                            <tr><td><code>{1..5}</code></td><td>1 2 3 4 5</td></tr>
-                            <tr><td><code>{5..10}</code></td><td>5 6 7 8 9 10</td></tr>
-                            <tr><td><code>{A..E}</code></td><td>A B C D E</td></tr>
-                            <tr><td><code>{2..10..2}</code></td><td>2 4 6 8 10</td></tr>
-                        </table>
-                    </div>
-                    <div class="content-box box-success">
-                        <h3>🎯 Exemplo: 1 a 5</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.95em;">
-                            <span class="keyword">for</span> <span class="variable">N</span> <span class="keyword">in</span> {1..5}<br>
-                            <span class="keyword">do</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"Número: $N"</span><br>
-                            <span class="keyword">done</span>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <div class="content-box box-highlight">
-                        <h3>📁 Criar Pastas 2020-2024</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.95em;">
-                            <span class="keyword">for</span> <span class="variable">ANO</span> <span class="keyword">in</span> {2020..2024}<br>
-                            <span class="keyword">do</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">mkdir</span> <span class="string">"pasta_$ANO"</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"Criada: pasta_$ANO"</span><br>
-                            <span class="keyword">done</span>
-                        </div>
-                    </div>
-                    <div class="content-box box-tip">
-                        <h3>💡 Vantagem</h3>
-                        <p>Mais rápido e limpo que <code>seq</code>!<br>
-                        Funciona com letras: <code>{a..z}</code></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 7: Comando seq -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🔢 Comando seq</h2>
-            <div class="content-box box-highlight" style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 1.2em;">Gerador de sequências numéricas!</p>
-            </div>
-            <div class="grid-2">
-                <div>
-                    <div class="content-box box-info">
-                        <h3>📐 Sintaxes do seq</h3>
-                        <table class="reference-table">
-                            <tr><th>Comando</th><th>Resultado</th></tr>
-                            <tr><td><code>seq 5</code></td><td>1 2 3 4 5</td></tr>
-                            <tr><td><code>seq 3 7</code></td><td>3 4 5 6 7</td></tr>
-                            <tr><td><code>seq 2 2 10</code></td><td>2 4 6 8 10</td></tr>
-                            <tr><td><code>seq 10 -1 1</code></td><td>10 9 8...1</td></tr>
-                        </table>
-                    </div>
-                    <div class="content-box box-success">
-                        <h3>🎯 Loop com seq</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.95em;">
-                            <span class="keyword">for</span> <span class="variable">N</span> <span class="keyword">in</span> $(seq 1 5)<br>
-                            <span class="keyword">do</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"Número: $N"</span><br>
-                            <span class="keyword">done</span>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <div class="content-box box-highlight">
-                        <h3>⏰ Contagem Regressiva</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.95em;">
-                            <span class="keyword">for</span> <span class="variable">N</span> <span class="keyword">in</span> $(seq 10 -1 1)<br>
-                            <span class="keyword">do</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"$N..."</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">sleep</span> 1<br>
-                            <span class="keyword">done</span><br>
-                            <span class="command">echo</span> <span class="string">"🚀 LANÇAR!"</span>
-                        </div>
-                    </div>
-                    <div class="content-box box-tip">
-                        <h3>💡 $(comando)</h3>
-                        <p>Executa o comando e usa sua saída como lista!</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 8: FOR Estilo C -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">⚙️ FOR Estilo C</h2>
-            <div class="content-box box-highlight" style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 1.2em;">Sintaxe tradicional de programação!</p>
-            </div>
-            <div class="grid-2">
-                <div>
-                    <div class="content-box box-info">
-                        <h3>🏗️ Estrutura</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.95em;">
-                            <span class="keyword">for</span> ((<span class="variable">i</span>=início; <span class="variable">i</span><=fim; <span class="variable">i</span>++))<br>
-                            <span class="keyword">do</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;comandos<br>
-                            <span class="keyword">done</span>
-                        </div>
-                    </div>
-                    <div class="content-box box-success">
-                        <h3>🎯 Exemplo: 1 a 5</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.95em;">
-                            <span class="keyword">for</span> ((<span class="variable">i</span>=1; <span class="variable">i</span><=5; <span class="variable">i</span>++))<br>
-                            <span class="keyword">do</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"Número: $i"</span><br>
-                            <span class="keyword">done</span>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <div class="content-box box-highlight">
-                        <h3>📊 Operadores</h3>
-                        <table class="reference-table">
-                            <tr><th>Operador</th><th>Significado</th></tr>
-                            <tr><td><code>i++</code></td><td>Incrementa 1</td></tr>
-                            <tr><td><code>i--</code></td><td>Decrementa 1</td></tr>
-                            <tr><td><code>i+=2</code></td><td>Incrementa 2</td></tr>
-                            <tr><td><code>i*=2</code></td><td>Multiplica por 2</td></tr>
-                        </table>
-                    </div>
-                    <div class="content-box box-tip">
-                        <h3>🔢 Números Pares</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.9em;">
-                            <span class="keyword">for</span> ((<span class="variable">i</span>=2; <span class="variable">i</span><=10; <span class="variable">i</span>+=2))<br>
-                            <span class="keyword">do</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"Par: $i"</span><br>
-                            <span class="keyword">done</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 9: FOR com Arquivo -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">📄 FOR com Conteúdo de Arquivo</h2>
-            <div class="grid-2">
-                <div>
-                    <div class="content-box box-info">
-                        <h3>📝 Preparando o Arquivo</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.95em;">
-                            <span class="prompt">$</span> <span class="command">cat</span> nomes.txt<br>
-                            <span class="output">Ana</span><br>
-                            <span class="output">Pedro</span><br>
-                            <span class="output">Maria</span>
-                        </div>
-                    </div>
-                    <div class="content-box box-success">
-                        <h3>🔄 Loop com cat</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.95em;">
-                            <span class="keyword">for</span> <span class="variable">NOME</span> <span class="keyword">in</span> $(cat nomes.txt)<br>
-                            <span class="keyword">do</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"Olá, $NOME!"</span><br>
-                            <span class="keyword">done</span>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <div class="box-terminal" style="padding: 15px; font-size: 0.95em;">
-                        <span class="output">Olá, Ana!</span><br>
-                        <span class="output">Olá, Pedro!</span><br>
-                        <span class="output">Olá, Maria!</span>
-                    </div>
-                    <div class="content-box box-highlight">
-                        <h3>🌐 Testar Sites</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.85em;">
-                            <span class="keyword">for</span> <span class="variable">SITE</span> <span class="keyword">in</span> $(cat sites.txt)<br>
-                            <span class="keyword">do</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span> ping -c 1 <span class="string">"$SITE"</span> &gt;/dev/null; <span class="keyword">then</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"✅ $SITE OK"</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">else</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"❌ $SITE FALHOU"</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">fi</span><br>
-                            <span class="keyword">done</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="content-box box-warning" style="margin-top: 15px;">
-                <h3>⚠️ Cuidado</h3>
-                <p>FOR separa por espaços! "Nome Completo" vira dois itens. Para linhas inteiras, use <code>while read</code>.</p>
-            </div>
-        </div>
-
-        <!-- SLIDE 10: Exemplo Prático - Renomeador -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🚀 Projeto: Renomeador de Fotos</h2>
-            <div class="box-terminal" style="font-size: 0.9em; line-height: 1.5;">
-                <span class="shebang">#!/bin/bash</span><br>
-                <span class="comment"># renomeador.sh - Renomeia fotos em sequência</span><br><br>
-                <span class="command">echo</span> <span class="string">"📸 RENOMEADOR DE FOTOS"</span><br>
-                <span class="command">echo</span> <span class="string">"====================="</span><br><br>
-                <span class="variable">CONTADOR</span>=1<br><br>
-                <span class="keyword">for</span> <span class="variable">FOTO</span> <span class="keyword">in</span> *.jpg *.png<br>
-                <span class="keyword">do</span><br>
-                &nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Verificar se arquivo existe</span><br>
-                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span> [ -f <span class="string">"$FOTO"</span> ]; <span class="keyword">then</span><br>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># Pegar extensão</span><br>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">EXT</span>="${FOTO##*.}"<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">NOVO</span>=<span class="string">"foto_${CONTADOR}.$EXT"</span><br><br>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="command">mv</span> <span class="string">"$FOTO"</span> <span class="string">"$NOVO"</span><br>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"$FOTO → $NOVO"</span><br><br>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">CONTADOR</span>=$(($CONTADOR + 1))<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">fi</span><br>
-                <span class="keyword">done</span><br><br>
-                <span class="command">echo</span> <span class="string">"✅ $(($CONTADOR - 1)) fotos renomeadas!"</span>
-            </div>
-            <div class="grid-2" style="margin-top: 20px;">
-                <div class="content-box box-success">
-                    <h3>🎯 O que faz</h3>
-                    <p>img_001.jpg → foto_1.jpg<br>
-                    DSC_002.png → foto_2.png<br>
-                    E assim por diante!</p>
-                </div>
-                <div class="content-box box-tip">
-                    <h3>💡 Conceitos Usados</h3>
-                    <p>Wildcards, variáveis, incremento, if para validar</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 11: Boas Práticas -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">💡 Boas Práticas</h2>
-            <div class="grid-2">
-                <div>
-                    <div class="content-box box-success">
-                        <h3>✅ Faça Isso</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.85em;">
-                            <span class="comment"># Nomes descritivos</span><br>
-                            <span class="keyword">for</span> <span class="variable">ARQUIVO_TEXTO</span> <span class="keyword">in</span> *.txt<br><br>
-                            <span class="comment"># Sempre use aspas</span><br>
-                            <span class="command">cp</span> <span class="string">"$ARQUIVO"</span> backup/<br><br>
-                            <span class="comment"># Verifique se existe</span><br>
-                            <span class="keyword">if</span> [ -f <span class="string">"$ARQ"</span> ]; <span class="keyword">then</span>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <div class="content-box box-warning">
-                        <h3>❌ Evite Isso</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.85em;">
-                            <span class="comment"># Nomes genéricos</span><br>
-                            <span class="keyword">for</span> <span class="variable">i</span> <span class="keyword">in</span> *.txt<br><br>
-                            <span class="comment"># Sem aspas (quebra)</span><br>
-                            <span class="command">cp</span> $ARQUIVO backup/<br><br>
-                            <span class="comment"># Assumir que existe</span><br>
-                            <span class="command">cat</span> $ARQ
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="content-box box-tip" style="margin-top: 15px;">
-                <h3>🎯 Checklist</h3>
-                <p>✅ Nomes descritivos | ✅ Aspas em variáveis | ✅ Verificar se arquivo existe | ✅ Testar antes de rodar!</p>
-            </div>
-        </div>
-
-        <!-- SLIDE 12: Resumo Sintaxes -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">📋 Resumo das Sintaxes</h2>
-            <div class="grid-3">
-                <div class="command-card">
-                    <div class="cmd">for i in lista</div>
-                    <h4>Lista Manual</h4>
-                    <p>Itens separados por espaço</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">for i in *.txt</div>
-                    <h4>Wildcards</h4>
-                    <p>Padrões de arquivos</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">for i in {1..10}</div>
-                    <h4>Chaves</h4>
-                    <p>Sequências rápidas</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">for i in $(seq 1 10)</div>
-                    <h4>Comando seq</h4>
-                    <p>Sequências flexíveis</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">for ((i=1;i<=10;i++))</div>
-                    <h4>Estilo C</h4>
-                    <p>Controle preciso</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">for i in $(cat arq)</div>
-                    <h4>De Arquivo</h4>
-                    <p>Palavras do arquivo</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 13: Quiz -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🎯 Desafio Interativo</h2>
-            <p style="text-align: center; margin-bottom: 20px;">Arraste as sintaxes para seus usos!</p>
-            
-            <div class="drag-drop-container">
-                <div class="col-questions">
-                    <div class="question-item">
-                        <div class="question-text">Números de 1 a 10 (rápido)</div>
-                        <div class="drop-zone" data-correct="{1..10}">Arraste aqui</div>
-                    </div>
-                    <div class="question-item">
-                        <div class="question-text">Todos os arquivos .txt</div>
-                        <div class="drop-zone" data-correct="*.txt">Arraste aqui</div>
-                    </div>
-                    <div class="question-item">
-                        <div class="question-text">Finaliza o loop FOR</div>
-                        <div class="drop-zone" data-correct="done">Arraste aqui</div>
-                    </div>
-                    <div class="question-item">
-                        <div class="question-text">Incrementa variável</div>
-                        <div class="drop-zone" data-correct="i++">Arraste aqui</div>
-                    </div>
-                    <div class="question-item">
-                        <div class="question-text">Executa comando e usa saída</div>
-                        <div class="drop-zone" data-correct="$(comando)">Arraste aqui</div>
-                    </div>
-                </div>
-
-                <div class="col-answers" id="answersPool"></div>
-            </div>
-
-            <div style="text-align: center; margin-top: 20px; display: flex; gap: 10px; justify-content: center;">
-                <button onclick="checkAnswers()" class="nav-btn" style="background: var(--accent-green);">✅ Verificar</button>
-                <button onclick="resetQuiz()" class="nav-btn" style="background: var(--accent-red);">🔄 Reiniciar</button>
-            </div>
-
-            <div id="quizResult" class="quiz-result"></div>
-        </div>
-
-        <!-- SLIDE 14: Conclusão -->
-        <div class="slide-card">
-            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center;">
-                <div style="font-size: 4em; margin-bottom: 20px;">🎓🔁</div>
-                <h2 class="slide-subtitle" style="border: none;">Parabéns! Você completou a Aula 11!</h2>
-                <div class="content-box box-success" style="max-width: 700px;">
-                    <h3>📚 O que aprendemos:</h3>
-                    <div class="grid-2" style="text-align: left; margin-top: 15px;">
-                        <div>
-                            <div class="bullet-point">Sintaxe básica do FOR</div>
-                            <div class="bullet-point">Loops com listas</div>
-                            <div class="bullet-point">Wildcards para arquivos</div>
-                        </div>
-                        <div>
-                            <div class="bullet-point">Sequências {1..10}</div>
-                            <div class="bullet-point">Comando seq</div>
-                            <div class="bullet-point">Sintaxe estilo C</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="content-box box-info" style="max-width: 700px; margin-top: 20px;">
-                    <h3>🔜 Na próxima aula:</h3>
-                    <p><strong>Loops WHILE</strong> - Repetir enquanto condição for verdadeira!</p>
-                </div>
-                <div class="content-box box-tip" style="max-width: 700px; margin-top: 20px;">
-                    <h3>💡 Lembre-se</h3>
-                    <p><code>for/do/done</code> | Aspas em variáveis | Verificar arquivos!</p>
-                </div>
-            </div>
-        </div>
-
+    <div class="lesson-hero">
+        <h1>&#x1F501; Loops <code>for</code></h1>
+        <p class="subtitle">Aula 11 &mdash; Repeti&ccedil;&atilde;o inteligente: percorra listas, arquivos e sequ&ecirc;ncias automatizando tarefas no Shell Script</p>
     </div>
 
-    <div class="nav-controls">
-        <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">⬅️ Anterior</button>
-        <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Próximo ➡️</button>
+    <!-- CARD 1 — O que são Loops? -->
+    <div class="content-card">
+        <h2>&#x1F3A1; O que s&atilde;o Loops?</h2>
+        <p>Um <strong>loop</strong> &eacute; uma estrutura que executa um bloco de comandos <em>repetidamente</em> para cada elemento de uma lista. No Bash, o <code>for</code> &eacute; o loop mais usado: para cada item da lista, o bloco entre <code>do</code> e <code>done</code> &eacute; executado uma vez.</p>
+
+        <div class="compare-grid">
+            <div class="compare-box red">
+                <h4>&#x274C; Sem loop &mdash; c&oacute;digo repetitivo</h4>
+                <div class="terminal">
+                    <div class="terminal-bar">
+                        <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                    </div>
+                    <div class="terminal-body"><span class="t-cmd">echo</span> <span class="t-str">"Arquivo1"</span>
+<span class="t-cmd">echo</span> <span class="t-str">"Arquivo2"</span>
+<span class="t-cmd">echo</span> <span class="t-str">"Arquivo3"</span>
+<span class="t-comment"># 50 linhas iguais...</span></div>
+                </div>
+            </div>
+            <div class="compare-box green">
+                <h4>&#x2705; Com loop &mdash; limpo e eficiente</h4>
+                <div class="terminal">
+                    <div class="terminal-bar">
+                        <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                    </div>
+                    <div class="terminal-body"><span class="t-kw">for</span> <span class="t-var">ARQ</span> <span class="t-kw">in</span> arq1 arq2 arq3
+<span class="t-kw">do</span>
+    <span class="t-cmd">echo</span> <span class="t-str">"$ARQ"</span>
+<span class="t-kw">done</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="highlight-box">
+            <p>&#x1F4CC; O princ&iacute;pio do <code>for</code>: <strong>"Para cada item da lista, fa&ccedil;a isso."</strong> Use loops para processar listas de arquivos, gerar sequ&ecirc;ncias, automatizar renomeamentos e muito mais.</p>
+        </div>
     </div>
 
-    <script>
-        let currentSlide = 0;
-        const slides = document.querySelectorAll('.slide-card');
-        const totalSlides = slides.length;
+    <!-- CARD 2 — Sintaxe Básica -->
+    <div class="content-card">
+        <h2>&#x1F4DD; Sintaxe B&aacute;sica do <code>for</code></h2>
 
-        document.getElementById('total-slides').textContent = totalSlides;
+        <h3>Estrutura geral</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">sintaxe</span>
+            </div>
+            <div class="terminal-body"><span class="t-kw">for</span> <span class="t-var">VARIAVEL</span> <span class="t-kw">in</span> <span class="t-arg">lista</span>
+<span class="t-kw">do</span>
+    comandos usando <span class="t-str">"$VARIAVEL"</span>
+<span class="t-kw">done</span></div>
+        </div>
 
-        function showSlide(index) {
-            slides.forEach((slide, i) => slide.classList.toggle('active', i === index));
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            document.getElementById('current-slide').textContent = index + 1;
-            document.getElementById('prevBtn').disabled = index === 0;
-            document.getElementById('nextBtn').disabled = index === totalSlides - 1;
-        }
+        <table class="cmp-table">
+            <thead><tr><th>Palavra-chave</th><th>Fun&ccedil;&atilde;o</th></tr></thead>
+            <tbody>
+                <tr><td><code>for</code></td><td>Inicia o loop</td></tr>
+                <tr><td><code>VARIAVEL</code></td><td>Recebe cada valor da lista a cada itera&ccedil;&atilde;o</td></tr>
+                <tr><td><code>in</code></td><td>Separa a vari&aacute;vel da lista de valores</td></tr>
+                <tr><td><code>do</code></td><td>Inicia o bloco de comandos</td></tr>
+                <tr><td><code>done</code></td><td>Encerra o bloco (obrigat&oacute;rio!)</td></tr>
+            </tbody>
+        </table>
 
-        function changeSlide(direction) {
-            const newSlide = currentSlide + direction;
-            if (newSlide >= 0 && newSlide < totalSlides) {
-                currentSlide = newSlide;
-                showSlide(currentSlide);
-            }
-        }
+        <h3>Exemplo com n&uacute;meros</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">numeros.sh</span>
+            </div>
+            <div class="terminal-body"><span class="t-kw">for</span> <span class="t-var">NUM</span> <span class="t-kw">in</span> 1 2 3 4 5
+<span class="t-kw">do</span>
+    <span class="t-cmd">echo</span> <span class="t-str">"N&uacute;mero: $NUM"</span>
+<span class="t-kw">done</span>
 
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowLeft') changeSlide(-1);
-            if (e.key === 'ArrowRight') changeSlide(1);
-        });
+<span class="t-out">N&uacute;mero: 1</span>
+<span class="t-out">N&uacute;mero: 2</span>
+<span class="t-out">N&uacute;mero: 3</span>
+<span class="t-out">N&uacute;mero: 4</span>
+<span class="t-out">N&uacute;mero: 5</span></div>
+        </div>
 
-        const answersData = [
-            { id: '{1..10}', text: '{1..10}' },
-            { id: '*.txt', text: '*.txt' },
-            { id: 'done', text: 'done' },
-            { id: 'i++', text: 'i++' },
-            { id: '$(comando)', text: '$(comando)' }
-        ];
+        <div class="tip-box">
+            <p>&#x1F4A1; <strong>Regra de ouro:</strong> espa&ccedil;os separam os itens da lista &mdash; <code>a b c</code> &eacute; uma lista de 3 elementos. Sempre feche o loop com <code>done</code>.</p>
+        </div>
+    </div>
 
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
-        }
+    <!-- CARD 3 — FOR com Strings -->
+    <div class="content-card">
+        <h2>&#x1F524; FOR com Palavras (Strings)</h2>
+        <p>A lista pode conter qualquer palavra ou string. Cada token separado por espa&ccedil;o &eacute; tratado como um item.</p>
 
-        let draggedItem = null;
+        <h3>Lista de frutas</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">frutas.sh</span>
+            </div>
+            <div class="terminal-body"><span class="t-shebang">#!/bin/bash</span>
 
-        function initQuiz() {
-            const pool = document.getElementById('answersPool');
-            pool.innerHTML = '';
-            const shuffled = shuffleArray([...answersData]);
-            
-            shuffled.forEach(ans => {
-                const div = document.createElement('div');
-                div.className = 'answer-item';
-                div.draggable = true;
-                div.textContent = ans.text;
-                div.dataset.id = ans.id;
-                
-                div.addEventListener('dragstart', (e) => {
-                    draggedItem = e.target;
-                    e.target.classList.add('dragging');
-                });
-                div.addEventListener('dragend', (e) => {
-                    e.target.classList.remove('dragging');
-                    draggedItem = null;
-                });
-                
-                pool.appendChild(div);
-            });
+<span class="t-kw">for</span> <span class="t-var">FRUTA</span> <span class="t-kw">in</span> ma&ccedil;&atilde; banana laranja
+<span class="t-kw">do</span>
+    <span class="t-cmd">echo</span> <span class="t-str">"Eu gosto de $FRUTA"</span>
+<span class="t-kw">done</span>
 
-            document.querySelectorAll('.drop-zone').forEach(zone => {
-                zone.innerHTML = 'Arraste aqui';
-                zone.classList.remove('has-answer');
-                zone.style.background = '#f8fafc';
-                
-                zone.addEventListener('dragover', (e) => {
-                    e.preventDefault();
-                    zone.classList.add('drag-over');
-                });
-                
-                zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
-                
-                zone.addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    zone.classList.remove('drag-over');
-                    
-                    if (draggedItem && !zone.querySelector('.answer-item')) {
-                        zone.innerHTML = '';
-                        zone.appendChild(draggedItem);
-                        draggedItem.classList.add('in-drop-zone');
-                        zone.classList.add('has-answer');
-                    }
-                });
-            });
-            
-            document.getElementById('quizResult').style.display = 'none';
-        }
+<span class="t-out">Eu gosto de ma&ccedil;&atilde;</span>
+<span class="t-out">Eu gosto de banana</span>
+<span class="t-out">Eu gosto de laranja</span></div>
+        </div>
 
-        function checkAnswers() {
-            let correct = 0;
-            const zones = document.querySelectorAll('.drop-zone');
-            
-            zones.forEach(zone => {
-                const answer = zone.querySelector('.answer-item');
-                if (answer && answer.dataset.id === zone.dataset.correct) {
-                    correct++;
-                    zone.style.background = '#d1fae5';
-                } else {
-                    zone.style.background = '#fee2e2';
-                }
-            });
+        <h3>Lista de nomes</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">saudacoes.sh</span>
+            </div>
+            <div class="terminal-body"><span class="t-kw">for</span> <span class="t-var">NOME</span> <span class="t-kw">in</span> Ana Pedro Maria
+<span class="t-kw">do</span>
+    <span class="t-cmd">echo</span> <span class="t-str">"Ol&aacute;, $NOME!"</span>
+<span class="t-kw">done</span>
 
-            const resultDiv = document.getElementById('quizResult');
-            resultDiv.style.display = 'block';
-            resultDiv.innerHTML = `<h3>Você acertou ${correct} de ${zones.length}!</h3>`;
-            
-            if(correct === zones.length) resultDiv.innerHTML += '<p>🎉 Perfeito! Você domina FOR!</p>';
-            else if(correct >= zones.length/2) resultDiv.innerHTML += '<p>👍 Bom! Revise os erros.</p>';
-            else resultDiv.innerHTML += '<p>📚 Continue praticando!</p>';
-        }
+<span class="t-out">Ol&aacute;, Ana!</span>
+<span class="t-out">Ol&aacute;, Pedro!</span>
+<span class="t-out">Ol&aacute;, Maria!</span></div>
+        </div>
+    </div>
 
-        function resetQuiz() { initQuiz(); }
+    <!-- CARD 4 — FOR com Wildcards -->
+    <div class="content-card">
+        <h2>&#x1F31F; FOR com Wildcards (Arquivos)</h2>
+        <p>Combinando o <code>for</code> com wildcards &eacute; poss&iacute;vel processar automaticamente todos os arquivos que correspondem a um padr&atilde;o, sem precisar listar cada nome manualmente.</p>
 
-        initQuiz();
-    </script>
+        <table class="cmp-table">
+            <thead><tr><th>Padr&atilde;o</th><th>Combina com&hellip;</th></tr></thead>
+            <tbody>
+                <tr><td><code>*.txt</code></td><td>Todos os arquivos <code>.txt</code></td></tr>
+                <tr><td><code>foto*</code></td><td>Arquivos que come&ccedil;am com "foto"</td></tr>
+                <tr><td><code>*2024*</code></td><td>Arquivos que cont&ecirc;m "2024"</td></tr>
+                <tr><td><code>*</code></td><td>Todos os arquivos do diret&oacute;rio</td></tr>
+                <tr><td><code>*.jpg *.png</code></td><td>Imagens jpg e png</td></tr>
+            </tbody>
+        </table>
+
+        <h3>Exemplo: backup autom&aacute;tico</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">backup.sh</span>
+            </div>
+            <div class="terminal-body"><span class="t-shebang">#!/bin/bash</span>
+
+<span class="t-cmd">mkdir</span> <span class="t-flag">-p</span> backup
+
+<span class="t-kw">for</span> <span class="t-var">ARQ</span> <span class="t-kw">in</span> *.txt
+<span class="t-kw">do</span>
+    <span class="t-cmd">echo</span> <span class="t-str">"Copiando $ARQ..."</span>
+    <span class="t-cmd">cp</span> <span class="t-str">"$ARQ"</span> backup/
+<span class="t-kw">done</span>
+
+<span class="t-cmd">echo</span> <span class="t-str">"Backup completo!"</span></div>
+        </div>
+
+        <div class="alert-box">
+            <p>&#x26A0;&#xFE0F; <strong>Sempre use aspas:</strong> <code>"$ARQ"</code> protege nomes de arquivo que cont&ecirc;m espa&ccedil;os. Sem aspas, um arquivo chamado <code>meu texto.txt</code> seria tratado como dois itens separados.</p>
+        </div>
+    </div>
+
+    <!-- CARD 5 — Sequências com Chaves -->
+    <div class="content-card">
+        <h2>&#x1F522; Sequ&ecirc;ncias com Chaves <code>{ }</code></h2>
+        <p>A expans&atilde;o de chaves gera sequ&ecirc;ncias num&eacute;ricas ou alfab&eacute;ticas diretamente no Bash, sem precisar de comandos externos.</p>
+
+        <table class="cmp-table">
+            <thead><tr><th>Sintaxe</th><th>Resultado</th></tr></thead>
+            <tbody>
+                <tr><td><code>{1..5}</code></td><td>1 2 3 4 5</td></tr>
+                <tr><td><code>{5..10}</code></td><td>5 6 7 8 9 10</td></tr>
+                <tr><td><code>{A..E}</code></td><td>A B C D E</td></tr>
+                <tr><td><code>{2..10..2}</code></td><td>2 4 6 8 10 (passo 2)</td></tr>
+                <tr><td><code>{a..z}</code></td><td>todas as letras min&uacute;sculas</td></tr>
+            </tbody>
+        </table>
+
+        <h3>Exemplo: criar pastas por ano</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">pastas-anuais.sh</span>
+            </div>
+            <div class="terminal-body"><span class="t-kw">for</span> <span class="t-var">ANO</span> <span class="t-kw">in</span> {2020..2024}
+<span class="t-kw">do</span>
+    <span class="t-cmd">mkdir</span> <span class="t-str">"relatorios_$ANO"</span>
+    <span class="t-cmd">echo</span> <span class="t-str">"Criada: relatorios_$ANO"</span>
+<span class="t-kw">done</span>
+
+<span class="t-out">Criada: relatorios_2020</span>
+<span class="t-out">Criada: relatorios_2021</span>
+<span class="t-out">Criada: relatorios_2022</span>
+<span class="t-out">Criada: relatorios_2023</span>
+<span class="t-out">Criada: relatorios_2024</span></div>
+        </div>
+
+        <div class="tip-box">
+            <p>&#x1F4A1; As chaves s&atilde;o expandidas pelo pr&oacute;prio Bash antes da execu&ccedil;&atilde;o, sendo mais r&aacute;pidas que o comando <code>seq</code>. Tamb&eacute;m funcionam com letras: <code>{a..f}</code>.</p>
+        </div>
+    </div>
+
+    <!-- CARD 6 — Comando seq -->
+    <div class="content-card">
+        <h2>&#x1F522; Comando <code>seq</code></h2>
+        <p>O <code>seq</code> gera sequ&ecirc;ncias num&eacute;ricas com controle de in&iacute;cio, fim e passo. &Eacute; &uacute;til quando os valores s&atilde;o definidos por vari&aacute;veis (as chaves n&atilde;o suportam vari&aacute;veis).</p>
+
+        <table class="cmp-table">
+            <thead><tr><th>Comando</th><th>Resultado</th></tr></thead>
+            <tbody>
+                <tr><td><code>seq 5</code></td><td>1 2 3 4 5</td></tr>
+                <tr><td><code>seq 3 7</code></td><td>3 4 5 6 7</td></tr>
+                <tr><td><code>seq 2 2 10</code></td><td>2 4 6 8 10</td></tr>
+                <tr><td><code>seq 10 -1 1</code></td><td>10 9 8 &hellip; 1 (regressivo)</td></tr>
+            </tbody>
+        </table>
+
+        <h3>Exemplo: contagem regressiva</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">contagem.sh</span>
+            </div>
+            <div class="terminal-body"><span class="t-kw">for</span> <span class="t-var">N</span> <span class="t-kw">in</span> $(seq 10 -1 1)
+<span class="t-kw">do</span>
+    <span class="t-cmd">echo</span> <span class="t-str">"$N..."</span>
+    <span class="t-cmd">sleep</span> 1
+<span class="t-kw">done</span>
+<span class="t-cmd">echo</span> <span class="t-str">"Lan&ccedil;ar!"</span></div>
+        </div>
+
+        <div class="highlight-box">
+            <p>&#x1F4CC; A constru&ccedil;&atilde;o <code>$(comando)</code> executa o comando e usa sua sa&iacute;da como a lista do <code>for</code>. Essa t&eacute;cnica funciona com qualquer comando que produza palavras na sa&iacute;da.</p>
+        </div>
+    </div>
+
+    <!-- CARD 7 — FOR Estilo C -->
+    <div class="content-card">
+        <h2>&#x2699;&#xFE0F; FOR Estilo C</h2>
+        <p>O Bash tamb&eacute;m suporta a sintaxe de loop <code>for</code> tradicional das linguagens C/Java, com inicializa&ccedil;&atilde;o, condi&ccedil;&atilde;o e incremento expl&iacute;citos.</p>
+
+        <h3>Estrutura</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">sintaxe</span>
+            </div>
+            <div class="terminal-body"><span class="t-kw">for</span> (( <span class="t-var">i</span>=in&iacute;cio; <span class="t-var">i</span>&lt;=fim; <span class="t-var">i</span>++ ))
+<span class="t-kw">do</span>
+    comandos
+<span class="t-kw">done</span></div>
+        </div>
+
+        <table class="cmp-table">
+            <thead><tr><th>Operador</th><th>Significado</th><th>Exemplo</th></tr></thead>
+            <tbody>
+                <tr><td><code>i++</code></td><td>Incrementa 1</td><td>0, 1, 2, 3&hellip;</td></tr>
+                <tr><td><code>i--</code></td><td>Decrementa 1</td><td>5, 4, 3, 2&hellip;</td></tr>
+                <tr><td><code>i+=2</code></td><td>Incrementa 2</td><td>0, 2, 4, 6&hellip;</td></tr>
+                <tr><td><code>i*=2</code></td><td>Multiplica por 2</td><td>1, 2, 4, 8&hellip;</td></tr>
+            </tbody>
+        </table>
+
+        <h3>Exemplo: n&uacute;meros pares de 2 a 10</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">pares.sh</span>
+            </div>
+            <div class="terminal-body"><span class="t-kw">for</span> (( <span class="t-var">i</span>=2; <span class="t-var">i</span>&lt;=10; <span class="t-var">i</span>+=2 ))
+<span class="t-kw">do</span>
+    <span class="t-cmd">echo</span> <span class="t-str">"Par: $i"</span>
+<span class="t-kw">done</span>
+
+<span class="t-out">Par: 2</span>
+<span class="t-out">Par: 4</span>
+<span class="t-out">Par: 6</span>
+<span class="t-out">Par: 8</span>
+<span class="t-out">Par: 10</span></div>
+        </div>
+    </div>
+
+    <!-- CARD 8 — FOR com Arquivo -->
+    <div class="content-card">
+        <h2>&#x1F4C4; FOR com Conte&uacute;do de Arquivo</h2>
+        <p>Combinando <code>$(cat arquivo)</code> com o <code>for</code>, o loop itera sobre cada <strong>palavra</strong> do arquivo. &Eacute; &uacute;til para processar listas armazenadas em disco.</p>
+
+        <h3>Lendo nomes de um arquivo</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">ler-nomes.sh</span>
+            </div>
+            <div class="terminal-body"><span class="t-comment"># Conteúdo de nomes.txt: Ana Pedro Maria</span>
+
+<span class="t-kw">for</span> <span class="t-var">NOME</span> <span class="t-kw">in</span> $(cat nomes.txt)
+<span class="t-kw">do</span>
+    <span class="t-cmd">echo</span> <span class="t-str">"Ol&aacute;, $NOME!"</span>
+<span class="t-kw">done</span>
+
+<span class="t-out">Ol&aacute;, Ana!</span>
+<span class="t-out">Ol&aacute;, Pedro!</span>
+<span class="t-out">Ol&aacute;, Maria!</span></div>
+        </div>
+
+        <h3>Testando conectividade de uma lista de sites</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">ping-sites.sh</span>
+            </div>
+            <div class="terminal-body"><span class="t-kw">for</span> <span class="t-var">SITE</span> <span class="t-kw">in</span> $(cat sites.txt)
+<span class="t-kw">do</span>
+    <span class="t-kw">if</span> <span class="t-cmd">ping</span> <span class="t-flag">-c 1</span> <span class="t-str">"$SITE"</span> &gt;/dev/null; <span class="t-kw">then</span>
+        <span class="t-cmd">echo</span> <span class="t-str">"$SITE OK"</span>
+    <span class="t-kw">else</span>
+        <span class="t-cmd">echo</span> <span class="t-str">"$SITE FALHOU"</span>
+    <span class="t-kw">fi</span>
+<span class="t-kw">done</span></div>
+        </div>
+
+        <div class="alert-box">
+            <p>&#x26A0;&#xFE0F; <strong>Aten&ccedil;&atilde;o:</strong> o <code>for</code> separa por espa&ccedil;os, n&atilde;o por linhas. &ldquo;Nome Completo&rdquo; vira dois itens (<code>Nome</code> e <code>Completo</code>). Para processar linha por linha, use <code>while read</code>.</p>
+        </div>
+    </div>
+
+    <!-- CARD 9 — Projeto Renomeador -->
+    <div class="content-card">
+        <h2>&#x1F680; Projeto: Renomeador de Fotos</h2>
+        <p>Exemplo completo que combina wildcards, vari&aacute;veis, incremento e valida&ccedil;&atilde;o com <code>if</code> para renomear automaticamente uma cole&ccedil;&atilde;o de imagens em sequ&ecirc;ncia.</p>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">renomeador.sh</span>
+            </div>
+            <div class="terminal-body"><span class="t-shebang">#!/bin/bash</span>
+<span class="t-comment"># Renomeia fotos em sequência numerada</span>
+
+<span class="t-cmd">echo</span> <span class="t-str">"RENOMEADOR DE FOTOS"</span>
+<span class="t-cmd">echo</span> <span class="t-str">"==================="</span>
+
+<span class="t-var">CONTADOR</span>=1
+
+<span class="t-kw">for</span> <span class="t-var">FOTO</span> <span class="t-kw">in</span> *.jpg *.png
+<span class="t-kw">do</span>
+    <span class="t-kw">if</span> [ <span class="t-flag">-f</span> <span class="t-str">"$FOTO"</span> ]; <span class="t-kw">then</span>
+        <span class="t-var">EXT</span>=<span class="t-str">"${FOTO##*.}"</span>
+        <span class="t-var">NOVO</span>=<span class="t-str">"foto_${CONTADOR}.$EXT"</span>
+
+        <span class="t-cmd">mv</span> <span class="t-str">"$FOTO"</span> <span class="t-str">"$NOVO"</span>
+        <span class="t-cmd">echo</span> <span class="t-str">"$FOTO &rarr; $NOVO"</span>
+
+        <span class="t-var">CONTADOR</span>=$(($CONTADOR + 1))
+    <span class="t-kw">fi</span>
+<span class="t-kw">done</span>
+
+<span class="t-cmd">echo</span> <span class="t-str">"$(($CONTADOR - 1)) fotos renomeadas!"</span></div>
+        </div>
+
+        <ul>
+            <li><code>*.jpg *.png</code> &mdash; percorre imagens de ambas as extens&otilde;es</li>
+            <li><code>[ -f "$FOTO" ]</code> &mdash; garante que o arquivo existe antes de renomear</li>
+            <li><code>${FOTO##*.}</code> &mdash; extrai a extens&atilde;o do nome original</li>
+            <li><code>$CONTADOR</code> &mdash; gera o n&uacute;mero sequencial em cada itera&ccedil;&atilde;o</li>
+        </ul>
+    </div>
+
+    <!-- CARD 10 — Boas Práticas -->
+    <div class="content-card">
+        <h2>&#x1F4A1; Boas Pr&aacute;ticas</h2>
+
+        <div class="compare-grid">
+            <div class="compare-box green">
+                <h4>&#x2705; Fa&ccedil;a isso</h4>
+                <div class="terminal">
+                    <div class="terminal-bar">
+                        <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                    </div>
+                    <div class="terminal-body"><span class="t-comment"># Nome descritivo</span>
+<span class="t-kw">for</span> <span class="t-var">ARQUIVO_TEXTO</span> <span class="t-kw">in</span> *.txt
+
+<span class="t-comment"># Aspas nas variáveis</span>
+<span class="t-cmd">cp</span> <span class="t-str">"$ARQUIVO"</span> backup/
+
+<span class="t-comment"># Verificar se existe</span>
+<span class="t-kw">if</span> [ <span class="t-flag">-f</span> <span class="t-str">"$ARQ"</span> ]; <span class="t-kw">then</span></div>
+                </div>
+            </div>
+            <div class="compare-box red">
+                <h4>&#x274C; Evite isso</h4>
+                <div class="terminal">
+                    <div class="terminal-bar">
+                        <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                    </div>
+                    <div class="terminal-body"><span class="t-comment"># Nome genérico</span>
+<span class="t-kw">for</span> <span class="t-var">i</span> <span class="t-kw">in</span> *.txt
+
+<span class="t-comment"># Sem aspas (quebra com espaços)</span>
+<span class="t-cmd">cp</span> $ARQUIVO backup/
+
+<span class="t-comment"># Assumir que existe</span>
+<span class="t-cmd">cat</span> $ARQ</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tip-box">
+            <p>&#x1F4CB; <strong>Checklist:</strong> use nomes descritivos &bull; sempre aspas em <code>"$VAR"</code> &bull; valide com <code>-f</code> antes de operar arquivos &bull; teste o script com <code>echo</code> antes de executar a&ccedil;&otilde;es destrutivas.</p>
+        </div>
+    </div>
+
+    <!-- CARD 11 — Resumo das Sintaxes -->
+    <div class="content-card">
+        <h2>&#x1F4CB; Resumo: Tipos de <code>for</code></h2>
+
+        <div class="cmd-grid">
+            <div class="cmd-card">
+                <span class="cmd">for i in lista</span>
+                <strong>Lista Manual</strong>
+                <span>Itens separados por espa&ccedil;o</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">for i in *.txt</span>
+                <strong>Wildcards</strong>
+                <span>Padr&otilde;es de arquivos</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">for i in {1..10}</span>
+                <strong>Chaves</strong>
+                <span>Sequ&ecirc;ncias r&aacute;pidas</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">for i in $(seq&nbsp;1&nbsp;10)</span>
+                <strong>seq</strong>
+                <span>Sequ&ecirc;ncias flex&iacute;veis</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">for ((i=1;i&lt;=10;i++))</span>
+                <strong>Estilo C</strong>
+                <span>Controle preciso</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">for i in $(cat arq)</span>
+                <strong>De Arquivo</strong>
+                <span>Palavras do arquivo</span>
+            </div>
+        </div>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">estrutura completa</span>
+            </div>
+            <div class="terminal-body"><span class="t-kw">for</span> <span class="t-var">VAR</span> <span class="t-kw">in</span> lista/padr&atilde;o/sequ&ecirc;ncia
+<span class="t-kw">do</span>
+    comandos usando <span class="t-str">"$VAR"</span>   <span class="t-comment"># aspas sempre!</span>
+<span class="t-kw">done</span></div>
+        </div>
+    </div>
+
+    <!-- EXERCÍCIO — Arrastar e Conectar -->
+    <div class="content-card exercise-card">
+        <h2>&#x1F3AF; Exerc&iacute;cio &mdash; Arraste e Conecte</h2>
+        <p style="color:#475569;font-size:.9em;margin-bottom:4px;">Relacione cada sintaxe do <code>for</code> &agrave; sua descri&ccedil;&atilde;o.</p>
+
+        <div class="ex-drag-root" data-ex="ex01">
+            <div class="ex-drag">
+                <div>
+                    <div class="ex-col-title">Descri&ccedil;&atilde;o</div>
+                    <div class="ex-pool" data-pool="ex01">
+                        <div class="drag-chip" data-id="c1">Gera sequ&ecirc;ncia sem comandos externos</div>
+                        <div class="drag-chip" data-id="c2">Processa todos os arquivos com extens&atilde;o .txt</div>
+                        <div class="drag-chip" data-id="c3">Usa a sa&iacute;da de um comando como lista</div>
+                        <div class="drag-chip" data-id="c4">Controle num&eacute;rico preciso estilo linguagem C</div>
+                        <div class="drag-chip" data-id="c5">Encerra o bloco do loop</div>
+                        <div class="drag-chip" data-id="c6">L&ecirc; palavras de um arquivo</div>
+                    </div>
+                </div>
+                <div>
+                    <div class="ex-col-title">Sintaxe</div>
+                    <div class="ex-zones" data-zones="ex01">
+                        <div class="drop-zone" data-zone="ex01-z1" data-accept="c1">
+                            <span class="zone-name"><code>{1..10}</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z2" data-accept="c2">
+                            <span class="zone-name"><code>*.txt</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z3" data-accept="c3">
+                            <span class="zone-name"><code>$(seq 1 5)</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z4" data-accept="c4">
+                            <span class="zone-name"><code>((i=1;i&lt;=5;i++))</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z5" data-accept="c5">
+                            <span class="zone-name"><code>done</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z6" data-accept="c6">
+                            <span class="zone-name"><code>$(cat arq.txt)</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ex-actions">
+            <button class="btn-verificar" onclick="dragVerify('ex01')">Verificar</button>
+            <button class="btn-refazer"  onclick="dragReset('ex01')">Refazer</button>
+        </div>
+        <div class="ex-result" id="ex01-result"></div>
+    </div>
+
+    <!-- ATIVIDADE PRÁTICA -->
+    <div class="content-card practical-card" id="prat-01">
+        <h2>&#x1F6E0;&#xFE0F; Atividade Pr&aacute;tica &mdash; Automatizando com FOR</h2>
+        <div class="prat-meta">
+            <span class="prat-tag">&#x23F1; ~30 min</span>
+            <span class="prat-tag">&#x1F4BB; Terminal Bash</span>
+            <span class="prat-tag">&#x1F4F8; Tirar screenshot da sa&iacute;da</span>
+        </div>
+
+        <div class="prat-steps">
+            <div class="prat-step">
+                <div class="step-num">1</div>
+                <div class="step-body">
+                    <div class="step-label">Backup com wildcards</div>
+                    <div class="step-desc">Crie <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">backup.sh</code> que crie a pasta <code>backup/</code> e copie todos os arquivos <code>.txt</code> do diret&oacute;rio atual para ela usando <code>for</code> com wildcard. Exiba o nome de cada arquivo copiado.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">2</div>
+                <div class="step-body">
+                    <div class="step-label">Contagem e sequ&ecirc;ncias</div>
+                    <div class="step-desc">Crie <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">sequencias.sh</code> com tr&ecirc;s loops: um com <code>{1..10}</code>, um com <code>$(seq 0 2 20)</code> (pares at&eacute; 20) e uma contagem regressiva de 5 at&eacute; 1 com <code>sleep 1</code>.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">3</div>
+                <div class="step-body">
+                    <div class="step-label">Estrutura de diret&oacute;rios</div>
+                    <div class="step-desc">Crie <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">criar-estrutura.sh</code> que use <code>for ANO in {2022..2025}</code> para criar pastas <code>relatorio_ANO</code> e dentro de cada uma as subpastas <code>jan</code>, <code>fev</code> e <code>mar</code> com outro <code>for</code> aninhado.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">4</div>
+                <div class="step-body">
+                    <div class="step-label">Renomeador com contador</div>
+                    <div class="step-desc">Adapte o <code>renomeador.sh</code> da aula para renomear arquivos <code>.txt</code> no formato <code>doc_001.txt</code>, <code>doc_002.txt</code>, usando <code>printf</code> para formatar o n&uacute;mero com zeros &agrave; esquerda: <code>printf "%03d" $CONTADOR</code>.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="prat-observe">
+            <strong>&#x1F4CC; Para refletir:</strong> o loop <code>for</code> &eacute; a ferramenta central de automa&ccedil;&atilde;o em Shell Script. Combinar wildcards, sequ&ecirc;ncias e substitui&ccedil;&atilde;o de comandos permite processar dezenas ou centenas de arquivos com apenas algumas linhas de c&oacute;digo.
+        </div>
+
+        <div class="ex-actions">
+            <button class="btn-print" onclick="printPractical('prat-01', 'Aula 11 \u2014 Loops FOR')">&#x1F5A8;&#xFE0F; Imprimir roteiro</button>
+        </div>
+    </div>
+
+    <div class="nav-footer">
+        <a href="aula10-estrutura-case.html" class="nav-link">&#x2B05; Anterior: Estrutura case</a>
+        <a href="aula12-loops-while.html" class="nav-link">Pr&oacute;xima: Loops while &#x27A1;</a>
+    </div>
+
+</div>
+
+<script src="slide-mode.js"></script>
+<script src="exercise-drag.js"></script>
+<script src="exercise-print.js"></script>
 </body>
 </html>
