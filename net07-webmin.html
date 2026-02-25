@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webmin — SO2</title>
+    <link rel="stylesheet" href="slide-mode.css">
+    <link rel="stylesheet" href="exercise.css">
+</head>
+<body>
+
+<div class="top-bar">
+    <a href="index.html" class="back-btn">&#x2190; Início</a>
+    <span class="page-badge">Redes · Aula 07</span>
+    <button class="slide-toggle-btn" onclick="toggleSlideMode()">&#9654; Modo Slides</button>
+</div>
+
+<div class="content-wrapper">
+
+    <div class="lesson-hero">
+        <div class="hero-badge">NET · 07</div>
+        <h1 class="hero-title">Webmin</h1>
+        <p class="hero-sub">Administração Gráfica de Servidores Linux — gerencie seu servidor pelo navegador!</p>
+    </div>
+
+    <!-- CARD 1: O que é Webmin -->
+    <div class="content-card">
+        <h2 class="card-title">&#x1F914; O que é Webmin?</h2>
+
+        <div class="highlight-box">
+            <strong>Webmin = Interface gráfica web para administrar Linux!</strong><br>
+            Em vez de digitar comandos no terminal, você usa <strong>cliques no navegador</strong>.
+        </div>
+
+        <p>Pense assim:</p>
+        <ul>
+            <li>&#x1F697; <strong>Carro</strong> = Servidor Linux</li>
+            <li>&#x1F39B; <strong>Painel de controle</strong> = Webmin</li>
+            <li>&#x1F527; <strong>Botões e indicadores</strong> = Módulos do Webmin</li>
+            <li>&#x1F9D1;&#x200D;&#x2708; <strong>Motorista</strong> = Você!</li>
+        </ul>
+
+        <p style="margin-top:1rem">Você pode gerenciar o servidor de qualquer computador com navegador, sem precisar memorizar comandos.</p>
+
+        <h3 style="margin-top:1.2rem">Como acessar</h3>
+        <div class="terminal-block">
+            <div class="terminal-header">Navegador — URL de acesso</div>
+            <div class="terminal-body"><span class="t-kw">https://</span><span class="t-str">192.168.0.1</span><span class="t-kw">:</span><span class="t-str">10000</span></div>
+        </div>
+
+        <p>Porta padrão: <strong>10000</strong> (HTTPS)</p>
+
+        <h3 style="margin-top:1.2rem">Vantagens</h3>
+        <ul>
+            <li>&#x2705; Interface gráfica amigável</li>
+            <li>&#x2705; Acesso remoto pelo navegador</li>
+            <li>&#x2705; Sem decorar comandos</li>
+            <li>&#x2705; Muitos módulos disponíveis</li>
+            <li>&#x2705; Terminal integrado quando necessário</li>
+        </ul>
+    </div>
+
+    <!-- CARD 2: Módulos Principais -->
+    <div class="content-card">
+        <h2 class="card-title">&#x1F4E6; Módulos Principais</h2>
+
+        <p>O Webmin é dividido em <strong>módulos</strong> — cada um gerencia um aspecto do servidor:</p>
+
+        <div class="cmd-grid" style="grid-template-columns: repeat(3, 1fr);">
+            <div class="cmd-card">
+                <div class="cmd-name">&#x1F465; Usuários</div>
+                <div class="cmd-desc">Criar, editar e remover usuários e grupos do sistema</div>
+            </div>
+            <div class="cmd-card">
+                <div class="cmd-name">&#x1F310; Apache</div>
+                <div class="cmd-desc">Configurar servidor web e Virtual Hosts</div>
+            </div>
+            <div class="cmd-card">
+                <div class="cmd-name">&#x1F512; Firewall</div>
+                <div class="cmd-desc">Gerenciar regras de iptables/ufw</div>
+            </div>
+            <div class="cmd-card">
+                <div class="cmd-name">&#x1F4C1; Samba</div>
+                <div class="cmd-desc">Compartilhamento de arquivos com Windows</div>
+            </div>
+            <div class="cmd-card">
+                <div class="cmd-name">&#x1F30D; BIND DNS</div>
+                <div class="cmd-desc">Gerenciar zonas e registros DNS</div>
+            </div>
+            <div class="cmd-card">
+                <div class="cmd-name">&#x1F510; Squid</div>
+                <div class="cmd-desc">Configurar proxy e ACLs de bloqueio</div>
+            </div>
+            <div class="cmd-card">
+                <div class="cmd-name">&#x1F4CA; Sistema</div>
+                <div class="cmd-desc">Monitorar CPU, RAM e uso de disco</div>
+            </div>
+            <div class="cmd-card">
+                <div class="cmd-name">&#x1F4E6; Pacotes</div>
+                <div class="cmd-desc">Instalar e atualizar softwares</div>
+            </div>
+            <div class="cmd-card">
+                <div class="cmd-name">&#x1F4DD; Logs</div>
+                <div class="cmd-desc">Visualizar logs do sistema em tempo real</div>
+            </div>
+        </div>
+
+        <div class="tip-box" style="margin-top:1rem">
+            <strong>&#x1F4A1; Dica:</strong> Webmin tem módulos para quase tudo que configuramos via terminal — IP, DHCP, Samba, Apache, DNS, Squid!
+        </div>
+    </div>
+
+    <!-- CARD 3: Passo 1 — Baixar o Webmin -->
+    <div class="content-card">
+        <h2 class="card-title">
+            <span class="step-badge">1</span>
+            Baixar o Webmin
+        </h2>
+
+        <div class="terminal-block">
+            <div class="terminal-header">bash — baixar pacote .deb</div>
+            <div class="terminal-body"><span class="t-comment"># Baixar o pacote .deb do Webmin</span>
+<span class="t-prompt">$</span> <span class="t-cmd">wget</span> <span class="t-str">https://prdownloads.sourceforge.net/webadmin/webmin_2.000_all.deb</span></div>
+        </div>
+
+        <p>Dois conceitos importantes nesse passo:</p>
+        <ul>
+            <li><strong><code>wget</code></strong> ("Web Get") — baixa arquivos da internet direto pelo terminal, como um "navegador" que só salva arquivos.</li>
+            <li><strong>Arquivo <code>.deb</code></strong> — pacote de instalação do Debian/Ubuntu, equivalente ao <code>.exe</code> do Windows.</li>
+        </ul>
+
+        <div class="alert-box">
+            <strong>&#x26A0; Atenção — Versão:</strong> A versão pode mudar! Verifique a versão mais recente em <strong>webmin.com</strong> antes de baixar.
+        </div>
+    </div>
+
+    <!-- CARD 4: Passo 2 — Instalar Dependências -->
+    <div class="content-card">
+        <h2 class="card-title">
+            <span class="step-badge">2</span>
+            Instalar Dependências
+        </h2>
+
+        <div class="terminal-block">
+            <div class="terminal-header">bash — instalar dependências</div>
+            <div class="terminal-body"><span class="t-prompt">$</span> <span class="t-cmd">sudo apt-get install</span> <span class="t-str">perl libnet-ssleay-perl openssl libauthen-pam-perl libpam-runtime libio-pty-perl apt-show-versions python3</span></div>
+        </div>
+
+        <p>O que são dependências? São programas que o Webmin precisa para funcionar:</p>
+
+        <table class="cmp-table">
+            <thead>
+                <tr><th>Pacote</th><th>Função</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>perl</code></td><td>Linguagem de programação usada pelo Webmin</td></tr>
+                <tr><td><code>openssl</code></td><td>Criptografia para HTTPS (porta 10000)</td></tr>
+                <tr><td><code>libpam-*</code></td><td>Autenticação de usuários</td></tr>
+                <tr><td><code>python3</code></td><td>Scripts auxiliares do Webmin</td></tr>
+            </tbody>
+        </table>
+
+        <div class="highlight-box" style="margin-top:1rem">
+            <strong>&#x1F3D7; Analogia:</strong> É como construir uma casa — antes de colocar o telhado (Webmin), precisamos das paredes e fundação (dependências)!
+        </div>
+    </div>
+
+    <!-- CARD 5: Passo 3 — Instalar o Webmin -->
+    <div class="content-card">
+        <h2 class="card-title">
+            <span class="step-badge">3</span>
+            Instalar o Webmin
+        </h2>
+
+        <div class="terminal-block">
+            <div class="terminal-header">bash — instalar pacote .deb</div>
+            <div class="terminal-body"><span class="t-comment"># Instalar o pacote baixado</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo dpkg -i</span> <span class="t-str">webmin_2.000_all.deb</span></div>
+        </div>
+
+        <p><code>dpkg</code> = <strong>Debian Package Manager</strong> — o instalador de pacotes <code>.deb</code>. A flag <code>-i</code> significa <em>install</em>.</p>
+
+        <p>Após a instalação, o Webmin:</p>
+        <ul>
+            <li>&#x2705; Inicia automaticamente</li>
+            <li>&#x2705; Fica escutando na porta <strong>10000</strong></li>
+            <li>&#x2705; Usa HTTPS por padrão</li>
+        </ul>
+
+        <div class="terminal-block">
+            <div class="terminal-header">bash — saída da instalação</div>
+            <div class="terminal-body"><span class="t-out">Webmin install complete. You can now login to</span>
+<span class="t-out">https://seu-servidor:10000/</span>
+<span class="t-out">as root with your root password.</span></div>
+        </div>
+    </div>
+
+    <!-- CARD 6: Passo 4 — Verificar Serviço -->
+    <div class="content-card">
+        <h2 class="card-title">
+            <span class="step-badge">4</span>
+            Verificar o Serviço
+        </h2>
+
+        <div class="terminal-block">
+            <div class="terminal-header">bash — verificar status</div>
+            <div class="terminal-body"><span class="t-prompt">$</span> <span class="t-cmd">sudo systemctl status webmin</span>
+<span class="t-out">● webmin.service - Webmin server daemon</span>
+<span class="t-out">   Loaded: loaded (/lib/systemd/system/webmin.service; enabled)</span>
+<span class="t-out">   Active: <span class="t-kw">active (running)</span></span>
+<span class="t-out">   Main PID: 1234 (miniserv.pl)</span></div>
+        </div>
+
+        <p>Se você ver <code>active (running)</code>, o Webmin está pronto para uso!</p>
+
+        <p>Caso o serviço não esteja rodando:</p>
+        <div class="terminal-block">
+            <div class="terminal-header">bash — iniciar manualmente</div>
+            <div class="terminal-body"><span class="t-prompt">$</span> <span class="t-cmd">sudo systemctl start webmin</span></div>
+        </div>
+    </div>
+
+    <!-- CARD 7: Passo 5 — Acessar o Webmin -->
+    <div class="content-card">
+        <h2 class="card-title">
+            <span class="step-badge">5</span>
+            Acessar o Webmin pelo Navegador
+        </h2>
+
+        <p>No cliente Windows, abra o navegador e acesse:</p>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Navegador — URL</div>
+            <div class="terminal-body"><span class="t-kw">https://</span><span class="t-str">192.168.0.1</span><span class="t-kw">:</span><span class="t-str">10000</span></div>
+        </div>
+
+        <p>Na tela de login, use as credenciais:</p>
+        <ul>
+            <li><strong>Username:</strong> <code>root</code></li>
+            <li><strong>Password:</strong> sua senha root do servidor</li>
+        </ul>
+
+        <div class="alert-box">
+            <strong>&#x26A0; Aviso de Certificado:</strong> O navegador mostrará um aviso de segurança — isso ocorre porque o Webmin usa um certificado autoassinado. Clique em <strong>"Avançado"</strong> → <strong>"Continuar assim mesmo"</strong> para acessar.
+        </div>
+    </div>
+
+    <!-- CARD 8: Interface e Gerenciamento de Serviços -->
+    <div class="content-card">
+        <h2 class="card-title">&#x1F3A8; Interface e Gerenciamento de Serviços</h2>
+
+        <p>Após o login, você verá o painel principal com os menus:</p>
+
+        <table class="cmp-table">
+            <thead>
+                <tr><th>Menu</th><th>O que você gerencia</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>Webmin</strong></td><td>Configurações do próprio Webmin</td></tr>
+                <tr><td><strong>System</strong></td><td>Usuários, grupos, processos, pacotes</td></tr>
+                <tr><td><strong>Servers</strong></td><td>Apache, DNS, Squid, Samba e outros serviços</td></tr>
+                <tr><td><strong>Networking</strong></td><td>Interfaces de rede, firewall, roteamento</td></tr>
+                <tr><td><strong>Hardware</strong></td><td>Dispositivos, discos, partições</td></tr>
+            </tbody>
+        </table>
+
+        <h3 style="margin-top:1.2rem">Gerenciando serviços que já instalamos</h3>
+        <div class="cmd-grid" style="grid-template-columns: repeat(2, 1fr);">
+            <div class="cmd-card">
+                <div class="cmd-name">&#x1F310; Apache</div>
+                <div class="cmd-desc">Servers → Apache → criar Virtual Hosts, ver logs, reiniciar</div>
+            </div>
+            <div class="cmd-card">
+                <div class="cmd-name">&#x1F30D; BIND DNS</div>
+                <div class="cmd-desc">Servers → BIND → criar zonas, adicionar registros A/CNAME</div>
+            </div>
+            <div class="cmd-card">
+                <div class="cmd-name">&#x1F510; Squid</div>
+                <div class="cmd-desc">Servers → Squid → gerenciar ACLs, bloquear sites, estatísticas</div>
+            </div>
+            <div class="cmd-card">
+                <div class="cmd-name">&#x1F4C1; Samba</div>
+                <div class="cmd-desc">Servers → Samba → criar compartilhamentos, gerenciar usuários</div>
+            </div>
+        </div>
+
+        <div class="tip-box" style="margin-top:1rem">
+            <strong>&#x1F4A1; Dica:</strong> Use a <strong>barra de busca</strong> no topo para encontrar rapidamente qualquer módulo ou configuração!
+        </div>
+    </div>
+
+    <!-- CARD 9: Terminal Web Integrado -->
+    <div class="content-card">
+        <h2 class="card-title">&#x1F4BB; Terminal Web Integrado</h2>
+
+        <p>O Webmin possui um terminal integrado — você pode executar comandos diretamente pelo navegador, sem precisar de SSH!</p>
+
+        <p>Para acessar: <strong>Webmin → Webmin Terminal</strong> ou navegue para:</p>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Navegador — Terminal web</div>
+            <div class="terminal-body"><span class="t-kw">https://</span><span class="t-str">192.168.0.1</span><span class="t-kw">:10000/</span><span class="t-str">shell/</span></div>
+        </div>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Terminal web — exemplo de uso</div>
+            <div class="terminal-body"><span class="t-prompt">root@servidor:~#</span> <span class="t-cmd">systemctl status apache2</span>
+<span class="t-out">● apache2.service - The Apache HTTP Server</span>
+<span class="t-out">   Active: <span class="t-kw">active (running)</span></span>
+
+<span class="t-prompt">root@servidor:~#</span> <span class="t-var">_</span></div>
+        </div>
+
+        <div class="highlight-box">
+            <strong>&#x1F31F; Melhor dos dois mundos!</strong><br>
+            Use a interface gráfica para configurações simples e o terminal para comandos avançados — tudo no mesmo lugar, pelo navegador.
+        </div>
+    </div>
+
+    <!-- CARD 10: Comandos Úteis -->
+    <div class="content-card">
+        <h2 class="card-title">&#x1F527; Comandos Úteis</h2>
+
+        <div class="cmd-grid">
+            <div class="cmd-card">
+                <div class="cmd-name"><code>systemctl start webmin</code></div>
+                <div class="cmd-desc">Inicia o serviço Webmin</div>
+            </div>
+            <div class="cmd-card">
+                <div class="cmd-name"><code>systemctl stop webmin</code></div>
+                <div class="cmd-desc">Para o serviço Webmin</div>
+            </div>
+            <div class="cmd-card">
+                <div class="cmd-name"><code>systemctl restart webmin</code></div>
+                <div class="cmd-desc">Reinicia o serviço</div>
+            </div>
+            <div class="cmd-card">
+                <div class="cmd-name"><code>systemctl status webmin</code></div>
+                <div class="cmd-desc">Verifica se está rodando</div>
+            </div>
+            <div class="cmd-card">
+                <div class="cmd-name"><code>/usr/share/webmin/changepass.pl</code></div>
+                <div class="cmd-desc">Script para alterar senha de usuário</div>
+            </div>
+            <div class="cmd-card">
+                <div class="cmd-name"><code>cat /etc/webmin/miniserv.conf</code></div>
+                <div class="cmd-desc">Exibe a configuração do servidor</div>
+            </div>
+        </div>
+
+        <h3 style="margin-top:1.4rem">Arquivos Importantes</h3>
+        <table class="cmp-table">
+            <thead>
+                <tr><th>Arquivo</th><th>Função</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>/etc/webmin/miniserv.conf</code></td><td>Configuração do servidor web interno</td></tr>
+                <tr><td><code>/etc/webmin/config</code></td><td>Configuração geral do Webmin</td></tr>
+                <tr><td><code>/var/webmin/</code></td><td>Logs e dados do Webmin</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- CARD 11: Exercício -->
+    <div class="content-card">
+        <h2 class="card-title">&#x1F3AF; Desafio Interativo</h2>
+        <p>Arraste cada conceito para seu par correto:</p>
+
+        <div class="ex-drag-root" data-ex="net07">
+            <div class="ex-pool">
+                <div class="drag-chip" data-id="c1">10000</div>
+                <div class="drag-chip" data-id="c2">dpkg -i</div>
+                <div class="drag-chip" data-id="c3">Perl</div>
+                <div class="drag-chip" data-id="c4">HTTPS</div>
+                <div class="drag-chip" data-id="c5">wget</div>
+            </div>
+
+            <div class="ex-zones">
+                <div class="drop-zone" data-zone="z1" data-accept="c1">
+                    <div class="zone-slot"></div>
+                    <div class="zone-label">Porta padrão do Webmin</div>
+                    <div class="zone-feedback"></div>
+                </div>
+                <div class="drop-zone" data-zone="z2" data-accept="c2">
+                    <div class="zone-slot"></div>
+                    <div class="zone-label">Comando para instalar pacote .deb</div>
+                    <div class="zone-feedback"></div>
+                </div>
+                <div class="drop-zone" data-zone="z3" data-accept="c3">
+                    <div class="zone-slot"></div>
+                    <div class="zone-label">Linguagem de programação do Webmin</div>
+                    <div class="zone-feedback"></div>
+                </div>
+                <div class="drop-zone" data-zone="z4" data-accept="c4">
+                    <div class="zone-slot"></div>
+                    <div class="zone-label">Protocolo usado pelo Webmin</div>
+                    <div class="zone-feedback"></div>
+                </div>
+                <div class="drop-zone" data-zone="z5" data-accept="c5">
+                    <div class="zone-slot"></div>
+                    <div class="zone-label">Comando para baixar arquivos da internet</div>
+                    <div class="zone-feedback"></div>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top:1rem; display:flex; gap:0.75rem; flex-wrap:wrap;">
+            <button class="btn-check" onclick="checkExercise('net07')">&#x2705; Verificar</button>
+            <button class="btn-reset" onclick="resetExercise('net07')">&#x1F504; Reiniciar</button>
+        </div>
+    </div>
+
+    <!-- CARD 12: Atividade Prática -->
+    <div class="content-card">
+        <h2 class="card-title">&#x1F6E0; Atividade Prática</h2>
+
+        <div class="practical-card">
+            <div class="prat-meta">
+                <span>&#x1F4BB; VirtualBox</span>
+                <span>&#x23F1; ~25 min</span>
+                <span>&#x1F9D1;&#x200D;&#x1F4BB; Individual</span>
+            </div>
+
+            <div class="prat-steps">
+                <div class="prat-step">
+                    <div class="step-num">1</div>
+                    <div class="step-body">
+                        <div class="step-label">Instalar dependências</div>
+                        <div class="step-desc">No servidor Ubuntu, instale todos os pacotes necessários com <code>apt-get install perl libnet-ssleay-perl openssl libauthen-pam-perl libpam-runtime libio-pty-perl apt-show-versions python3</code>.</div>
+                    </div>
+                </div>
+                <div class="prat-step">
+                    <div class="step-num">2</div>
+                    <div class="step-body">
+                        <div class="step-label">Baixar e instalar o Webmin</div>
+                        <div class="step-desc">Use <code>wget</code> para baixar o pacote <code>.deb</code> e instale com <code>sudo dpkg -i webmin_*.deb</code>. Verifique a instalação com <code>systemctl status webmin</code>.</div>
+                    </div>
+                </div>
+                <div class="prat-step">
+                    <div class="step-num">3</div>
+                    <div class="step-body">
+                        <div class="step-label">Acessar pelo navegador</div>
+                        <div class="step-desc">No Windows, abra o navegador e acesse <code>https://192.168.0.1:10000</code>. Aceite o aviso de certificado e faça login com <code>root</code>.</div>
+                    </div>
+                </div>
+                <div class="prat-step">
+                    <div class="step-num">4</div>
+                    <div class="step-body">
+                        <div class="step-label">Explorar módulos</div>
+                        <div class="step-desc">Navegue pelos módulos: verifique o status do Apache em <strong>Servers → Apache</strong>, visualize os logs em <strong>System → Logs</strong> e explore o terminal em <strong>Webmin → Webmin Terminal</strong>.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="prat-observe">
+                <strong>&#x1F4CB; Observe:</strong> Quais serviços instalados nas aulas anteriores (Apache, DNS, Squid, Samba) aparecem como módulos no Webmin? Tente reiniciar um deles pela interface gráfica.
+            </div>
+
+            <button class="btn-print" onclick="printPractical()">&#x1F5A8; Imprimir Atividade</button>
+        </div>
+    </div>
+
+    <div class="nav-footer">
+        <a href="net06-servidor-proxy-squid.html" class="nav-link">&#x2B05; Anterior: Proxy Squid</a>
+        <a href="aula21-docker-basico.html" class="nav-link">Pr&oacute;xima: Docker &#x27A1;</a>
+    </div>
+
+</div>
+
+<script src="slide-mode.js"></script>
+<script src="exercise-drag.js"></script>
+<script src="exercise-print.js"></script>
+</body>
+</html>
