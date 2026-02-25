@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 1 &mdash; IP Est&aacute;tico com Netplan</title>
+    <link rel="stylesheet" href="slide-mode.css">
+    <link rel="stylesheet" href="exercise.css">
+    <style>
+        :root {
+            --primary:   #667eea;
+            --secondary: #764ba2;
+            --bg-light:  #f4f7fe;
+            --text-dark: #2d3748;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: var(--bg-light); color: var(--text-dark); line-height: 1.7; }
+
+        /* ── TOP BAR ── */
+        .top-bar { background: white; padding: 15px 30px; display: flex; align-items: center; gap: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 10; }
+        .back-btn { text-decoration: none; color: var(--primary); font-weight: 600; display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 8px; transition: background .3s; }
+        .back-btn:hover { background: rgba(102,126,234,.08); }
+        .page-badge { font-size: .8em; padding: 4px 12px; border-radius: 20px; background: rgba(102,126,234,.12); color: var(--primary); font-weight: 600; }
+
+        /* ── LAYOUT ── */
+        .content-wrapper { max-width: 800px; margin: 40px auto; padding: 0 30px; }
+        .lesson-hero { background: white; border-radius: 16px; padding: 40px; box-shadow: 0 5px 15px rgba(0,0,0,.05); margin-bottom: 30px; border-top: 4px solid var(--primary); }
+        .lesson-hero h1 { font-size: 2em; margin-bottom: 10px; color: var(--primary); }
+        .lesson-hero .subtitle { font-size: 1.05em; color: #718096; }
+        .content-card { background: white; border-radius: 16px; padding: 35px; box-shadow: 0 5px 15px rgba(0,0,0,.05); margin-bottom: 25px; }
+        .content-card h2 { font-size: 1.4em; color: var(--primary); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
+        .content-card h3 { font-size: 1.05em; color: #5a67d8; margin: 20px 0 10px; }
+        .content-card p { margin-bottom: 15px; text-align: justify; }
+        ul, ol { margin: 10px 0 15px 25px; }
+        li { margin-bottom: 8px; }
+
+        /* ── CAIXAS ── */
+        .highlight-box { background: linear-gradient(135deg,rgba(102,126,234,.05),rgba(118,75,162,.06)); border-left: 4px solid var(--primary); padding: 20px 25px; border-radius: 0 12px 12px 0; margin: 20px 0; }
+        .highlight-box p { margin-bottom: 0; font-style: italic; }
+        .alert-box { background: #fff8e1; border-left: 4px solid #f59e0b; padding: 18px 22px; border-radius: 0 12px 12px 0; margin: 20px 0; }
+        .alert-box p { margin: 0; color: #78350f; font-size: .93em; }
+        .tip-box { background: #f0fdf4; border-left: 4px solid #16a34a; padding: 18px 22px; border-radius: 0 12px 12px 0; margin: 20px 0; }
+        .tip-box p { margin: 0; color: #14532d; font-size: .93em; }
+
+        /* ── TERMINAIS ── */
+        .terminal { background: #1a202c; border-radius: 12px; overflow: hidden; margin: 16px 0; box-shadow: 0 4px 20px rgba(0,0,0,.3); }
+        .terminal-bar { background: #2d3748; padding: 8px 16px; display: flex; align-items: center; gap: 8px; }
+        .term-dot { width: 12px; height: 12px; border-radius: 50%; }
+        .term-dot.red    { background: #fc8181; }
+        .term-dot.yellow { background: #f6e05e; }
+        .term-dot.green  { background: #68d391; }
+        .term-title { font-size: .75em; color: #718096; margin-left: 8px; font-family: 'Consolas', monospace; }
+        .terminal-body { padding: 20px 24px; font-family: 'Courier New','Consolas',monospace; font-size: .92em; line-height: 2; color: #a0aec0; white-space: pre-wrap; }
+        .t-prompt  { color: #63b3ed; }
+        .t-cmd     { color: #38ef7d; }
+        .t-flag    { color: #f6e05e; }
+        .t-out     { color: #a0aec0; }
+        .t-comment { color: #4a5568; font-style: italic; }
+        .t-kw      { color: #f687b3; font-weight: bold; }
+        .t-str     { color: #68d391; }
+        .t-var     { color: #fbd38d; }
+        .yaml-key   { color: #63b3ed; }
+        .yaml-value { color: #68d391; }
+        .yaml-hl    { color: #fbd38d; font-weight: bold; }
+
+        /* ── TABELA ── */
+        .cmp-table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: .88em; }
+        .cmp-table th { background: var(--primary); color: white; padding: 10px 14px; text-align: left; }
+        .cmp-table th:first-child { border-radius: 6px 0 0 0; }
+        .cmp-table th:last-child  { border-radius: 0 6px 0 0; }
+        .cmp-table td { padding: 9px 14px; border-bottom: 1px solid #e5e7eb; }
+        .cmp-table tr:nth-child(even) td { background: #f8f7ff; }
+        .cmp-table td code { font-family: 'Consolas',monospace; background: #1e293b; color: #a78bfa; padding: 1px 6px; border-radius: 4px; font-size: .88em; }
+
+        /* ── GRID RESUMO ── */
+        .cmd-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(130px,1fr)); gap: 12px; margin: 16px 0; }
+        .cmd-card { background: #f8f7ff; border-radius: 10px; padding: 16px; text-align: center; border-top: 3px solid var(--primary); }
+        .cmd-card .cmd { font-family: 'Consolas',monospace; font-size: .82em; color: var(--primary); font-weight: 700; display: block; margin-bottom: 6px; }
+        .cmd-card strong { display: block; font-size: .82em; color: #1e293b; margin-bottom: 4px; }
+        .cmd-card span { font-size: .76em; color: #475569; }
+
+        /* ── COMPARAÇÃO ── */
+        .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+        .compare-box { border-radius: 12px; padding: 18px; }
+        .compare-box.green { background: #f0fdf4; border-top: 3px solid #16a34a; }
+        .compare-box.red   { background: #fff5f5; border-top: 3px solid #ef4444; }
+        .compare-box.blue  { background: #eff6ff; border-top: 3px solid #3b82f6; }
+        .compare-box h4 { font-size: .95em; margin-bottom: 10px; }
+        .compare-box.green h4 { color: #065f46; }
+        .compare-box.red   h4 { color: #7f1d1d; }
+        .compare-box.blue  h4 { color: #1e3a8a; }
+
+        /* ── PASSO BADGE ── */
+        .step-badge { display: inline-block; background: var(--primary); color: white; border-radius: 50%; width: 28px; height: 28px; line-height: 28px; text-align: center; font-size: .85em; font-weight: 700; margin-right: 8px; flex-shrink: 0; }
+
+        /* ── NAV ── */
+        .nav-footer { display: flex; justify-content: space-between; margin-top: 40px; padding-bottom: 40px; }
+        .nav-link { text-decoration: none; color: var(--primary); font-weight: 600; padding: 12px 24px; border-radius: 10px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,.05); transition: all .3s; }
+        .nav-link:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.1); }
+
+        @media (max-width: 768px) {
+            .content-wrapper { padding: 0 15px; }
+            .lesson-hero, .content-card { padding: 25px; }
+            .lesson-hero h1 { font-size: 1.5em; }
+            .compare-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-bar">
+    <a href="index.html" class="back-btn">&#x2B05; Voltar ao Dashboard</a>
+    <span class="page-badge">3&ordm; Bimestre &mdash; Servi&ccedil;os de Rede</span>
+    <button class="slide-toggle" id="slideToggleBtn">&#x1F4FA; Modo Slide</button>
+</div>
+
+<div class="content-wrapper">
+
+    <div class="lesson-hero">
+        <h1>&#x1F310; IP Est&aacute;tico com Netplan</h1>
+        <p class="subtitle">Aula 1 &mdash; Configure endere&ccedil;os IP fixos no Ubuntu Server usando o Netplan: edite arquivos YAML, teste antes de aplicar e saiba como corrigir problemas de conectividade</p>
+    </div>
+
+    <!-- CARD 1 — IP Estático vs Dinâmico -->
+    <div class="content-card">
+        <h2>&#x1F4CA; IP Est&aacute;tico vs Din&acirc;mico</h2>
+        <p>Todo dispositivo em rede precisa de um endere&ccedil;o IP para se comunicar. Esse endere&ccedil;o pode ser atribu&iacute;do de duas formas diferentes, cada uma com suas caracter&iacute;sticas.</p>
+
+        <div class="compare-grid">
+            <div class="compare-box blue">
+                <h4>&#x1F3E8; IP Din&acirc;mico (DHCP)</h4>
+                <ul>
+                    <li>Atribu&iacute;do automaticamente pelo roteador</li>
+                    <li>Pode mudar a cada reinicializa&ccedil;&atilde;o</li>
+                    <li>Ideal para esta&ccedil;&otilde;es de trabalho e clientes</li>
+                    <li>Como um quarto de hotel: &eacute; diferente a cada visita</li>
+                </ul>
+            </div>
+            <div class="compare-box green">
+                <h4>&#x1F3E0; IP Est&aacute;tico</h4>
+                <ul>
+                    <li>Configurado manualmente, nunca muda</li>
+                    <li>Sempre o mesmo endere&ccedil;o ap&oacute;s reinicializa&ccedil;&atilde;o</li>
+                    <li>Essencial para servidores e servi&ccedil;os</li>
+                    <li>Como casa pr&oacute;pria: endere&ccedil;o fixo e confi&aacute;vel</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="highlight-box">
+            <p>&#x1F4A1; <strong>Analogia:</strong> DHCP &eacute; como ficar em um hotel &mdash; voc&ecirc; recebe um quarto diferente a cada vez que chega. IP est&aacute;tico &eacute; como ter casa pr&oacute;pria &mdash; seu endere&ccedil;o nunca muda e as pessoas sempre sabem onde te encontrar.</p>
+        </div>
+    </div>
+
+    <!-- CARD 2 — Quando Usar IP Estático -->
+    <div class="content-card">
+        <h2>&#x1F3AF; Quando Usar IP Est&aacute;tico</h2>
+        <p>Servidores precisam de IP fixo porque outros dispositivos precisam saber onde encontr&aacute;-los. Se o IP mudar, os servi&ccedil;os param de funcionar.</p>
+
+        <div class="cmd-grid">
+            <div class="cmd-card">
+                <span class="cmd">Web Server</span>
+                <strong>Apache / Nginx</strong>
+                <span>Sites e aplica&ccedil;&otilde;es web</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">SSH</span>
+                <strong>Acesso Remoto</strong>
+                <span>Administra&ccedil;&atilde;o segura</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">NFS / Samba</span>
+                <strong>Servidor de Arquivos</strong>
+                <span>Compartilhamento em rede</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">DNS</span>
+                <strong>Servidor de Nomes</strong>
+                <span>Resolu&ccedil;&atilde;o de dom&iacute;nios</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">DHCP</span>
+                <strong>Servidor DHCP</strong>
+                <span>Distribui IPs na rede</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">Impressora</span>
+                <strong>Dispositivos Fixos</strong>
+                <span>Perif&eacute;ricos em rede</span>
+            </div>
+        </div>
+
+        <div class="tip-box">
+            <p>&#x2705; <strong>Regra geral:</strong> qualquer m&aacute;quina que <em>oferece</em> servi&ccedil;os deve ter IP est&aacute;tico. M&aacute;quinas que apenas <em>consomem</em> servi&ccedil;os podem usar DHCP.</p>
+        </div>
+    </div>
+
+    <!-- CARD 3 — O que é Netplan -->
+    <div class="content-card">
+        <h2>&#x1F4CB; O que &eacute; Netplan</h2>
+        <p>O <strong>Netplan</strong> &eacute; o sistema de configura&ccedil;&atilde;o de rede padr&atilde;o do Ubuntu desde a vers&atilde;o 18.04. Ele usa arquivos de texto no formato <strong>YAML</strong> para descrever como as interfaces de rede devem ser configuradas.</p>
+
+        <ul>
+            <li>Arquivos ficam em <code>/etc/netplan/</code></li>
+            <li>Extens&atilde;o <code>.yaml</code> ou <code>.yml</code></li>
+            <li>Substitui o antigo <code>/etc/network/interfaces</code></li>
+            <li>Usa <code>systemd-networkd</code> como backend no Ubuntu Server</li>
+        </ul>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">listar arquivos netplan</span>
+            </div>
+            <div class="terminal-body"><span class="t-prompt">$</span> <span class="t-cmd">ls</span> <span class="t-flag">-la</span> /etc/netplan/
+<span class="t-out">total 12
+drwxr-xr-x  2 root root 4096 jan 10 09:00 .
+drwxr-xr-x 93 root root 4096 jan 10 09:00 ..
+-rw-r--r--  1 root root  119 jan 10 09:00 00-installer-config.yaml</span>
+
+<span class="t-prompt">$</span> <span class="t-cmd">cat</span> /etc/netplan/00-installer-config.yaml
+<span class="t-out"># This is the network config written by the installer</span></div>
+        </div>
+
+        <div class="alert-box">
+            <p>&#x26A0;&#xFE0F; <strong>Aten&ccedil;&atilde;o:</strong> YAML &eacute; sens&iacute;vel a indenta&ccedil;&atilde;o. Use sempre <strong>espa&ccedil;os</strong> (n&atilde;o tabula&ccedil;&otilde;es) e mantenha o alinhamento correto. Um erro de indenta&ccedil;&atilde;o pode deixar o servidor sem rede!</p>
+        </div>
+    </div>
+
+    <!-- CARD 4 — Comandos do Netplan -->
+    <div class="content-card">
+        <h2>&#x2318; Comandos do Netplan</h2>
+        <p>O Netplan tem quatro comandos principais. O mais importante &eacute; o <code>netplan try</code>, que oferece uma rede de seguran&ccedil;a ao testar antes de aplicar definitivamente.</p>
+
+        <table class="cmp-table">
+            <thead>
+                <tr><th>Comando</th><th>O que faz</th><th>Quando usar</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>netplan try</code></td><td>Testa a configura&ccedil;&atilde;o e reverte automaticamente em 120s se n&atilde;o confirmada</td><td>Sempre antes de aplicar</td></tr>
+                <tr><td><code>netplan apply</code></td><td>Aplica a configura&ccedil;&atilde;o permanentemente, sem rollback</td><td>Ap&oacute;s confirmar que funciona</td></tr>
+                <tr><td><code>netplan get</code></td><td>Exibe a configura&ccedil;&atilde;o de rede atual em formato YAML</td><td>Para consultar configura&ccedil;&atilde;o</td></tr>
+                <tr><td><code>netplan status</code></td><td>Mostra o status detalhado de todas as interfaces</td><td>Para diagn&oacute;stico</td></tr>
+            </tbody>
+        </table>
+
+        <div class="tip-box">
+            <p>&#x1F6E1;&#xFE0F; <strong>Dica de seguran&ccedil;a:</strong> use sempre <code>netplan try</code> antes de <code>netplan apply</code>. Se a configura&ccedil;&atilde;o quebrar a conex&atilde;o SSH, o servidor reverter&aacute; automaticamente ap&oacute;s 120 segundos.</p>
+        </div>
+    </div>
+
+    <!-- CARD 5 — Preparação -->
+    <div class="content-card">
+        <h2>&#x1F4CB; Prepara&ccedil;&atilde;o &mdash; Informa&ccedil;&otilde;es Necess&aacute;rias</h2>
+        <p>Antes de configurar um IP est&aacute;tico, reuna quatro informa&ccedil;&otilde;es essenciais. Solicite ao administrador de rede ou consulte a configura&ccedil;&atilde;o atual.</p>
+
+        <table class="cmp-table">
+            <thead>
+                <tr><th>Informa&ccedil;&atilde;o</th><th>Exemplo</th><th>Como descobrir</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>Endere&ccedil;o IP</strong></td><td>192.168.1.100</td><td>Definido pelo administrador</td></tr>
+                <tr><td><strong>M&aacute;scara CIDR</strong></td><td>/24 (= 255.255.255.0)</td><td>Padr&atilde;o de redes classe C</td></tr>
+                <tr><td><strong>Gateway</strong></td><td>192.168.1.1</td><td><code>ip route show default</code></td></tr>
+                <tr><td><strong>Servidores DNS</strong></td><td>8.8.8.8, 1.1.1.1</td><td><code>cat /etc/resolv.conf</code></td></tr>
+            </tbody>
+        </table>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">verificar configuração atual</span>
+            </div>
+            <div class="terminal-body"><span class="t-prompt">$</span> <span class="t-cmd">ip</span> address show       <span class="t-comment"># ver IPs e interfaces</span>
+<span class="t-prompt">$</span> <span class="t-cmd">ip</span> route show default <span class="t-comment"># ver gateway atual</span>
+<span class="t-prompt">$</span> <span class="t-cmd">cat</span> /etc/resolv.conf   <span class="t-comment"># ver DNS atual</span>
+<span class="t-prompt">$</span> <span class="t-cmd">ip</span> link show          <span class="t-comment"># ver nome das interfaces</span></div>
+        </div>
+    </div>
+
+    <!-- CARD 6 — Passo 1: Backup -->
+    <div class="content-card">
+        <h2>&#x1F4BE; <span class="step-badge">1</span> Backup do Arquivo Original</h2>
+        <p>Antes de qualquer altera&ccedil;&atilde;o, fa&ccedil;a um backup do arquivo de configura&ccedil;&atilde;o atual. Se algo der errado, voc&ecirc; pode restaurar a configura&ccedil;&atilde;o original rapidamente.</p>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">criando backup</span>
+            </div>
+            <div class="terminal-body"><span class="t-comment"># Verificar o nome exato do arquivo</span>
+<span class="t-prompt">$</span> <span class="t-cmd">ls</span> /etc/netplan/
+<span class="t-out">00-installer-config.yaml</span>
+
+<span class="t-comment"># Criar cópia de segurança</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">cp</span> /etc/netplan/00-installer-config.yaml \
+       /etc/netplan/00-installer-config.yaml.backup
+
+<span class="t-comment"># Verificar que o backup foi criado</span>
+<span class="t-prompt">$</span> <span class="t-cmd">ls</span> <span class="t-flag">-la</span> /etc/netplan/
+<span class="t-out">00-installer-config.yaml
+00-installer-config.yaml.backup</span></div>
+        </div>
+
+        <div class="alert-box">
+            <p>&#x26A0;&#xFE0F; <strong>N&atilde;o pule o backup!</strong> Em produ&ccedil;&atilde;o, uma configura&ccedil;&atilde;o errada pode deixar o servidor inacess&iacute;vel. O backup permite recupera&ccedil;&atilde;o r&aacute;pida sem acesso f&iacute;sico ao servidor.</p>
+        </div>
+    </div>
+
+    <!-- CARD 7 — Passo 2: Editar YAML -->
+    <div class="content-card">
+        <h2>&#x270F;&#xFE0F; <span class="step-badge">2</span> Editar o Arquivo YAML</h2>
+        <p>Abra o arquivo de configura&ccedil;&atilde;o com um editor de texto e substitua a configura&ccedil;&atilde;o din&acirc;mica (DHCP) por uma configura&ccedil;&atilde;o est&aacute;tica com IP fixo.</p>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">abrir para edição</span>
+            </div>
+            <div class="terminal-body"><span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">nano</span> /etc/netplan/00-installer-config.yaml</div>
+        </div>
+
+        <div class="compare-grid">
+            <div class="compare-box red">
+                <h4>&#x274C; Antes &mdash; DHCP (din&acirc;mico)</h4>
+                <div class="terminal">
+                    <div class="terminal-bar">
+                        <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                    </div>
+                    <div class="terminal-body"><span class="yaml-key">network:</span>
+  <span class="yaml-key">version:</span> <span class="yaml-value">2</span>
+  <span class="yaml-key">ethernets:</span>
+    <span class="yaml-key">enp0s3:</span>
+      <span class="yaml-key">dhcp4:</span> <span class="yaml-hl">true</span></div>
+                </div>
+            </div>
+            <div class="compare-box green">
+                <h4>&#x2705; Depois &mdash; IP Est&aacute;tico</h4>
+                <div class="terminal">
+                    <div class="terminal-bar">
+                        <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                    </div>
+                    <div class="terminal-body"><span class="yaml-key">network:</span>
+  <span class="yaml-key">version:</span> <span class="yaml-value">2</span>
+  <span class="yaml-key">ethernets:</span>
+    <span class="yaml-key">enp0s3:</span>
+      <span class="yaml-key">dhcp4:</span> <span class="yaml-hl">false</span>
+      <span class="yaml-key">addresses:</span>
+        - <span class="yaml-hl">192.168.1.100/24</span>
+      <span class="yaml-key">routes:</span>
+        - <span class="yaml-key">to:</span> <span class="yaml-value">default</span>
+          <span class="yaml-key">via:</span> <span class="yaml-hl">192.168.1.1</span>
+      <span class="yaml-key">nameservers:</span>
+        <span class="yaml-key">addresses:</span>
+          - <span class="yaml-hl">8.8.8.8</span>
+          - <span class="yaml-hl">1.1.1.1</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARD 8 — Entendendo o YAML -->
+    <div class="content-card">
+        <h2>&#x1F4D6; Entendendo o YAML</h2>
+        <p>Cada linha do arquivo de configura&ccedil;&atilde;o Netplan tem um significado espec&iacute;fico. Compreend&ecirc;-las evita erros de configura&ccedil;&atilde;o.</p>
+
+        <table class="cmp-table">
+            <thead>
+                <tr><th>Linha YAML</th><th>Significado</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>version: 2</code></td><td>Vers&atilde;o do formato Netplan (sempre 2)</td></tr>
+                <tr><td><code>ethernets:</code></td><td>Declara interfaces de rede com fio (Ethernet)</td></tr>
+                <tr><td><code>enp0s3:</code></td><td>Nome da interface (use <code>ip link show</code> para descobrir)</td></tr>
+                <tr><td><code>dhcp4: false</code></td><td>Desabilita o DHCP (necess&aacute;rio para IP est&aacute;tico)</td></tr>
+                <tr><td><code>addresses: [192.168.1.100/24]</code></td><td>IP est&aacute;tico com m&aacute;scara CIDR</td></tr>
+                <tr><td><code>routes: - to: default via: ...</code></td><td>Gateway padr&atilde;o (roteador da rede)</td></tr>
+                <tr><td><code>nameservers: addresses:</code></td><td>Servidores DNS para resolu&ccedil;&atilde;o de nomes</td></tr>
+            </tbody>
+        </table>
+
+        <div class="highlight-box">
+            <p>&#x1F4A1; <strong>CIDR /24</strong> significa que os primeiros 24 bits s&atilde;o o endere&ccedil;o de rede &mdash; equivale &agrave; m&aacute;scara 255.255.255.0. Para redes /24, o gateway geralmente &eacute; o <code>.1</code> do mesmo bloco IP (ex.: 192.168.1.<strong>1</strong>).</p>
+        </div>
+    </div>
+
+    <!-- CARD 9 — Passo 3: Testar -->
+    <div class="content-card">
+        <h2>&#x1F9EA; <span class="step-badge">3</span> Testar com <code>netplan try</code></h2>
+        <p>O <code>netplan try</code> &eacute; seu melhor amigo! Ele aplica a configura&ccedil;&atilde;o temporariamente e aguarda confirma&ccedil;&atilde;o. Se voc&ecirc; n&atilde;o confirmar em <strong>120 segundos</strong>, a configura&ccedil;&atilde;o &eacute; revertida automaticamente.</p>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">testando configuração</span>
+            </div>
+            <div class="terminal-body"><span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">netplan</span> try
+<span class="t-out">Do you want to keep these settings?
+Press ENTER before the timeout to accept the new configuration
+
+Changes will revert in  120 seconds
+Configuration accepted.</span></div>
+        </div>
+
+        <div class="compare-grid">
+            <div class="compare-box green">
+                <h4>&#x2705; Se conectar (confirmar)</h4>
+                <ul>
+                    <li>Teste o ping: <code>ping 8.8.8.8</code></li>
+                    <li>Verifique o IP: <code>ip address show</code></li>
+                    <li>Pressione <strong>ENTER</strong> para confirmar</li>
+                </ul>
+            </div>
+            <div class="compare-box red">
+                <h4>&#x274C; Se n&atilde;o conectar (aguardar)</h4>
+                <ul>
+                    <li>N&atilde;o pressione ENTER</li>
+                    <li>Aguarde os 120 segundos</li>
+                    <li>Configura&ccedil;&atilde;o reverte automaticamente</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARD 10 — Passo 4: Aplicar -->
+    <div class="content-card">
+        <h2>&#x2705; <span class="step-badge">4</span> Aplicar e Verificar</h2>
+        <p>Ap&oacute;s confirmar que o <code>netplan try</code> funcionou corretamente, aplique a configura&ccedil;&atilde;o definitivamente e verifique o resultado.</p>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">aplicando e verificando</span>
+            </div>
+            <div class="terminal-body"><span class="t-comment"># Aplicar permanentemente</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">netplan</span> apply
+
+<span class="t-comment"># Verificar o IP configurado</span>
+<span class="t-prompt">$</span> <span class="t-cmd">ip</span> address show enp0s3
+<span class="t-out">2: enp0s3: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 ...
+    inet <span class="t-var">192.168.1.100/24</span> brd 192.168.1.255 scope global enp0s3</span>
+
+<span class="t-comment"># Testar conectividade</span>
+<span class="t-prompt">$</span> <span class="t-cmd">ping</span> <span class="t-flag">-c</span> 4 8.8.8.8
+<span class="t-out">PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
+64 bytes from 8.8.8.8: icmp_seq=1 ttl=118 time=12.4 ms
+64 bytes from 8.8.8.8: icmp_seq=2 ttl=118 time=11.8 ms</span>
+
+<span class="t-comment"># Verificar rota padrão</span>
+<span class="t-prompt">$</span> <span class="t-cmd">ip</span> route show
+<span class="t-out">default via 192.168.1.1 dev enp0s3
+192.168.1.0/24 dev enp0s3 proto kernel scope link src 192.168.1.100</span></div>
+        </div>
+    </div>
+
+    <!-- CARD 11 — Resolução de Problemas -->
+    <div class="content-card">
+        <h2>&#x1F527; Resolu&ccedil;&atilde;o de Problemas</h2>
+        <p>Problemas de rede ap&oacute;s configura&ccedil;&atilde;o s&atilde;o comuns. Conhe&ccedil;a os erros mais frequentes e como resolv&ecirc;-los.</p>
+
+        <h3>Perdi o acesso SSH</h3>
+        <p>Se a configura&ccedil;&atilde;o errada foi aplicada com <code>netplan apply</code> e voc&ecirc; perdeu o acesso remoto, restaure pelo console f&iacute;sico ou pelo console da VM:</p>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">recuperação via acesso físico</span>
+            </div>
+            <div class="terminal-body"><span class="t-comment"># Restaurar o backup salvo no Passo 1</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">cp</span> /etc/netplan/00-installer-config.yaml.backup \
+       /etc/netplan/00-installer-config.yaml
+<span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">netplan</span> apply</div>
+        </div>
+
+        <h3>Erro de sintaxe no YAML</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">validar sintaxe antes de aplicar</span>
+            </div>
+            <div class="terminal-body"><span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">netplan</span> generate
+<span class="t-out">** (generate:1234): ERROR **: Error in network definition ...
+  indentation is not a multiple of 2</span>
+
+<span class="t-comment"># Corrigir a indentação e tentar novamente</span></div>
+        </div>
+
+        <table class="cmp-table">
+            <thead>
+                <tr><th>Problema</th><th>Causa Prov&aacute;vel</th><th>Solu&ccedil;&atilde;o</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Sem conectividade ap&oacute;s apply</td><td>Gateway ou IP incorreto</td><td>Restaurar backup e corrigir</td></tr>
+                <tr><td>Erro de sintaxe no netplan</td><td>Indenta&ccedil;&atilde;o incorreta no YAML</td><td>Verificar espa&ccedil;os e alinhamento</td></tr>
+                <tr><td>Interface n&atilde;o encontrada</td><td>Nome errado da interface</td><td>Verificar com <code>ip link show</code></td></tr>
+                <tr><td>DNS n&atilde;o resolve nomes</td><td>Nameservers n&atilde;o configurados</td><td>Adicionar se&ccedil;&atilde;o <code>nameservers</code></td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- EXERCÍCIO — Arrastar e Conectar -->
+    <div class="content-card exercise-card">
+        <h2>&#x1F3AF; Exerc&iacute;cio &mdash; Arraste e Conecte</h2>
+        <p style="color:#475569;font-size:.9em;margin-bottom:4px;">Relacione cada elemento do Netplan &agrave; sua descri&ccedil;&atilde;o correta.</p>
+
+        <div class="ex-drag-root" data-ex="ex01">
+            <div class="ex-drag">
+                <div>
+                    <div class="ex-col-title">Descri&ccedil;&atilde;o</div>
+                    <div class="ex-pool" data-pool="ex01">
+                        <div class="drag-chip" data-id="c1">Testa configura&ccedil;&atilde;o com rollback autom&aacute;tico em 120 segundos</div>
+                        <div class="drag-chip" data-id="c2">Aplica configura&ccedil;&atilde;o de rede permanentemente</div>
+                        <div class="drag-chip" data-id="c3">Exibe endere&ccedil;os IP de todas as interfaces</div>
+                        <div class="drag-chip" data-id="c4">M&aacute;scara CIDR equivalente a 255.255.255.0</div>
+                        <div class="drag-chip" data-id="c5">Endere&ccedil;o do roteador para sa&iacute;da de tr&aacute;fego</div>
+                    </div>
+                </div>
+                <div>
+                    <div class="ex-col-title">Elemento</div>
+                    <div class="ex-zones" data-zones="ex01">
+                        <div class="drop-zone" data-zone="ex01-z1" data-accept="c1">
+                            <span class="zone-name"><code>netplan try</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z2" data-accept="c2">
+                            <span class="zone-name"><code>netplan apply</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z3" data-accept="c3">
+                            <span class="zone-name"><code>ip address</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z4" data-accept="c4">
+                            <span class="zone-name"><code>/24</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z5" data-accept="c5">
+                            <span class="zone-name"><code>gateway</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ex-actions">
+            <button class="btn-verificar" onclick="dragVerify('ex01')">Verificar</button>
+            <button class="btn-refazer"  onclick="dragReset('ex01')">Refazer</button>
+        </div>
+        <div class="ex-result" id="ex01-result"></div>
+    </div>
+
+    <!-- ATIVIDADE PRÁTICA -->
+    <div class="content-card practical-card" id="prat-01">
+        <h2>&#x1F6E0;&#xFE0F; Atividade Pr&aacute;tica &mdash; Configurando IP Est&aacute;tico</h2>
+        <div class="prat-meta">
+            <span class="prat-tag">&#x23F1; ~30 min</span>
+            <span class="prat-tag">&#x1F4BB; Ubuntu Server / VM</span>
+            <span class="prat-tag">&#x1F4F8; Tirar screenshot da sa&iacute;da</span>
+        </div>
+
+        <div class="prat-steps">
+            <div class="prat-step">
+                <div class="step-num">1</div>
+                <div class="step-body">
+                    <div class="step-label">Levantamento da configura&ccedil;&atilde;o atual</div>
+                    <div class="step-desc">Execute <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">ip address show</code>, <code>ip route show</code> e <code>cat /etc/resolv.conf</code>. Anote o nome da interface, IP atual, gateway e DNS. Tire screenshot da sa&iacute;da.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">2</div>
+                <div class="step-body">
+                    <div class="step-label">Backup e edi&ccedil;&atilde;o do arquivo Netplan</div>
+                    <div class="step-desc">Fa&ccedil;a backup do arquivo em <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">/etc/netplan/</code> com sufixo <code>.backup</code>. Edite o arquivo original com <code>sudo nano</code>, substituindo <code>dhcp4: true</code> por configura&ccedil;&atilde;o est&aacute;tica usando o IP levantado no passo anterior.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">3</div>
+                <div class="step-body">
+                    <div class="step-label">Testar com netplan try</div>
+                    <div class="step-desc">Execute <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">sudo netplan try</code>. Em outro terminal, teste com <code>ping 8.8.8.8</code> e <code>ip address show</code>. Se tudo funcionar, pressione ENTER para confirmar antes dos 120 segundos.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">4</div>
+                <div class="step-body">
+                    <div class="step-label">Aplicar e documentar</div>
+                    <div class="step-desc">Execute <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">sudo netplan apply</code> para tornar permanente. Verifique com <code>ip address show</code> e <code>ping -c 3 8.8.8.8</code>. Tire screenshot mostrando o IP est&aacute;tico configurado corretamente.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="prat-observe">
+            <strong>&#x1F4CC; Para refletir:</strong> o Netplan separa a <em>declara&ccedil;&atilde;o</em> da configura&ccedil;&atilde;o (arquivo YAML) da <em>aplica&ccedil;&atilde;o</em> real na rede. Isso permite validar antes de confirmar, tornando a gest&atilde;o de redes mais segura. Dominar o Netplan &eacute; fundamental para administrar servidores Ubuntu modernos.
+        </div>
+
+        <div class="ex-actions">
+            <button class="btn-print" onclick="printPractical('prat-01', 'Aula 1 \u2014 IP Est\u00e1tico com Netplan')">&#x1F5A8;&#xFE0F; Imprimir roteiro</button>
+        </div>
+    </div>
+
+    <div class="nav-footer">
+        <a href="ss07-funcoes.html" class="nav-link">&#x2B05; Anterior: Fun&ccedil;&otilde;es</a>
+        <a href="net02-servidor-dhcp.html" class="nav-link">Pr&oacute;xima: Servidor DHCP &#x27A1;</a>
+    </div>
+
+</div>
+
+<script src="slide-mode.js"></script>
+<script src="exercise-drag.js"></script>
+<script src="exercise-print.js"></script>
+</body>
+</html>
