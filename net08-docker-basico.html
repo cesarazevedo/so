@@ -6,85 +6,7 @@
     <title>Docker Básico — SO2</title>
     <link rel="stylesheet" href="slide-mode.css">
     <link rel="stylesheet" href="exercise.css">
-    <style>
-        :root {
-            --primary:   #667eea;
-            --secondary: #764ba2;
-            --bg-light:  #f4f7fe;
-            --text-dark: #2d3748;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: var(--bg-light); color: var(--text-dark); line-height: 1.7; }
-
-        /* ── TOP BAR ── */
-        .top-bar { background: white; padding: 15px 30px; display: flex; align-items: center; gap: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 10; }
-        .back-btn { text-decoration: none; color: var(--primary); font-weight: 600; display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 8px; transition: background .3s; }
-        .back-btn:hover { background: rgba(102,126,234,.08); }
-        .page-badge { font-size: .8em; padding: 4px 12px; border-radius: 20px; background: rgba(102,126,234,.12); color: var(--primary); font-weight: 600; }
-        .slide-toggle-btn { margin-left: auto; padding: 8px 18px; border: 2px solid var(--primary); background: transparent; color: var(--primary); font-weight: 600; font-size: .9em; border-radius: 8px; cursor: pointer; transition: all .3s; }
-        .slide-toggle-btn:hover { background: var(--primary); color: white; }
-
-        /* ── LAYOUT ── */
-        .content-wrapper { max-width: 800px; margin: 40px auto; padding: 0 30px; }
-        .lesson-hero { background: white; border-radius: 16px; padding: 40px; box-shadow: 0 5px 15px rgba(0,0,0,.05); margin-bottom: 30px; border-top: 4px solid var(--primary); }
-        .hero-badge { display: inline-block; background: var(--primary); color: white; padding: 3px 12px; border-radius: 20px; font-size: .75em; font-weight: 700; letter-spacing: .04em; margin-bottom: 10px; text-transform: uppercase; }
-        .hero-title { font-size: 2em; color: var(--primary); margin-bottom: 8px; }
-        .hero-sub { font-size: 1.05em; color: #718096; }
-        .content-card { background: white; border-radius: 16px; padding: 35px; box-shadow: 0 5px 15px rgba(0,0,0,.05); margin-bottom: 25px; }
-        .content-card h2, .card-title { font-size: 1.4em; color: var(--primary); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
-        .content-card h3 { font-size: 1.05em; color: #5a67d8; margin: 20px 0 10px; }
-        .content-card p { margin-bottom: 15px; text-align: justify; }
-        ul, ol { margin: 10px 0 15px 25px; }
-        li { margin-bottom: 8px; }
-
-        /* ── CAIXAS ── */
-        .highlight-box { background: linear-gradient(135deg,rgba(102,126,234,.05),rgba(118,75,162,.06)); border-left: 4px solid var(--primary); padding: 20px 25px; border-radius: 0 12px 12px 0; margin: 20px 0; }
-        .alert-box { background: #fff8e1; border-left: 4px solid #f59e0b; padding: 18px 22px; border-radius: 0 12px 12px 0; margin: 20px 0; }
-        .tip-box { background: #f0fdf4; border-left: 4px solid #16a34a; padding: 18px 22px; border-radius: 0 12px 12px 0; margin: 20px 0; }
-
-        /* ── TERMINAIS ── */
-        .terminal-block { background: #1a202c; border-radius: 12px; overflow: hidden; margin: 16px 0; box-shadow: 0 4px 20px rgba(0,0,0,.3); }
-        .terminal-header { background: #2d3748; padding: 8px 16px; font-size: .78em; color: #a0aec0; font-family: 'Consolas', monospace; }
-        .terminal-body { padding: 20px 24px; font-family: 'Courier New','Consolas',monospace; font-size: .92em; line-height: 2; color: #a0aec0; white-space: pre-wrap; }
-        .t-prompt  { color: #63b3ed; }
-        .t-cmd     { color: #38ef7d; }
-        .t-flag    { color: #f6e05e; }
-        .t-out     { color: #a0aec0; }
-        .t-comment { color: #4a5568; font-style: italic; }
-        .t-kw      { color: #f687b3; font-weight: bold; }
-        .t-str     { color: #68d391; }
-        .t-var     { color: #fbd38d; }
-
-        /* ── TABELA ── */
-        .cmp-table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: .88em; }
-        .cmp-table th { background: var(--primary); color: white; padding: 10px 14px; text-align: left; }
-        .cmp-table th:first-child { border-radius: 6px 0 0 0; }
-        .cmp-table th:last-child  { border-radius: 0 6px 0 0; }
-        .cmp-table td { padding: 9px 14px; border-bottom: 1px solid #e5e7eb; }
-        .cmp-table tr:nth-child(even) td { background: #f8f7ff; }
-        .cmp-table td code { font-family: 'Consolas',monospace; background: #1e293b; color: #a78bfa; padding: 1px 6px; border-radius: 4px; font-size: .88em; }
-
-        /* ── GRID ── */
-        .cmd-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(140px,1fr)); gap: 12px; margin: 16px 0; }
-        .cmd-card { background: #f8f7ff; border-radius: 10px; padding: 16px; text-align: center; border-top: 3px solid var(--primary); }
-        .cmd-card .cmd-name { font-family: 'Consolas',monospace; font-size: .85em; color: var(--primary); font-weight: 700; display: block; margin-bottom: 6px; }
-        .cmd-card .cmd-desc { font-size: .78em; color: #475569; line-height: 1.5; }
-
-        /* ── PASSO BADGE ── */
-        .step-badge { display: inline-block; background: var(--primary); color: white; border-radius: 50%; width: 28px; height: 28px; line-height: 28px; text-align: center; font-size: .85em; font-weight: 700; margin-right: 8px; flex-shrink: 0; }
-
-        /* ── NAV ── */
-        .nav-footer { display: flex; justify-content: space-between; margin-top: 40px; padding-bottom: 40px; }
-        .nav-link { text-decoration: none; color: var(--primary); font-weight: 600; padding: 12px 24px; border-radius: 10px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,.05); transition: all .3s; }
-        .nav-link:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.1); }
-
-        @media (max-width: 768px) {
-            .content-wrapper { padding: 0 15px; }
-            .lesson-hero, .content-card { padding: 25px; }
-            .hero-title { font-size: 1.5em; }
-        }
-    </style>
+    <link rel="stylesheet" href="lesson.css">
 </head>
 <body>
 
@@ -562,6 +484,58 @@
         </div>
     </div>
 
+    <!-- MÚLTIPLA ESCOLHA -->
+    <div class="content-card exercise-card">
+        <h2>&#x2753; Verifique seu Conhecimento</h2>
+
+        <div class="mc-question" data-correct="b">
+            <p class="mc-q-text">Qual a diferen&ccedil;a principal entre um container Docker e uma m&aacute;quina virtual?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>Containers s&atilde;o mais lentos que VMs</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>Containers compartilham o kernel do host, VMs t&ecirc;m kernel pr&oacute;prio</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>Containers precisam de mais RAM que VMs</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>Containers n&atilde;o podem executar aplica&ccedil;&otilde;es web</span></div>
+            </div>
+            <div class="mc-explanation">&#x2713; Containers Docker compartilham o kernel do sistema operacional host, tornando-os muito mais leves e r&aacute;pidos que VMs completas.</div>
+        </div>
+        <hr class="mc-sep">
+
+        <div class="mc-question" data-correct="c">
+            <p class="mc-q-text">Qual comando baixa uma imagem do Docker Hub sem iniciar um container?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>docker run nginx</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>docker get nginx</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>docker pull nginx</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>docker fetch nginx</span></div>
+            </div>
+            <div class="mc-explanation">&#x2713; <code>docker pull</code> baixa a imagem. <code>docker run</code> baixa (se necess&aacute;rio) E inicia o container.</div>
+        </div>
+        <hr class="mc-sep">
+
+        <div class="mc-question" data-correct="a">
+            <p class="mc-q-text">Qual flag do comando <code>docker run</code> mapeia a porta 80 do container para a porta 8080 do host?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>-p 8080:80</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>-p 80:8080</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>--port 8080=80</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>-map 8080:80</span></div>
+            </div>
+            <div class="mc-explanation">&#x2713; A sintaxe &eacute; <code>-p porta_host:porta_container</code>. Ent&atilde;o <code>-p 8080:80</code> &rarr; acesse o Nginx em <code>http://localhost:8080</code>.</div>
+        </div>
+        <hr class="mc-sep">
+
+        <div class="mc-question" data-correct="d">
+            <p class="mc-q-text">O que &eacute; um Dockerfile?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>Um arquivo de logs dos containers</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>Um script de inicializa&ccedil;&atilde;o do Docker daemon</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>Um arquivo de configura&ccedil;&atilde;o do Docker Desktop</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>Um arquivo de instru&ccedil;&otilde;es para construir uma imagem Docker</span></div>
+            </div>
+            <div class="mc-explanation">&#x2713; O Dockerfile cont&eacute;m instru&ccedil;&otilde;es (FROM, RUN, COPY, CMD...) que definem como construir uma imagem. Use <code>docker build -t nome .</code> para gerar a imagem.</div>
+        </div>
+    </div>
+
     <div class="nav-footer">
         <a href="net07-webmin.html" class="nav-link">&#x2B05; Anterior: Webmin</a>
         <a href="index.html" class="nav-link">&#x1F3E0; Página Inicial &#x27A1;</a>
@@ -572,5 +546,6 @@
 <script src="slide-mode.js"></script>
 <script src="exercise-drag.js"></script>
 <script src="exercise-print.js"></script>
+<script src="exercise-mc.js"></script>
 </body>
 </html>

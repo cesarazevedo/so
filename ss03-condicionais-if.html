@@ -6,105 +6,7 @@
     <title>Aula 9 &mdash; Instru&ccedil;&otilde;es Condicionais (if)</title>
     <link rel="stylesheet" href="slide-mode.css">
     <link rel="stylesheet" href="exercise.css">
-    <style>
-        :root {
-            --primary:   #667eea;
-            --secondary: #764ba2;
-            --bg-light:  #f4f7fe;
-            --text-dark: #2d3748;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: var(--bg-light); color: var(--text-dark); line-height: 1.7; }
-
-        /* ── TOP BAR ── */
-        .top-bar { background: white; padding: 15px 30px; display: flex; align-items: center; gap: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 10; }
-        .back-btn { text-decoration: none; color: var(--primary); font-weight: 600; display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 8px; transition: background .3s; }
-        .back-btn:hover { background: rgba(102,126,234,.08); }
-        .page-badge { font-size: .8em; padding: 4px 12px; border-radius: 20px; background: rgba(102,126,234,.12); color: var(--primary); font-weight: 600; }
-
-        /* ── LAYOUT ── */
-        .content-wrapper { max-width: 800px; margin: 40px auto; padding: 0 30px; }
-        .lesson-hero { background: white; border-radius: 16px; padding: 40px; box-shadow: 0 5px 15px rgba(0,0,0,.05); margin-bottom: 30px; border-top: 4px solid var(--primary); }
-        .lesson-hero h1 { font-size: 2em; margin-bottom: 10px; color: var(--primary); }
-        .lesson-hero .subtitle { font-size: 1.05em; color: #718096; }
-        .content-card { background: white; border-radius: 16px; padding: 35px; box-shadow: 0 5px 15px rgba(0,0,0,.05); margin-bottom: 25px; }
-        .content-card h2 { font-size: 1.4em; color: var(--primary); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
-        .content-card h3 { font-size: 1.05em; color: #5a67d8; margin: 20px 0 10px; }
-        .content-card p { margin-bottom: 15px; text-align: justify; }
-        ul, ol { margin: 10px 0 15px 25px; }
-        li { margin-bottom: 8px; }
-
-        /* ── CAIXAS ── */
-        .highlight-box { background: linear-gradient(135deg,rgba(102,126,234,.05),rgba(118,75,162,.06)); border-left: 4px solid var(--primary); padding: 20px 25px; border-radius: 0 12px 12px 0; margin: 20px 0; }
-        .highlight-box p { margin-bottom: 0; font-style: italic; }
-        .alert-box { background: #fff8e1; border-left: 4px solid #f59e0b; padding: 18px 22px; border-radius: 0 12px 12px 0; margin: 20px 0; }
-        .alert-box p { margin: 0; color: #78350f; font-size: .93em; }
-        .tip-box { background: #f0fdf4; border-left: 4px solid #16a34a; padding: 18px 22px; border-radius: 0 12px 12px 0; margin: 20px 0; }
-        .tip-box p { margin: 0; color: #14532d; font-size: .93em; }
-
-        /* ── TERMINAIS ── */
-        .terminal { background: #1a202c; border-radius: 12px; overflow: hidden; margin: 16px 0; box-shadow: 0 4px 20px rgba(0,0,0,.3); }
-        .terminal-bar { background: #2d3748; padding: 8px 16px; display: flex; align-items: center; gap: 8px; }
-        .term-dot { width: 12px; height: 12px; border-radius: 50%; }
-        .term-dot.red    { background: #fc8181; }
-        .term-dot.yellow { background: #f6e05e; }
-        .term-dot.green  { background: #68d391; }
-        .term-title { font-size: .75em; color: #718096; margin-left: 8px; font-family: 'Consolas', monospace; }
-        .terminal-body { padding: 20px 24px; font-family: 'Courier New','Consolas',monospace; font-size: .92em; line-height: 2; color: #a0aec0; white-space: pre-wrap; }
-        .t-prompt  { color: #63b3ed; }
-        .t-root    { color: #fc8181; }
-        .t-cmd     { color: #38ef7d; }
-        .t-flag    { color: #f6e05e; }
-        .t-arg     { color: #90cdf4; }
-        .t-out     { color: #a0aec0; }
-        .t-comment { color: #4a5568; font-style: italic; }
-        .t-hl      { color: #f6e05e; font-weight: bold; }
-        .t-ok      { color: #38ef7d; font-weight: bold; }
-        /* Shell script específico */
-        .t-kw      { color: #f687b3; font-weight: bold; }   /* if then else fi */
-        .t-str     { color: #68d391; }                       /* "strings" */
-        .t-var     { color: #fbd38d; }                       /* $VARIAVEL */
-        .t-shebang { color: #f687b3; }                       /* #!/bin/bash */
-
-        /* ── TABELA ── */
-        .cmp-table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: .88em; }
-        .cmp-table th { background: var(--primary); color: white; padding: 10px 14px; text-align: left; }
-        .cmp-table th:first-child { border-radius: 6px 0 0 0; }
-        .cmp-table th:last-child  { border-radius: 0 6px 0 0; }
-        .cmp-table td { padding: 9px 14px; border-bottom: 1px solid #e5e7eb; }
-        .cmp-table tr:nth-child(even) td { background: #f8f7ff; }
-        .cmp-table td code { font-family: 'Consolas',monospace; background: #1e293b; color: #a78bfa; padding: 1px 6px; border-radius: 4px; font-size: .88em; }
-
-        /* ── GRID RESUMO ── */
-        .cmd-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(140px,1fr)); gap: 12px; margin: 16px 0; }
-        .cmd-card { background: #f8f7ff; border-radius: 10px; padding: 16px; text-align: center; border-top: 3px solid var(--primary); }
-        .cmd-card .cmd { font-family: 'Consolas',monospace; font-size: .9em; color: var(--primary); font-weight: 700; display: block; margin-bottom: 6px; }
-        .cmd-card strong { display: block; font-size: .82em; color: #1e293b; margin-bottom: 4px; }
-        .cmd-card span { font-size: .76em; color: #475569; }
-
-        /* ── DIAGRAMA FLUXO ── */
-        .flow-if { display: flex; flex-direction: column; align-items: center; gap: 6px; margin: 16px 0; }
-        .flow-diamond { background: #fef3c7; border: 2px solid #f59e0b; border-radius: 8px; padding: 12px 24px; text-align: center; font-weight: 600; font-size: .95em; }
-        .flow-branch { display: flex; gap: 40px; align-items: flex-start; justify-content: center; }
-        .flow-branch-item { display: flex; flex-direction: column; align-items: center; gap: 6px; }
-        .flow-action-true  { background: #d1fae5; border: 2px solid #10b981; border-radius: 8px; padding: 10px 20px; font-size: .88em; text-align: center; }
-        .flow-action-false { background: #fee2e2; border: 2px solid #ef4444; border-radius: 8px; padding: 10px 20px; font-size: .88em; text-align: center; }
-        .flow-arrow { font-size: 1.2em; color: #718096; }
-        .flow-label { font-size: .78em; color: #718096; }
-
-        /* ── NAV ── */
-        .nav-footer { display: flex; justify-content: space-between; margin-top: 40px; padding-bottom: 40px; }
-        .nav-link { text-decoration: none; color: var(--primary); font-weight: 600; padding: 12px 24px; border-radius: 10px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,.05); transition: all .3s; }
-        .nav-link:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.1); }
-
-        @media (max-width: 768px) {
-            .content-wrapper { padding: 0 15px; }
-            .lesson-hero, .content-card { padding: 25px; }
-            .lesson-hero h1 { font-size: 1.5em; }
-            .flow-branch { gap: 20px; }
-        }
-    </style>
+    <link rel="stylesheet" href="lesson.css">
 </head>
 <body>
 
@@ -683,6 +585,58 @@
         </div>
     </div>
 
+    <!-- MÚLTIPLA ESCOLHA -->
+    <div class="content-card exercise-card">
+        <h2>&#x2753; Verifique seu Conhecimento</h2>
+
+        <div class="mc-question" data-correct="b">
+            <p class="mc-q-text">Qual a sintaxe correta de um if em Bash?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>if (condi&ccedil;&atilde;o) { comandos }</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>if [ condi&ccedil;&atilde;o ]; then comandos; fi</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>if condi&ccedil;&atilde;o: comandos end</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>if { condi&ccedil;&atilde;o } do comandos done</span></div>
+            </div>
+            <div class="mc-explanation">&#x2713; Em Bash: <code>if [ condi&ccedil;&atilde;o ]; then ... elif [ ... ]; then ... else ... fi</code>. Note os espa&ccedil;os dentro dos colchetes!</div>
+        </div>
+        <hr class="mc-sep">
+
+        <div class="mc-question" data-correct="c">
+            <p class="mc-q-text">Qual operador testa se dois n&uacute;meros s&atilde;o iguais em Bash?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>==</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>=</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>-eq</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>-is</span></div>
+            </div>
+            <div class="mc-explanation">&#x2713; Para n&uacute;meros: <code>-eq</code> (igual), <code>-ne</code> (diferente), <code>-lt</code> (menor), <code>-gt</code> (maior). Para strings: <code>==</code> e <code>!=</code>.</div>
+        </div>
+        <hr class="mc-sep">
+
+        <div class="mc-question" data-correct="a">
+            <p class="mc-q-text">Qual flag testa se um arquivo existe e &eacute; um diret&oacute;rio?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>-d</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>-f</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>-e</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>-r</span></div>
+            </div>
+            <div class="mc-explanation">&#x2713; <code>-d</code> = &eacute; diret&oacute;rio, <code>-f</code> = &eacute; arquivo regular, <code>-e</code> = existe (qualquer tipo), <code>-r</code> = tem permiss&atilde;o de leitura.</div>
+        </div>
+        <hr class="mc-sep">
+
+        <div class="mc-question" data-correct="d">
+            <p class="mc-q-text">Como combinar duas condi&ccedil;&otilde;es com E l&oacute;gico (ambas devem ser verdadeiras)?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>if [ cond1 ] OR [ cond2 ]</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>if [ cond1 ] AND [ cond2 ]</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>if [ cond1 | cond2 ]</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>if [ cond1 ] &amp;&amp; [ cond2 ]</span></div>
+            </div>
+            <div class="mc-explanation">&#x2713; Use <code>&amp;&amp;</code> para E l&oacute;gico e <code>||</code> para OU l&oacute;gico entre condi&ccedil;&otilde;es. Ou use <code>[[ cond1 &amp;&amp; cond2 ]]</code> em duplos colchetes.</div>
+        </div>
+    </div>
+
     <div class="nav-footer">
         <a href="ss02-variaveis-interacao.html" class="nav-link">&#x2B05; Anterior: Vari&aacute;veis e Intera&ccedil;&atilde;o</a>
         <a href="ss04-estrutura-case.html" class="nav-link">Pr&oacute;xima: Estrutura case &#x27A1;</a>
@@ -693,5 +647,6 @@
 <script src="slide-mode.js"></script>
 <script src="exercise-drag.js"></script>
 <script src="exercise-print.js"></script>
+<script src="exercise-mc.js"></script>
 </body>
 </html>

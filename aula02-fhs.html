@@ -6,75 +6,7 @@
     <title>Aula 1.2 — Arquitetura e FHS</title>
     <link rel="stylesheet" href="slide-mode.css">
     <link rel="stylesheet" href="exercise.css">
-    <style>
-        :root {
-            --primary:   #667eea;
-            --secondary: #764ba2;
-            --bg-light:  #f4f7fe;
-            --text-dark: #2d3748;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: var(--bg-light); color: var(--text-dark); line-height: 1.7; }
-        .top-bar { background: white; padding: 15px 30px; display: flex; align-items: center; gap: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 10; }
-        .back-btn { text-decoration: none; color: var(--primary); font-weight: 600; display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 8px; transition: background .3s; }
-        .back-btn:hover { background: rgba(102,126,234,.08); }
-        .page-badge { font-size: .8em; padding: 4px 12px; border-radius: 20px; background: rgba(102,126,234,.12); color: var(--primary); font-weight: 600; }
-        .content-wrapper { max-width: 800px; margin: 40px auto; padding: 0 30px; }
-        .lesson-hero { background: white; border-radius: 16px; padding: 40px; box-shadow: 0 5px 15px rgba(0,0,0,.05); margin-bottom: 30px; border-top: 4px solid var(--primary); }
-        .lesson-hero h1 { font-size: 2em; margin-bottom: 10px; color: var(--primary); }
-        .lesson-hero .subtitle { font-size: 1.05em; color: #718096; }
-        .content-card { background: white; border-radius: 16px; padding: 35px; box-shadow: 0 5px 15px rgba(0,0,0,.05); margin-bottom: 25px; }
-        .content-card h2 { font-size: 1.4em; color: var(--primary); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
-        .content-card h3 { font-size: 1.05em; color: #4a5568; margin: 20px 0 10px; }
-        .content-card p { margin-bottom: 15px; text-align: justify; }
-        ul, ol { margin: 10px 0 15px 25px; }
-        li { margin-bottom: 8px; }
-        .highlight-box { background: linear-gradient(135deg,rgba(102,126,234,.05),rgba(118,75,162,.06)); border-left: 4px solid var(--primary); padding: 20px 25px; border-radius: 0 12px 12px 0; margin: 20px 0; }
-        .highlight-box p { margin-bottom: 0; font-style: italic; }
-        .alert-box { background: #fff8e1; border-left: 4px solid #f59e0b; padding: 18px 22px; border-radius: 0 12px 12px 0; margin: 20px 0; }
-        .alert-box p { margin: 0; color: #78350f; font-size: .93em; }
-        .tip-box { background: #f0fdf4; border-left: 4px solid #16a34a; padding: 18px 22px; border-radius: 0 12px 12px 0; margin: 20px 0; }
-        .tip-box p { margin: 0; color: #14532d; font-size: .93em; }
-        .kbd-sm { background: #1e293b; color: #e2e8f0; border-radius: 4px; padding: 2px 6px; font-family:'Consolas',monospace; font-size:.82em; white-space:nowrap; }
-        .terminal { background: #1a202c; border-radius: 12px; overflow: hidden; margin: 16px 0; box-shadow: 0 4px 20px rgba(0,0,0,.3); }
-        .terminal-bar { background: #2d3748; padding: 8px 16px; display: flex; align-items: center; gap: 8px; }
-        .term-dot { width: 12px; height: 12px; border-radius: 50%; }
-        .term-dot.red    { background: #fc8181; }
-        .term-dot.yellow { background: #f6e05e; }
-        .term-dot.green  { background: #68d391; }
-        .term-title { font-size: .75em; color: #718096; margin-left: 8px; font-family: 'Consolas', monospace; }
-        .terminal-body { padding: 20px 24px; font-family: 'Courier New','Consolas',monospace; font-size: .92em; line-height: 2; color: #a0aec0; white-space: pre-wrap; }
-        .t-prompt  { color: #63b3ed; }
-        .t-root    { color: #fc8181; }
-        .t-cmd     { color: #38ef7d; }
-        .t-flag    { color: #f6e05e; }
-        .t-path    { color: #fc8181; }
-        .t-arg     { color: #90cdf4; }
-        .t-out     { color: #a0aec0; }
-        .t-comment { color: #4a5568; font-style: italic; }
-        .t-string  { color: #68d391; }
-        .t-var     { color: #b794f4; }
-        .t-shebang { color: #f687b3; }
-        .t-ok      { color: #38ef7d; font-weight: bold; }
-        .t-err     { color: #fc8181; font-weight: bold; }
-        .dir-table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: .9em; }
-        .dir-table th { background: var(--primary); color: white; padding: 10px 14px; text-align: left; }
-        .dir-table th:first-child { border-radius: 8px 0 0 0; }
-        .dir-table th:last-child  { border-radius: 0 8px 0 0; }
-        .dir-table td { padding: 9px 14px; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
-        .dir-table tr:nth-child(even) td { background: #f8fafc; }
-        .dir-table td code { font-family: 'Consolas',monospace; background: #1e293b; color: #63b3ed; padding: 1px 6px; border-radius: 4px; font-size: .9em; }
-        .dir-table td:first-child { font-family: 'Consolas',monospace; color: var(--primary); font-weight: 700; white-space: nowrap; }
-        .dir-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 16px 0; }
-        .dir-card { background: #f8fafc; border-radius: 12px; padding: 16px; border-left: 4px solid var(--primary); }
-        .dir-card .dc-dir { font-family: 'Consolas',monospace; font-weight: 700; color: var(--primary); font-size: 1em; margin-bottom: 6px; }
-        .dir-card .dc-label { font-size: .85em; font-weight: 600; color: #2d3748; margin-bottom: 4px; }
-        .dir-card .dc-desc { font-size: .8em; color: #718096; }
-        .nav-footer { display: flex; justify-content: space-between; margin-top: 40px; padding-bottom: 40px; }
-        .nav-link { text-decoration: none; color: var(--primary); font-weight: 600; padding: 12px 24px; border-radius: 10px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,.05); transition: all .3s; }
-        .nav-link:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.1); }
-        @media (max-width: 768px) { .content-wrapper { padding: 0 15px; } .lesson-hero, .content-card { padding: 25px; } .lesson-hero h1 { font-size: 1.5em; } .dir-table { font-size: .8em; } }
-    </style>
+    <link rel="stylesheet" href="lesson.css">
 </head>
 <body>
 

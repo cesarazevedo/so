@@ -6,103 +6,7 @@
     <title>Aula 12 &mdash; Loops WHILE</title>
     <link rel="stylesheet" href="slide-mode.css">
     <link rel="stylesheet" href="exercise.css">
-    <style>
-        :root {
-            --primary:   #667eea;
-            --secondary: #764ba2;
-            --bg-light:  #f4f7fe;
-            --text-dark: #2d3748;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: var(--bg-light); color: var(--text-dark); line-height: 1.7; }
-
-        /* ── TOP BAR ── */
-        .top-bar { background: white; padding: 15px 30px; display: flex; align-items: center; gap: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 10; }
-        .back-btn { text-decoration: none; color: var(--primary); font-weight: 600; display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 8px; transition: background .3s; }
-        .back-btn:hover { background: rgba(102,126,234,.08); }
-        .page-badge { font-size: .8em; padding: 4px 12px; border-radius: 20px; background: rgba(102,126,234,.12); color: var(--primary); font-weight: 600; }
-
-        /* ── LAYOUT ── */
-        .content-wrapper { max-width: 800px; margin: 40px auto; padding: 0 30px; }
-        .lesson-hero { background: white; border-radius: 16px; padding: 40px; box-shadow: 0 5px 15px rgba(0,0,0,.05); margin-bottom: 30px; border-top: 4px solid var(--primary); }
-        .lesson-hero h1 { font-size: 2em; margin-bottom: 10px; color: var(--primary); }
-        .lesson-hero .subtitle { font-size: 1.05em; color: #718096; }
-        .content-card { background: white; border-radius: 16px; padding: 35px; box-shadow: 0 5px 15px rgba(0,0,0,.05); margin-bottom: 25px; }
-        .content-card h2 { font-size: 1.4em; color: var(--primary); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
-        .content-card h3 { font-size: 1.05em; color: #5a67d8; margin: 20px 0 10px; }
-        .content-card p { margin-bottom: 15px; text-align: justify; }
-        ul, ol { margin: 10px 0 15px 25px; }
-        li { margin-bottom: 8px; }
-
-        /* ── CAIXAS ── */
-        .highlight-box { background: linear-gradient(135deg,rgba(102,126,234,.05),rgba(118,75,162,.06)); border-left: 4px solid var(--primary); padding: 20px 25px; border-radius: 0 12px 12px 0; margin: 20px 0; }
-        .highlight-box p { margin-bottom: 0; font-style: italic; }
-        .alert-box { background: #fff8e1; border-left: 4px solid #f59e0b; padding: 18px 22px; border-radius: 0 12px 12px 0; margin: 20px 0; }
-        .alert-box p { margin: 0; color: #78350f; font-size: .93em; }
-        .tip-box { background: #f0fdf4; border-left: 4px solid #16a34a; padding: 18px 22px; border-radius: 0 12px 12px 0; margin: 20px 0; }
-        .tip-box p { margin: 0; color: #14532d; font-size: .93em; }
-
-        /* ── TERMINAIS ── */
-        .terminal { background: #1a202c; border-radius: 12px; overflow: hidden; margin: 16px 0; box-shadow: 0 4px 20px rgba(0,0,0,.3); }
-        .terminal-bar { background: #2d3748; padding: 8px 16px; display: flex; align-items: center; gap: 8px; }
-        .term-dot { width: 12px; height: 12px; border-radius: 50%; }
-        .term-dot.red    { background: #fc8181; }
-        .term-dot.yellow { background: #f6e05e; }
-        .term-dot.green  { background: #68d391; }
-        .term-title { font-size: .75em; color: #718096; margin-left: 8px; font-family: 'Consolas', monospace; }
-        .terminal-body { padding: 20px 24px; font-family: 'Courier New','Consolas',monospace; font-size: .92em; line-height: 2; color: #a0aec0; white-space: pre-wrap; }
-        .t-prompt  { color: #63b3ed; }
-        .t-cmd     { color: #38ef7d; }
-        .t-flag    { color: #f6e05e; }
-        .t-arg     { color: #90cdf4; }
-        .t-out     { color: #a0aec0; }
-        .t-comment { color: #4a5568; font-style: italic; }
-        .t-ok      { color: #38ef7d; font-weight: bold; }
-        .t-kw      { color: #f687b3; font-weight: bold; }
-        .t-str     { color: #68d391; }
-        .t-var     { color: #fbd38d; }
-        .t-shebang { color: #f687b3; }
-
-        /* ── TABELA ── */
-        .cmp-table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: .88em; }
-        .cmp-table th { background: var(--primary); color: white; padding: 10px 14px; text-align: left; }
-        .cmp-table th:first-child { border-radius: 6px 0 0 0; }
-        .cmp-table th:last-child  { border-radius: 0 6px 0 0; }
-        .cmp-table td { padding: 9px 14px; border-bottom: 1px solid #e5e7eb; }
-        .cmp-table tr:nth-child(even) td { background: #f8f7ff; }
-        .cmp-table td code { font-family: 'Consolas',monospace; background: #1e293b; color: #a78bfa; padding: 1px 6px; border-radius: 4px; font-size: .88em; }
-
-        /* ── GRID RESUMO ── */
-        .cmd-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(140px,1fr)); gap: 12px; margin: 16px 0; }
-        .cmd-card { background: #f8f7ff; border-radius: 10px; padding: 16px; text-align: center; border-top: 3px solid var(--primary); }
-        .cmd-card .cmd { font-family: 'Consolas',monospace; font-size: .82em; color: var(--primary); font-weight: 700; display: block; margin-bottom: 6px; }
-        .cmd-card strong { display: block; font-size: .82em; color: #1e293b; margin-bottom: 4px; }
-        .cmd-card span { font-size: .76em; color: #475569; }
-
-        /* ── COMPARAÇÃO ── */
-        .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
-        .compare-box { border-radius: 12px; padding: 18px; }
-        .compare-box.blue  { background: #f4f7fe; border-top: 3px solid var(--primary); }
-        .compare-box.green { background: #f0fdf4; border-top: 3px solid #16a34a; }
-        .compare-box h4 { font-size: .95em; margin-bottom: 10px; }
-        .compare-box.blue  h4 { color: #1e40af; }
-        .compare-box.green h4 { color: #065f46; }
-        .compare-box ul { margin: 0 0 0 18px; }
-        .compare-box li { font-size: .9em; margin-bottom: 5px; }
-
-        /* ── NAV ── */
-        .nav-footer { display: flex; justify-content: space-between; margin-top: 40px; padding-bottom: 40px; }
-        .nav-link { text-decoration: none; color: var(--primary); font-weight: 600; padding: 12px 24px; border-radius: 10px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,.05); transition: all .3s; }
-        .nav-link:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.1); }
-
-        @media (max-width: 768px) {
-            .content-wrapper { padding: 0 15px; }
-            .lesson-hero, .content-card { padding: 25px; }
-            .lesson-hero h1 { font-size: 1.5em; }
-            .compare-grid { grid-template-columns: 1fr; }
-        }
-    </style>
+    <link rel="stylesheet" href="lesson.css">
 </head>
 <body>
 
@@ -698,6 +602,55 @@
         </div>
     </div>
 
+    <!-- MÚLTIPLA ESCOLHA -->
+    <div class="content-card exercise-card">
+        <h2>&#x2753; Verifique seu Conhecimento</h2>
+
+        <div class="mc-question" data-correct="b">
+            <p class="mc-q-text">Qual a diferen&ccedil;a entre while e until em Bash?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>while executa uma vez, until executa v&aacute;rias</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>while executa enquanto a condi&ccedil;&atilde;o &eacute; verdadeira; until executa enquanto &eacute; falsa</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>until &eacute; mais r&aacute;pido que while</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>N&atilde;o h&aacute; diferen&ccedil;a pr&aacute;tica entre eles</span></div>
+            </div>
+            <div class="mc-explanation">&#x2713; <code>while [ condi&ccedil;&atilde;o ]</code>: continua enquanto verdadeiro. <code>until [ condi&ccedil;&atilde;o ]</code>: continua enquanto falso (para quando torna-se verdadeiro).</div>
+        </div>
+        <hr class="mc-sep">
+        <div class="mc-question" data-correct="c">
+            <p class="mc-q-text">Como criar um loop infinito em Bash com while?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>while (forever); do comandos; done</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>while loop; do comandos; done</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>while true; do comandos; done</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>while :infinite:; do comandos; done</span></div>
+            </div>
+            <div class="mc-explanation">&#x2713; <code>while true</code> ou <code>while :</code> criam loops infinitos. Sempre inclua uma condi&ccedil;&atilde;o de sa&iacute;da com <code>break</code> para n&atilde;o travar o sistema.</div>
+        </div>
+        <hr class="mc-sep">
+        <div class="mc-question" data-correct="a">
+            <p class="mc-q-text">O que faz <code>read -t 5 resposta</code> em um script?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>L&ecirc; entrada com timeout de 5 segundos</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>Repete a leitura 5 vezes</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>L&ecirc; no m&aacute;ximo 5 caracteres</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>Aguarda 5 segundos antes de ler</span></div>
+            </div>
+            <div class="mc-explanation">&#x2713; <code>read -t N</code> define um timeout: se o usu&aacute;rio n&atilde;o digitar em N segundos, o comando retorna com c&oacute;digo de erro. &Uacute;til em scripts de monitoramento.</div>
+        </div>
+        <hr class="mc-sep">
+        <div class="mc-question" data-correct="d">
+            <p class="mc-q-text">Qual comando Bash monitora continuamente o uso de disco a cada 5 segundos com while?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>while disk; do df -h; wait 5; done</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>while monitor; do check-disk; sleep 5; done</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>loop disk-monitor --interval 5</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>while true; do df -h; sleep 5; done</span></div>
+            </div>
+            <div class="mc-explanation">&#x2713; Padr&atilde;o de monitoramento: <code>while true; do comando; sleep N; done</code>. Ctrl+C para interromper. Redirecione para log com <code>&gt;&gt; /var/log/monitor.log</code>.</div>
+        </div>
+    </div>
+
     <div class="nav-footer">
         <a href="ss05-loops-for.html" class="nav-link">&#x2B05; Anterior: Loops for</a>
         <a href="ss07-funcoes.html" class="nav-link">Pr&oacute;xima: Fun&ccedil;&otilde;es &#x27A1;</a>
@@ -708,5 +661,6 @@
 <script src="slide-mode.js"></script>
 <script src="exercise-drag.js"></script>
 <script src="exercise-print.js"></script>
+<script src="exercise-mc.js"></script>
 </body>
 </html>

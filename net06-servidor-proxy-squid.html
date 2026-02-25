@@ -6,90 +6,7 @@
     <title>Servidor Proxy Squid — SO2</title>
     <link rel="stylesheet" href="slide-mode.css">
     <link rel="stylesheet" href="exercise.css">
-    <style>
-        :root {
-            --primary:   #667eea;
-            --secondary: #764ba2;
-            --bg-light:  #f4f7fe;
-            --text-dark: #2d3748;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: var(--bg-light); color: var(--text-dark); line-height: 1.7; }
-
-        /* ── TOP BAR ── */
-        .top-bar { background: white; padding: 15px 30px; display: flex; align-items: center; gap: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 10; }
-        .back-btn { text-decoration: none; color: var(--primary); font-weight: 600; display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 8px; transition: background .3s; }
-        .back-btn:hover { background: rgba(102,126,234,.08); }
-        .page-badge { font-size: .8em; padding: 4px 12px; border-radius: 20px; background: rgba(102,126,234,.12); color: var(--primary); font-weight: 600; }
-        .slide-toggle-btn { margin-left: auto; padding: 8px 18px; border: 2px solid var(--primary); background: transparent; color: var(--primary); font-weight: 600; font-size: .9em; border-radius: 8px; cursor: pointer; transition: all .3s; }
-        .slide-toggle-btn:hover { background: var(--primary); color: white; }
-
-        /* ── LAYOUT ── */
-        .content-wrapper { max-width: 800px; margin: 40px auto; padding: 0 30px; }
-        .lesson-hero { background: white; border-radius: 16px; padding: 40px; box-shadow: 0 5px 15px rgba(0,0,0,.05); margin-bottom: 30px; border-top: 4px solid var(--primary); }
-        .hero-badge { display: inline-block; background: var(--primary); color: white; padding: 3px 12px; border-radius: 20px; font-size: .75em; font-weight: 700; letter-spacing: .04em; margin-bottom: 10px; text-transform: uppercase; }
-        .hero-title { font-size: 2em; color: var(--primary); margin-bottom: 8px; }
-        .hero-sub { font-size: 1.05em; color: #718096; }
-        .content-card { background: white; border-radius: 16px; padding: 35px; box-shadow: 0 5px 15px rgba(0,0,0,.05); margin-bottom: 25px; }
-        .content-card h2, .card-title { font-size: 1.4em; color: var(--primary); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
-        .content-card h3 { font-size: 1.05em; color: #5a67d8; margin: 20px 0 10px; }
-        .content-card p { margin-bottom: 15px; text-align: justify; }
-        ul, ol { margin: 10px 0 15px 25px; }
-        li { margin-bottom: 8px; }
-
-        /* ── CAIXAS ── */
-        .highlight-box { background: linear-gradient(135deg,rgba(102,126,234,.05),rgba(118,75,162,.06)); border-left: 4px solid var(--primary); padding: 20px 25px; border-radius: 0 12px 12px 0; margin: 20px 0; }
-        .alert-box { background: #fff8e1; border-left: 4px solid #f59e0b; padding: 18px 22px; border-radius: 0 12px 12px 0; margin: 20px 0; }
-        .tip-box { background: #f0fdf4; border-left: 4px solid #16a34a; padding: 18px 22px; border-radius: 0 12px 12px 0; margin: 20px 0; }
-
-        /* ── TERMINAIS ── */
-        .terminal-block { background: #1a202c; border-radius: 12px; overflow: hidden; margin: 16px 0; box-shadow: 0 4px 20px rgba(0,0,0,.3); }
-        .terminal-header { background: #2d3748; padding: 8px 16px; font-size: .78em; color: #a0aec0; font-family: 'Consolas', monospace; }
-        .terminal-body { padding: 20px 24px; font-family: 'Courier New','Consolas',monospace; font-size: .92em; line-height: 2; color: #a0aec0; white-space: pre-wrap; }
-        .t-prompt  { color: #63b3ed; }
-        .t-cmd     { color: #38ef7d; }
-        .t-flag    { color: #f6e05e; }
-        .t-out     { color: #a0aec0; }
-        .t-comment { color: #4a5568; font-style: italic; }
-        .t-kw      { color: #f687b3; font-weight: bold; }
-        .t-str     { color: #68d391; }
-        .t-var     { color: #fbd38d; }
-
-        /* ── TABELA ── */
-        .cmp-table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: .88em; }
-        .cmp-table th { background: var(--primary); color: white; padding: 10px 14px; text-align: left; }
-        .cmp-table th:first-child { border-radius: 6px 0 0 0; }
-        .cmp-table th:last-child  { border-radius: 0 6px 0 0; }
-        .cmp-table td { padding: 9px 14px; border-bottom: 1px solid #e5e7eb; }
-        .cmp-table tr:nth-child(even) td { background: #f8f7ff; }
-        .cmp-table td code { font-family: 'Consolas',monospace; background: #1e293b; color: #a78bfa; padding: 1px 6px; border-radius: 4px; font-size: .88em; }
-
-        /* ── GRID ── */
-        .cmd-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(140px,1fr)); gap: 12px; margin: 16px 0; }
-        .cmd-card { background: #f8f7ff; border-radius: 10px; padding: 16px; text-align: center; border-top: 3px solid var(--primary); }
-        .cmd-card .cmd-name { font-family: 'Consolas',monospace; font-size: .85em; color: var(--primary); font-weight: 700; display: block; margin-bottom: 6px; }
-        .cmd-card .cmd-desc { font-size: .78em; color: #475569; line-height: 1.5; }
-
-        /* ── FLUXO ── */
-        .flow-steps { display: flex; flex-direction: column; gap: 8px; margin: 16px 0; }
-        .flow-step { display: flex; align-items: flex-start; gap: 14px; background: #f8f7ff; border-radius: 10px; padding: 14px 18px; }
-        .flow-num { background: var(--primary); color: white; border-radius: 50%; width: 26px; height: 26px; line-height: 26px; text-align: center; font-size: .8em; font-weight: 700; flex-shrink: 0; }
-
-        /* ── PASSO BADGE ── */
-        .step-badge { display: inline-block; background: var(--primary); color: white; border-radius: 50%; width: 28px; height: 28px; line-height: 28px; text-align: center; font-size: .85em; font-weight: 700; margin-right: 8px; flex-shrink: 0; }
-
-        /* ── NAV ── */
-        .nav-footer { display: flex; justify-content: space-between; margin-top: 40px; padding-bottom: 40px; }
-        .nav-link { text-decoration: none; color: var(--primary); font-weight: 600; padding: 12px 24px; border-radius: 10px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,.05); transition: all .3s; }
-        .nav-link:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.1); }
-
-        @media (max-width: 768px) {
-            .content-wrapper { padding: 0 15px; }
-            .lesson-hero, .content-card { padding: 25px; }
-            .hero-title { font-size: 1.5em; }
-        }
-    </style>
+    <link rel="stylesheet" href="lesson.css">
 </head>
 <body>
 
@@ -583,6 +500,58 @@
         </div>
     </div>
 
+    <!-- MÚLTIPLA ESCOLHA -->
+    <div class="content-card exercise-card">
+        <h2>&#x2753; Verifique seu Conhecimento</h2>
+
+        <div class="mc-question" data-correct="b">
+            <p class="mc-q-text">Qual a principal fun&ccedil;&atilde;o de um servidor proxy?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>Distribuir endere&ccedil;os IP na rede</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>Intermediar e controlar o acesso &agrave; internet</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>Resolver nomes de dom&iacute;nio</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>Compartilhar arquivos entre computadores</span></div>
+            </div>
+            <div class="mc-explanation">&#x2713; O proxy age como intermedi&aacute;rio: clientes conectam ao proxy, que faz as requisi&ccedil;&otilde;es em seu nome, filtrando e cacheando o tr&aacute;fego.</div>
+        </div>
+        <hr class="mc-sep">
+
+        <div class="mc-question" data-correct="c">
+            <p class="mc-q-text">Qual porta padr&atilde;o usa o Squid?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>80</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>8080</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>3128</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>443</span></div>
+            </div>
+            <div class="mc-explanation">&#x2713; O Squid escuta por padr&atilde;o na porta <strong>3128</strong>. Configure os clientes para usar essa porta como proxy HTTP.</div>
+        </div>
+        <hr class="mc-sep">
+
+        <div class="mc-question" data-correct="a">
+            <p class="mc-q-text">Qual diretiva no squid.conf bloqueia acesso a um site espec&iacute;fico?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>acl bloqueados dstdomain .site.com / http_access deny bloqueados</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>block domain .site.com</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>deny url .site.com</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>restrict access to .site.com</span></div>
+            </div>
+            <div class="mc-explanation">&#x2713; Define uma ACL com <code>acl bloqueados dstdomain .site.com</code> e ent&atilde;o aplica <code>http_access deny bloqueados</code> antes das regras de allow.</div>
+        </div>
+        <hr class="mc-sep">
+
+        <div class="mc-question" data-correct="d">
+            <p class="mc-q-text">Qual comando verifica erros de configura&ccedil;&atilde;o no Squid antes de reinici&aacute;-lo?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>squid --test</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>squid -c check</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>squidcheck -f /etc/squid/squid.conf</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>squid -k parse</span></div>
+            </div>
+            <div class="mc-explanation">&#x2713; <code>squid -k parse</code> valida o squid.conf e lista erros de sintaxe sem reiniciar o servi&ccedil;o.</div>
+        </div>
+    </div>
+
     <div class="nav-footer">
         <a href="net05-servidor-dns-bind9.html" class="nav-link">&#x2B05; Anterior: Servidor DNS</a>
         <a href="net07-webmin.html" class="nav-link">Pr&oacute;xima: Webmin &#x27A1;</a>
@@ -593,5 +562,6 @@
 <script src="slide-mode.js"></script>
 <script src="exercise-drag.js"></script>
 <script src="exercise-print.js"></script>
+<script src="exercise-mc.js"></script>
 </body>
 </html>

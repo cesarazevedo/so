@@ -3,758 +3,438 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aula - Journalctl: Logs do Sistema</title>
-    <style>
-        :root {
-            --primary: #667eea;
-            --secondary: #764ba2;
-            --bg-light: #f4f7fe;
-            --text-dark: #2d3748;
-            --text-light: #718096;
-            --accent-green: #38ef7d;
-            --accent-red: #ff758c;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-light);
-            color: var(--text-dark);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        .classroom-header {
-            background: white;
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 1000;
-        }
-        .back-btn {
-            text-decoration: none;
-            color: var(--text-dark);
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            border-radius: 50px;
-            transition: all 0.2s;
-            background: #f0f2f5;
-        }
-        .back-btn:hover { background: #e2e8f0; color: var(--primary); }
-        .lesson-info h1 { font-size: 1.1em; margin: 0; color: var(--text-dark); }
-        .lesson-info span { font-size: 0.85em; color: var(--text-light); }
-        .slide-counter {
-            background: var(--primary);
-            color: white;
-            padding: 5px 12px;
-            border-radius: 12px;
-            font-size: 0.9em;
-            font-weight: bold;
-        }
-        .viewer-container {
-            margin-top: 80px;
-            padding: 20px;
-            padding-bottom: 100px;
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-        }
-        .slide-card {
-            background: white;
-            width: 100%;
-            max-width: 1000px;
-            min-height: 80vh;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            padding: 50px;
-            position: relative;
-            display: none;
-            flex-direction: column;
-            animation: fadeIn 0.4s ease;
-        }
-        .slide-card.active { display: flex; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        h1.slide-title {
-            font-size: 2.8em;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        h2.slide-subtitle {
-            font-size: 2.2em;
-            color: var(--text-dark);
-            border-bottom: 3px solid #e2e8f0;
-            padding-bottom: 15px;
-            margin-bottom: 30px;
-        }
-        h3 { color: var(--primary); margin: 20px 0 10px; font-size: 1.5em; }
-        .content-box {
-            padding: 20px;
-            border-radius: 12px;
-            margin: 15px 0;
-            border-left: 5px solid;
-            background: #f8fafc;
-        }
-        .box-highlight { border-color: #f39c12; background: #fffaf0; }
-        .box-info { border-color: var(--primary); background: #f4f7fe; }
-        .box-success { border-color: var(--accent-green); background: #f0fdf4; }
-        .box-warning { border-color: var(--accent-red); background: #fff5f5; }
-        .box-terminal { 
-            background: #1a202c; 
-            color: #38ef7d; 
-            font-family: 'Courier New', monospace; 
-            border-left: 5px solid #38ef7d;
-            padding: 25px;
-            border-radius: 12px;
-            font-size: 1.1em;
-            line-height: 1.8;
-        }
-        .box-terminal .prompt { color: #63b3ed; }
-        .box-terminal .command { color: #38ef7d; }
-        .box-terminal .output { color: #a0aec0; }
-        .box-terminal .comment { color: #718096; font-style: italic; }
-        .box-terminal .root-prompt { color: #fc8181; }
-        .box-terminal .log-error { color: #fc8181; }
-        .box-terminal .log-info { color: #63b3ed; }
-        .box-terminal .log-date { color: #a0aec0; }
-        .box-terminal .log-service { color: #b794f4; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
-        .bullet-point {
-            display: flex;
-            align-items: center;
-            margin: 10px 0;
-            font-size: 1.1em;
-            line-height: 1.4;
-        }
-        .bullet-point::before {
-            content: "•";
-            color: var(--primary);
-            font-weight: bold;
-            font-size: 1.5em;
-            margin-right: 10px;
-        }
-        .command-card {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
-        }
-        .command-card:hover { transform: translateY(-5px); }
-        .command-card .cmd { 
-            font-family: 'Courier New', monospace;
-            font-size: 1.4em; 
-            color: var(--primary);
-            background: #f4f7fe;
-            padding: 10px 20px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            display: inline-block;
-        }
-        .command-card h4 { color: var(--text-dark); margin-bottom: 10px; }
-        .command-card p { font-size: 0.9em; color: var(--text-light); }
-        .keyboard-key {
-            background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
-            border: 1px solid #dee2e6;
-            border-radius: 6px;
-            padding: 8px 15px;
-            font-family: 'Courier New', monospace;
-            font-weight: bold;
-            box-shadow: 0 2px 0 #dee2e6;
-            display: inline-block;
-            margin: 0 3px;
-        }
-        .log-level {
-            display: inline-block;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 0.9em;
-            margin: 5px;
-        }
-        .level-err { background: #ef4444; color: white; }
-        .level-warning { background: #f59e0b; color: white; }
-        .level-info { background: #22c55e; color: white; }
-        .nav-controls {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 15px;
-            background: white;
-            padding: 10px 20px;
-            border-radius: 50px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            z-index: 100;
-        }
-        .nav-btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 25px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
-        }
-        .nav-btn:hover { background: var(--secondary); transform: translateY(-2px); }
-        .nav-btn:disabled { background: #cbd5e0; cursor: not-allowed; transform: none; }
-        .drag-drop-container { display: flex; gap: 30px; margin-top: 20px; }
-        .col-questions, .col-answers { flex: 1; }
-        .question-item {
-            background: white;
-            border: 2px solid #e2e8f0;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 12px;
-        }
-        .question-text { font-weight: bold; margin-bottom: 10px; color: var(--text-dark); }
-        .drop-zone {
-            background: #f8fafc;
-            border: 2px dashed #cbd5e0;
-            border-radius: 8px;
-            min-height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.9em;
-            color: var(--text-light);
-            transition: all 0.2s;
-        }
-        .drop-zone.drag-over { background: #e6fffa; border-color: var(--accent-green); }
-        .drop-zone.has-answer { border-style: solid; background: white; border-color: var(--primary); }
-        .answer-item {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            padding: 12px 20px;
-            margin-bottom: 10px;
-            border-radius: 8px;
-            cursor: grab;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            font-size: 0.95em;
-            user-select: none;
-            font-family: 'Courier New', monospace;
-        }
-        .answer-item:active { cursor: grabbing; }
-        .answer-item.dragging { opacity: 0.5; }
-        .answer-item.in-drop-zone { margin: 0; width: 100%; box-shadow: none; }
-        .quiz-result {
-            margin-top: 30px;
-            padding: 20px;
-            border-radius: 15px;
-            text-align: center;
-            display: none;
-            background: linear-gradient(135deg, #f6ad55 0%, #ed8936 100%);
-            color: white;
-        }
-        @media (max-width: 768px) {
-            .viewer-container { padding: 10px; margin-top: 70px; }
-            .slide-card { padding: 25px; min-height: 70vh; }
-            .grid-2, .grid-3 { grid-template-columns: 1fr; }
-            .drag-drop-container { flex-direction: column; }
-            .classroom-header { padding: 10px 15px; }
-            h1.slide-title { font-size: 2em; }
-            h2.slide-subtitle { font-size: 1.5em; }
-        }
-    </style>
+    <title>Aula &mdash; Journalctl: Logs do Sistema</title>
+    <link rel="stylesheet" href="slide-mode.css">
+    <link rel="stylesheet" href="exercise.css">
+    <link rel="stylesheet" href="lesson.css">
 </head>
 <body>
-    <header class="classroom-header">
-        <div style="display: flex; align-items: center; gap: 20px;">
-            <a href="index.html" class="back-btn"><span>←</span> Voltar</a>
-            <div class="lesson-info">
-                <h1>Administração Linux</h1>
-                <span>Módulo Avançado • Journalctl</span>
-            </div>
-        </div>
-        <div class="slide-counter">
-            <span id="current-slide">1</span> / <span id="total-slides">14</span>
-        </div>
-    </header>
 
-    <div class="viewer-container">
-        
-        <!-- SLIDE 1: Capa -->
-        <div class="slide-card active">
-            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
-                <div style="font-size: 5em;">📋</div>
-                <h1 class="slide-title">Journalctl</h1>
-                <div class="content-box box-highlight" style="text-align: center; font-size: 1.2em;">
-                    <p><strong>O Detetive do Sistema Linux</strong></p>
-                    <p style="margin-top: 10px; opacity: 0.8;">Desvende os mistérios dos logs!</p>
-                </div>
-                <div class="box-terminal" style="margin-top: 30px; max-width: 600px;">
-                    <span class="prompt">usuario@linux</span>:~$ <span class="command">journalctl -f</span><br>
-                    <span class="log-date">Jan 15 10:30:45</span> <span class="log-service">systemd[1]:</span> <span class="output">Started Daily apt activities.</span><br>
-                    <span class="comment"># Logs em tempo real! 🔍</span>
-                </div>
-                <div class="content-box box-info" style="margin-top: 30px;">
-                    💡 Hoje você vai aprender a investigar tudo que acontece no seu sistema!
-                </div>
-            </div>
-        </div>
+<div class="top-bar">
+    <a href="index.html" class="back-btn">&#x2B05; Voltar ao Dashboard</a>
+    <span class="page-badge">2&ordm; Bimestre &mdash; Administra&ccedil;&atilde;o</span>
+    <button class="slide-toggle" id="slideToggleBtn">&#x1F4FA; Modo Slide</button>
+</div>
 
-        <!-- SLIDE 2: O que é Journalctl -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🤔 O que é o Journalctl?</h2>
-            <div class="grid-2">
-                <div class="content-box box-info">
-                    <h3>📝 Definição</h3>
-                    <p style="font-size: 1.1em; line-height: 1.6;">Logs são <strong>registros automáticos</strong> de tudo que acontece no sistema.</p>
-                    <p style="margin-top: 15px;"><strong>journalctl</strong> é o comando para ler, filtrar e pesquisar esses logs.</p>
-                </div>
-                <div class="content-box box-highlight">
-                    <h3>🎯 Analogia</h3>
-                    <p style="font-size: 1.1em; line-height: 1.6;">Imagine um <strong>diário automático</strong> do computador:</p>
-                    <div class="bullet-point">📅 "10:30 - Usuário fez login"</div>
-                    <div class="bullet-point">⚠️ "10:35 - Apache não iniciou"</div>
-                    <div class="bullet-point">✅ "10:40 - Backup concluído"</div>
-                </div>
-            </div>
-            <div class="content-box box-success" style="text-align: center; margin-top: 20px;">
-                💼 <strong>Por que é importante:</strong> Quando algo dá errado, os logs são sua única pista!
-            </div>
-        </div>
+<div class="content-wrapper">
 
-        <!-- SLIDE 3: Primeiro Comando -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🎉 Seus Primeiros Comandos</h2>
-            <div class="content-box box-terminal">
-                <span class="comment"># Ver todos os logs (muito texto!)</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">journalctl</span><br><br>
-                <span class="comment"># Ver logs em TEMPO REAL (o mais usado!)</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">journalctl -f</span><br>
-                <span class="log-date">Jan 15 10:30:45</span> <span class="log-service">systemd[1]:</span> <span class="output">Starting Daily apt...</span><br>
-                <span class="log-date">Jan 15 10:30:46</span> <span class="log-service">sshd[1234]:</span> <span class="log-info">Accepted publickey for usuario</span><br>
-                <span class="output">█</span> <span class="comment">← Esperando novos logs...</span>
-            </div>
-            <div class="grid-2" style="margin-top: 20px;">
-                <div class="content-box box-info">
-                    <h3>🧭 Navegação</h3>
-                    <div class="bullet-point"><span class="keyboard-key">↑</span> <span class="keyboard-key">↓</span> Rolar</div>
-                    <div class="bullet-point"><span class="keyboard-key">Q</span> Sair</div>
-                    <div class="bullet-point"><span class="keyboard-key">Ctrl+C</span> Parar o -f</div>
-                </div>
-                <div class="content-box box-highlight">
-                    <h3>💡 Analogia do -f</h3>
-                    <p>É como assistir uma <strong>câmera de segurança ao vivo</strong>!</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 4: Filtrar por serviço -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🔧 Filtrar por Serviço: -u</h2>
-            <div class="content-box box-highlight" style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 1.2em;">Ver logs de um serviço específico!</p>
-            </div>
-            <div class="content-box box-terminal">
-                <span class="comment"># Logs do SSH</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">journalctl -u ssh</span><br>
-                <span class="log-date">Jan 15 10:00:00</span> <span class="log-service">sshd[1000]:</span> <span class="output">Server listening on port 22</span><br>
-                <span class="log-date">Jan 15 10:30:46</span> <span class="log-service">sshd[1234]:</span> <span class="log-info">Accepted publickey for usuario</span><br><br>
-                <span class="comment"># Logs do Apache</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">journalctl -u apache2</span><br><br>
-                <span class="comment"># Logs do Nginx em tempo real</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">journalctl -u nginx -f</span>
-            </div>
-            <div class="content-box box-info" style="margin-top: 20px;">
-                <h3>💡 Como saber o nome do serviço?</h3>
-                <p>Use <code>systemctl list-units --type=service</code></p>
-            </div>
-        </div>
-
-        <!-- SLIDE 5: Filtrar por tempo -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">⏰ Filtrar por Tempo</h2>
-            <div class="content-box box-terminal">
-                <span class="comment"># Logs de hoje</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">journalctl --since today</span><br><br>
-                <span class="comment"># Logs de ontem</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">journalctl --since yesterday</span><br><br>
-                <span class="comment"># Logs da última hora</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">journalctl --since "1 hour ago"</span><br><br>
-                <span class="comment"># Logs entre duas datas</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">journalctl --since "2024-01-10" --until "2024-01-15"</span><br><br>
-                <span class="comment"># Últimas 50 linhas</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">journalctl -n 50</span>
-            </div>
-            <div class="content-box box-highlight" style="margin-top: 20px;">
-                <h3>💡 Caso de uso</h3>
-                <p>"O servidor parou às 3h, o que aconteceu?" → <code>journalctl --since "03:00" --until "03:30"</code></p>
-            </div>
-        </div>
-
-        <!-- SLIDE 6: Filtrar por prioridade -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🚨 Filtrar por Prioridade: -p</h2>
-            <div class="content-box box-highlight" style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 1.2em;">Nem todo log é igual. Alguns são mais <strong>urgentes</strong>!</p>
-            </div>
-            <div style="text-align: center; margin: 20px 0;">
-                <span class="log-level level-err">err (erros)</span>
-                <span class="log-level level-warning">warning (avisos)</span>
-                <span class="log-level level-info">info (informações)</span>
-            </div>
-            <div class="content-box box-terminal">
-                <span class="comment"># Ver apenas ERROS (o mais útil!)</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">journalctl -p err</span><br><br>
-                <span class="comment"># Ver WARNINGS e erros</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">journalctl -p warning</span><br><br>
-                <span class="comment"># Erros de um serviço específico</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">journalctl -u apache2 -p err</span>
-            </div>
-            <div class="content-box box-warning" style="margin-top: 20px;">
-                <h3>⚠️ Dica de ouro</h3>
-                <p>Quando algo dá errado, comece SEMPRE por <code>journalctl -p err</code> !</p>
-            </div>
-        </div>
-
-        <!-- SLIDE 7: Filtrar por boot -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🔄 Filtrar por Boot: -b</h2>
-            <div class="content-box box-terminal">
-                <span class="comment"># Logs do boot atual</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">journalctl -b</span><br><br>
-                <span class="comment"># Logs do boot anterior (antes de reiniciar)</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">journalctl -b -1</span><br><br>
-                <span class="comment"># Listar todos os boots</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">journalctl --list-boots</span><br>
-                <span class="output">-2 abc123... Mon 2024-01-13 08:00 - Mon 2024-01-13 23:59</span><br>
-                <span class="output">-1 def456... Tue 2024-01-14 08:00 - Tue 2024-01-14 23:59</span><br>
-                <span class="output"> 0 ghi789... Wed 2024-01-15 08:00 - Wed 2024-01-15 10:30</span>
-            </div>
-            <div class="content-box box-info" style="margin-top: 20px;">
-                <h3>💡 Quando usar?</h3>
-                <p>"O servidor reiniciou sozinho. O que aconteceu?" → <code>journalctl -b -1</code></p>
-            </div>
-        </div>
-
-        <!-- SLIDE 8: Kernel e Combinações -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🖥️ Kernel e Combinações</h2>
-            <div class="content-box box-terminal">
-                <span class="comment"># Logs do kernel (problemas de hardware!)</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">journalctl -k</span><br>
-                <span class="log-date">Jan 15 08:00:01</span> <span class="log-service">kernel:</span> <span class="output">Linux version 5.15.0</span><br>
-                <span class="log-date">Jan 15 08:00:03</span> <span class="log-service">kernel:</span> <span class="log-info">eth0: Link is Up - 1Gbps</span><br><br>
-                <span class="comment"># Só erros do kernel</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">journalctl -k -p err</span><br><br>
-                <span class="comment"># Combinar: erros do SSH hoje</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">journalctl -u ssh -p err --since today</span><br><br>
-                <span class="comment"># Buscar palavra específica</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">journalctl | grep "Failed"</span>
-            </div>
-            <div class="content-box box-success" style="margin-top: 20px;">
-                <h3>💡 Lógica de investigação</h3>
-                <p>Serviço (<code>-u</code>) + Prioridade (<code>-p</code>) + Tempo (<code>--since</code>) + Busca (<code>grep</code>)</p>
-            </div>
-        </div>
-
-        <!-- SLIDE 9: Caso Prático -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🔎 Caso Prático: SSH não funciona</h2>
-            <div class="content-box box-warning" style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 1.1em;">😱 O SSH parou de funcionar! Como investigar?</p>
-            </div>
-            <div class="content-box box-terminal">
-                <span class="comment"># 1. Ver status do serviço</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">systemctl status ssh</span><br>
-                <span class="log-error">● ssh.service - OpenBSD Secure Shell server</span><br>
-                <span class="log-error">   Active: failed (Result: exit-code)</span><br><br>
-                <span class="comment"># 2. Ver logs recentes do SSH</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">journalctl -u ssh -n 30</span><br><br>
-                <span class="comment"># 3. Filtrar só erros</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">journalctl -u ssh -p err</span><br>
-                <span class="log-date">Jan 15 10:30:00</span> <span class="log-service">sshd:</span> <span class="log-error">error: Bind to port 22 failed: Address already in use</span><br><br>
-                <span class="comment"># 4. AHA! Porta 22 em uso!</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">sudo lsof -i :22</span>
-            </div>
-        </div>
-
-        <!-- SLIDE 10: Gerenciando espaço -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">💾 Gerenciando Espaço</h2>
-            <div class="content-box box-highlight" style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 1.2em;">Logs podem ocupar MUITO espaço!</p>
-            </div>
-            <div class="content-box box-terminal">
-                <span class="comment"># Ver espaço ocupado</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">journalctl --disk-usage</span><br>
-                <span class="output">Archived and active journals take up 1.2G</span><br><br>
-                <span class="comment"># Limpar (manter só 500MB)</span><br>
-                <span class="root-prompt">root@linux</span>:~# <span class="command">journalctl --vacuum-size=500M</span><br><br>
-                <span class="comment"># Limpar logs > 7 dias</span><br>
-                <span class="root-prompt">root@linux</span>:~# <span class="command">journalctl --vacuum-time=7d</span>
-            </div>
-            <div class="content-box box-info" style="margin-top: 20px;">
-                <h3>⚙️ Configuração permanente</h3>
-                <p>Edite <code>/etc/systemd/journald.conf</code>: <code>SystemMaxUse=500M</code></p>
-            </div>
-        </div>
-
-        <!-- SLIDE 11: Resumo -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">📋 Resumo dos Comandos</h2>
-            <div class="grid-3">
-                <div class="command-card">
-                    <div class="cmd">-f</div>
-                    <h4>Tempo Real</h4>
-                    <p>Follow</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">-u serviço</div>
-                    <h4>Por Serviço</h4>
-                    <p>ssh, apache2</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">-p err</div>
-                    <h4>Prioridade</h4>
-                    <p>Só erros</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">-b</div>
-                    <h4>Por Boot</h4>
-                    <p>-b -1 = anterior</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">-k</div>
-                    <h4>Kernel</h4>
-                    <p>Hardware</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">--since</div>
-                    <h4>Tempo</h4>
-                    <p>today, yesterday</p>
-                </div>
-            </div>
-            <div class="content-box box-success" style="margin-top: 30px; text-align: center;">
-                <h3>🎯 Comando do dia</h3>
-                <p style="font-size: 1.2em;"><code>journalctl -p err -b</code> → Erros desde o boot!</p>
-            </div>
-        </div>
-
-        <!-- SLIDE 12: Quiz -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🎯 Desafio Interativo</h2>
-            <p style="text-align: center;">Arraste os comandos para suas funções!</p>
-            <div class="drag-drop-container">
-                <div class="col-questions">
-                    <div class="question-item">
-                        <div class="question-text">Ver logs em tempo real</div>
-                        <div class="drop-zone" data-correct="journalctl -f">Arraste aqui</div>
-                    </div>
-                    <div class="question-item">
-                        <div class="question-text">Ver logs do Apache</div>
-                        <div class="drop-zone" data-correct="journalctl -u apache2">Arraste aqui</div>
-                    </div>
-                    <div class="question-item">
-                        <div class="question-text">Ver apenas erros</div>
-                        <div class="drop-zone" data-correct="journalctl -p err">Arraste aqui</div>
-                    </div>
-                    <div class="question-item">
-                        <div class="question-text">Logs do boot atual</div>
-                        <div class="drop-zone" data-correct="journalctl -b">Arraste aqui</div>
-                    </div>
-                    <div class="question-item">
-                        <div class="question-text">Logs do kernel</div>
-                        <div class="drop-zone" data-correct="journalctl -k">Arraste aqui</div>
-                    </div>
-                    <div class="question-item">
-                        <div class="question-text">Logs de hoje</div>
-                        <div class="drop-zone" data-correct="journalctl --since today">Arraste aqui</div>
-                    </div>
-                </div>
-                <div class="col-answers" id="answersPool"></div>
-            </div>
-            <div style="text-align: center; margin-top: 20px; display: flex; gap: 10px; justify-content: center;">
-                <button onclick="checkAnswers()" class="nav-btn" style="background: var(--accent-green);">✅ Verificar</button>
-                <button onclick="resetQuiz()" class="nav-btn" style="background: var(--accent-red);">🔄 Reiniciar</button>
-            </div>
-            <div id="quizResult" class="quiz-result"></div>
-        </div>
-
-        <!-- SLIDE 13: Dicas Extras -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">⚡ Dicas Extras</h2>
-            <div class="grid-2">
-                <div class="content-box box-info">
-                    <h3>🔍 Busca Avançada</h3>
-                    <div class="bullet-point"><code>journalctl _UID=1000</code> → Por usuário</div>
-                    <div class="bullet-point"><code>journalctl _PID=1234</code> → Por processo</div>
-                    <div class="bullet-point"><code>journalctl -o json</code> → Saída JSON</div>
-                </div>
-                <div class="content-box box-highlight">
-                    <h3>📊 Formatos de Saída</h3>
-                    <div class="bullet-point"><code>-o short</code> → Padrão</div>
-                    <div class="bullet-point"><code>-o verbose</code> → Detalhado</div>
-                    <div class="bullet-point"><code>-o cat</code> → Só mensagem</div>
-                </div>
-            </div>
-            <div class="content-box box-success" style="margin-top: 20px;">
-                <h3>🔗 Combo para Segurança</h3>
-                <p><code>journalctl -u ssh --since today | grep -i "failed"</code></p>
-                <p style="margin-top: 10px;">→ Tentativas de acesso SSH que falharam hoje!</p>
-            </div>
-        </div>
-
-        <!-- SLIDE 14: Conclusão -->
-        <div class="slide-card">
-            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center;">
-                <div style="font-size: 4em; margin-bottom: 20px;">🎓📋</div>
-                <h2 class="slide-subtitle" style="border: none;">Parabéns!</h2>
-                <div class="content-box box-success" style="max-width: 700px;">
-                    <h3>📚 O que aprendemos:</h3>
-                    <div class="grid-2" style="text-align: left; margin-top: 15px;">
-                        <div>
-                            <div class="bullet-point">Tempo real (-f)</div>
-                            <div class="bullet-point">Por serviço (-u)</div>
-                            <div class="bullet-point">Por prioridade (-p)</div>
-                        </div>
-                        <div>
-                            <div class="bullet-point">Por tempo e boot</div>
-                            <div class="bullet-point">Kernel (-k)</div>
-                            <div class="bullet-point">Gerenciar espaço</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="content-box box-highlight" style="max-width: 700px; margin-top: 20px;">
-                    <h3>🔍 Lembre-se:</h3>
-                    <p>Quando algo der errado, os logs são seu <strong>melhor amigo</strong>!</p>
-                    <p style="margin-top: 10px;"><code>journalctl -u serviço -p err --since today</code></p>
-                </div>
-                <div style="margin-top: 40px;">
-                    <a href="index.html" class="nav-btn" style="font-size: 1.2em; padding: 15px 40px;">Voltar ao Dashboard 🏠</a>
-                </div>
-            </div>
-        </div>
-
+    <div class="lesson-hero">
+        <h1>📋 Journalctl &mdash; Logs do Sistema</h1>
+        <p class="subtitle">O Detetive do Sistema Linux &mdash; Desvende os mist&eacute;rios dos logs!</p>
     </div>
 
-    <div class="nav-controls">
-        <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">⬅️ Anterior</button>
-        <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Próximo ➡️</button>
+    <!-- Card 1: O que e Journalctl? -->
+    <div class="content-card">
+        <h2>🤔 O que &eacute; o Journalctl?</h2>
+        <table class="cmp-table">
+            <tr>
+                <th>Conceito</th>
+                <th>Descri&ccedil;&atilde;o</th>
+            </tr>
+            <tr>
+                <td><strong>Logs</strong></td>
+                <td>Registros autom&aacute;ticos de tudo que acontece no sistema</td>
+            </tr>
+            <tr>
+                <td><strong>journalctl</strong></td>
+                <td>Comando para ler, filtrar e pesquisar esses logs</td>
+            </tr>
+        </table>
+        <div class="highlight-box">
+            <p>🎯 <strong>Analogia:</strong> Imagine um <strong>di&aacute;rio autom&aacute;tico</strong> do computador:</p>
+            <ul>
+                <li>📅 "10:30 - Usu&aacute;rio fez login"</li>
+                <li>⚠️ "10:35 - Apache n&atilde;o iniciou"</li>
+                <li>✅ "10:40 - Backup conclu&iacute;do"</li>
+            </ul>
+        </div>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">exemplo de log em tempo real</span>
+            </div>
+            <div class="terminal-body">
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">journalctl -f</span><br>
+                <span class="t-out">Jan 15 10:30:45 systemd[1]: Started Daily apt activities.</span><br>
+                <span class="t-out">Jan 15 10:30:46 sshd[1234]: Accepted publickey for usuario</span><br>
+                <span class="t-out">&#x2588;</span> <span class="t-comment">&larr; Esperando novos logs...</span>
+            </div>
+        </div>
+        <div class="tip-box">
+            <p>💼 <strong>Por que &eacute; importante:</strong> Quando algo d&aacute; errado, os logs s&atilde;o sua &uacute;nica pista!</p>
+        </div>
     </div>
 
-    <script>
-        let currentSlide = 0;
-        const slides = document.querySelectorAll('.slide-card');
-        const totalSlides = slides.length;
-        document.getElementById('total-slides').textContent = totalSlides;
+    <!-- Card 2: Primeiros Comandos -->
+    <div class="content-card">
+        <h2>🎉 Seus Primeiros Comandos</h2>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">comandos b&aacute;sicos</span>
+            </div>
+            <div class="terminal-body">
+                <span class="t-comment"># Ver todos os logs (muito texto!)</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">journalctl</span><br><br>
+                <span class="t-comment"># Ver logs em TEMPO REAL (o mais usado!)</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">journalctl -f</span><br>
+                <span class="t-out">Jan 15 10:30:45 systemd[1]: Starting Daily apt...</span><br>
+                <span class="t-out">Jan 15 10:30:46 sshd[1234]: Accepted publickey for usuario</span><br>
+                <span class="t-out">&#x2588;</span> <span class="t-comment">&larr; Esperando novos logs...</span>
+            </div>
+        </div>
+        <table class="cmp-table">
+            <tr>
+                <th>Navega&ccedil;&atilde;o</th>
+                <th>A&ccedil;&atilde;o</th>
+            </tr>
+            <tr><td>&#x2191; &#x2193;</td><td>Rolar</td></tr>
+            <tr><td><code>Q</code></td><td>Sair</td></tr>
+            <tr><td><code>Ctrl+C</code></td><td>Parar o -f</td></tr>
+        </table>
+        <div class="tip-box">
+            <p>💡 <strong>Analogia do -f:</strong> &Eacute; como assistir uma <strong>c&acirc;mera de seguran&ccedil;a ao vivo</strong>!</p>
+        </div>
+    </div>
 
-        function showSlide(index) {
-            slides.forEach((slide, i) => slide.classList.toggle('active', i === index));
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            document.getElementById('current-slide').textContent = index + 1;
-            document.getElementById('prevBtn').disabled = index === 0;
-            document.getElementById('nextBtn').disabled = index === totalSlides - 1;
-        }
+    <!-- Card 3: Filtrar por Servico -->
+    <div class="content-card">
+        <h2>🔧 Filtrar por Servi&ccedil;o: -u</h2>
+        <p>Ver logs de um servi&ccedil;o espec&iacute;fico!</p>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">filtrar por servi&ccedil;o</span>
+            </div>
+            <div class="terminal-body">
+                <span class="t-comment"># Logs do SSH</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">journalctl -u ssh</span><br>
+                <span class="t-out">Jan 15 10:00:00 sshd[1000]: Server listening on port 22</span><br>
+                <span class="t-out">Jan 15 10:30:46 sshd[1234]: Accepted publickey for usuario</span><br><br>
+                <span class="t-comment"># Logs do Apache</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">journalctl -u apache2</span><br><br>
+                <span class="t-comment"># Logs do Nginx em tempo real</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">journalctl -u nginx -f</span>
+            </div>
+        </div>
+        <div class="tip-box">
+            <p>💡 <strong>Como saber o nome do servi&ccedil;o?</strong> Use <code>systemctl list-units --type=service</code></p>
+        </div>
+    </div>
 
-        function changeSlide(direction) {
-            const newSlide = currentSlide + direction;
-            if (newSlide >= 0 && newSlide < totalSlides) {
-                currentSlide = newSlide;
-                showSlide(currentSlide);
-            }
-        }
+    <!-- Card 4: Filtrar por Tempo -->
+    <div class="content-card">
+        <h2>⏰ Filtrar por Tempo</h2>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">filtros de tempo</span>
+            </div>
+            <div class="terminal-body">
+                <span class="t-comment"># Logs de hoje</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">journalctl --since today</span><br><br>
+                <span class="t-comment"># Logs de ontem</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">journalctl --since yesterday</span><br><br>
+                <span class="t-comment"># Logs da &uacute;ltima hora</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">journalctl --since "1 hour ago"</span><br><br>
+                <span class="t-comment"># Logs entre duas datas</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">journalctl --since "2024-01-10" --until "2024-01-15"</span><br><br>
+                <span class="t-comment"># &Uacute;ltimas 50 linhas</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">journalctl -n 50</span>
+            </div>
+        </div>
+        <div class="highlight-box">
+            <p>💡 <strong>Caso de uso:</strong> "O servidor parou &agrave;s 3h, o que aconteceu?"<br>
+            &rarr; <code>journalctl --since "03:00" --until "03:30"</code></p>
+        </div>
+    </div>
 
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowLeft') changeSlide(-1);
-            if (e.key === 'ArrowRight') changeSlide(1);
-        });
+    <!-- Card 5: Filtrar por Prioridade -->
+    <div class="content-card">
+        <h2>🚨 Filtrar por Prioridade: -p</h2>
+        <p>Nem todo log &eacute; igual. Alguns s&atilde;o mais <strong>urgentes</strong>!</p>
+        <table class="cmp-table">
+            <tr>
+                <th>N&iacute;vel</th>
+                <th>Nome</th>
+                <th>Uso</th>
+            </tr>
+            <tr>
+                <td><code>err</code></td>
+                <td>Erros</td>
+                <td>Problemas que precisam de aten&ccedil;&atilde;o imediata</td>
+            </tr>
+            <tr>
+                <td><code>warning</code></td>
+                <td>Avisos</td>
+                <td>Alertas que podem virar problemas</td>
+            </tr>
+            <tr>
+                <td><code>info</code></td>
+                <td>Informa&ccedil;&otilde;es</td>
+                <td>Opera&ccedil;&otilde;es normais do sistema</td>
+            </tr>
+        </table>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">filtrar por prioridade</span>
+            </div>
+            <div class="terminal-body">
+                <span class="t-comment"># Ver apenas ERROS (o mais &uacute;til!)</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">journalctl -p err</span><br><br>
+                <span class="t-comment"># Ver WARNINGS e erros</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">journalctl -p warning</span><br><br>
+                <span class="t-comment"># Erros de um servi&ccedil;o espec&iacute;fico</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">journalctl -u apache2 -p err</span>
+            </div>
+        </div>
+        <div class="tip-box">
+            <p>✅ <strong>Dica de ouro:</strong> Quando algo d&aacute; errado, comece SEMPRE por <code>journalctl -p err</code>!</p>
+        </div>
+    </div>
 
-        const answersData = [
-            { id: 'journalctl -f', text: 'journalctl -f' },
-            { id: 'journalctl -u apache2', text: 'journalctl -u apache2' },
-            { id: 'journalctl -p err', text: 'journalctl -p err' },
-            { id: 'journalctl -b', text: 'journalctl -b' },
-            { id: 'journalctl -k', text: 'journalctl -k' },
-            { id: 'journalctl --since today', text: 'journalctl --since today' }
-        ];
+    <!-- Card 6: Filtrar por Boot -->
+    <div class="content-card">
+        <h2>🔄 Filtrar por Boot: -b</h2>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">filtros de boot</span>
+            </div>
+            <div class="terminal-body">
+                <span class="t-comment"># Logs do boot atual</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">journalctl -b</span><br><br>
+                <span class="t-comment"># Logs do boot anterior (antes de reiniciar)</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">journalctl -b -1</span><br><br>
+                <span class="t-comment"># Listar todos os boots</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">journalctl --list-boots</span><br>
+                <span class="t-out">-2 abc123... Mon 2024-01-13 08:00 - Mon 2024-01-13 23:59</span><br>
+                <span class="t-out">-1 def456... Tue 2024-01-14 08:00 - Tue 2024-01-14 23:59</span><br>
+                <span class="t-out">&nbsp;0 ghi789... Wed 2024-01-15 08:00 - Wed 2024-01-15 10:30</span>
+            </div>
+        </div>
+        <div class="highlight-box">
+            <p>💡 <strong>Quando usar?</strong> "O servidor reiniciou sozinho. O que aconteceu?" &rarr; <code>journalctl -b -1</code></p>
+        </div>
+    </div>
 
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
-        }
+    <!-- Card 7: Kernel e Combinacoes -->
+    <div class="content-card">
+        <h2>🖥️ Kernel e Combina&ccedil;&otilde;es</h2>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">logs do kernel e combina&ccedil;&otilde;es</span>
+            </div>
+            <div class="terminal-body">
+                <span class="t-comment"># Logs do kernel (problemas de hardware!)</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">journalctl -k</span><br>
+                <span class="t-out">Jan 15 08:00:01 kernel: Linux version 5.15.0</span><br>
+                <span class="t-out">Jan 15 08:00:03 kernel: eth0: Link is Up - 1Gbps</span><br><br>
+                <span class="t-comment"># S&oacute; erros do kernel</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">journalctl -k -p err</span><br><br>
+                <span class="t-comment"># Combinar: erros do SSH hoje</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">journalctl -u ssh -p err --since today</span><br><br>
+                <span class="t-comment"># Buscar palavra espec&iacute;fica</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">journalctl | grep "Failed"</span>
+            </div>
+        </div>
+        <div class="highlight-box">
+            <p>💡 <strong>L&oacute;gica de investiga&ccedil;&atilde;o:</strong><br>
+            Servi&ccedil;o (<code>-u</code>) + Prioridade (<code>-p</code>) + Tempo (<code>--since</code>) + Busca (<code>grep</code>)</p>
+        </div>
+    </div>
 
-        let draggedItem = null;
+    <!-- Card 8: Caso Pratico -->
+    <div class="content-card">
+        <h2>🔎 Caso Pr&aacute;tico: SSH n&atilde;o Funciona</h2>
+        <div class="alert-box">
+            <p>⚠️ 😱 O SSH parou de funcionar! Como investigar?</p>
+        </div>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">investiga&ccedil;&atilde;o passo a passo</span>
+            </div>
+            <div class="terminal-body">
+                <span class="t-comment"># 1. Ver status do servi&ccedil;o</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">systemctl status ssh</span><br>
+                <span class="t-out">&#x25cf; ssh.service - OpenBSD Secure Shell server</span><br>
+                <span class="t-out">&nbsp;&nbsp;&nbsp;Active: failed (Result: exit-code)</span><br><br>
+                <span class="t-comment"># 2. Ver logs recentes do SSH</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">journalctl -u ssh -n 30</span><br><br>
+                <span class="t-comment"># 3. Filtrar s&oacute; erros</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">journalctl -u ssh -p err</span><br>
+                <span class="t-out">Jan 15 10:30:00 sshd: error: Bind to port 22 failed: Address already in use</span><br><br>
+                <span class="t-comment"># 4. AHA! Porta 22 em uso!</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">sudo lsof -i :22</span>
+            </div>
+        </div>
+    </div>
 
-        function initQuiz() {
-            const pool = document.getElementById('answersPool');
-            pool.innerHTML = '';
-            shuffleArray([...answersData]).forEach(ans => {
-                const div = document.createElement('div');
-                div.className = 'answer-item';
-                div.draggable = true;
-                div.textContent = ans.text;
-                div.dataset.id = ans.id;
-                div.addEventListener('dragstart', (e) => { draggedItem = e.target; e.target.classList.add('dragging'); });
-                div.addEventListener('dragend', (e) => { e.target.classList.remove('dragging'); draggedItem = null; });
-                pool.appendChild(div);
-            });
+    <!-- Card 9: Gerenciando Espaco -->
+    <div class="content-card">
+        <h2>💾 Gerenciando Espa&ccedil;o</h2>
+        <div class="alert-box">
+            <p>⚠️ Logs podem ocupar MUITO espa&ccedil;o!</p>
+        </div>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">gerenciamento de espa&ccedil;o dos logs</span>
+            </div>
+            <div class="terminal-body">
+                <span class="t-comment"># Ver espa&ccedil;o ocupado</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">journalctl --disk-usage</span><br>
+                <span class="t-out">Archived and active journals take up 1.2G</span><br><br>
+                <span class="t-comment"># Limpar (manter s&oacute; 500MB)</span><br>
+                <span class="t-prompt">root@linux:~#</span> <span class="t-cmd">journalctl --vacuum-size=500M</span><br><br>
+                <span class="t-comment"># Limpar logs &gt; 7 dias</span><br>
+                <span class="t-prompt">root@linux:~#</span> <span class="t-cmd">journalctl --vacuum-time=7d</span>
+            </div>
+        </div>
+        <div class="highlight-box">
+            <p>⚙️ <strong>Configura&ccedil;&atilde;o permanente:</strong> Edite <code>/etc/systemd/journald.conf</code> e defina <code>SystemMaxUse=500M</code></p>
+        </div>
+    </div>
 
-            document.querySelectorAll('.drop-zone').forEach(zone => {
-                zone.innerHTML = 'Arraste aqui';
-                zone.classList.remove('has-answer');
-                zone.style.background = '#f8fafc';
-                zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('drag-over'); });
-                zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
-                zone.addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    zone.classList.remove('drag-over');
-                    if (draggedItem && !zone.querySelector('.answer-item')) {
-                        zone.innerHTML = '';
-                        zone.appendChild(draggedItem);
-                        draggedItem.classList.add('in-drop-zone');
-                        zone.classList.add('has-answer');
-                    }
-                });
-            });
-            document.getElementById('quizResult').style.display = 'none';
-        }
+    <!-- Card 10: Busca Avancada e Formatos -->
+    <div class="content-card">
+        <h2>⚡ Dicas Extras &mdash; Busca Avan&ccedil;ada</h2>
+        <table class="cmp-table">
+            <tr>
+                <th>Comando</th>
+                <th>Fun&ccedil;&atilde;o</th>
+            </tr>
+            <tr><td><code>journalctl _UID=1000</code></td><td>Por usu&aacute;rio (UID)</td></tr>
+            <tr><td><code>journalctl _PID=1234</code></td><td>Por processo (PID)</td></tr>
+            <tr><td><code>journalctl -o json</code></td><td>Sa&iacute;da em formato JSON</td></tr>
+            <tr><td><code>journalctl -o short</code></td><td>Formato padr&atilde;o</td></tr>
+            <tr><td><code>journalctl -o verbose</code></td><td>Detalhado</td></tr>
+            <tr><td><code>journalctl -o cat</code></td><td>S&oacute; a mensagem</td></tr>
+        </table>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">combo para seguran&ccedil;a</span>
+            </div>
+            <div class="terminal-body">
+                <span class="t-comment"># Tentativas de acesso SSH que falharam hoje!</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">journalctl -u ssh --since today | grep -i "failed"</span>
+            </div>
+        </div>
+    </div>
 
-        function checkAnswers() {
-            let correct = 0;
-            const zones = document.querySelectorAll('.drop-zone');
-            zones.forEach(zone => {
-                const answer = zone.querySelector('.answer-item');
-                if (answer && answer.dataset.id === zone.dataset.correct) {
-                    correct++;
-                    zone.style.background = '#d1fae5';
-                } else {
-                    zone.style.background = '#fee2e2';
-                }
-            });
-            const resultDiv = document.getElementById('quizResult');
-            resultDiv.style.display = 'block';
-            resultDiv.innerHTML = `<h3>Você acertou ${correct} de ${zones.length}!</h3>`;
-            if(correct === zones.length) resultDiv.innerHTML += '<p>🎉 Perfeito!</p>';
-            else if(correct >= zones.length/2) resultDiv.innerHTML += '<p>👍 Bom trabalho!</p>';
-            else resultDiv.innerHTML += '<p>📚 Continue praticando!</p>';
-        }
+    <!-- Card 11: Resumo dos Comandos -->
+    <div class="content-card">
+        <h2>📋 Resumo dos Comandos</h2>
+        <table class="cmp-table">
+            <tr>
+                <th>Op&ccedil;&atilde;o</th>
+                <th>Fun&ccedil;&atilde;o</th>
+                <th>Exemplo</th>
+            </tr>
+            <tr><td><code>-f</code></td><td>Tempo Real (Follow)</td><td><code>journalctl -f</code></td></tr>
+            <tr><td><code>-u servi&ccedil;o</code></td><td>Por Servi&ccedil;o</td><td><code>journalctl -u ssh</code></td></tr>
+            <tr><td><code>-p err</code></td><td>Prioridade (s&oacute; erros)</td><td><code>journalctl -p err</code></td></tr>
+            <tr><td><code>-b</code></td><td>Por Boot (-b -1 = anterior)</td><td><code>journalctl -b -1</code></td></tr>
+            <tr><td><code>-k</code></td><td>Kernel (hardware)</td><td><code>journalctl -k</code></td></tr>
+            <tr><td><code>--since</code></td><td>Por Tempo</td><td><code>journalctl --since today</code></td></tr>
+            <tr><td><code>-n N</code></td><td>&Uacute;ltimas N linhas</td><td><code>journalctl -n 50</code></td></tr>
+            <tr><td><code>--disk-usage</code></td><td>Espa&ccedil;o ocupado</td><td><code>journalctl --disk-usage</code></td></tr>
+            <tr><td><code>--vacuum-size</code></td><td>Limpar espa&ccedil;o</td><td><code>journalctl --vacuum-size=500M</code></td></tr>
+            <tr><td><code>--list-boots</code></td><td>Listar boots</td><td><code>journalctl --list-boots</code></td></tr>
+        </table>
+        <div class="tip-box">
+            <p>🎯 <strong>Comando do dia:</strong> <code>journalctl -p err -b</code> &rarr; Erros desde o boot!</p>
+        </div>
+    </div>
 
-        function resetQuiz() { initQuiz(); }
-        initQuiz();
-    </script>
+    <!-- Card 12: Resumo Final -->
+    <div class="content-card">
+        <h2>🎓 O que Aprendemos</h2>
+        <table class="cmp-table">
+            <tr>
+                <th>T&oacute;pico</th>
+                <th>Comando</th>
+            </tr>
+            <tr><td>Tempo real</td><td><code>journalctl -f</code></td></tr>
+            <tr><td>Por servi&ccedil;o</td><td><code>journalctl -u apache2</code></td></tr>
+            <tr><td>Por prioridade</td><td><code>journalctl -p err</code></td></tr>
+            <tr><td>Por tempo</td><td><code>journalctl --since yesterday</code></td></tr>
+            <tr><td>Por boot</td><td><code>journalctl -b -1</code></td></tr>
+            <tr><td>Kernel</td><td><code>journalctl -k</code></td></tr>
+            <tr><td>Gerenciar espa&ccedil;o</td><td><code>journalctl --vacuum-size=500M</code></td></tr>
+        </table>
+        <div class="tip-box">
+            <p>🔍 <strong>Lembre-se:</strong> Quando algo der errado, os logs s&atilde;o seu <strong>melhor amigo</strong>!<br>
+            <code>journalctl -u servi&ccedil;o -p err --since today</code></p>
+        </div>
+    </div>
+
+    <!-- MÚLTIPLA ESCOLHA -->
+    <div class="content-card exercise-card">
+        <h2>&#x2753; Verifique seu Conhecimento</h2>
+
+        <div class="mc-question" data-correct="b">
+            <p class="mc-q-text">O que &eacute; o journald no contexto do systemd?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>Um servidor de logs remoto</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>O servi&ccedil;o de coleta e armazenamento de logs do systemd</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>Um editor de arquivos de log</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>Um analisador de seguran&ccedil;a de logs</span></div>
+            </div>
+            <div class="mc-explanation">&#x2713; O <code>systemd-journald</code> coleta logs de servi&ccedil;os, kernel e aplica&ccedil;&otilde;es, armazenando em formato bin&aacute;rio. O <code>journalctl</code> &eacute; a ferramenta para consult&aacute;-los.</div>
+        </div>
+        <hr class="mc-sep">
+
+        <div class="mc-question" data-correct="c">
+            <p class="mc-q-text">Qual comando exibe os logs de um servi&ccedil;o espec&iacute;fico em tempo real?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>journalctl --service=nginx --live</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>journalctl -u nginx --monitor</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>journalctl -u nginx -f</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>journalctl --follow nginx.service</span></div>
+            </div>
+            <div class="mc-explanation">&#x2713; <code>-u</code> filtra por unidade (servi&ccedil;o) e <code>-f</code> segue em tempo real (como <code>tail -f</code>). Ex: <code>journalctl -u apache2 -f</code>.</div>
+        </div>
+        <hr class="mc-sep">
+
+        <div class="mc-question" data-correct="a">
+            <p class="mc-q-text">Como filtrar logs do journalctl por prioridade (apenas erros e cr&iacute;ticos)?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>journalctl -p err</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>journalctl --level=error</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>journalctl -e critical</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>journalctl --filter=err</span></div>
+            </div>
+            <div class="mc-explanation">&#x2713; <code>-p</code> filtra por prioridade: emerg, alert, crit, err, warning, notice, info, debug. <code>journalctl -p err</code> mostra err e mais graves.</div>
+        </div>
+        <hr class="mc-sep">
+
+        <div class="mc-question" data-correct="d">
+            <p class="mc-q-text">Qual comando limita a sa&iacute;da do journalctl &agrave;s &uacute;ltimas 50 linhas?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>journalctl --last=50</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>journalctl --limit 50</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>journalctl --tail=50</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>journalctl -n 50</span></div>
+            </div>
+            <div class="mc-explanation">&#x2713; <code>-n N</code> mostra as N linhas mais recentes (padr&atilde;o 10). Combine com <code>-f</code>: <code>journalctl -n 50 -f</code> para ver &uacute;ltimas 50 e continuar monitorando.</div>
+        </div>
+    </div>
+
+    <div class="nav-footer">
+        <a href="intro_so.html" class="nav-link">&#x2B05; Introdu&ccedil;&atilde;o ao SO</a>
+        <a href="ss01-shell-script.html" class="nav-link">Shell Script &#x27A1;</a>
+    </div>
+
+</div>
+
+<script src="slide-mode.js"></script>
+<script src="exercise-drag.js"></script>
+<script src="exercise-print.js"></script>
+<script src="exercise-mc.js"></script>
 </body>
 </html>

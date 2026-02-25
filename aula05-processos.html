@@ -4,1412 +4,716 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aula 05 - Gerenciamento de Processos</title>
-    <style>
-        /* --- VARIÁVEIS GLOBAIS --- */
-        :root {
-            --primary: #667eea;
-            --secondary: #764ba2;
-            --bg-light: #f4f7fe;
-            --text-dark: #2d3748;
-            --text-light: #718096;
-            --accent-green: #38ef7d;
-            --accent-red: #ff758c;
-            --accent-orange: #f39c12;
-            --accent-cyan: #17a2b8;
-        }
-
-        /* --- RESET E BASE --- */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-light);
-            color: var(--text-dark);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* --- HEADER DA SALA DE AULA --- */
-        .classroom-header {
-            background: white;
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 1000;
-        }
-
-        .back-btn {
-            text-decoration: none;
-            color: var(--text-dark);
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            border-radius: 50px;
-            transition: all 0.2s;
-            background: #f0f2f5;
-        }
-        .back-btn:hover { background: #e2e8f0; color: var(--primary); }
-
-        .lesson-info h1 { font-size: 1.1em; margin: 0; color: var(--text-dark); }
-        .lesson-info span { font-size: 0.85em; color: var(--text-light); }
-
-        .slide-counter {
-            background: var(--primary);
-            color: white;
-            padding: 5px 12px;
-            border-radius: 12px;
-            font-size: 0.9em;
-            font-weight: bold;
-        }
-
-        /* --- CONTAINER PRINCIPAL --- */
-        .viewer-container {
-            margin-top: 80px;
-            padding: 20px;
-            padding-bottom: 100px;
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-        }
-
-        .slide-card {
-            background: white;
-            width: 100%;
-            max-width: 1000px;
-            min-height: 80vh;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            padding: 50px;
-            padding-bottom: 100px;
-            position: relative;
-            display: none;
-            flex-direction: column;
-            animation: fadeIn 0.4s ease;
-        }
-        .slide-card.active { display: flex; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* --- ESTILOS DO CONTEÚDO --- */
-        h1.slide-title {
-            font-size: 2.8em;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        h2.slide-subtitle {
-            font-size: 2.2em;
-            color: var(--text-dark);
-            border-bottom: 3px solid #e2e8f0;
-            padding-bottom: 15px;
-            margin-bottom: 30px;
-        }
-
-        h3 { color: var(--primary); margin: 20px 0 10px; font-size: 1.5em; }
-
-        /* Boxes de Conteúdo */
-        .content-box {
-            padding: 20px;
-            border-radius: 12px;
-            margin: 15px 0;
-            border-left: 5px solid;
-            background: #f8fafc;
-        }
-        
-        .box-highlight { border-color: #f39c12; background: #fffaf0; }
-        .box-info { border-color: var(--primary); background: #f4f7fe; }
-        .box-success { border-color: var(--accent-green); background: #f0fdf4; }
-        .box-warning { border-color: var(--accent-red); background: #fff5f5; }
-        .box-tip { border-color: var(--accent-cyan); background: #e6fffa; }
-        
-        .box-terminal { 
-            background: #1a202c; 
-            color: #38ef7d; 
-            font-family: 'Courier New', monospace; 
-            border-left: 5px solid #38ef7d;
-            padding: 25px;
-            border-radius: 12px;
-            font-size: 1.1em;
-            line-height: 1.8;
-        }
-        .box-terminal .prompt { color: #63b3ed; }
-        .box-terminal .command { color: #38ef7d; }
-        .box-terminal .output { color: #a0aec0; }
-        .box-terminal .comment { color: #718096; font-style: italic; }
-        .box-terminal .root-prompt { color: #fc8181; }
-        .box-terminal .highlight { color: #f6e05e; }
-
-        /* Layouts de Colunas */
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
-        .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 15px; }
-
-        .bullet-point {
-            display: flex;
-            align-items: flex-start;
-            margin: 10px 0;
-            font-size: 1.1em;
-            line-height: 1.4;
-        }
-        .bullet-point::before {
-            content: "⚙️";
-            margin-right: 10px;
-            flex-shrink: 0;
-        }
-
-        /* Cards de Comando */
-        .command-card {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
-        }
-        .command-card:hover { transform: translateY(-5px); }
-        .command-card .cmd { 
-            font-family: 'Courier New', monospace;
-            font-size: 1.5em; 
-            color: var(--primary);
-            background: #f4f7fe;
-            padding: 10px 20px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            display: inline-block;
-        }
-        .command-card h4 { color: var(--text-dark); margin-bottom: 10px; }
-        .command-card p { font-size: 0.9em; color: var(--text-light); }
-
-        /* Ícones de Estado do Processo */
-        .process-icon {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.5em;
-            margin: 0 auto 15px;
-        }
-        .process-running { background: linear-gradient(135deg, #38ef7d, #11998e); }
-        .process-sleeping { background: linear-gradient(135deg, #667eea, #764ba2); }
-        .process-stopped { background: linear-gradient(135deg, #f39c12, #e67e22); }
-        .process-zombie { background: linear-gradient(135deg, #e74c3c, #c0392b); }
-
-        /* Sinais Kill */
-        .signal-box {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 15px;
-            padding: 20px;
-            text-align: center;
-            color: white;
-            margin: 10px 0;
-        }
-        .signal-number {
-            font-size: 2.5em;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        .signal-name {
-            font-size: 1.2em;
-            opacity: 0.9;
-        }
-
-        /* Tabela de Referência */
-        .reference-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            font-size: 1em;
-        }
-        .reference-table th {
-            background: var(--primary);
-            color: white;
-            padding: 12px;
-            text-align: left;
-        }
-        .reference-table td {
-            padding: 12px;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        .reference-table tr:hover {
-            background: #f4f7fe;
-        }
-        .reference-table code {
-            background: #e2e8f0;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-family: 'Courier New', monospace;
-        }
-
-        /* Simulação do TOP */
-        .top-simulation {
-            background: #000;
-            color: #00ff00;
-            font-family: 'Courier New', monospace;
-            padding: 20px;
-            border-radius: 12px;
-            font-size: 0.85em;
-            line-height: 1.6;
-            overflow-x: auto;
-        }
-        .top-header { color: #00ffff; }
-        .top-highlight { color: #ffff00; }
-        .top-warning { color: #ff6b6b; }
-
-        /* Diagrama de Estados */
-        .state-diagram {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            flex-wrap: wrap;
-            margin: 20px 0;
-        }
-        .state-box {
-            padding: 15px 25px;
-            border-radius: 10px;
-            text-align: center;
-            font-weight: bold;
-            min-width: 120px;
-        }
-        .state-arrow {
-            font-size: 1.5em;
-            color: var(--primary);
-        }
-
-        /* Prioridade Visual */
-        .priority-bar {
-            display: flex;
-            align-items: center;
-            margin: 10px 0;
-        }
-        .priority-label {
-            width: 80px;
-            font-weight: bold;
-        }
-        .priority-track {
-            flex: 1;
-            height: 20px;
-            background: #e2e8f0;
-            border-radius: 10px;
-            position: relative;
-            overflow: hidden;
-        }
-        .priority-fill {
-            height: 100%;
-            border-radius: 10px;
-            transition: width 0.3s;
-        }
-        .priority-high { background: linear-gradient(90deg, #e74c3c, #c0392b); }
-        .priority-normal { background: linear-gradient(90deg, #3498db, #2980b9); }
-        .priority-low { background: linear-gradient(90deg, #2ecc71, #27ae60); }
-
-        /* --- CONTROLES DE NAVEGAÇÃO --- */
-        .nav-controls {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 15px;
-            background: white;
-            padding: 10px 20px;
-            border-radius: 50px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            z-index: 100;
-        }
-
-        .nav-btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 25px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
-        }
-        .nav-btn:hover { background: var(--secondary); transform: translateY(-2px); }
-        .nav-btn:disabled { background: #cbd5e0; cursor: not-allowed; transform: none; }
-
-        /* --- DRAG AND DROP QUIZ --- */
-        .drag-drop-container { display: flex; gap: 30px; margin-top: 20px; }
-        .col-questions, .col-answers { flex: 1; }
-
-        .question-item {
-            background: white;
-            border: 2px solid #e2e8f0;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 12px;
-            transition: all 0.3s;
-        }
-        .question-text { font-weight: bold; margin-bottom: 10px; color: var(--text-dark); }
-        
-        .drop-zone {
-            background: #f8fafc;
-            border: 2px dashed #cbd5e0;
-            border-radius: 8px;
-            min-height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.9em;
-            color: var(--text-light);
-            transition: all 0.2s;
-        }
-        .drop-zone.drag-over { background: #e6fffa; border-color: var(--accent-green); }
-        .drop-zone.has-answer { border-style: solid; background: white; border-color: var(--primary); }
-
-        .answer-item {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            padding: 12px 20px;
-            margin-bottom: 10px;
-            border-radius: 8px;
-            cursor: grab;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            font-size: 0.95em;
-            user-select: none;
-            font-family: 'Courier New', monospace;
-        }
-        .answer-item:active { cursor: grabbing; }
-        .answer-item.dragging { opacity: 0.5; }
-        .answer-item.in-drop-zone { margin: 0; width: 100%; box-shadow: none; }
-
-        .quiz-result {
-            margin-top: 30px;
-            padding: 20px;
-            border-radius: 15px;
-            text-align: center;
-            display: none;
-            background: linear-gradient(135deg, #f6ad55 0%, #ed8936 100%);
-            color: white;
-        }
-
-        /* Responsivo */
-        @media (max-width: 768px) {
-            .viewer-container { padding: 10px; margin-top: 70px; }
-            .slide-card { padding: 25px; padding-bottom: 100px; min-height: 70vh; }
-            .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
-            .drag-drop-container { flex-direction: column; }
-            .classroom-header { padding: 10px 15px; }
-            h1.slide-title { font-size: 2em; }
-            h2.slide-subtitle { font-size: 1.5em; }
-            .state-diagram { flex-direction: column; }
-            .state-arrow { transform: rotate(90deg); }
-            .top-simulation { font-size: 0.7em; }
-        }
-    </style>
+    <link rel="stylesheet" href="slide-mode.css">
+    <link rel="stylesheet" href="exercise.css">
+    <link rel="stylesheet" href="lesson.css">
 </head>
 <body>
 
-    <header class="classroom-header">
-        <div style="display: flex; align-items: center; gap: 20px;">
-            <a href="index.html" class="back-btn">
-                <span>←</span> Voltar
-            </a>
-            <div class="lesson-info">
-                <h1>Fundamentos do Linux</h1>
-                <span>Módulo 1 • Aula 05</span>
-            </div>
-        </div>
-        <div class="slide-counter">
-            <span id="current-slide">1</span> / <span id="total-slides">22</span>
-        </div>
-    </header>
+<div class="top-bar">
+    <a href="index.html" class="back-btn">&#x2B05; Voltar ao Dashboard</a>
+    <span class="page-badge">1&ordm; Bimestre &mdash; Linux B&aacute;sico</span>
+    <button class="slide-toggle" id="slideToggleBtn">&#x1F4FA; Modo Slide</button>
+</div>
 
-    <div class="viewer-container">
-        
-        <!-- SLIDE 1: Capa -->
-        <div class="slide-card active">
-            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
-                <div style="font-size: 5em;">⚙️</div>
-                <h1 class="slide-title">Gerenciamento de Processos</h1>
-                <div class="content-box box-highlight" style="text-align: center; font-size: 1.2em;">
-                    <p><strong>Monitoramento, Controle e Otimização</strong></p>
-                    <p style="margin-top: 10px; opacity: 0.8;">Domine o que roda no seu sistema!</p>
-                </div>
-                <div class="box-terminal" style="margin-top: 30px; max-width: 600px;">
-                    <span class="prompt">usuario@linux</span>:~$ <span class="command">ps aux | head -5</span><br>
-                    <span class="output">USER  PID %CPU %MEM   COMMAND</span><br>
-                    <span class="output">root    1  0.0  0.1   /sbin/init</span><br>
-                    <span class="output">root    2  0.0  0.0   [kthreadd]</span><br>
-                    <span class="comment"># Veja tudo que está rodando! 🔍</span>
-                </div>
-                <div class="content-box box-info" style="margin-top: 30px;">
-                    💡 Aprenda a controlar processos como um verdadeiro SysAdmin!
-                </div>
-            </div>
-        </div>
+<div class="content-wrapper">
 
-        <!-- SLIDE 2: O que é um Processo? -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🤔 O que é um Processo?</h2>
-            <div class="content-box box-highlight" style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 1.3em;"><strong>Processo = Programa em execução</strong></p>
-            </div>
-            <div class="grid-2">
-                <div class="content-box box-info">
-                    <h3>📦 Programa vs Processo</h3>
-                    <div class="bullet-point"><strong>Programa:</strong> Arquivo no disco (estático)</div>
-                    <div class="bullet-point"><strong>Processo:</strong> Programa rodando na memória (dinâmico)</div>
-                    <p style="margin-top: 15px;"><strong>Analogia:</strong> Programa é a receita, processo é o bolo sendo feito!</p>
-                </div>
-                <div class="content-box box-success">
-                    <h3>🔢 Cada Processo Tem:</h3>
-                    <div class="bullet-point"><strong>PID:</strong> Número único de identificação</div>
-                    <div class="bullet-point"><strong>PPID:</strong> PID do processo pai</div>
-                    <div class="bullet-point"><strong>Dono:</strong> Usuário que iniciou</div>
-                    <div class="bullet-point"><strong>Prioridade:</strong> Importância para a CPU</div>
-                    <div class="bullet-point"><strong>Estado:</strong> Rodando, dormindo, etc.</div>
-                </div>
-            </div>
-            <div class="box-terminal" style="margin-top: 20px;">
-                <span class="comment"># Todo processo tem um "pai" - exceto o primeiro (init/systemd)</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">pstree</span><br>
-                <span class="output">systemd─┬─apache2───5*[apache2]</span><br>
-                <span class="output">        ├─sshd───sshd───bash───pstree</span><br>
-                <span class="output">        └─mysql───mysqld</span>
-            </div>
-        </div>
-
-        <!-- SLIDE 3: Analogia da Fábrica -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🏭 Analogia: Sistema como uma Fábrica</h2>
-            <div class="content-box box-highlight" style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 1.2em;">Imagine o Linux como uma <strong>fábrica</strong> com vários trabalhadores!</p>
-            </div>
-            <div class="grid-2">
-                <div>
-                    <div class="content-box box-info">
-                        <h3>🏭 A Fábrica (Sistema)</h3>
-                        <div class="bullet-point"><strong>CPU</strong> = Mesas de trabalho</div>
-                        <div class="bullet-point"><strong>Memória RAM</strong> = Espaço de trabalho</div>
-                        <div class="bullet-point"><strong>Processos</strong> = Trabalhadores</div>
-                        <div class="bullet-point"><strong>PID</strong> = Crachá do funcionário</div>
-                    </div>
-                    <div class="content-box box-success">
-                        <h3>👷 Os Trabalhadores (Processos)</h3>
-                        <div class="bullet-point">Cada um faz sua tarefa</div>
-                        <div class="bullet-point">Alguns são mais importantes (prioridade)</div>
-                        <div class="bullet-point">Podem ser pausados ou demitidos (kill)</div>
-                        <div class="bullet-point">Alguns trabalham juntos (threads)</div>
-                    </div>
-                </div>
-                <div>
-                    <div class="content-box box-highlight">
-                        <h3>👨‍💼 Você é o Gerente!</h3>
-                        <div class="bullet-point"><code>ps</code> = Ver lista de funcionários</div>
-                        <div class="bullet-point"><code>top</code> = Monitorar produtividade</div>
-                        <div class="bullet-point"><code>kill</code> = Demitir funcionário</div>
-                        <div class="bullet-point"><code>nice</code> = Definir prioridade</div>
-                        <div class="bullet-point"><code>bg/fg</code> = Mandar para 2º plano</div>
-                    </div>
-                    <div class="content-box box-tip">
-                        <h3>💡 Dica</h3>
-                        <p>Um bom gerente (admin) monitora seus trabalhadores (processos) para manter a fábrica (sistema) funcionando bem!</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 4: Estados dos Processos -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🔄 Estados dos Processos</h2>
-            <div class="grid-4">
-                <div class="content-box box-success" style="text-align: center;">
-                    <div class="process-icon process-running">🏃</div>
-                    <h3 style="color: #27ae60;">Running (R)</h3>
-                    <p>Executando agora ou pronto para executar</p>
-                </div>
-                <div class="content-box box-info" style="text-align: center;">
-                    <div class="process-icon process-sleeping">😴</div>
-                    <h3 style="color: var(--primary);">Sleeping (S)</h3>
-                    <p>Esperando algo (entrada, tempo, etc.)</p>
-                </div>
-                <div class="content-box box-highlight" style="text-align: center;">
-                    <div class="process-icon process-stopped">⏸️</div>
-                    <h3 style="color: #e67e22;">Stopped (T)</h3>
-                    <p>Pausado (Ctrl+Z ou sinal STOP)</p>
-                </div>
-                <div class="content-box box-warning" style="text-align: center;">
-                    <div class="process-icon process-zombie">🧟</div>
-                    <h3 style="color: #c0392b;">Zombie (Z)</h3>
-                    <p>Terminou, mas pai não coletou status</p>
-                </div>
-            </div>
-            <div class="state-diagram" style="margin-top: 30px;">
-                <div class="state-box" style="background: #d1fae5; color: #065f46;">Novo</div>
-                <div class="state-arrow">→</div>
-                <div class="state-box" style="background: #dbeafe; color: #1e40af;">Pronto</div>
-                <div class="state-arrow">→</div>
-                <div class="state-box" style="background: #dcfce7; color: #166534;">Executando</div>
-                <div class="state-arrow">→</div>
-                <div class="state-box" style="background: #fef3c7; color: #92400e;">Esperando</div>
-                <div class="state-arrow">→</div>
-                <div class="state-box" style="background: #fee2e2; color: #991b1b;">Terminado</div>
-            </div>
-            <div class="content-box box-tip" style="margin-top: 20px;">
-                <h3>💡 Processo Zombie?</h3>
-                <p>Não se preocupe! Zombies usam pouquíssimos recursos. São apenas "registros" de processos que terminaram. O sistema limpa automaticamente na maioria dos casos.</p>
-            </div>
-        </div>
-
-        <!-- SLIDE 5: Comando ps - Básico -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">📋 Comando ps - Listando Processos</h2>
-            <div class="content-box box-highlight" style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 1.2em;"><strong>ps</strong> = Process Status (Estado dos Processos)</p>
-            </div>
-            <div class="box-terminal">
-                <span class="comment"># Processos do terminal atual</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">ps</span><br>
-                <span class="output">  PID TTY          TIME CMD</span><br>
-                <span class="output"> 1234 pts/0    00:00:00 bash</span><br>
-                <span class="output"> 1567 pts/0    00:00:00 ps</span><br><br>
-                
-                <span class="comment"># TODOS os processos do sistema (mais usado!)</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">ps aux</span><br>
-                <span class="output">USER       PID %CPU %MEM    VSZ   RSS TTY  STAT START   TIME COMMAND</span><br>
-                <span class="output">root         1  0.0  0.1 169292 11680 ?    Ss   10:00   0:02 /sbin/init</span><br>
-                <span class="output">www-data  1423  0.5  2.1 456780 87654 ?    S    10:05   0:15 apache2</span><br>
-                <span class="output">mysql     2156  1.2  5.4 987654 22100 ?    Sl   10:05   0:45 mysqld</span>
-            </div>
-            <div class="grid-2" style="margin-top: 20px;">
-                <div class="content-box box-info">
-                    <h3>🔧 Opções Comuns</h3>
-                    <div class="bullet-point"><code>ps aux</code> → Todos os processos (BSD)</div>
-                    <div class="bullet-point"><code>ps -ef</code> → Todos os processos (POSIX)</div>
-                    <div class="bullet-point"><code>ps -u usuario</code> → De um usuário</div>
-                </div>
-                <div class="content-box box-success">
-                    <h3>📊 Colunas Importantes</h3>
-                    <div class="bullet-point"><strong>PID</strong> → ID do processo</div>
-                    <div class="bullet-point"><strong>%CPU</strong> → Uso de CPU</div>
-                    <div class="bullet-point"><strong>%MEM</strong> → Uso de memória</div>
-                    <div class="bullet-point"><strong>STAT</strong> → Estado (R, S, T, Z)</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 6: Comando ps - Filtros -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">📋 Comando ps - Filtros Úteis</h2>
-            <div class="box-terminal">
-                <span class="comment"># Buscar processo específico (muito usado!)</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">ps aux | grep apache</span><br>
-                <span class="output">www-data  1423  0.5  2.1 456780 87654 ?  S  10:05  0:15 apache2</span><br>
-                <span class="output">www-data  1424  0.3  1.8 456780 73456 ?  S  10:05  0:10 apache2</span><br><br>
-                
-                <span class="comment"># Ver processos de um usuário específico</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">ps -u mysql</span><br>
-                <span class="output">  PID TTY          TIME CMD</span><br>
-                <span class="output"> 2156 ?        00:00:45 mysqld</span><br><br>
-                
-                <span class="comment"># Ver árvore de processos (quem é pai de quem)</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">ps auxf</span><br>
-                <span class="output">root      1234  bash</span><br>
-                <span class="output">root      1235   \_ vim arquivo.txt</span><br>
-                <span class="output">root      1236   \_ python script.py</span>
-            </div>
-            <div class="content-box box-tip" style="margin-top: 20px;">
-                <h3>💡 Dica Pro: pgrep</h3>
-                <p>Use <code>pgrep nome</code> para encontrar PIDs rapidamente!</p>
-                <div class="box-terminal" style="padding: 15px; margin-top: 10px;">
-                    <span class="prompt">usuario@linux</span>:~$ <span class="command">pgrep apache</span><br>
-                    <span class="output">1423</span><br>
-                    <span class="output">1424</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 7: Comando top - Introdução -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">📊 Comando top - Monitoramento em Tempo Real</h2>
-            <div class="content-box box-highlight" style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 1.2em;"><strong>top</strong> = Monitor de processos em tempo real</p>
-                <p>É como o "Gerenciador de Tarefas" do Linux!</p>
-            </div>
-            <div class="top-simulation">
-<span class="top-header">top - 14:32:15 up 5 days, 3:21, 2 users, load average: 0.52, 0.58, 0.59</span>
-<span class="top-header">Tasks: 203 total,   1 running, 202 sleeping,   0 stopped,   0 zombie</span>
-<span class="top-header">%Cpu(s):  5.2 us,  2.1 sy,  0.0 ni, 92.1 id,  0.5 wa,  0.0 hi,  0.1 si</span>
-<span class="top-header">MiB Mem:   7976.5 total,   1234.2 free,   4521.3 used,   2221.0 buff/cache</span>
-<span class="top-header">MiB Swap:  2048.0 total,   2048.0 free,      0.0 used.   3102.1 avail Mem</span>
-
-  <span class="top-highlight">PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND</span>
-<span class="top-warning"> 2156 mysql     20   0  987654 221000  12340 S   5.3  10.2   0:45.32 mysqld</span>
- 1423 www-data  20   0  456780  87654   8765 S   2.1   4.1   0:15.21 apache2
- 3456 usuario   20   0  234567  45678   5678 S   1.0   2.1   0:05.43 firefox
-    1 root      20   0  169292  11680   8456 S   0.0   0.5   0:02.15 systemd
-            </div>
-            <div class="content-box box-info" style="margin-top: 20px;">
-                <h3>🎯 Informações do Cabeçalho</h3>
-                <div class="bullet-point"><strong>load average:</strong> Carga do sistema (1, 5, 15 min)</div>
-                <div class="bullet-point"><strong>Tasks:</strong> Total de processos e seus estados</div>
-                <div class="bullet-point"><strong>%Cpu:</strong> Uso de CPU (us=usuário, sy=sistema, id=idle)</div>
-                <div class="bullet-point"><strong>Mem/Swap:</strong> Uso de memória RAM e swap</div>
-            </div>
-        </div>
-
-        <!-- SLIDE 8: Comando top - Atalhos -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">📊 Comando top - Atalhos Interativos</h2>
-            <div class="content-box box-highlight" style="text-align: center; margin-bottom: 20px;">
-                <p>Dentro do <code>top</code>, você pode interagir com teclas!</p>
-            </div>
-            <div class="grid-2">
-                <div class="content-box box-info">
-                    <h3>🔧 Ordenação e Visualização</h3>
-                    <table class="reference-table">
-                        <tr><th>Tecla</th><th>Ação</th></tr>
-                        <tr><td><code>P</code></td><td>Ordenar por CPU</td></tr>
-                        <tr><td><code>M</code></td><td>Ordenar por Memória</td></tr>
-                        <tr><td><code>N</code></td><td>Ordenar por PID</td></tr>
-                        <tr><td><code>T</code></td><td>Ordenar por Tempo</td></tr>
-                        <tr><td><code>1</code></td><td>Ver cada CPU separada</td></tr>
-                        <tr><td><code>c</code></td><td>Mostrar caminho completo</td></tr>
-                    </table>
-                </div>
-                <div class="content-box box-success">
-                    <h3>⚡ Ações nos Processos</h3>
-                    <table class="reference-table">
-                        <tr><th>Tecla</th><th>Ação</th></tr>
-                        <tr><td><code>k</code></td><td>Matar processo (pede PID)</td></tr>
-                        <tr><td><code>r</code></td><td>Renive (mudar prioridade)</td></tr>
-                        <tr><td><code>u</code></td><td>Filtrar por usuário</td></tr>
-                        <tr><td><code>h</code></td><td>Ajuda</td></tr>
-                        <tr><td><code>q</code></td><td>Sair do top</td></tr>
-                    </table>
-                </div>
-            </div>
-            <div class="box-terminal" style="margin-top: 20px;">
-                <span class="comment"># Iniciar top já ordenado por memória</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">top -o %MEM</span><br><br>
-                
-                <span class="comment"># Ver apenas processos de um usuário</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">top -u mysql</span><br><br>
-                
-                <span class="comment"># Atualizar a cada 2 segundos (padrão é 3)</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">top -d 2</span>
-            </div>
-        </div>
-
-        <!-- SLIDE 9: htop - Versão Melhorada -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🎨 htop - O top com Esteroides!</h2>
-            <div class="content-box box-highlight" style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 1.2em;"><strong>htop</strong> = top + cores + mouse + usabilidade</p>
-            </div>
-            <div class="grid-2">
-                <div class="content-box box-info">
-                    <h3>✨ Vantagens do htop</h3>
-                    <div class="bullet-point">Interface colorida e intuitiva</div>
-                    <div class="bullet-point">Suporte a mouse (clique para ordenar)</div>
-                    <div class="bullet-point">Barras gráficas de CPU e memória</div>
-                    <div class="bullet-point">Rolagem vertical e horizontal</div>
-                    <div class="bullet-point">Matar processos com F9</div>
-                    <div class="bullet-point">Busca com F3</div>
-                </div>
-                <div class="content-box box-success">
-                    <h3>🔧 Instalação</h3>
-                    <div class="box-terminal" style="padding: 15px; font-size: 0.95em;">
-                        <span class="comment"># Debian/Ubuntu</span><br>
-                        <span class="command">sudo apt install htop</span><br><br>
-                        
-                        <span class="comment"># CentOS/RHEL</span><br>
-                        <span class="command">sudo yum install htop</span><br><br>
-                        
-                        <span class="comment"># Executar</span><br>
-                        <span class="command">htop</span>
-                    </div>
-                </div>
-            </div>
-            <div class="content-box box-tip" style="margin-top: 20px;">
-                <h3>🎯 Teclas de Função no htop</h3>
-                <p><strong>F1</strong>=Ajuda | <strong>F2</strong>=Configurar | <strong>F3</strong>=Buscar | <strong>F4</strong>=Filtrar | <strong>F5</strong>=Árvore | <strong>F6</strong>=Ordenar | <strong>F9</strong>=Kill | <strong>F10</strong>=Sair</p>
-            </div>
-        </div>
-
-        <!-- SLIDE 10: Kill - Introdução -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">💀 Comando kill - Enviando Sinais</h2>
-            <div class="content-box box-highlight" style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 1.2em;"><strong>kill</strong> não é só "matar" - é enviar SINAIS para processos!</p>
-            </div>
-            <div class="grid-2">
-                <div class="content-box box-info">
-                    <h3>📨 O que são Sinais?</h3>
-                    <p>Sinais são <strong>mensagens</strong> que o sistema envia para processos.</p>
-                    <p style="margin-top: 10px;"><strong>Analogia:</strong> É como um chefe mandando recados para funcionários:</p>
-                    <div class="bullet-point">"Termine seu trabalho" (SIGTERM)</div>
-                    <div class="bullet-point">"Pare AGORA!" (SIGKILL)</div>
-                    <div class="bullet-point">"Faça uma pausa" (SIGSTOP)</div>
-                    <div class="bullet-point">"Continue trabalhando" (SIGCONT)</div>
-                </div>
-                <div class="content-box box-success">
-                    <h3>🎯 Sintaxe Básica</h3>
-                    <div class="box-terminal" style="padding: 15px; font-size: 0.95em;">
-                        <span class="comment"># Sintaxe geral</span><br>
-                        <span class="command">kill -SINAL PID</span><br><br>
-                        
-                        <span class="comment"># Exemplo: terminar processo 1234</span><br>
-                        <span class="command">kill 1234</span><br><br>
-                        
-                        <span class="comment"># Forçar término</span><br>
-                        <span class="command">kill -9 1234</span>
-                    </div>
-                </div>
-            </div>
-            <div class="box-terminal" style="margin-top: 20px;">
-                <span class="comment"># Ver lista de todos os sinais disponíveis</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">kill -l</span><br>
-                <span class="output"> 1) SIGHUP   2) SIGINT   3) SIGQUIT  9) SIGKILL</span><br>
-                <span class="output">15) SIGTERM 18) SIGCONT 19) SIGSTOP 20) SIGTSTP</span>
-            </div>
-        </div>
-
-        <!-- SLIDE 11: Kill - Sinais Importantes -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">💀 Sinais Mais Importantes</h2>
-            <div class="grid-3">
-                <div class="signal-box" style="background: linear-gradient(135deg, #38ef7d, #11998e);">
-                    <div class="signal-number">15</div>
-                    <div class="signal-name">SIGTERM</div>
-                    <p style="margin-top: 10px; font-size: 0.9em;">"Por favor, termine"<br>Educado, permite limpeza</p>
-                </div>
-                <div class="signal-box" style="background: linear-gradient(135deg, #e74c3c, #c0392b);">
-                    <div class="signal-number">9</div>
-                    <div class="signal-name">SIGKILL</div>
-                    <p style="margin-top: 10px; font-size: 0.9em;">"MORRA AGORA!"<br>Brutal, não pode ignorar</p>
-                </div>
-                <div class="signal-box" style="background: linear-gradient(135deg, #f39c12, #e67e22);">
-                    <div class="signal-number">1</div>
-                    <div class="signal-name">SIGHUP</div>
-                    <p style="margin-top: 10px; font-size: 0.9em;">"Recarregue config"<br>Usado por daemons</p>
-                </div>
-            </div>
-            <div class="grid-2" style="margin-top: 20px;">
-                <div class="content-box box-info">
-                    <h3>📋 Tabela de Sinais Comuns</h3>
-                    <table class="reference-table">
-                        <tr><th>Número</th><th>Nome</th><th>Uso</th></tr>
-                        <tr><td>1</td><td>SIGHUP</td><td>Recarregar configuração</td></tr>
-                        <tr><td>2</td><td>SIGINT</td><td>Interromper (Ctrl+C)</td></tr>
-                        <tr><td>9</td><td>SIGKILL</td><td>Matar forçado</td></tr>
-                        <tr><td>15</td><td>SIGTERM</td><td>Terminar educadamente</td></tr>
-                        <tr><td>18</td><td>SIGCONT</td><td>Continuar parado</td></tr>
-                        <tr><td>19</td><td>SIGSTOP</td><td>Pausar processo</td></tr>
-                    </table>
-                </div>
-                <div class="content-box box-warning">
-                    <h3>⚠️ SIGKILL vs SIGTERM</h3>
-                    <p><strong>Sempre tente SIGTERM (15) primeiro!</strong></p>
-                    <p style="margin-top: 10px;">SIGTERM permite que o processo:</p>
-                    <div class="bullet-point">Salve dados</div>
-                    <div class="bullet-point">Feche arquivos</div>
-                    <div class="bullet-point">Libere recursos</div>
-                    <p style="margin-top: 10px;">SIGKILL (9) é último recurso - pode corromper dados!</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 12: Kill - Exemplos Práticos -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">💀 kill - Exemplos Práticos</h2>
-            <div class="box-terminal">
-                <span class="comment"># 1. Terminar processo educadamente (SIGTERM - padrão)</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">kill 1234</span><br><br>
-                
-                <span class="comment"># 2. Se não funcionou, forçar (SIGKILL)</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">kill -9 1234</span><br><br>
-                
-                <span class="comment"># 3. Matar pelo nome (todos os processos com esse nome)</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">killall firefox</span><br><br>
-                
-                <span class="comment"># 4. Matar por padrão de nome (regex)</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">pkill -f "python script.py"</span><br><br>
-                
-                <span class="comment"># 5. Recarregar configuração do Apache</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">sudo kill -HUP $(pgrep apache2)</span>
-            </div>
-            <div class="grid-2" style="margin-top: 20px;">
-                <div class="content-box box-info">
-                    <h3>🔧 Variantes do kill</h3>
-                    <div class="bullet-point"><code>kill PID</code> → Por PID específico</div>
-                    <div class="bullet-point"><code>killall nome</code> → Por nome exato</div>
-                    <div class="bullet-point"><code>pkill padrão</code> → Por padrão/regex</div>
-                    <div class="bullet-point"><code>xkill</code> → Clique na janela (GUI)</div>
-                </div>
-                <div class="content-box box-tip">
-                    <h3>💡 Dica: Encontrar e Matar</h3>
-                    <div class="box-terminal" style="padding: 10px; font-size: 0.9em;">
-                        <span class="comment"># Combinação útil</span><br>
-                        <span class="command">pgrep -l firefox</span><br>
-                        <span class="output">4567 firefox</span><br>
-                        <span class="command">kill 4567</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 13: Foreground e Background -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🔄 Foreground e Background</h2>
-            <div class="content-box box-highlight" style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 1.2em;">Processos podem rodar na <strong>frente</strong> ou no <strong>fundo</strong>!</p>
-            </div>
-            <div class="grid-2">
-                <div class="content-box box-info">
-                    <h3>📺 Foreground (Frente)</h3>
-                    <div class="bullet-point">Ocupa o terminal</div>
-                    <div class="bullet-point">Você vê a saída</div>
-                    <div class="bullet-point">Ctrl+C para parar</div>
-                    <div class="bullet-point">Só 1 por terminal</div>
-                    <p style="margin-top: 15px;"><strong>Exemplo:</strong> vim, nano, top</p>
-                </div>
-                <div class="content-box box-success">
-                    <h3>🌙 Background (Fundo)</h3>
-                    <div class="bullet-point">Libera o terminal</div>
-                    <div class="bullet-point">Roda "escondido"</div>
-                    <div class="bullet-point">Pode ter vários</div>
-                    <div class="bullet-point">Use & no final</div>
-                    <p style="margin-top: 15px;"><strong>Exemplo:</strong> downloads, backups</p>
-                </div>
-            </div>
-            <div class="box-terminal" style="margin-top: 20px;">
-                <span class="comment"># Rodar em background (adicione &)</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">cp arquivo_grande.iso /backup/ &</span><br>
-                <span class="output">[1] 5678</span> <span class="comment"># Job 1, PID 5678</span><br><br>
-                
-                <span class="comment"># Ver jobs em background</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">jobs</span><br>
-                <span class="output">[1]+  Running  cp arquivo_grande.iso /backup/ &</span>
-            </div>
-        </div>
-
-        <!-- SLIDE 14: Ctrl+Z, bg, fg -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">⌨️ Controles: Ctrl+Z, bg, fg</h2>
-            <div class="box-terminal">
-                <span class="comment"># 1. Rodar um comando que demora...</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">find / -name "*.log" 2>/dev/null</span><br>
-                <span class="output">(processando...)</span><br><br>
-                
-                <span class="comment"># 2. Ops! Preciso do terminal. Pressione Ctrl+Z</span><br>
-                <span class="output">^Z</span><br>
-                <span class="output">[1]+  Stopped  find / -name "*.log"</span><br><br>
-                
-                <span class="comment"># 3. Mandar para background e continuar</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">bg</span><br>
-                <span class="output">[1]+ find / -name "*.log" &</span><br><br>
-                
-                <span class="comment"># 4. Trazer de volta para foreground</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">fg</span><br>
-                <span class="output">find / -name "*.log"</span>
-            </div>
-            <div class="grid-3" style="margin-top: 20px;">
-                <div class="command-card">
-                    <div class="cmd">Ctrl+Z</div>
-                    <h4>Pausar</h4>
-                    <p>Suspende o processo atual</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">bg</div>
-                    <h4>Background</h4>
-                    <p>Continua em segundo plano</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">fg</div>
-                    <h4>Foreground</h4>
-                    <p>Traz para primeiro plano</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 15: nohup e disown -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🔒 nohup e disown - Processos Persistentes</h2>
-            <div class="content-box box-highlight" style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 1.1em;">E se eu fechar o terminal? O processo morre!</p>
-                <p><strong>nohup</strong> e <strong>disown</strong> resolvem isso.</p>
-            </div>
-            <div class="grid-2">
-                <div class="content-box box-info">
-                    <h3>📌 nohup (No Hang Up)</h3>
-                    <p>Protege o processo de ser terminado quando você fecha o terminal.</p>
-                    <div class="box-terminal" style="padding: 15px; font-size: 0.95em; margin-top: 10px;">
-                        <span class="comment"># Rodar script que sobrevive ao logout</span><br>
-                        <span class="command">nohup python backup.py &</span><br>
-                        <span class="output">nohup: saída anexada a 'nohup.out'</span>
-                    </div>
-                </div>
-                <div class="content-box box-success">
-                    <h3>🔓 disown</h3>
-                    <p>Remove job da lista do shell atual (já rodando).</p>
-                    <div class="box-terminal" style="padding: 15px; font-size: 0.95em; margin-top: 10px;">
-                        <span class="comment"># Já iniciou? Use disown!</span><br>
-                        <span class="command">./script_longo.sh &</span><br>
-                        <span class="command">disown</span><br>
-                        <span class="comment"># Agora pode fechar o terminal</span>
-                    </div>
-                </div>
-            </div>
-            <div class="content-box box-tip" style="margin-top: 20px;">
-                <h3>💡 Quando Usar</h3>
-                <p><strong>nohup:</strong> Antes de iniciar um processo longo (backups, downloads)</p>
-                <p><strong>disown:</strong> Esqueceu o nohup? Use disown depois de iniciar com &</p>
-                <p><strong>screen/tmux:</strong> Para sessões complexas, considere usar screen ou tmux!</p>
-            </div>
-        </div>
-
-        <!-- SLIDE 16: nice e renice - Prioridades -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">⚖️ nice e renice - Prioridades</h2>
-            <div class="content-box box-highlight" style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 1.2em;">Nem todo processo tem a mesma importância!</p>
-                <p><strong>nice</strong> = "gentileza" (quanto maior, menos prioridade)</p>
-            </div>
-            <div class="content-box box-info">
-                <h3>📊 Escala de Prioridade (nice)</h3>
-                <div class="priority-bar">
-                    <span class="priority-label">-20</span>
-                    <div class="priority-track">
-                        <div class="priority-fill priority-high" style="width: 100%;"></div>
-                    </div>
-                    <span style="margin-left: 10px;">Maior prioridade (egoísta)</span>
-                </div>
-                <div class="priority-bar">
-                    <span class="priority-label">0</span>
-                    <div class="priority-track">
-                        <div class="priority-fill priority-normal" style="width: 50%;"></div>
-                    </div>
-                    <span style="margin-left: 10px;">Normal (padrão)</span>
-                </div>
-                <div class="priority-bar">
-                    <span class="priority-label">+19</span>
-                    <div class="priority-track">
-                        <div class="priority-fill priority-low" style="width: 10%;"></div>
-                    </div>
-                    <span style="margin-left: 10px;">Menor prioridade (gentil)</span>
-                </div>
-            </div>
-            <div class="box-terminal" style="margin-top: 20px;">
-                <span class="comment"># Iniciar processo com prioridade baixa (gentil com outros)</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">nice -n 10 tar -czf backup.tar.gz /home</span><br><br>
-                
-                <span class="comment"># Mudar prioridade de processo já rodando</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">renice -n 5 -p 1234</span><br>
-                <span class="output">1234 (process ID) old priority 0, new priority 5</span><br><br>
-                
-                <span class="comment"># Só root pode aumentar prioridade (nice negativo)</span><br>
-                <span class="root-prompt">root@linux</span>:~# <span class="command">nice -n -10 ./processo_importante</span>
-            </div>
-        </div>
-
-        <!-- SLIDE 17: Monitoramento com outros comandos -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">📈 Outros Comandos de Monitoramento</h2>
-            <div class="grid-2">
-                <div class="content-box box-info">
-                    <h3>💾 free - Memória</h3>
-                    <div class="box-terminal" style="padding: 15px; font-size: 0.9em;">
-                        <span class="command">free -h</span><br>
-                        <span class="output">       total  used  free  shared  cache  avail</span><br>
-                        <span class="output">Mem:   7.8G  4.2G  1.1G   234M   2.5G  3.1G</span><br>
-                        <span class="output">Swap:  2.0G    0B  2.0G</span>
-                    </div>
-                </div>
-                <div class="content-box box-success">
-                    <h3>📊 uptime - Carga do Sistema</h3>
-                    <div class="box-terminal" style="padding: 15px; font-size: 0.9em;">
-                        <span class="command">uptime</span><br>
-                        <span class="output">14:32:15 up 5 days, 3:21,</span><br>
-                        <span class="output">2 users, load: 0.52, 0.58, 0.59</span>
-                    </div>
-                </div>
-            </div>
-            <div class="grid-2" style="margin-top: 15px;">
-                <div class="content-box box-highlight">
-                    <h3>🔢 vmstat - Estatísticas</h3>
-                    <div class="box-terminal" style="padding: 15px; font-size: 0.9em;">
-                        <span class="command">vmstat 1 5</span> <span class="comment"># A cada 1s, 5x</span><br>
-                        <span class="output">procs ---memory--- --io-- -system-</span><br>
-                        <span class="output"> r  b   swpd  free  bi bo  in  cs</span><br>
-                        <span class="output"> 1  0      0  1.1G   5  3 156 298</span>
-                    </div>
-                </div>
-                <div class="content-box box-tip">
-                    <h3>📂 lsof - Arquivos Abertos</h3>
-                    <div class="box-terminal" style="padding: 15px; font-size: 0.9em;">
-                        <span class="comment"># Quem está usando a porta 80?</span><br>
-                        <span class="command">lsof -i :80</span><br>
-                        <span class="output">apache2 1423 www-data TCP *:80</span>
-                    </div>
-                </div>
-            </div>
-            <div class="content-box box-info" style="margin-top: 15px;">
-                <h3>🔍 Resumo de Comandos</h3>
-                <p><code>free -h</code> = Memória | <code>uptime</code> = Carga | <code>vmstat</code> = Estatísticas | <code>lsof</code> = Arquivos/Portas | <code>iostat</code> = Disco</p>
-            </div>
-        </div>
-
-        <!-- SLIDE 18: systemctl - Serviços -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🔧 systemctl - Gerenciando Serviços</h2>
-            <div class="content-box box-highlight" style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 1.1em;"><strong>Serviços (daemons)</strong> são processos que rodam em background</p>
-                <p>Apache, MySQL, SSH, etc. são gerenciados pelo <strong>systemd</strong></p>
-            </div>
-            <div class="box-terminal">
-                <span class="comment"># Ver status de um serviço</span><br>
-                <span class="prompt">usuario@linux</span>:~$ <span class="command">sudo systemctl status apache2</span><br>
-                <span class="output">● apache2.service - The Apache HTTP Server</span><br>
-                <span class="output">   Loaded: loaded (/lib/systemd/system/apache2.service)</span><br>
-                <span class="output">   Active: <span class="highlight">active (running)</span> since Mon 2024-01-15 10:00:00</span><br><br>
-                
-                <span class="comment"># Iniciar / Parar / Reiniciar</span><br>
-                <span class="root-prompt">root@linux</span>:~# <span class="command">systemctl start apache2</span><br>
-                <span class="root-prompt">root@linux</span>:~# <span class="command">systemctl stop apache2</span><br>
-                <span class="root-prompt">root@linux</span>:~# <span class="command">systemctl restart apache2</span><br><br>
-                
-                <span class="comment"># Habilitar/Desabilitar no boot</span><br>
-                <span class="root-prompt">root@linux</span>:~# <span class="command">systemctl enable apache2</span><br>
-                <span class="root-prompt">root@linux</span>:~# <span class="command">systemctl disable apache2</span>
-            </div>
-            <div class="content-box box-tip" style="margin-top: 15px;">
-                <h3>💡 Diferença: start vs enable</h3>
-                <p><strong>start/stop:</strong> Inicia/para AGORA</p>
-                <p><strong>enable/disable:</strong> Inicia/não inicia no BOOT</p>
-            </div>
-        </div>
-
-        <!-- SLIDE 19: Caso Prático -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🎯 Caso Prático: Servidor Lento</h2>
-            <div class="content-box box-warning" style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 1.1em;">😱 O servidor está lento! Como investigar?</p>
-            </div>
-            <div class="box-terminal">
-                <span class="comment"># 1. Verificar carga do sistema</span><br>
-                <span class="prompt">admin@server</span>:~$ <span class="command">uptime</span><br>
-                <span class="output">load average: <span class="highlight">8.52</span>, 7.21, 5.43</span> <span class="comment"># Alto! Normal seria < 1</span><br><br>
-                
-                <span class="comment"># 2. Ver quem está consumindo CPU/Memória</span><br>
-                <span class="prompt">admin@server</span>:~$ <span class="command">top -o %CPU</span><br>
-                <span class="output">PID   %CPU %MEM  COMMAND</span><br>
-                <span class="output"><span class="highlight">9876  95.2  45.1  python loop_infinito.py</span></span> <span class="comment"># Vilão!</span><br><br>
-                
-                <span class="comment"># 3. Investigar o processo</span><br>
-                <span class="prompt">admin@server</span>:~$ <span class="command">ps aux | grep 9876</span><br>
-                <span class="output">joao  9876  95.2  45.1  python loop_infinito.py</span><br><br>
-                
-                <span class="comment"># 4. Matar o processo problemático</span><br>
-                <span class="prompt">admin@server</span>:~$ <span class="command">kill 9876</span><br>
-                <span class="comment"># Se não funcionar: kill -9 9876</span><br><br>
-                
-                <span class="comment"># 5. Verificar se melhorou</span><br>
-                <span class="prompt">admin@server</span>:~$ <span class="command">uptime</span><br>
-                <span class="output">load average: 0.52, 2.21, 4.43</span> <span class="comment"># Voltando ao normal!</span>
-            </div>
-        </div>
-
-        <!-- SLIDE 20: Resumo dos Comandos -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">📋 Resumo: Comandos de Processos</h2>
-            <div class="grid-3">
-                <div class="command-card">
-                    <div class="cmd">ps aux</div>
-                    <h4>Listar Processos</h4>
-                    <p>Snapshot atual</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">top / htop</div>
-                    <h4>Monitorar</h4>
-                    <p>Tempo real</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">kill PID</div>
-                    <h4>Terminar</h4>
-                    <p>Enviar sinal</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">killall nome</div>
-                    <h4>Matar por Nome</h4>
-                    <p>Todos com esse nome</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">bg / fg</div>
-                    <h4>Background/Fore</h4>
-                    <p>Alternar plano</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">nice / renice</div>
-                    <h4>Prioridade</h4>
-                    <p>-20 a +19</p>
-                </div>
-            </div>
-            <div class="grid-3" style="margin-top: 15px;">
-                <div class="command-card">
-                    <div class="cmd">pgrep</div>
-                    <h4>Buscar PID</h4>
-                    <p>Por nome</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">nohup</div>
-                    <h4>Persistir</h4>
-                    <p>Sobrevive logout</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">systemctl</div>
-                    <h4>Serviços</h4>
-                    <p>start/stop/status</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 21: Quiz Interativo -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🎯 Desafio Interativo</h2>
-            <p style="text-align: center; margin-bottom: 20px;">Arraste os comandos para suas funções corretas!</p>
-            
-            <div class="drag-drop-container">
-                <div class="col-questions">
-                    <div class="question-item">
-                        <div class="question-text">Listar todos os processos</div>
-                        <div class="drop-zone" data-correct="ps aux">Arraste aqui</div>
-                    </div>
-                    <div class="question-item">
-                        <div class="question-text">Monitoramento em tempo real</div>
-                        <div class="drop-zone" data-correct="top">Arraste aqui</div>
-                    </div>
-                    <div class="question-item">
-                        <div class="question-text">Matar processo forçado</div>
-                        <div class="drop-zone" data-correct="kill -9">Arraste aqui</div>
-                    </div>
-                    <div class="question-item">
-                        <div class="question-text">Mandar para segundo plano</div>
-                        <div class="drop-zone" data-correct="bg">Arraste aqui</div>
-                    </div>
-                    <div class="question-item">
-                        <div class="question-text">Mudar prioridade</div>
-                        <div class="drop-zone" data-correct="renice">Arraste aqui</div>
-                    </div>
-                    <div class="question-item">
-                        <div class="question-text">Gerenciar serviços</div>
-                        <div class="drop-zone" data-correct="systemctl">Arraste aqui</div>
-                    </div>
-                </div>
-
-                <div class="col-answers" id="answersPool">
-                </div>
-            </div>
-
-            <div style="text-align: center; margin-top: 20px; display: flex; gap: 10px; justify-content: center;">
-                <button onclick="checkAnswers()" class="nav-btn" style="background: var(--accent-green);">✅ Verificar</button>
-                <button onclick="resetQuiz()" class="nav-btn" style="background: var(--accent-red);">🔄 Reiniciar</button>
-            </div>
-
-            <div id="quizResult" class="quiz-result"></div>
-        </div>
-
-        <!-- SLIDE 22: Conclusão -->
-        <div class="slide-card">
-            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center;">
-                <div style="font-size: 4em; margin-bottom: 20px;">🎓⚙️</div>
-                <h2 class="slide-subtitle" style="border: none;">Parabéns! Você completou a Aula 05!</h2>
-                <div class="content-box box-success" style="max-width: 700px;">
-                    <h3>📚 O que aprendemos hoje:</h3>
-                    <div class="grid-2" style="text-align: left; margin-top: 15px;">
-                        <div>
-                            <div class="bullet-point">O que são processos e PIDs</div>
-                            <div class="bullet-point">Estados: Running, Sleeping, Stopped</div>
-                            <div class="bullet-point">Comandos ps e top/htop</div>
-                        </div>
-                        <div>
-                            <div class="bullet-point">Sinais kill (SIGTERM, SIGKILL)</div>
-                            <div class="bullet-point">Foreground e Background</div>
-                            <div class="bullet-point">Prioridades com nice/renice</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="content-box box-info" style="max-width: 700px; margin-top: 20px;">
-                    <h3>🔜 Na próxima aula:</h3>
-                    <p>Vamos aprender sobre <strong>Gerenciamento de Pacotes</strong>! apt, yum, dnf e mais.</p>
-                </div>
-                <div class="content-box box-tip" style="max-width: 700px; margin-top: 20px;">
-                    <h3>💡 Lembrete Final</h3>
-                    <p>Sempre use <code>kill</code> (SIGTERM) antes de <code>kill -9</code> (SIGKILL)!</p>
-                </div>
-                <div style="margin-top: 40px;">
-                    <a href="dashboard.html" class="nav-btn" style="font-size: 1.2em; padding: 15px 40px;">
-                        Voltar para o Dashboard 🏠
-                    </a>
-                </div>
-            </div>
-        </div>
-
+    <div class="lesson-hero">
+        <h1>⚙️ Gerenciamento de Processos</h1>
+        <p class="subtitle">Monitoramento, Controle e Otimiza&ccedil;&atilde;o &mdash; Domine o que roda no seu sistema!</p>
     </div>
 
-    <div class="nav-controls">
-        <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">⬅️ Anterior</button>
-        <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Próximo ➡️</button>
+    <!-- Card 1: O que e um Processo? -->
+    <div class="content-card">
+        <h2>🤔 O que &eacute; um Processo?</h2>
+        <div class="highlight-box">
+            <p><strong>Processo = Programa em execu&ccedil;&atilde;o</strong></p>
+        </div>
+        <table class="cmp-table">
+            <tr>
+                <th>Conceito</th>
+                <th>Descri&ccedil;&atilde;o</th>
+            </tr>
+            <tr>
+                <td><strong>Programa</strong></td>
+                <td>Arquivo no disco (est&aacute;tico)</td>
+            </tr>
+            <tr>
+                <td><strong>Processo</strong></td>
+                <td>Programa rodando na mem&oacute;ria (din&acirc;mico)</td>
+            </tr>
+        </table>
+        <p style="margin-top: 1em;"><strong>Analogia:</strong> Programa &eacute; a receita, processo &eacute; o bolo sendo feito!</p>
+        <p style="margin-top: 0.5em;">Cada processo tem:</p>
+        <ul>
+            <li><strong>PID</strong> &mdash; N&uacute;mero &uacute;nico de identifica&ccedil;&atilde;o</li>
+            <li><strong>PPID</strong> &mdash; PID do processo pai</li>
+            <li><strong>Dono</strong> &mdash; Usu&aacute;rio que iniciou</li>
+            <li><strong>Prioridade</strong> &mdash; Import&acirc;ncia para a CPU</li>
+            <li><strong>Estado</strong> &mdash; Rodando, dormindo, etc.</li>
+        </ul>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">&aacute;rvore de processos</span>
+            </div>
+            <div class="terminal-body">
+                <span class="t-comment"># Todo processo tem um "pai" - exceto o primeiro (init/systemd)</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">pstree</span><br>
+                <span class="t-out">systemd&mdash;&boxur;&mdash;apache2&mdash;&mdash;5*[apache2]</span><br>
+                <span class="t-out">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&boxvr;&mdash;sshd&mdash;&mdash;sshd&mdash;&mdash;bash&mdash;&mdash;pstree</span><br>
+                <span class="t-out">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&boxur;&mdash;mysql&mdash;&mdash;mysqld</span>
+            </div>
+        </div>
     </div>
 
-    <script>
-        // === LÓGICA DE NAVEGAÇÃO ===
-        let currentSlide = 0;
-        const slides = document.querySelectorAll('.slide-card');
-        const totalSlides = slides.length;
+    <!-- Card 2: Analogia da Fabrica -->
+    <div class="content-card">
+        <h2>🏭 Analogia: Sistema como uma F&aacute;brica</h2>
+        <p>Imagine o Linux como uma <strong>f&aacute;brica</strong> com v&aacute;rios trabalhadores!</p>
+        <table class="cmp-table">
+            <tr>
+                <th>F&aacute;brica (Sistema)</th>
+                <th>Equivalente Linux</th>
+            </tr>
+            <tr><td>Mesas de trabalho</td><td><strong>CPU</strong></td></tr>
+            <tr><td>Espa&ccedil;o de trabalho</td><td><strong>Mem&oacute;ria RAM</strong></td></tr>
+            <tr><td>Trabalhadores</td><td><strong>Processos</strong></td></tr>
+            <tr><td>Crachá do funcion&aacute;rio</td><td><strong>PID</strong></td></tr>
+        </table>
+        <p style="margin-top: 1em;">Voc&ecirc; &eacute; o <strong>gerente</strong>! Seus comandos:</p>
+        <ul>
+            <li><code>ps</code> &mdash; Ver lista de funcion&aacute;rios</li>
+            <li><code>top</code> &mdash; Monitorar produtividade</li>
+            <li><code>kill</code> &mdash; Demitir funcion&aacute;rio</li>
+            <li><code>nice</code> &mdash; Definir prioridade</li>
+            <li><code>bg/fg</code> &mdash; Mandar para 2&ordm; plano</li>
+        </ul>
+    </div>
 
-        document.getElementById('total-slides').textContent = totalSlides;
+    <!-- Card 3: Estados dos Processos -->
+    <div class="content-card">
+        <h2>🔄 Estados dos Processos</h2>
+        <table class="cmp-table">
+            <tr>
+                <th>Estado</th>
+                <th>C&oacute;digo</th>
+                <th>Descri&ccedil;&atilde;o</th>
+            </tr>
+            <tr>
+                <td>🏃 Running</td>
+                <td><code>R</code></td>
+                <td>Executando agora ou pronto para executar</td>
+            </tr>
+            <tr>
+                <td>😴 Sleeping</td>
+                <td><code>S</code></td>
+                <td>Esperando algo (entrada, tempo, etc.)</td>
+            </tr>
+            <tr>
+                <td>⏸️ Stopped</td>
+                <td><code>T</code></td>
+                <td>Pausado (Ctrl+Z ou sinal STOP)</td>
+            </tr>
+            <tr>
+                <td>🧟 Zombie</td>
+                <td><code>Z</code></td>
+                <td>Terminou, mas pai n&atilde;o coletou status</td>
+            </tr>
+        </table>
+        <p style="margin-top: 1em; text-align: center;">
+            <strong>Novo</strong> &rarr; <strong>Pronto</strong> &rarr; <strong>Executando</strong> &rarr; <strong>Esperando</strong> &rarr; <strong>Terminado</strong>
+        </p>
+        <div class="tip-box">
+            <p>💡 <strong>Processo Zombie?</strong> N&atilde;o se preocupe! Zombies usam pouqu&iacute;ssimos recursos. S&atilde;o apenas "registros" de processos que terminaram. O sistema limpa automaticamente na maioria dos casos.</p>
+        </div>
+    </div>
 
-        function showSlide(index) {
-            slides.forEach((slide, i) => {
-                slide.classList.toggle('active', i === index);
-            });
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            
-            document.getElementById('current-slide').textContent = index + 1;
-            document.getElementById('prevBtn').disabled = index === 0;
-            document.getElementById('nextBtn').disabled = index === totalSlides - 1;
-        }
+    <!-- Card 4: Comando ps -->
+    <div class="content-card">
+        <h2>📋 Comando ps &mdash; Listando Processos</h2>
+        <div class="highlight-box">
+            <p><strong>ps</strong> = Process Status (Estado dos Processos)</p>
+        </div>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">ps &mdash; exemplos b&aacute;sicos</span>
+            </div>
+            <div class="terminal-body">
+                <span class="t-comment"># Processos do terminal atual</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">ps</span><br>
+                <span class="t-out">&nbsp;&nbsp;PID TTY&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TIME CMD</span><br>
+                <span class="t-out">&nbsp;1234 pts/0&nbsp;&nbsp;&nbsp;&nbsp;00:00:00 bash</span><br>
+                <span class="t-out">&nbsp;1567 pts/0&nbsp;&nbsp;&nbsp;&nbsp;00:00:00 ps</span><br><br>
+                <span class="t-comment"># TODOS os processos do sistema (mais usado!)</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">ps aux</span><br>
+                <span class="t-out">USER&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PID %CPU %MEM&nbsp;&nbsp;&nbsp;&nbsp;VSZ&nbsp;&nbsp;&nbsp;RSS TTY&nbsp;&nbsp;STAT START&nbsp;&nbsp;&nbsp;TIME COMMAND</span><br>
+                <span class="t-out">root&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;&nbsp;0.0&nbsp;&nbsp;0.1 169292 11680 ?&nbsp;&nbsp;&nbsp;&nbsp;Ss&nbsp;&nbsp; 10:00&nbsp;&nbsp; 0:02 /sbin/init</span><br>
+                <span class="t-out">www-data&nbsp;&nbsp;1423&nbsp;&nbsp;0.5&nbsp;&nbsp;2.1 456780 87654 ?&nbsp;&nbsp;&nbsp;&nbsp;S&nbsp;&nbsp;&nbsp; 10:05&nbsp;&nbsp; 0:15 apache2</span><br>
+                <span class="t-out">mysql&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2156&nbsp;&nbsp;1.2&nbsp;&nbsp;5.4 987654 22100 ?&nbsp;&nbsp;&nbsp;&nbsp;Sl&nbsp;&nbsp; 10:05&nbsp;&nbsp; 0:45 mysqld</span>
+            </div>
+        </div>
+        <table class="cmp-table">
+            <tr>
+                <th>Op&ccedil;&atilde;o</th>
+                <th>Descri&ccedil;&atilde;o</th>
+            </tr>
+            <tr><td><code>ps aux</code></td><td>Todos os processos (BSD)</td></tr>
+            <tr><td><code>ps -ef</code></td><td>Todos os processos (POSIX)</td></tr>
+            <tr><td><code>ps -u usuario</code></td><td>Processos de um usu&aacute;rio espec&iacute;fico</td></tr>
+            <tr><td><strong>PID</strong></td><td>ID do processo</td></tr>
+            <tr><td><strong>%CPU</strong></td><td>Uso de CPU</td></tr>
+            <tr><td><strong>%MEM</strong></td><td>Uso de mem&oacute;ria</td></tr>
+            <tr><td><strong>STAT</strong></td><td>Estado (R, S, T, Z)</td></tr>
+        </table>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">ps &mdash; filtros &uacute;teis</span>
+            </div>
+            <div class="terminal-body">
+                <span class="t-comment"># Buscar processo espec&iacute;fico (muito usado!)</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">ps aux | grep apache</span><br>
+                <span class="t-out">www-data&nbsp;&nbsp;1423&nbsp;&nbsp;0.5&nbsp;&nbsp;2.1 456780 87654 ?&nbsp;&nbsp;S&nbsp;&nbsp;10:05&nbsp;&nbsp;0:15 apache2</span><br><br>
+                <span class="t-comment"># Ver processos de um usu&aacute;rio espec&iacute;fico</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">ps -u mysql</span><br>
+                <span class="t-out">&nbsp;&nbsp;PID TTY&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TIME CMD</span><br>
+                <span class="t-out">&nbsp;2156 ?&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;00:00:45 mysqld</span><br><br>
+                <span class="t-comment"># Ver &aacute;rvore de processos (quem &eacute; pai de quem)</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">ps auxf</span><br>
+                <span class="t-out">root&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1234&nbsp;&nbsp;bash</span><br>
+                <span class="t-out">root&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1235&nbsp;&nbsp;&nbsp;\_ vim arquivo.txt</span><br>
+                <span class="t-out">root&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1236&nbsp;&nbsp;&nbsp;\_ python script.py</span>
+            </div>
+        </div>
+        <div class="tip-box">
+            <p>💡 <strong>Dica Pro: pgrep</strong> &mdash; Use <code>pgrep nome</code> para encontrar PIDs rapidamente!</p>
+        </div>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">pgrep</span>
+            </div>
+            <div class="terminal-body">
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">pgrep apache</span><br>
+                <span class="t-out">1423</span><br>
+                <span class="t-out">1424</span>
+            </div>
+        </div>
+    </div>
 
-        function changeSlide(direction) {
-            const newSlide = currentSlide + direction;
-            if (newSlide >= 0 && newSlide < totalSlides) {
-                currentSlide = newSlide;
-                showSlide(currentSlide);
-            }
-        }
+    <!-- Card 5: Comando top -->
+    <div class="content-card">
+        <h2>📊 Comando top &mdash; Monitoramento em Tempo Real</h2>
+        <div class="highlight-box">
+            <p><strong>top</strong> = Monitor de processos em tempo real. &Eacute; como o "Gerenciador de Tarefas" do Linux!</p>
+        </div>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">sa&iacute;da do top</span>
+            </div>
+            <div class="terminal-body">
+                <span class="t-out">top - 14:32:15 up 5 days, 3:21, 2 users, load average: 0.52, 0.58, 0.59</span><br>
+                <span class="t-out">Tasks: 203 total,&nbsp;&nbsp;&nbsp;1 running, 202 sleeping,&nbsp;&nbsp;&nbsp;0 stopped,&nbsp;&nbsp;&nbsp;0 zombie</span><br>
+                <span class="t-out">%Cpu(s):&nbsp;&nbsp;5.2 us,&nbsp;&nbsp;2.1 sy,&nbsp;&nbsp;0.0 ni, 92.1 id,&nbsp;&nbsp;0.5 wa,&nbsp;&nbsp;0.0 hi,&nbsp;&nbsp;0.1 si</span><br>
+                <span class="t-out">MiB Mem:&nbsp;&nbsp;&nbsp;7976.5 total,&nbsp;&nbsp;&nbsp;1234.2 free,&nbsp;&nbsp;&nbsp;4521.3 used,&nbsp;&nbsp;&nbsp;2221.0 buff/cache</span><br><br>
+                <span class="t-out">&nbsp;&nbsp;PID USER&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PR&nbsp;&nbsp;NI&nbsp;&nbsp;&nbsp;&nbsp;VIRT&nbsp;&nbsp;&nbsp;&nbsp;RES&nbsp;&nbsp;&nbsp;&nbsp;SHR S&nbsp;&nbsp;%CPU&nbsp;&nbsp;%MEM&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TIME+ COMMAND</span><br>
+                <span class="t-out">&nbsp;2156 mysql&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;20&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;987654 221000&nbsp;&nbsp;12340 S&nbsp;&nbsp;&nbsp;5.3&nbsp;&nbsp;10.2&nbsp;&nbsp;&nbsp;0:45.32 mysqld</span><br>
+                <span class="t-out">&nbsp;1423 www-data&nbsp;&nbsp;20&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;456780&nbsp;&nbsp;87654&nbsp;&nbsp;&nbsp;8765 S&nbsp;&nbsp;&nbsp;2.1&nbsp;&nbsp;&nbsp;4.1&nbsp;&nbsp;&nbsp;0:15.21 apache2</span><br>
+                <span class="t-out">&nbsp;3456 usuario&nbsp;&nbsp;&nbsp;20&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;234567&nbsp;&nbsp;45678&nbsp;&nbsp;&nbsp;5678 S&nbsp;&nbsp;&nbsp;1.0&nbsp;&nbsp;&nbsp;2.1&nbsp;&nbsp;&nbsp;0:05.43 firefox</span>
+            </div>
+        </div>
+        <p style="margin-top: 1em;">Informa&ccedil;&otilde;es do cabe&ccedil;alho:</p>
+        <ul>
+            <li><strong>load average:</strong> Carga do sistema (1, 5, 15 min)</li>
+            <li><strong>Tasks:</strong> Total de processos e seus estados</li>
+            <li><strong>%Cpu:</strong> Uso de CPU (us=usu&aacute;rio, sy=sistema, id=idle)</li>
+            <li><strong>Mem/Swap:</strong> Uso de mem&oacute;ria RAM e swap</li>
+        </ul>
+        <table class="cmp-table">
+            <tr>
+                <th>Tecla</th>
+                <th>A&ccedil;&atilde;o (dentro do top)</th>
+            </tr>
+            <tr><td><code>P</code></td><td>Ordenar por CPU</td></tr>
+            <tr><td><code>M</code></td><td>Ordenar por Mem&oacute;ria</td></tr>
+            <tr><td><code>N</code></td><td>Ordenar por PID</td></tr>
+            <tr><td><code>T</code></td><td>Ordenar por Tempo</td></tr>
+            <tr><td><code>1</code></td><td>Ver cada CPU separada</td></tr>
+            <tr><td><code>k</code></td><td>Matar processo (pede PID)</td></tr>
+            <tr><td><code>u</code></td><td>Filtrar por usu&aacute;rio</td></tr>
+            <tr><td><code>q</code></td><td>Sair do top</td></tr>
+        </table>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">op&ccedil;&otilde;es do top</span>
+            </div>
+            <div class="terminal-body">
+                <span class="t-comment"># Iniciar top j&aacute; ordenado por mem&oacute;ria</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">top -o %MEM</span><br><br>
+                <span class="t-comment"># Ver apenas processos de um usu&aacute;rio</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">top -u mysql</span><br><br>
+                <span class="t-comment"># Atualizar a cada 2 segundos (padr&atilde;o &eacute; 3)</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">top -d 2</span>
+            </div>
+        </div>
+    </div>
 
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowLeft') changeSlide(-1);
-            if (e.key === 'ArrowRight') changeSlide(1);
-        });
+    <!-- Card 6: htop -->
+    <div class="content-card">
+        <h2>🎨 htop &mdash; O top com Ester&oacute;ides!</h2>
+        <div class="highlight-box">
+            <p><strong>htop</strong> = top + cores + mouse + usabilidade</p>
+        </div>
+        <p>Vantagens do htop:</p>
+        <ul>
+            <li>Interface colorida e intuitiva</li>
+            <li>Suporte a mouse (clique para ordenar)</li>
+            <li>Barras gr&aacute;ficas de CPU e mem&oacute;ria</li>
+            <li>Rolagem vertical e horizontal</li>
+            <li>Matar processos com F9</li>
+            <li>Busca com F3</li>
+        </ul>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">instala&ccedil;&atilde;o e uso</span>
+            </div>
+            <div class="terminal-body">
+                <span class="t-comment"># Debian/Ubuntu</span><br>
+                <span class="t-cmd">sudo apt install htop</span><br><br>
+                <span class="t-comment"># CentOS/RHEL</span><br>
+                <span class="t-cmd">sudo yum install htop</span><br><br>
+                <span class="t-comment"># Executar</span><br>
+                <span class="t-cmd">htop</span>
+            </div>
+        </div>
+        <div class="tip-box">
+            <p>💡 <strong>Teclas de Fun&ccedil;&atilde;o no htop:</strong><br>
+            F1=Ajuda | F2=Configurar | F3=Buscar | F4=Filtrar | F5=&Aacute;rvore | F6=Ordenar | F9=Kill | F10=Sair</p>
+        </div>
+    </div>
 
-        // === LÓGICA DO QUIZ ===
-        const answersData = [
-            { id: 'ps aux', text: 'ps aux' },
-            { id: 'top', text: 'top' },
-            { id: 'kill -9', text: 'kill -9' },
-            { id: 'bg', text: 'bg' },
-            { id: 'renice', text: 'renice' },
-            { id: 'systemctl', text: 'systemctl' }
-        ];
+    <!-- Card 7: Comando kill -->
+    <div class="content-card">
+        <h2>💀 Comando kill &mdash; Enviando Sinais</h2>
+        <div class="highlight-box">
+            <p><strong>kill</strong> n&atilde;o &eacute; s&oacute; "matar" &mdash; &eacute; enviar SINAIS para processos!</p>
+        </div>
+        <p>Sinais s&atilde;o <strong>mensagens</strong> que o sistema envia para processos. Analogia &mdash; &eacute; como um chefe mandando recados para funcion&aacute;rios:</p>
+        <ul>
+            <li>"Termine seu trabalho" (SIGTERM)</li>
+            <li>"Pare AGORA!" (SIGKILL)</li>
+            <li>"Fa&ccedil;a uma pausa" (SIGSTOP)</li>
+            <li>"Continue trabalhando" (SIGCONT)</li>
+        </ul>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">sintaxe b&aacute;sica do kill</span>
+            </div>
+            <div class="terminal-body">
+                <span class="t-comment"># Sintaxe geral</span><br>
+                <span class="t-cmd">kill -SINAL PID</span><br><br>
+                <span class="t-comment"># Terminar processo 1234 (SIGTERM &mdash; padr&atilde;o)</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">kill 1234</span><br><br>
+                <span class="t-comment"># For&ccedil;ar t&eacute;rmino (SIGKILL)</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">kill -9 1234</span><br><br>
+                <span class="t-comment"># Ver lista de todos os sinais dispon&iacute;veis</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">kill -l</span><br>
+                <span class="t-out">&nbsp;1) SIGHUP&nbsp;&nbsp;&nbsp;2) SIGINT&nbsp;&nbsp;&nbsp;3) SIGQUIT&nbsp;&nbsp;9) SIGKILL</span><br>
+                <span class="t-out">15) SIGTERM 18) SIGCONT 19) SIGSTOP 20) SIGTSTP</span>
+            </div>
+        </div>
+        <table class="cmp-table">
+            <tr>
+                <th>N&uacute;mero</th>
+                <th>Nome</th>
+                <th>Uso</th>
+            </tr>
+            <tr><td>1</td><td>SIGHUP</td><td>Recarregar configura&ccedil;&atilde;o</td></tr>
+            <tr><td>2</td><td>SIGINT</td><td>Interromper (Ctrl+C)</td></tr>
+            <tr><td>9</td><td>SIGKILL</td><td>Matar for&ccedil;ado</td></tr>
+            <tr><td>15</td><td>SIGTERM</td><td>Terminar educadamente</td></tr>
+            <tr><td>18</td><td>SIGCONT</td><td>Continuar parado</td></tr>
+            <tr><td>19</td><td>SIGSTOP</td><td>Pausar processo</td></tr>
+        </table>
+        <div class="alert-box">
+            <p>⚠️ <strong>SIGKILL vs SIGTERM:</strong> Sempre tente SIGTERM (15) primeiro! SIGTERM permite que o processo salve dados, feche arquivos e libere recursos. SIGKILL (9) &eacute; &uacute;ltimo recurso &mdash; pode corromper dados!</p>
+        </div>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">exemplos pr&aacute;ticos de kill</span>
+            </div>
+            <div class="terminal-body">
+                <span class="t-comment"># 1. Terminar processo educadamente (SIGTERM - padr&atilde;o)</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">kill 1234</span><br><br>
+                <span class="t-comment"># 2. Se n&atilde;o funcionou, for&ccedil;ar (SIGKILL)</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">kill -9 1234</span><br><br>
+                <span class="t-comment"># 3. Matar pelo nome (todos os processos com esse nome)</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">killall firefox</span><br><br>
+                <span class="t-comment"># 4. Matar por padr&atilde;o de nome (regex)</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">pkill -f "python script.py"</span><br><br>
+                <span class="t-comment"># 5. Recarregar configura&ccedil;&atilde;o do Apache (SIGHUP)</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">sudo kill -HUP $(pgrep apache2)</span>
+            </div>
+        </div>
+        <table class="cmp-table">
+            <tr>
+                <th>Variante</th>
+                <th>Descri&ccedil;&atilde;o</th>
+            </tr>
+            <tr><td><code>kill PID</code></td><td>Por PID espec&iacute;fico</td></tr>
+            <tr><td><code>killall nome</code></td><td>Por nome exato</td></tr>
+            <tr><td><code>pkill padr&atilde;o</code></td><td>Por padr&atilde;o/regex</td></tr>
+            <tr><td><code>xkill</code></td><td>Clique na janela (GUI)</td></tr>
+        </table>
+    </div>
 
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
-        }
+    <!-- Card 8: Foreground e Background -->
+    <div class="content-card">
+        <h2>🔄 Foreground e Background</h2>
+        <p>Processos podem rodar na <strong>frente</strong> ou no <strong>fundo</strong>!</p>
+        <table class="cmp-table">
+            <tr>
+                <th>📺 Foreground (Frente)</th>
+                <th>🌙 Background (Fundo)</th>
+            </tr>
+            <tr>
+                <td>Ocupa o terminal</td>
+                <td>Libera o terminal</td>
+            </tr>
+            <tr>
+                <td>Voc&ecirc; v&ecirc; a sa&iacute;da</td>
+                <td>Roda "escondido"</td>
+            </tr>
+            <tr>
+                <td>Ctrl+C para parar</td>
+                <td>Pode ter v&aacute;rios</td>
+            </tr>
+            <tr>
+                <td>S&oacute; 1 por terminal</td>
+                <td>Use &amp; no final</td>
+            </tr>
+            <tr>
+                <td>Ex: vim, nano, top</td>
+                <td>Ex: downloads, backups</td>
+            </tr>
+        </table>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">background com &amp;</span>
+            </div>
+            <div class="terminal-body">
+                <span class="t-comment"># Rodar em background (adicione &amp;)</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">cp arquivo_grande.iso /backup/ &amp;</span><br>
+                <span class="t-out">[1] 5678</span><br>
+                <span class="t-comment"># Job 1, PID 5678</span><br><br>
+                <span class="t-comment"># Ver jobs em background</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">jobs</span><br>
+                <span class="t-out">[1]+&nbsp;&nbsp;Running&nbsp;&nbsp;cp arquivo_grande.iso /backup/ &amp;</span>
+            </div>
+        </div>
+    </div>
 
-        let draggedItem = null;
+    <!-- Card 9: Ctrl+Z, bg, fg -->
+    <div class="content-card">
+        <h2>⌨️ Controles: Ctrl+Z, bg, fg</h2>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">ctrl+z, bg e fg na pr&aacute;tica</span>
+            </div>
+            <div class="terminal-body">
+                <span class="t-comment"># 1. Rodar um comando que demora...</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">find / -name "*.log" 2&gt;/dev/null</span><br>
+                <span class="t-out">(processando...)</span><br><br>
+                <span class="t-comment"># 2. Ops! Preciso do terminal. Pressione Ctrl+Z</span><br>
+                <span class="t-out">^Z</span><br>
+                <span class="t-out">[1]+&nbsp;&nbsp;Stopped&nbsp;&nbsp;find / -name "*.log"</span><br><br>
+                <span class="t-comment"># 3. Mandar para background e continuar</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">bg</span><br>
+                <span class="t-out">[1]+ find / -name "*.log" &amp;</span><br><br>
+                <span class="t-comment"># 4. Trazer de volta para foreground</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">fg</span><br>
+                <span class="t-out">find / -name "*.log"</span>
+            </div>
+        </div>
+        <table class="cmp-table">
+            <tr>
+                <th>Comando</th>
+                <th>A&ccedil;&atilde;o</th>
+            </tr>
+            <tr><td><code>Ctrl+Z</code></td><td>Pausar o processo atual</td></tr>
+            <tr><td><code>bg</code></td><td>Continuar em segundo plano</td></tr>
+            <tr><td><code>fg</code></td><td>Trazer para primeiro plano</td></tr>
+        </table>
+    </div>
 
-        function initQuiz() {
-            const pool = document.getElementById('answersPool');
-            pool.innerHTML = '';
-            const shuffled = shuffleArray([...answersData]);
-            
-            shuffled.forEach(ans => {
-                const div = document.createElement('div');
-                div.className = 'answer-item';
-                div.draggable = true;
-                div.textContent = ans.text;
-                div.dataset.id = ans.id;
-                
-                div.addEventListener('dragstart', (e) => {
-                    draggedItem = e.target;
-                    e.target.classList.add('dragging');
-                });
-                div.addEventListener('dragend', (e) => {
-                    e.target.classList.remove('dragging');
-                    draggedItem = null;
-                });
-                
-                pool.appendChild(div);
-            });
+    <!-- Card 10: nohup e disown -->
+    <div class="content-card">
+        <h2>🔒 nohup e disown &mdash; Processos Persistentes</h2>
+        <div class="highlight-box">
+            <p>E se eu fechar o terminal? O processo morre! <strong>nohup</strong> e <strong>disown</strong> resolvem isso.</p>
+        </div>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">nohup &mdash; No Hang Up</span>
+            </div>
+            <div class="terminal-body">
+                <span class="t-comment"># Rodar script que sobrevive ao logout</span><br>
+                <span class="t-cmd">nohup python backup.py &amp;</span><br>
+                <span class="t-out">nohup: sa&iacute;da anexada a 'nohup.out'</span>
+            </div>
+        </div>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">disown &mdash; remover da sess&atilde;o</span>
+            </div>
+            <div class="terminal-body">
+                <span class="t-comment"># J&aacute; iniciou? Use disown!</span><br>
+                <span class="t-cmd">./script_longo.sh &amp;</span><br>
+                <span class="t-cmd">disown</span><br>
+                <span class="t-comment"># Agora pode fechar o terminal</span>
+            </div>
+        </div>
+        <div class="tip-box">
+            <p>💡 <strong>Quando usar:</strong><br>
+            <strong>nohup:</strong> Antes de iniciar um processo longo (backups, downloads)<br>
+            <strong>disown:</strong> Esqueceu o nohup? Use disown depois de iniciar com &amp;<br>
+            <strong>screen/tmux:</strong> Para sess&otilde;es complexas, considere usar screen ou tmux!</p>
+        </div>
+    </div>
 
-            document.querySelectorAll('.drop-zone').forEach(zone => {
-                zone.innerHTML = 'Arraste aqui';
-                zone.classList.remove('has-answer');
-                zone.style.background = '#f8fafc';
-                
-                zone.addEventListener('dragover', (e) => {
-                    e.preventDefault();
-                    zone.classList.add('drag-over');
-                });
-                
-                zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
-                
-                zone.addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    zone.classList.remove('drag-over');
-                    
-                    const jaTemResposta = zone.querySelector('.answer-item');
-                    
-                    if (draggedItem && !jaTemResposta) {
-                        zone.innerHTML = '';
-                        zone.appendChild(draggedItem);
-                        draggedItem.classList.add('in-drop-zone');
-                        zone.classList.add('has-answer');
-                    }
-                });
-            });
-            
-            document.getElementById('quizResult').style.display = 'none';
-        }
+    <!-- Card 11: nice e renice -->
+    <div class="content-card">
+        <h2>⚖️ nice e renice &mdash; Prioridades</h2>
+        <div class="highlight-box">
+            <p>Nem todo processo tem a mesma import&acirc;ncia! <strong>nice</strong> = "gentileza" (quanto maior, menos prioridade)</p>
+        </div>
+        <table class="cmp-table">
+            <tr>
+                <th>Valor Nice</th>
+                <th>Prioridade</th>
+                <th>Comportamento</th>
+            </tr>
+            <tr><td><code>-20</code></td><td>M&aacute;xima</td><td>Ego&iacute;sta &mdash; pega mais CPU</td></tr>
+            <tr><td><code>0</code></td><td>Normal</td><td>Padr&atilde;o</td></tr>
+            <tr><td><code>+19</code></td><td>M&iacute;nima</td><td>Gentil &mdash; deixa outros passarem</td></tr>
+        </table>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">nice e renice</span>
+            </div>
+            <div class="terminal-body">
+                <span class="t-comment"># Iniciar processo com prioridade baixa (gentil com outros)</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">nice -n 10 tar -czf backup.tar.gz /home</span><br><br>
+                <span class="t-comment"># Mudar prioridade de processo j&aacute; rodando</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">renice -n 5 -p 1234</span><br>
+                <span class="t-out">1234 (process ID) old priority 0, new priority 5</span><br><br>
+                <span class="t-comment"># S&oacute; root pode aumentar prioridade (nice negativo)</span><br>
+                <span class="t-prompt">root@linux:~#</span> <span class="t-cmd">nice -n -10 ./processo_importante</span>
+            </div>
+        </div>
+    </div>
 
-        function checkAnswers() {
-            let correct = 0;
-            const zones = document.querySelectorAll('.drop-zone');
-            const total = zones.length;
-            
-            zones.forEach(zone => {
-                const answer = zone.querySelector('.answer-item');
-                if (answer && answer.dataset.id === zone.dataset.correct) {
-                    correct++;
-                    zone.style.background = '#d1fae5';
-                } else {
-                    zone.style.background = '#fee2e2';
-                }
-            });
+    <!-- Card 12: Outros Comandos de Monitoramento -->
+    <div class="content-card">
+        <h2>📈 Outros Comandos de Monitoramento</h2>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">free &mdash; mem&oacute;ria</span>
+            </div>
+            <div class="terminal-body">
+                <span class="t-cmd">free -h</span><br>
+                <span class="t-out">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;total&nbsp;&nbsp;used&nbsp;&nbsp;free&nbsp;&nbsp;shared&nbsp;&nbsp;cache&nbsp;&nbsp;avail</span><br>
+                <span class="t-out">Mem:&nbsp;&nbsp;&nbsp;7.8G&nbsp;&nbsp;4.2G&nbsp;&nbsp;1.1G&nbsp;&nbsp;&nbsp;234M&nbsp;&nbsp;&nbsp;2.5G&nbsp;&nbsp;3.1G</span><br>
+                <span class="t-out">Swap:&nbsp;&nbsp;2.0G&nbsp;&nbsp;&nbsp;&nbsp;0B&nbsp;&nbsp;2.0G</span>
+            </div>
+        </div>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">uptime, vmstat e lsof</span>
+            </div>
+            <div class="terminal-body">
+                <span class="t-cmd">uptime</span><br>
+                <span class="t-out">14:32:15 up 5 days, 3:21, 2 users, load: 0.52, 0.58, 0.59</span><br><br>
+                <span class="t-cmd">vmstat 1 5</span><br>
+                <span class="t-comment"># A cada 1s, 5x</span><br>
+                <span class="t-out">procs ---memory--- --io-- -system-</span><br>
+                <span class="t-out">&nbsp;r&nbsp;&nbsp;b&nbsp;&nbsp;&nbsp;swpd&nbsp;&nbsp;free&nbsp;&nbsp;bi bo&nbsp;&nbsp;in&nbsp;&nbsp;cs</span><br>
+                <span class="t-out">&nbsp;1&nbsp;&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;&nbsp;1.1G&nbsp;&nbsp;&nbsp;5&nbsp;&nbsp;3 156 298</span><br><br>
+                <span class="t-comment"># Quem est&aacute; usando a porta 80?</span><br>
+                <span class="t-cmd">lsof -i :80</span><br>
+                <span class="t-out">apache2 1423 www-data TCP *:80</span>
+            </div>
+        </div>
+        <div class="tip-box">
+            <p>💡 <strong>Resumo:</strong> <code>free -h</code> = Mem&oacute;ria | <code>uptime</code> = Carga | <code>vmstat</code> = Estat&iacute;sticas | <code>lsof</code> = Arquivos/Portas | <code>iostat</code> = Disco</p>
+        </div>
+    </div>
 
-            const resultDiv = document.getElementById('quizResult');
-            resultDiv.style.display = 'block';
-            resultDiv.innerHTML = `<h3>Você acertou ${correct} de ${total}!</h3>`;
-            
-            if(correct === total) resultDiv.innerHTML += '<p>🎉 Perfeito! Você domina processos no Linux!</p>';
-            else if(correct >= total/2) resultDiv.innerHTML += '<p>👍 Bom trabalho! Revise os que errou.</p>';
-            else resultDiv.innerHTML += '<p>📚 Continue praticando! Use top e ps no terminal!</p>';
-        }
+    <!-- Card 13: systemctl -->
+    <div class="content-card">
+        <h2>🔧 systemctl &mdash; Gerenciando Servi&ccedil;os</h2>
+        <div class="highlight-box">
+            <p><strong>Servi&ccedil;os (daemons)</strong> s&atilde;o processos que rodam em background. Apache, MySQL, SSH, etc. s&atilde;o gerenciados pelo <strong>systemd</strong>.</p>
+        </div>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">gerenciando servi&ccedil;os com systemctl</span>
+            </div>
+            <div class="terminal-body">
+                <span class="t-comment"># Ver status de um servi&ccedil;o</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">sudo systemctl status apache2</span><br>
+                <span class="t-out">&#x25cf; apache2.service - The Apache HTTP Server</span><br>
+                <span class="t-out">&nbsp;&nbsp;&nbsp;Loaded: loaded (/lib/systemd/system/apache2.service)</span><br>
+                <span class="t-out">&nbsp;&nbsp;&nbsp;Active: active (running) since Mon 2024-01-15 10:00:00</span><br><br>
+                <span class="t-comment"># Iniciar / Parar / Reiniciar</span><br>
+                <span class="t-prompt">root@linux:~#</span> <span class="t-cmd">systemctl start apache2</span><br>
+                <span class="t-prompt">root@linux:~#</span> <span class="t-cmd">systemctl stop apache2</span><br>
+                <span class="t-prompt">root@linux:~#</span> <span class="t-cmd">systemctl restart apache2</span><br><br>
+                <span class="t-comment"># Habilitar/Desabilitar no boot</span><br>
+                <span class="t-prompt">root@linux:~#</span> <span class="t-cmd">systemctl enable apache2</span><br>
+                <span class="t-prompt">root@linux:~#</span> <span class="t-cmd">systemctl disable apache2</span>
+            </div>
+        </div>
+        <div class="tip-box">
+            <p>💡 <strong>Diferen&ccedil;a: start vs enable</strong><br>
+            <strong>start/stop:</strong> Inicia/para AGORA<br>
+            <strong>enable/disable:</strong> Inicia/n&atilde;o inicia no BOOT</p>
+        </div>
+    </div>
 
-        function resetQuiz() {
-            initQuiz();
-        }
+    <!-- Card 14: Caso Pratico -->
+    <div class="content-card">
+        <h2>🎯 Caso Pr&aacute;tico: Servidor Lento</h2>
+        <div class="alert-box">
+            <p>⚠️ 😱 O servidor est&aacute; lento! Como investigar?</p>
+        </div>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">investiga&ccedil;&atilde;o passo a passo</span>
+            </div>
+            <div class="terminal-body">
+                <span class="t-comment"># 1. Verificar carga do sistema</span><br>
+                <span class="t-prompt">admin@server:~$</span> <span class="t-cmd">uptime</span><br>
+                <span class="t-out">load average: 8.52, 7.21, 5.43</span><br>
+                <span class="t-comment"># Alto! Normal seria &lt; 1</span><br><br>
+                <span class="t-comment"># 2. Ver quem est&aacute; consumindo CPU/Mem&oacute;ria</span><br>
+                <span class="t-prompt">admin@server:~$</span> <span class="t-cmd">top -o %CPU</span><br>
+                <span class="t-out">PID&nbsp;&nbsp;&nbsp;%CPU %MEM&nbsp;&nbsp;COMMAND</span><br>
+                <span class="t-out">9876&nbsp;&nbsp;95.2&nbsp;&nbsp;45.1&nbsp;&nbsp;python loop_infinito.py</span><br>
+                <span class="t-comment"># Vil&atilde;o!</span><br><br>
+                <span class="t-comment"># 3. Investigar o processo</span><br>
+                <span class="t-prompt">admin@server:~$</span> <span class="t-cmd">ps aux | grep 9876</span><br>
+                <span class="t-out">joao&nbsp;&nbsp;9876&nbsp;&nbsp;95.2&nbsp;&nbsp;45.1&nbsp;&nbsp;python loop_infinito.py</span><br><br>
+                <span class="t-comment"># 4. Matar o processo problem&aacute;tico</span><br>
+                <span class="t-prompt">admin@server:~$</span> <span class="t-cmd">kill 9876</span><br>
+                <span class="t-comment"># Se n&atilde;o funcionar: kill -9 9876</span><br><br>
+                <span class="t-comment"># 5. Verificar se melhorou</span><br>
+                <span class="t-prompt">admin@server:~$</span> <span class="t-cmd">uptime</span><br>
+                <span class="t-out">load average: 0.52, 2.21, 4.43</span><br>
+                <span class="t-comment"># Voltando ao normal!</span>
+            </div>
+        </div>
+    </div>
 
-        // Inicia tudo
-        initQuiz();
+    <!-- Card 15: Resumo Final -->
+    <div class="content-card">
+        <h2>📋 Resumo: Comandos de Processos</h2>
+        <table class="cmp-table">
+            <tr>
+                <th>Comando</th>
+                <th>Fun&ccedil;&atilde;o</th>
+                <th>Detalhe</th>
+            </tr>
+            <tr><td><code>ps aux</code></td><td>Listar Processos</td><td>Snapshot atual</td></tr>
+            <tr><td><code>top / htop</code></td><td>Monitorar</td><td>Tempo real</td></tr>
+            <tr><td><code>kill PID</code></td><td>Terminar</td><td>Enviar sinal</td></tr>
+            <tr><td><code>killall nome</code></td><td>Matar por Nome</td><td>Todos com esse nome</td></tr>
+            <tr><td><code>bg / fg</code></td><td>Background/Fore</td><td>Alternar plano</td></tr>
+            <tr><td><code>nice / renice</code></td><td>Prioridade</td><td>-20 a +19</td></tr>
+            <tr><td><code>pgrep</code></td><td>Buscar PID</td><td>Por nome</td></tr>
+            <tr><td><code>nohup</code></td><td>Persistir</td><td>Sobrevive logout</td></tr>
+            <tr><td><code>systemctl</code></td><td>Servi&ccedil;os</td><td>start/stop/status</td></tr>
+        </table>
+    </div>
 
-    </script>
+    <!-- MÚLTIPLA ESCOLHA -->
+    <div class="content-card exercise-card">
+        <h2>&#x2753; Verifique seu Conhecimento</h2>
+
+        <div class="mc-question" data-correct="b">
+            <p class="mc-q-text">O que &eacute; um processo em Linux?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>Um arquivo execut&aacute;vel armazenado em disco</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>Um programa em execu&ccedil;&atilde;o com PID, mem&oacute;ria e recursos alocados</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>Uma tarefa agendada pelo cron</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>Um servi&ccedil;o do systemd parado</span></div>
+            </div>
+            <div class="mc-explanation">&#x2713; Processo = programa carregado em mem&oacute;ria e em execu&ccedil;&atilde;o. Cada processo tem um PID &uacute;nico, processo pai (PPID), usu&aacute;rio dono e estado.</div>
+        </div>
+        <hr class="mc-sep">
+
+        <div class="mc-question" data-correct="c">
+            <p class="mc-q-text">Qual comando envia o sinal SIGKILL (for&ccedil;a o encerramento imediato) para o PID 1234?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>kill 1234</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>kill -15 1234</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>kill -9 1234</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>killall -STOP 1234</span></div>
+            </div>
+            <div class="mc-explanation">&#x2713; <code>kill -9</code> envia SIGKILL &mdash; encerramento imediato, sem possibilidade de o processo se salvar. Use <code>kill -15</code> (SIGTERM) primeiro para encerramento gracioso.</div>
+        </div>
+        <hr class="mc-sep">
+
+        <div class="mc-question" data-correct="a">
+            <p class="mc-q-text">O que faz o comando <code>jobs</code> no terminal?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>Lista os processos em segundo plano da sess&atilde;o atual</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>Mostra todos os processos do sistema</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>Lista as tarefas do cron</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>Exibe o hist&oacute;rico de comandos executados</span></div>
+            </div>
+            <div class="mc-explanation">&#x2713; <code>jobs</code> mostra processos suspensos (Ctrl+Z) e em background (&amp;) da sess&atilde;o atual. Use <code>fg %1</code> para trazer o job 1 ao primeiro plano.</div>
+        </div>
+        <hr class="mc-sep">
+
+        <div class="mc-question" data-correct="d">
+            <p class="mc-q-text">Como executar um comando em segundo plano no Bash?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>background comando</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>run -bg comando</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>nohup comando</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>comando &amp;</span></div>
+            </div>
+            <div class="mc-explanation">&#x2713; Adicionar <code>&amp;</code> ao final coloca o processo em background: <code>sleep 100 &amp;</code>. O shell exibe o PID e retorna o prompt imediatamente.</div>
+        </div>
+    </div>
+
+    <div class="nav-footer">
+        <a href="aula04-metacaracteres.html" class="nav-link">&#x2B05; Metacaracteres</a>
+        <a href="aula06-permissoes.html" class="nav-link">Permiss&otilde;es &#x27A1;</a>
+    </div>
+
+</div>
+
+<script src="slide-mode.js"></script>
+<script src="exercise-drag.js"></script>
+<script src="exercise-print.js"></script>
+<script src="exercise-mc.js"></script>
 </body>
 </html>

@@ -6,102 +6,7 @@
     <title>Aula 3 &mdash; Servidor Samba</title>
     <link rel="stylesheet" href="slide-mode.css">
     <link rel="stylesheet" href="exercise.css">
-    <style>
-        :root {
-            --primary:   #667eea;
-            --secondary: #764ba2;
-            --bg-light:  #f4f7fe;
-            --text-dark: #2d3748;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: var(--bg-light); color: var(--text-dark); line-height: 1.7; }
-
-        /* ── TOP BAR ── */
-        .top-bar { background: white; padding: 15px 30px; display: flex; align-items: center; gap: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 10; }
-        .back-btn { text-decoration: none; color: var(--primary); font-weight: 600; display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 8px; transition: background .3s; }
-        .back-btn:hover { background: rgba(102,126,234,.08); }
-        .page-badge { font-size: .8em; padding: 4px 12px; border-radius: 20px; background: rgba(102,126,234,.12); color: var(--primary); font-weight: 600; }
-
-        /* ── LAYOUT ── */
-        .content-wrapper { max-width: 800px; margin: 40px auto; padding: 0 30px; }
-        .lesson-hero { background: white; border-radius: 16px; padding: 40px; box-shadow: 0 5px 15px rgba(0,0,0,.05); margin-bottom: 30px; border-top: 4px solid var(--primary); }
-        .lesson-hero h1 { font-size: 2em; margin-bottom: 10px; color: var(--primary); }
-        .lesson-hero .subtitle { font-size: 1.05em; color: #718096; }
-        .content-card { background: white; border-radius: 16px; padding: 35px; box-shadow: 0 5px 15px rgba(0,0,0,.05); margin-bottom: 25px; }
-        .content-card h2 { font-size: 1.4em; color: var(--primary); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
-        .content-card h3 { font-size: 1.05em; color: #5a67d8; margin: 20px 0 10px; }
-        .content-card p { margin-bottom: 15px; text-align: justify; }
-        ul, ol { margin: 10px 0 15px 25px; }
-        li { margin-bottom: 8px; }
-
-        /* ── CAIXAS ── */
-        .highlight-box { background: linear-gradient(135deg,rgba(102,126,234,.05),rgba(118,75,162,.06)); border-left: 4px solid var(--primary); padding: 20px 25px; border-radius: 0 12px 12px 0; margin: 20px 0; }
-        .highlight-box p { margin-bottom: 0; font-style: italic; }
-        .alert-box { background: #fff8e1; border-left: 4px solid #f59e0b; padding: 18px 22px; border-radius: 0 12px 12px 0; margin: 20px 0; }
-        .alert-box p { margin: 0; color: #78350f; font-size: .93em; }
-        .tip-box { background: #f0fdf4; border-left: 4px solid #16a34a; padding: 18px 22px; border-radius: 0 12px 12px 0; margin: 20px 0; }
-        .tip-box p { margin: 0; color: #14532d; font-size: .93em; }
-
-        /* ── TERMINAIS ── */
-        .terminal { background: #1a202c; border-radius: 12px; overflow: hidden; margin: 16px 0; box-shadow: 0 4px 20px rgba(0,0,0,.3); }
-        .terminal-bar { background: #2d3748; padding: 8px 16px; display: flex; align-items: center; gap: 8px; }
-        .term-dot { width: 12px; height: 12px; border-radius: 50%; }
-        .term-dot.red    { background: #fc8181; }
-        .term-dot.yellow { background: #f6e05e; }
-        .term-dot.green  { background: #68d391; }
-        .term-title { font-size: .75em; color: #718096; margin-left: 8px; font-family: 'Consolas', monospace; }
-        .terminal-body { padding: 20px 24px; font-family: 'Courier New','Consolas',monospace; font-size: .92em; line-height: 2; color: #a0aec0; white-space: pre-wrap; }
-        .t-prompt  { color: #63b3ed; }
-        .t-cmd     { color: #38ef7d; }
-        .t-flag    { color: #f6e05e; }
-        .t-out     { color: #a0aec0; }
-        .t-comment { color: #4a5568; font-style: italic; }
-        .t-kw      { color: #f687b3; font-weight: bold; }
-        .t-str     { color: #68d391; }
-        .t-var     { color: #fbd38d; }
-        .t-section { color: #63b3ed; font-weight: bold; }
-
-        /* ── TABELA ── */
-        .cmp-table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: .88em; }
-        .cmp-table th { background: var(--primary); color: white; padding: 10px 14px; text-align: left; }
-        .cmp-table th:first-child { border-radius: 6px 0 0 0; }
-        .cmp-table th:last-child  { border-radius: 0 6px 0 0; }
-        .cmp-table td { padding: 9px 14px; border-bottom: 1px solid #e5e7eb; }
-        .cmp-table tr:nth-child(even) td { background: #f8f7ff; }
-        .cmp-table td code { font-family: 'Consolas',monospace; background: #1e293b; color: #a78bfa; padding: 1px 6px; border-radius: 4px; font-size: .88em; }
-
-        /* ── GRID RESUMO ── */
-        .cmd-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(140px,1fr)); gap: 12px; margin: 16px 0; }
-        .cmd-card { background: #f8f7ff; border-radius: 10px; padding: 16px; text-align: center; border-top: 3px solid var(--primary); }
-        .cmd-card .cmd { font-family: 'Consolas',monospace; font-size: .82em; color: var(--primary); font-weight: 700; display: block; margin-bottom: 6px; }
-        .cmd-card strong { display: block; font-size: .82em; color: #1e293b; margin-bottom: 4px; }
-        .cmd-card span { font-size: .76em; color: #475569; }
-
-        /* ── COMPARE ── */
-        .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
-        .compare-box { border-radius: 12px; padding: 18px; }
-        .compare-box.blue  { background: #eff6ff; border-top: 3px solid #3b82f6; }
-        .compare-box.green { background: #f0fdf4; border-top: 3px solid #16a34a; }
-        .compare-box h4 { font-size: .95em; margin-bottom: 10px; }
-        .compare-box.blue  h4 { color: #1e3a8a; }
-        .compare-box.green h4 { color: #065f46; }
-
-        /* ── PASSO BADGE ── */
-        .step-badge { display: inline-block; background: var(--primary); color: white; border-radius: 50%; width: 28px; height: 28px; line-height: 28px; text-align: center; font-size: .85em; font-weight: 700; margin-right: 8px; flex-shrink: 0; }
-
-        /* ── NAV ── */
-        .nav-footer { display: flex; justify-content: space-between; margin-top: 40px; padding-bottom: 40px; }
-        .nav-link { text-decoration: none; color: var(--primary); font-weight: 600; padding: 12px 24px; border-radius: 10px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,.05); transition: all .3s; }
-        .nav-link:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.1); }
-
-        @media (max-width: 768px) {
-            .content-wrapper { padding: 0 15px; }
-            .lesson-hero, .content-card { padding: 25px; }
-            .lesson-hero h1 { font-size: 1.5em; }
-            .compare-grid { grid-template-columns: 1fr; }
-        }
-    </style>
+    <link rel="stylesheet" href="lesson.css">
 </head>
 <body>
 
@@ -600,6 +505,55 @@ Server role: ROLE_STANDALONE</span>
         </div>
     </div>
 
+    <!-- MÚLTIPLA ESCOLHA -->
+    <div class="content-card exercise-card">
+        <h2>&#x2753; Verifique seu Conhecimento</h2>
+
+        <div class="mc-question" data-correct="b">
+            <p class="mc-q-text">Para que serve o Samba em redes mistas Linux/Windows?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>Gerenciar endereços IP dinamicamente</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>Compartilhar arquivos e impressoras entre Linux e Windows</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>Configurar roteamento entre redes</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>Monitorar tráfego de rede</span></div>
+            </div>
+            <div class="mc-explanation">✓ O Samba implementa o protocolo SMB/CIFS, permitindo que Linux compartilhe arquivos com Windows como se fosse um servidor nativo.</div>
+        </div>
+        <hr class="mc-sep">
+        <div class="mc-question" data-correct="c">
+            <p class="mc-q-text">Qual arquivo é o principal arquivo de configuração do Samba?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span><code>/etc/samba/users.conf</code></span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span><code>/var/samba/config.ini</code></span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span><code>/etc/samba/smb.conf</code></span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span><code>/etc/smb/samba.conf</code></span></div>
+            </div>
+            <div class="mc-explanation">✓ O arquivo <code>/etc/samba/smb.conf</code> define as seções [global], [homes] e os compartilhamentos personalizados.</div>
+        </div>
+        <hr class="mc-sep">
+        <div class="mc-question" data-correct="a">
+            <p class="mc-q-text">Qual comando adiciona um usuário à base de senhas do Samba?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span><code>smbpasswd -a usuario</code></span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span><code>sambaadd usuario</code></span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span><code>useradd -s samba usuario</code></span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span><code>smb-user --add usuario</code></span></div>
+            </div>
+            <div class="mc-explanation">✓ <code>smbpasswd -a usuario</code> adiciona o usuário à base Samba (distinta da senha do Linux).</div>
+        </div>
+        <hr class="mc-sep">
+        <div class="mc-question" data-correct="d">
+            <p class="mc-q-text">Qual parâmetro do smb.conf restringe o acesso a um compartilhamento por usuário?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span><code>restrict users = usuario</code></span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span><code>allow only = usuario</code></span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span><code>smb users = usuario</code></span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span><code>valid users = usuario</code></span></div>
+            </div>
+            <div class="mc-explanation">✓ <code>valid users = usuario</code> lista quem pode acessar o compartilhamento — use <code>@grupo</code> para grupos inteiros.</div>
+        </div>
+    </div>
+
     <div class="nav-footer">
         <a href="net02-servidor-dhcp.html" class="nav-link">&#x2B05; Anterior: Servidor DHCP</a>
         <a href="net04-servidor-apache.html" class="nav-link">Pr&oacute;xima: Servidor Apache &#x27A1;</a>
@@ -610,5 +564,6 @@ Server role: ROLE_STANDALONE</span>
 <script src="slide-mode.js"></script>
 <script src="exercise-drag.js"></script>
 <script src="exercise-print.js"></script>
+<script src="exercise-mc.js"></script>
 </body>
 </html>
