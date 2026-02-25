@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 5 &mdash; Servidor DNS com BIND9</title>
+    <link rel="stylesheet" href="slide-mode.css">
+    <link rel="stylesheet" href="exercise.css">
+    <style>
+        :root {
+            --primary:   #667eea;
+            --secondary: #764ba2;
+            --bg-light:  #f4f7fe;
+            --text-dark: #2d3748;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: var(--bg-light); color: var(--text-dark); line-height: 1.7; }
+
+        /* ── TOP BAR ── */
+        .top-bar { background: white; padding: 15px 30px; display: flex; align-items: center; gap: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 10; }
+        .back-btn { text-decoration: none; color: var(--primary); font-weight: 600; display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 8px; transition: background .3s; }
+        .back-btn:hover { background: rgba(102,126,234,.08); }
+        .page-badge { font-size: .8em; padding: 4px 12px; border-radius: 20px; background: rgba(102,126,234,.12); color: var(--primary); font-weight: 600; }
+
+        /* ── LAYOUT ── */
+        .content-wrapper { max-width: 800px; margin: 40px auto; padding: 0 30px; }
+        .lesson-hero { background: white; border-radius: 16px; padding: 40px; box-shadow: 0 5px 15px rgba(0,0,0,.05); margin-bottom: 30px; border-top: 4px solid var(--primary); }
+        .lesson-hero h1 { font-size: 2em; margin-bottom: 10px; color: var(--primary); }
+        .lesson-hero .subtitle { font-size: 1.05em; color: #718096; }
+        .content-card { background: white; border-radius: 16px; padding: 35px; box-shadow: 0 5px 15px rgba(0,0,0,.05); margin-bottom: 25px; }
+        .content-card h2 { font-size: 1.4em; color: var(--primary); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
+        .content-card h3 { font-size: 1.05em; color: #5a67d8; margin: 20px 0 10px; }
+        .content-card p { margin-bottom: 15px; text-align: justify; }
+        ul, ol { margin: 10px 0 15px 25px; }
+        li { margin-bottom: 8px; }
+
+        /* ── CAIXAS ── */
+        .highlight-box { background: linear-gradient(135deg,rgba(102,126,234,.05),rgba(118,75,162,.06)); border-left: 4px solid var(--primary); padding: 20px 25px; border-radius: 0 12px 12px 0; margin: 20px 0; }
+        .highlight-box p { margin-bottom: 0; font-style: italic; }
+        .alert-box { background: #fff8e1; border-left: 4px solid #f59e0b; padding: 18px 22px; border-radius: 0 12px 12px 0; margin: 20px 0; }
+        .alert-box p { margin: 0; color: #78350f; font-size: .93em; }
+        .tip-box { background: #f0fdf4; border-left: 4px solid #16a34a; padding: 18px 22px; border-radius: 0 12px 12px 0; margin: 20px 0; }
+        .tip-box p { margin: 0; color: #14532d; font-size: .93em; }
+
+        /* ── TERMINAIS ── */
+        .terminal { background: #1a202c; border-radius: 12px; overflow: hidden; margin: 16px 0; box-shadow: 0 4px 20px rgba(0,0,0,.3); }
+        .terminal-bar { background: #2d3748; padding: 8px 16px; display: flex; align-items: center; gap: 8px; }
+        .term-dot { width: 12px; height: 12px; border-radius: 50%; }
+        .term-dot.red    { background: #fc8181; }
+        .term-dot.yellow { background: #f6e05e; }
+        .term-dot.green  { background: #68d391; }
+        .term-title { font-size: .75em; color: #718096; margin-left: 8px; font-family: 'Consolas', monospace; }
+        .terminal-body { padding: 20px 24px; font-family: 'Courier New','Consolas',monospace; font-size: .92em; line-height: 2; color: #a0aec0; white-space: pre-wrap; }
+        .t-prompt  { color: #63b3ed; }
+        .t-cmd     { color: #38ef7d; }
+        .t-flag    { color: #f6e05e; }
+        .t-out     { color: #a0aec0; }
+        .t-comment { color: #4a5568; font-style: italic; }
+        .t-kw      { color: #f687b3; font-weight: bold; }
+        .t-str     { color: #68d391; }
+        .t-var     { color: #fbd38d; }
+        .t-rtype   { color: #63b3ed; font-weight: bold; }
+
+        /* ── TABELA ── */
+        .cmp-table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: .88em; }
+        .cmp-table th { background: var(--primary); color: white; padding: 10px 14px; text-align: left; }
+        .cmp-table th:first-child { border-radius: 6px 0 0 0; }
+        .cmp-table th:last-child  { border-radius: 0 6px 0 0; }
+        .cmp-table td { padding: 9px 14px; border-bottom: 1px solid #e5e7eb; }
+        .cmp-table tr:nth-child(even) td { background: #f8f7ff; }
+        .cmp-table td code { font-family: 'Consolas',monospace; background: #1e293b; color: #a78bfa; padding: 1px 6px; border-radius: 4px; font-size: .88em; }
+
+        /* ── GRID RESUMO ── */
+        .cmd-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(140px,1fr)); gap: 12px; margin: 16px 0; }
+        .cmd-card { background: #f8f7ff; border-radius: 10px; padding: 16px; text-align: center; border-top: 3px solid var(--primary); }
+        .cmd-card .cmd { font-family: 'Consolas',monospace; font-size: .85em; color: var(--primary); font-weight: 700; display: block; margin-bottom: 6px; }
+        .cmd-card strong { display: block; font-size: .82em; color: #1e293b; margin-bottom: 4px; }
+        .cmd-card span { font-size: .76em; color: #475569; }
+
+        /* ── FLUXO ── */
+        .flow-steps { display: flex; flex-direction: column; gap: 8px; margin: 16px 0; }
+        .flow-step { display: flex; align-items: flex-start; gap: 14px; background: #f8f7ff; border-radius: 10px; padding: 14px 18px; }
+        .flow-num { background: var(--primary); color: white; border-radius: 50%; width: 26px; height: 26px; line-height: 26px; text-align: center; font-size: .8em; font-weight: 700; flex-shrink: 0; }
+        .flow-step p { margin: 0; font-size: .9em; }
+
+        /* ── PASSO BADGE ── */
+        .step-badge { display: inline-block; background: var(--primary); color: white; border-radius: 50%; width: 28px; height: 28px; line-height: 28px; text-align: center; font-size: .85em; font-weight: 700; margin-right: 8px; flex-shrink: 0; }
+
+        /* ── NAV ── */
+        .nav-footer { display: flex; justify-content: space-between; margin-top: 40px; padding-bottom: 40px; }
+        .nav-link { text-decoration: none; color: var(--primary); font-weight: 600; padding: 12px 24px; border-radius: 10px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,.05); transition: all .3s; }
+        .nav-link:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.1); }
+
+        @media (max-width: 768px) {
+            .content-wrapper { padding: 0 15px; }
+            .lesson-hero, .content-card { padding: 25px; }
+            .lesson-hero h1 { font-size: 1.5em; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-bar">
+    <a href="index.html" class="back-btn">&#x2B05; Voltar ao Dashboard</a>
+    <span class="page-badge">3&ordm; Bimestre &mdash; Servi&ccedil;os de Rede</span>
+    <button class="slide-toggle" id="slideToggleBtn">&#x1F4FA; Modo Slide</button>
+</div>
+
+<div class="content-wrapper">
+
+    <div class="lesson-hero">
+        <h1>&#x1F5FA;&#xFE0F; Servidor DNS com BIND9</h1>
+        <p class="subtitle">Aula 5 &mdash; Configure o BIND9 no Ubuntu para resolver nomes de dom&iacute;nio: crie zonas, defina registros A e CNAME e teste com <code>nslookup</code></p>
+    </div>
+
+    <!-- CARD 1 — O que é DNS? -->
+    <div class="content-card">
+        <h2>&#x1F4D6; O que &eacute; DNS?</h2>
+        <p>O <strong>DNS</strong> (Domain Name System) &eacute; o sistema que traduz nomes de dom&iacute;nio em endere&ccedil;os IP. Sem DNS, para acessar qualquer site voc&ecirc; precisaria memorizar o endere&ccedil;o IP diretamente.</p>
+
+        <div class="highlight-box">
+            <p>&#x1F4A1; <strong>Analogia da agenda telef&ocirc;nica:</strong> a agenda &eacute; o DNS, o nome do contato &eacute; o dom&iacute;nio e o n&uacute;mero &eacute; o endere&ccedil;o IP. Voc&ecirc; lembra do nome (<em>www.google.com</em>), n&atilde;o do n&uacute;mero (<em>142.250.185.46</em>)!</p>
+        </div>
+
+        <h3>Como funciona uma consulta DNS</h3>
+        <div class="flow-steps">
+            <div class="flow-step"><div class="flow-num">1</div><p>Voc&ecirc; digita <code>www.google.com</code> no navegador</p></div>
+            <div class="flow-step"><div class="flow-num">2</div><p>Sistema consulta o servidor DNS configurado</p></div>
+            <div class="flow-step"><div class="flow-num">3</div><p>DNS busca o registro e retorna <code>142.250.185.46</code></p></div>
+            <div class="flow-step"><div class="flow-num">4</div><p>Navegador conecta ao endere&ccedil;o IP encontrado</p></div>
+            <div class="flow-step"><div class="flow-num">5</div><p>P&aacute;gina carrega normalmente!</p></div>
+        </div>
+
+        <h3>Por que usar DNS?</h3>
+        <ul>
+            <li>Nomes s&atilde;o f&aacute;ceis de lembrar; IPs, n&atilde;o</li>
+            <li>O IP do servidor pode mudar; o nome permanece</li>
+            <li>Permite balanceamento de carga com m&uacute;ltiplos IPs</li>
+            <li>Facilita a navega&ccedil;&atilde;o e a administra&ccedil;&atilde;o de redes</li>
+            <li><strong>Porta padr&atilde;o:</strong> 53 (UDP e TCP)</li>
+        </ul>
+    </div>
+
+    <!-- CARD 2 — O que é BIND9? -->
+    <div class="content-card">
+        <h2>&#x1F5A5;&#xFE0F; O que &eacute; BIND9?</h2>
+        <p>O <strong>BIND</strong> (Berkeley Internet Name Domain) &eacute; o servidor DNS mais usado do mundo. Mantido pelo ISC (Internet Systems Consortium), &eacute; o padr&atilde;o em servidores Unix e Linux.</p>
+
+        <h3>Caracter&iacute;sticas</h3>
+        <ul>
+            <li>Gratuito, open source e extremamente est&aacute;vel</li>
+            <li>Suporta DNSSEC para seguran&ccedil;a nas consultas</li>
+            <li>Suporte a zonas master, slave e encaminhamento</li>
+            <li>Amplamente documentado e com grande comunidade</li>
+        </ul>
+
+        <h3>Arquivos principais</h3>
+        <table class="cmp-table">
+            <thead>
+                <tr><th>Arquivo</th><th>Fun&ccedil;&atilde;o</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>/etc/bind/named.conf</code></td><td>Configura&ccedil;&atilde;o principal (inclui outros arquivos)</td></tr>
+                <tr><td><code>/etc/bind/named.conf.options</code></td><td>Op&ccedil;&otilde;es gerais (portas, recursividade, ACLs)</td></tr>
+                <tr><td><code>/etc/bind/named.conf.my-zones</code></td><td>Declara&ccedil;&atilde;o das nossas zonas personalizadas</td></tr>
+                <tr><td><code>/var/cache/bind/*.zone</code></td><td>Arquivos com os registros DNS de cada zona</td></tr>
+            </tbody>
+        </table>
+
+        <div class="tip-box">
+            <p>&#x1F3AF; <strong>Objetivo desta aula:</strong> criar o dom&iacute;nio <code>informatica.joaocamara</code> com registros <code>www</code> (A &rarr; 192.168.0.1), <code>outrohost</code> (A &rarr; 192.168.0.2) e <code>curso</code> (CNAME &rarr; www).</p>
+        </div>
+    </div>
+
+    <!-- CARD 3 — Tipos de Registros DNS -->
+    <div class="content-card">
+        <h2>&#x1F4CB; Tipos de Registros DNS</h2>
+        <p>O DNS usa diferentes tipos de registros para mapear nomes a recursos de rede. Conhecer os principais &eacute; fundamental para configurar e diagnosticar qualquer zona.</p>
+
+        <div class="cmd-grid">
+            <div class="cmd-card">
+                <span class="cmd">A</span>
+                <strong>Address</strong>
+                <span>Nome &rarr; IPv4</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">AAAA</span>
+                <strong>IPv6</strong>
+                <span>Nome &rarr; IPv6</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">CNAME</span>
+                <strong>Alias</strong>
+                <span>Apelido para nome</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">MX</span>
+                <strong>Mail</strong>
+                <span>Servidor de e-mail</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">NS</span>
+                <strong>Name Server</strong>
+                <span>Servidores DNS</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">TXT</span>
+                <strong>Texto</strong>
+                <span>SPF, verifica&ccedil;&otilde;es</span>
+            </div>
+        </div>
+
+        <h3>Exemplos pr&aacute;ticos</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">exemplos de registros</span>
+            </div>
+            <div class="terminal-body"><span class="t-comment">; Registro A — nome aponta para IPv4</span>
+www       <span class="t-rtype">IN A</span>     <span class="t-str">192.168.0.1</span>
+
+<span class="t-comment">; Registro CNAME — apelido para outro nome</span>
+curso     <span class="t-rtype">IN CNAME</span> <span class="t-str">www</span>
+
+<span class="t-comment">; Registro MX — servidor de e-mail</span>
+@         <span class="t-rtype">IN MX</span>    <span class="t-var">10</span> mail.dominio.com
+
+<span class="t-comment">; Registro AAAA — nome aponta para IPv6</span>
+www       <span class="t-rtype">IN AAAA</span>  <span class="t-str">2001:db8::1</span></div>
+        </div>
+    </div>
+
+    <!-- CARD 4 — Passo 1: Instalar BIND9 -->
+    <div class="content-card">
+        <h2>&#x1F4E6; <span class="step-badge">1</span> Instalar o BIND9</h2>
+        <p>A instala&ccedil;&atilde;o &eacute; feita com o apt. O BIND9 inicia automaticamente ap&oacute;s a instala&ccedil;&atilde;o, mas precisamos configurar nossas zonas personalizadas antes de usar.</p>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">instalando bind9</span>
+            </div>
+            <div class="terminal-body"><span class="t-comment"># Atualizar repositórios</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">apt-get</span> update
+
+<span class="t-comment"># Instalar o BIND9</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">apt-get</span> install bind9
+
+<span class="t-comment"># Verificar status</span>
+<span class="t-prompt">$</span> <span class="t-cmd">systemctl</span> status bind9
+<span class="t-out">● named.service - BIND Domain Name Server
+     Active: <span class="t-str">active (running)</span> since ...</span></div>
+        </div>
+
+        <h3>O que &eacute; instalado</h3>
+        <ul>
+            <li>Servidor BIND9 (processo <code>named</code>)</li>
+            <li>Utilit&aacute;rios de consulta: <code>dig</code> e <code>nslookup</code></li>
+            <li>Arquivos de configura&ccedil;&atilde;o padr&atilde;o em <code>/etc/bind/</code></li>
+        </ul>
+    </div>
+
+    <!-- CARD 5 — Passo 2: Configurar named.conf -->
+    <div class="content-card">
+        <h2>&#x270F;&#xFE0F; <span class="step-badge">2</span> Configurar o named.conf</h2>
+        <p>Edite o arquivo principal para comentar as zonas padr&atilde;o e apontar para o nosso pr&oacute;prio arquivo de zonas personalizadas.</p>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">editar named.conf</span>
+            </div>
+            <div class="terminal-body"><span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">vim</span> /etc/bind/named.conf</div>
+        </div>
+
+        <h3>Antes e depois</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">/etc/bind/named.conf</span>
+            </div>
+            <div class="terminal-body"><span class="t-kw">include</span> <span class="t-str">"/etc/bind/named.conf.options"</span>;
+<span class="t-kw">include</span> <span class="t-str">"/etc/bind/named.conf.local"</span>;
+<span class="t-comment">//include "/etc/bind/named.conf.default-zones";  ← comentar esta linha</span>
+<span class="t-kw">include</span> <span class="t-str">"/etc/bind/named.conf.my-zones"</span>;  <span class="t-comment">← adicionar esta</span></div>
+        </div>
+
+        <div class="tip-box">
+            <p>&#x1F4A1; Comentar a linha <code>default-zones</code> com <code>//</code> e adicionar <code>my-zones</code> faz o BIND carregar apenas nossas zonas personalizadas, sem as zonas padr&atilde;o desnecessárias.</p>
+        </div>
+    </div>
+
+    <!-- CARD 6 — Passo 3: Configurar Opções -->
+    <div class="content-card">
+        <h2>&#x2699;&#xFE0F; <span class="step-badge">3</span> Configurar as Op&ccedil;&otilde;es</h2>
+        <p>Edite o <code>named.conf.options</code> para definir quais redes podem consultar nosso servidor DNS e em quais interfaces ele deve escutar.</p>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">/etc/bind/named.conf.options</span>
+            </div>
+            <div class="terminal-body"><span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">vim</span> /etc/bind/named.conf.options</div>
+        </div>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">conteúdo do named.conf.options</span>
+            </div>
+            <div class="terminal-body"><span class="t-kw">options</span> {
+  <span class="t-kw">directory</span>          <span class="t-str">"/var/cache/bind"</span>;
+
+  <span class="t-comment">// Quem pode consultar nosso DNS</span>
+  <span class="t-kw">listen-on port</span> <span class="t-var">53</span> { <span class="t-str">localhost</span>; <span class="t-str">192.168.0.0/24</span>; };
+  <span class="t-kw">allow-query</span>        { <span class="t-str">localhost</span>; <span class="t-str">192.168.0.0/24</span>; };
+  <span class="t-kw">recursion</span>          <span class="t-str">no</span>;
+
+  <span class="t-kw">dnssec-validation</span>  <span class="t-str">auto</span>;
+  <span class="t-kw">listen-on-v6</span>       { <span class="t-str">any</span>; };
+};</div>
+        </div>
+
+        <h3>Diretivas explicadas</h3>
+        <table class="cmp-table">
+            <thead>
+                <tr><th>Diretiva</th><th>Fun&ccedil;&atilde;o</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>listen-on port 53</code></td><td>Interfaces e porta em que o servidor escuta</td></tr>
+                <tr><td><code>allow-query</code></td><td>Redes autorizadas a fazer consultas DNS</td></tr>
+                <tr><td><code>recursion no</code></td><td>N&atilde;o faz consultas recursivas &mdash; mais seguro</td></tr>
+                <tr><td><code>192.168.0.0/24</code></td><td>Toda a rede local classe C</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- CARD 7 — Passo 4: Criar Arquivo de Zona -->
+    <div class="content-card">
+        <h2>&#x1F4C4; <span class="step-badge">4</span> Declarar a Zona</h2>
+        <p>Crie o arquivo <code>named.conf.my-zones</code> para declarar o dom&iacute;nio que ser&aacute; gerenciado por este servidor. Esse arquivo diz ao BIND <em>qual</em> zona existe e <em>onde</em> encontrar os registros.</p>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">criar named.conf.my-zones</span>
+            </div>
+            <div class="terminal-body"><span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">vim</span> /etc/bind/named.conf.my-zones</div>
+        </div>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">conteúdo do named.conf.my-zones</span>
+            </div>
+            <div class="terminal-body"><span class="t-kw">zone</span> <span class="t-str">"informatica.joaocamara"</span> <span class="t-kw">IN</span> {
+  <span class="t-kw">type</span>   <span class="t-str">master</span>;
+  <span class="t-kw">file</span>   <span class="t-str">"informatica.joaocamara.zone"</span>;
+};</div>
+        </div>
+
+        <table class="cmp-table">
+            <thead>
+                <tr><th>Diretiva</th><th>Significado</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>zone "nome"</code></td><td>Nome do dom&iacute;nio a ser gerenciado</td></tr>
+                <tr><td><code>type master</code></td><td>Servidor DNS principal da zona</td></tr>
+                <tr><td><code>file "..."</code></td><td>Arquivo com os registros (em <code>/var/cache/bind/</code>)</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- CARD 8 — Passo 5: Criar Registros DNS -->
+    <div class="content-card">
+        <h2>&#x1F4DD; <span class="step-badge">5</span> Criar os Registros DNS</h2>
+        <p>Crie o arquivo <code>.zone</code> com os registros do dom&iacute;nio. Ele deve ficar em <code>/var/cache/bind/</code>, caminho definido na diretiva <code>directory</code> das op&ccedil;&otilde;es.</p>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">criar arquivo zone</span>
+            </div>
+            <div class="terminal-body"><span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">vim</span> /var/cache/bind/informatica.joaocamara.zone</div>
+        </div>
+
+        <h3>Conte&uacute;do do arquivo .zone</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">informatica.joaocamara.zone</span>
+            </div>
+            <div class="terminal-body"><span class="t-var">$TTL</span> <span class="t-str">86400</span>
+@ <span class="t-rtype">IN SOA</span> informatica.joaocamara. root.informatica.joaocamara. (
+    <span class="t-str">2024010101</span> <span class="t-comment">; serial (YYYYMMDDNN)</span>
+    <span class="t-str">3600</span>       <span class="t-comment">; refresh (1 hora)</span>
+    <span class="t-str">900</span>        <span class="t-comment">; retry  (15 min)</span>
+    <span class="t-str">604800</span>     <span class="t-comment">; expire (7 dias)</span>
+    <span class="t-str">86400</span>      <span class="t-comment">; negative TTL (24h)</span>
+)
+
+<span class="t-comment">; Servidor de nomes autoritativo</span>
+@         <span class="t-rtype">IN NS</span>    www
+
+<span class="t-comment">; Registros A — nome → IPv4</span>
+www       <span class="t-rtype">IN A</span>     <span class="t-str">192.168.0.1</span>
+outrohost <span class="t-rtype">IN A</span>     <span class="t-str">192.168.0.2</span>
+
+<span class="t-comment">; Registro CNAME — apelido</span>
+curso     <span class="t-rtype">IN CNAME</span> www</div>
+        </div>
+    </div>
+
+    <!-- CARD 9 — Entendendo o Arquivo Zone -->
+    <div class="content-card">
+        <h2>&#x1F4D6; Entendendo o Arquivo Zone</h2>
+        <p>Cada linha do arquivo <code>.zone</code> tem um significado preciso. Compreender a estrutura &eacute; essencial para adicionar registros corretamente.</p>
+
+        <h3>$TTL e SOA</h3>
+        <table class="cmp-table">
+            <thead>
+                <tr><th>Campo</th><th>Valor</th><th>Significado</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>$TTL 86400</code></td><td>86400 s</td><td>24 horas &mdash; tempo que clientes guardam em cache</td></tr>
+                <tr><td><code>serial</code></td><td>2024010101</td><td>Vers&atilde;o do arquivo (formato YYYYMMDDNN)</td></tr>
+                <tr><td><code>refresh</code></td><td>3600 s</td><td>Servidores slave verificam atualiza&ccedil;&otilde;es a cada 1h</td></tr>
+                <tr><td><code>retry</code></td><td>900 s</td><td>Tentar novamente ap&oacute;s falha a cada 15 min</td></tr>
+                <tr><td><code>expire</code></td><td>604800 s</td><td>Tempo m&aacute;ximo sem sincronizar com o master</td></tr>
+            </tbody>
+        </table>
+
+        <h3>Nossos registros</h3>
+        <table class="cmp-table">
+            <thead>
+                <tr><th>Nome</th><th>Tipo</th><th>Valor</th><th>Resultado</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>www</code></td><td>A</td><td>192.168.0.1</td><td>www &rarr; 192.168.0.1</td></tr>
+                <tr><td><code>outrohost</code></td><td>A</td><td>192.168.0.2</td><td>outrohost &rarr; 192.168.0.2</td></tr>
+                <tr><td><code>curso</code></td><td>CNAME</td><td>www</td><td>curso &rarr; www &rarr; 192.168.0.1</td></tr>
+            </tbody>
+        </table>
+
+        <div class="alert-box">
+            <p>&#x26A0;&#xFE0F; <strong>Incremente sempre o serial!</strong> Ao modificar o arquivo <code>.zone</code>, aumente o n&uacute;mero serial (ex.: <code>2024010101</code> &rarr; <code>2024010102</code>). Servidores slave usam o serial para saber se precisam sincronizar.</p>
+        </div>
+    </div>
+
+    <!-- CARD 10 — Passo 6: Validar e Reiniciar -->
+    <div class="content-card">
+        <h2>&#x2705; <span class="step-badge">6</span> Validar e Reiniciar</h2>
+        <p>Antes de reiniciar o BIND9, sempre valide a configura&ccedil;&atilde;o e o arquivo zone. Um erro de sintaxe pode impedir o servi&ccedil;o de iniciar.</p>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">validar e reiniciar</span>
+            </div>
+            <div class="terminal-body"><span class="t-comment"># Validar configuração geral (sem saída = OK!)</span>
+<span class="t-prompt">$</span> <span class="t-cmd">named-checkconf</span>
+
+<span class="t-comment"># Validar arquivo de zona</span>
+<span class="t-prompt">$</span> <span class="t-cmd">named-checkzone</span> informatica.joaocamara \
+    /var/cache/bind/informatica.joaocamara.zone
+<span class="t-out">zone informatica.joaocamara/IN: loaded serial 2024010101
+OK</span>
+
+<span class="t-comment"># Reiniciar o serviço BIND9</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">systemctl</span> restart bind9
+
+<span class="t-comment"># Verificar status</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">systemctl</span> status bind9
+<span class="t-out">● named.service - BIND Domain Name Server
+     Active: <span class="t-str">active (running)</span> since ...</span></div>
+        </div>
+
+        <div class="tip-box">
+            <p>&#x1F6E1;&#xFE0F; <strong>Fluxo seguro:</strong> <code>named-checkconf</code> (sem erros) &rarr; <code>named-checkzone</code> (OK) &rarr; <code>systemctl restart bind9</code>. Se qualquer valida&ccedil;&atilde;o falhar, corrija antes de reiniciar.</p>
+        </div>
+    </div>
+
+    <!-- CARD 11 — Testando o DNS -->
+    <div class="content-card">
+        <h2>&#x1F50D; Testando o DNS</h2>
+        <p>Configure os clientes para usar o servidor DNS rec&eacute;m-criado e teste a resolu&ccedil;&atilde;o de nomes com <code>nslookup</code>.</p>
+
+        <h3>Configurar no Linux</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">apontar para nosso DNS</span>
+            </div>
+            <div class="terminal-body"><span class="t-comment"># Editar o arquivo de resolução de nomes</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">vim</span> /etc/resolv.conf
+
+<span class="t-comment"># Adicionar o IP do servidor DNS:</span>
+<span class="t-kw">nameserver</span> <span class="t-str">192.168.0.1</span></div>
+        </div>
+
+        <h3>Testar com nslookup</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">consultas de teste</span>
+            </div>
+            <div class="terminal-body"><span class="t-comment"># Testar registro A</span>
+<span class="t-prompt">$</span> <span class="t-cmd">nslookup</span> www.informatica.joaocamara
+<span class="t-out">Server:  192.168.0.1
+Name:    www.informatica.joaocamara
+Address: 192.168.0.1</span>
+
+<span class="t-comment"># Testar CNAME</span>
+<span class="t-prompt">$</span> <span class="t-cmd">nslookup</span> curso.informatica.joaocamara
+<span class="t-out">Server:  192.168.0.1
+curso.informatica.joaocamara   canonical name = www.informatica.joaocamara
+Name:    www.informatica.joaocamara
+Address: 192.168.0.1</span>
+
+<span class="t-comment"># Forçar consulta em servidor específico (Windows/Linux)</span>
+<span class="t-prompt">$</span> <span class="t-cmd">nslookup</span> www.informatica.joaocamara <span class="t-str">192.168.0.1</span></div>
+        </div>
+
+        <div class="tip-box">
+            <p>&#x1F30D; <strong>No navegador:</strong> com o DNS configurado, acesse <code>http://www.informatica.joaocamara</code> diretamente pelo nome &mdash; sem precisar digitar o IP.</p>
+        </div>
+    </div>
+
+    <!-- EXERCÍCIO — Arrastar e Conectar -->
+    <div class="content-card exercise-card">
+        <h2>&#x1F3AF; Exerc&iacute;cio &mdash; Arraste e Conecte</h2>
+        <p style="color:#475569;font-size:.9em;margin-bottom:4px;">Relacione cada elemento do DNS/BIND9 &agrave; sua descri&ccedil;&atilde;o correta.</p>
+
+        <div class="ex-drag-root" data-ex="ex01">
+            <div class="ex-drag">
+                <div>
+                    <div class="ex-col-title">Descri&ccedil;&atilde;o</div>
+                    <div class="ex-pool" data-pool="ex01">
+                        <div class="drag-chip" data-id="c1">Tipo de registro que associa um nome a um endere&ccedil;o IPv4</div>
+                        <div class="drag-chip" data-id="c2">Tipo de registro que cria um apelido para outro nome</div>
+                        <div class="drag-chip" data-id="c3">Comando para validar a configura&ccedil;&atilde;o geral do BIND9</div>
+                        <div class="drag-chip" data-id="c4">Porta padr&atilde;o do protocolo DNS</div>
+                        <div class="drag-chip" data-id="c5">Significado da sigla BIND</div>
+                    </div>
+                </div>
+                <div>
+                    <div class="ex-col-title">Elemento</div>
+                    <div class="ex-zones" data-zones="ex01">
+                        <div class="drop-zone" data-zone="ex01-z1" data-accept="c1">
+                            <span class="zone-name"><code>A</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z2" data-accept="c2">
+                            <span class="zone-name"><code>CNAME</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z3" data-accept="c3">
+                            <span class="zone-name"><code>named-checkconf</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z4" data-accept="c4">
+                            <span class="zone-name"><code>53</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z5" data-accept="c5">
+                            <span class="zone-name"><code>Berkeley Internet Name Domain</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ex-actions">
+            <button class="btn-verificar" onclick="dragVerify('ex01')">Verificar</button>
+            <button class="btn-refazer"  onclick="dragReset('ex01')">Refazer</button>
+        </div>
+        <div class="ex-result" id="ex01-result"></div>
+    </div>
+
+    <!-- ATIVIDADE PRÁTICA -->
+    <div class="content-card practical-card" id="prat-01">
+        <h2>&#x1F6E0;&#xFE0F; Atividade Pr&aacute;tica &mdash; Configurando o Servidor DNS</h2>
+        <div class="prat-meta">
+            <span class="prat-tag">&#x23F1; ~45 min</span>
+            <span class="prat-tag">&#x1F4BB; Ubuntu Server / VM</span>
+            <span class="prat-tag">&#x1F4F8; Tirar screenshot da sa&iacute;da</span>
+        </div>
+
+        <div class="prat-steps">
+            <div class="prat-step">
+                <div class="step-num">1</div>
+                <div class="step-body">
+                    <div class="step-label">Instalar e configurar named.conf</div>
+                    <div class="step-desc">Instale o BIND9 com <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">sudo apt-get install bind9</code>. Edite <code>/etc/bind/named.conf</code>: comente a linha <code>default-zones</code> e adicione a linha <code>include</code> apontando para <code>named.conf.my-zones</code>. Tire screenshot do arquivo editado.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">2</div>
+                <div class="step-body">
+                    <div class="step-label">Configurar op&ccedil;&otilde;es e declarar a zona</div>
+                    <div class="step-desc">Edite <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">named.conf.options</code> com <code>listen-on</code> e <code>allow-query</code> para a sua rede local. Crie o arquivo <code>named.conf.my-zones</code> declarando sua zona com <code>type master</code> e o caminho do arquivo <code>.zone</code>.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">3</div>
+                <div class="step-body">
+                    <div class="step-label">Criar arquivo zone e validar</div>
+                    <div class="step-desc">Crie o arquivo <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">/var/cache/bind/seu-dominio.zone</code> com o SOA, registro NS, pelo menos dois registros A e um CNAME. Valide com <code>named-checkconf</code> e <code>named-checkzone</code>. Reinicie com <code>systemctl restart bind9</code>.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">4</div>
+                <div class="step-body">
+                    <div class="step-label">Testar a resolu&ccedil;&atilde;o de nomes</div>
+                    <div class="step-desc">Configure <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">/etc/resolv.conf</code> com o IP do seu servidor DNS. Teste com <code>nslookup www.seu-dominio</code> e verifique que o CNAME tamb&eacute;m resolve corretamente. Tire screenshot das consultas bem-sucedidas.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="prat-observe">
+            <strong>&#x1F4CC; Para refletir:</strong> o DNS &eacute; um dos servi&ccedil;os mais cr&iacute;ticos de qualquer rede. Sem ele, navegar na internet seria impratic&aacute;vel. Entender a estrutura de um arquivo <code>.zone</code>, os tipos de registros e o processo de valida&ccedil;&atilde;o com <code>named-checkconf</code> e <code>named-checkzone</code> &eacute; fundamental para administrar infraestruturas de rede profissionalmente.
+        </div>
+
+        <div class="ex-actions">
+            <button class="btn-print" onclick="printPractical('prat-01', 'Aula 5 \u2014 Servidor DNS com BIND9')">&#x1F5A8;&#xFE0F; Imprimir roteiro</button>
+        </div>
+    </div>
+
+    <div class="nav-footer">
+        <a href="net04-servidor-apache.html" class="nav-link">&#x2B05; Anterior: Servidor Apache</a>
+        <a href="aula19-servidor-proxy-squid.html" class="nav-link">Pr&oacute;xima: Servidor Proxy &#x27A1;</a>
+    </div>
+
+</div>
+
+<script src="slide-mode.js"></script>
+<script src="exercise-drag.js"></script>
+<script src="exercise-print.js"></script>
+</body>
+</html>
