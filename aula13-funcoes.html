@@ -3,1041 +3,783 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aula 13 - Shell Script: Funções</title>
+    <title>Aula 13 &mdash; Fun&ccedil;&otilde;es em Shell Script</title>
+    <link rel="stylesheet" href="slide-mode.css">
+    <link rel="stylesheet" href="exercise.css">
     <style>
         :root {
-            --primary: #1565c0;
-            --secondary: #2e7d32;
-            --bg-light: #f4f7fe;
+            --primary:   #667eea;
+            --secondary: #764ba2;
+            --bg-light:  #f4f7fe;
             --text-dark: #2d3748;
-            --text-light: #718096;
-            --accent-green: #38ef7d;
-            --accent-red: #ff758c;
-            --accent-orange: #f39c12;
-            --accent-cyan: #17a2b8;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-light);
-            color: var(--text-dark);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: var(--bg-light); color: var(--text-dark); line-height: 1.7; }
 
-        .classroom-header {
-            background: white;
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 1000;
-        }
+        /* ── TOP BAR ── */
+        .top-bar { background: white; padding: 15px 30px; display: flex; align-items: center; gap: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 10; }
+        .back-btn { text-decoration: none; color: var(--primary); font-weight: 600; display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 8px; transition: background .3s; }
+        .back-btn:hover { background: rgba(102,126,234,.08); }
+        .page-badge { font-size: .8em; padding: 4px 12px; border-radius: 20px; background: rgba(102,126,234,.12); color: var(--primary); font-weight: 600; }
 
-        .back-btn {
-            text-decoration: none;
-            color: var(--text-dark);
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
-            border-radius: 50px;
-            transition: all 0.2s;
-            background: #f0f2f5;
-        }
-        .back-btn:hover { background: #e2e8f0; color: var(--primary); }
+        /* ── LAYOUT ── */
+        .content-wrapper { max-width: 800px; margin: 40px auto; padding: 0 30px; }
+        .lesson-hero { background: white; border-radius: 16px; padding: 40px; box-shadow: 0 5px 15px rgba(0,0,0,.05); margin-bottom: 30px; border-top: 4px solid var(--primary); }
+        .lesson-hero h1 { font-size: 2em; margin-bottom: 10px; color: var(--primary); }
+        .lesson-hero .subtitle { font-size: 1.05em; color: #718096; }
+        .content-card { background: white; border-radius: 16px; padding: 35px; box-shadow: 0 5px 15px rgba(0,0,0,.05); margin-bottom: 25px; }
+        .content-card h2 { font-size: 1.4em; color: var(--primary); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
+        .content-card h3 { font-size: 1.05em; color: #5a67d8; margin: 20px 0 10px; }
+        .content-card p { margin-bottom: 15px; text-align: justify; }
+        ul, ol { margin: 10px 0 15px 25px; }
+        li { margin-bottom: 8px; }
 
-        .lesson-info h1 { font-size: 1.1em; margin: 0; color: var(--text-dark); }
-        .lesson-info span { font-size: 0.85em; color: var(--text-light); }
+        /* ── CAIXAS ── */
+        .highlight-box { background: linear-gradient(135deg,rgba(102,126,234,.05),rgba(118,75,162,.06)); border-left: 4px solid var(--primary); padding: 20px 25px; border-radius: 0 12px 12px 0; margin: 20px 0; }
+        .highlight-box p { margin-bottom: 0; font-style: italic; }
+        .alert-box { background: #fff8e1; border-left: 4px solid #f59e0b; padding: 18px 22px; border-radius: 0 12px 12px 0; margin: 20px 0; }
+        .alert-box p { margin: 0; color: #78350f; font-size: .93em; }
+        .tip-box { background: #f0fdf4; border-left: 4px solid #16a34a; padding: 18px 22px; border-radius: 0 12px 12px 0; margin: 20px 0; }
+        .tip-box p { margin: 0; color: #14532d; font-size: .93em; }
 
-        .slide-counter {
-            background: var(--primary);
-            color: white;
-            padding: 5px 12px;
-            border-radius: 12px;
-            font-size: 0.9em;
-            font-weight: bold;
-        }
+        /* ── TERMINAIS ── */
+        .terminal { background: #1a202c; border-radius: 12px; overflow: hidden; margin: 16px 0; box-shadow: 0 4px 20px rgba(0,0,0,.3); }
+        .terminal-bar { background: #2d3748; padding: 8px 16px; display: flex; align-items: center; gap: 8px; }
+        .term-dot { width: 12px; height: 12px; border-radius: 50%; }
+        .term-dot.red    { background: #fc8181; }
+        .term-dot.yellow { background: #f6e05e; }
+        .term-dot.green  { background: #68d391; }
+        .term-title { font-size: .75em; color: #718096; margin-left: 8px; font-family: 'Consolas', monospace; }
+        .terminal-body { padding: 20px 24px; font-family: 'Courier New','Consolas',monospace; font-size: .92em; line-height: 2; color: #a0aec0; white-space: pre-wrap; }
+        .t-prompt  { color: #63b3ed; }
+        .t-cmd     { color: #38ef7d; }
+        .t-flag    { color: #f6e05e; }
+        .t-out     { color: #a0aec0; }
+        .t-comment { color: #4a5568; font-style: italic; }
+        .t-kw      { color: #f687b3; font-weight: bold; }
+        .t-str     { color: #68d391; }
+        .t-var     { color: #fbd38d; }
+        .t-shebang { color: #f687b3; }
+        .t-fn      { color: #63b3ed; font-weight: bold; }
 
-        .viewer-container {
-            margin-top: 80px;
-            padding: 20px;
-            padding-bottom: 100px;
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-        }
+        /* ── TABELA ── */
+        .cmp-table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: .88em; }
+        .cmp-table th { background: var(--primary); color: white; padding: 10px 14px; text-align: left; }
+        .cmp-table th:first-child { border-radius: 6px 0 0 0; }
+        .cmp-table th:last-child  { border-radius: 0 6px 0 0; }
+        .cmp-table td { padding: 9px 14px; border-bottom: 1px solid #e5e7eb; }
+        .cmp-table tr:nth-child(even) td { background: #f8f7ff; }
+        .cmp-table td code { font-family: 'Consolas',monospace; background: #1e293b; color: #a78bfa; padding: 1px 6px; border-radius: 4px; font-size: .88em; }
 
-        .slide-card {
-            background: white;
-            width: 100%;
-            max-width: 1000px;
-            min-height: 80vh;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            padding: 50px;
-            padding-bottom: 100px;
-            position: relative;
-            display: none;
-            flex-direction: column;
-            animation: fadeIn 0.4s ease;
-        }
-        .slide-card.active { display: flex; }
+        /* ── GRID RESUMO ── */
+        .cmd-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(130px,1fr)); gap: 12px; margin: 16px 0; }
+        .cmd-card { background: #f8f7ff; border-radius: 10px; padding: 16px; text-align: center; border-top: 3px solid var(--primary); }
+        .cmd-card .cmd { font-family: 'Consolas',monospace; font-size: .82em; color: var(--primary); font-weight: 700; display: block; margin-bottom: 6px; }
+        .cmd-card strong { display: block; font-size: .82em; color: #1e293b; margin-bottom: 4px; }
+        .cmd-card span { font-size: .76em; color: #475569; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* ── COMPARAÇÃO ── */
+        .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+        .compare-box { border-radius: 12px; padding: 18px; }
+        .compare-box.green { background: #f0fdf4; border-top: 3px solid #16a34a; }
+        .compare-box.red   { background: #fff5f5; border-top: 3px solid #ef4444; }
+        .compare-box h4 { font-size: .95em; margin-bottom: 10px; }
+        .compare-box.green h4 { color: #065f46; }
+        .compare-box.red   h4 { color: #7f1d1d; }
 
-        h1.slide-title {
-            font-size: 2.8em;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        h2.slide-subtitle {
-            font-size: 2.2em;
-            color: var(--text-dark);
-            border-bottom: 3px solid #e2e8f0;
-            padding-bottom: 15px;
-            margin-bottom: 30px;
-        }
-
-        h3 { color: var(--primary); margin: 20px 0 10px; font-size: 1.4em; }
-
-        .content-box {
-            padding: 20px;
-            border-radius: 12px;
-            margin: 15px 0;
-            border-left: 5px solid;
-            background: #f8fafc;
-        }
-        
-        .box-highlight { border-color: var(--accent-orange); background: #fff8e1; }
-        .box-info { border-color: var(--primary); background: #e3f2fd; }
-        .box-success { border-color: var(--accent-green); background: #f0fdf4; }
-        .box-warning { border-color: var(--accent-red); background: #fff5f5; }
-        .box-tip { border-color: var(--accent-cyan); background: #e6fffa; }
-        
-        .box-terminal { 
-            background: #1a202c; 
-            color: #38ef7d; 
-            font-family: 'Courier New', monospace; 
-            border-left: 5px solid #38ef7d;
-            padding: 25px;
-            border-radius: 12px;
-            font-size: 1em;
-            line-height: 1.6;
-        }
-        .box-terminal .prompt { color: #63b3ed; }
-        .box-terminal .command { color: #38ef7d; }
-        .box-terminal .output { color: #a0aec0; }
-        .box-terminal .comment { color: #718096; font-style: italic; }
-        .box-terminal .shebang { color: #f687b3; }
-        .box-terminal .string { color: #68d391; }
-        .box-terminal .variable { color: #fbd38d; }
-        .box-terminal .keyword { color: #f687b3; font-weight: bold; }
-        .box-terminal .function { color: #63b3ed; font-weight: bold; }
-
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
-
-        .bullet-point {
-            display: flex;
-            align-items: flex-start;
-            margin: 10px 0;
-            font-size: 1.1em;
-            line-height: 1.4;
-        }
-        .bullet-point::before {
-            content: "🔧";
-            margin-right: 10px;
-            flex-shrink: 0;
-        }
-
-        .command-card {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
-        }
-        .command-card:hover { transform: translateY(-5px); }
-        .command-card .cmd { 
-            font-family: 'Courier New', monospace;
-            font-size: 1.2em; 
-            color: var(--primary);
-            background: #e3f2fd;
-            padding: 10px 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            display: inline-block;
-        }
-        .command-card h4 { color: var(--text-dark); margin-bottom: 10px; }
-        .command-card p { font-size: 0.9em; color: var(--text-light); }
-
-        .reference-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 15px 0;
-            font-size: 0.95em;
-        }
-        .reference-table th {
-            background: var(--primary);
-            color: white;
-            padding: 12px;
-            text-align: left;
-        }
-        .reference-table td {
-            padding: 10px 12px;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        .reference-table tr:hover { background: #e3f2fd; }
-        .reference-table code {
-            background: #e2e8f0;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-family: 'Courier New', monospace;
-        }
-
-        .nav-controls {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 15px;
-            background: white;
-            padding: 10px 20px;
-            border-radius: 50px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            z-index: 100;
-        }
-
-        .nav-btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 25px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
-        }
-        .nav-btn:hover { background: var(--secondary); transform: translateY(-2px); }
-        .nav-btn:disabled { background: #cbd5e0; cursor: not-allowed; transform: none; }
-
-        .drag-drop-container { display: flex; gap: 30px; margin-top: 20px; }
-        .col-questions, .col-answers { flex: 1; }
-
-        .question-item {
-            background: white;
-            border: 2px solid #e2e8f0;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 12px;
-        }
-        .question-text { font-weight: bold; margin-bottom: 10px; color: var(--text-dark); }
-        
-        .drop-zone {
-            background: #f8fafc;
-            border: 2px dashed #cbd5e0;
-            border-radius: 8px;
-            min-height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.9em;
-            color: var(--text-light);
-            transition: all 0.2s;
-        }
-        .drop-zone.drag-over { background: #e6fffa; border-color: var(--accent-green); }
-        .drop-zone.has-answer { border-style: solid; background: white; border-color: var(--primary); }
-
-        .answer-item {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            padding: 12px 20px;
-            margin-bottom: 10px;
-            border-radius: 8px;
-            cursor: grab;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            font-size: 0.95em;
-            user-select: none;
-            font-family: 'Courier New', monospace;
-        }
-        .answer-item:active { cursor: grabbing; }
-        .answer-item.dragging { opacity: 0.5; }
-        .answer-item.in-drop-zone { margin: 0; width: 100%; box-shadow: none; }
-
-        .quiz-result {
-            margin-top: 30px;
-            padding: 20px;
-            border-radius: 15px;
-            text-align: center;
-            display: none;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: white;
-        }
+        /* ── NAV ── */
+        .nav-footer { display: flex; justify-content: space-between; margin-top: 40px; padding-bottom: 40px; }
+        .nav-link { text-decoration: none; color: var(--primary); font-weight: 600; padding: 12px 24px; border-radius: 10px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,.05); transition: all .3s; }
+        .nav-link:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.1); }
 
         @media (max-width: 768px) {
-            .viewer-container { padding: 10px; margin-top: 70px; }
-            .slide-card { padding: 25px; padding-bottom: 100px; min-height: 70vh; }
-            .grid-2, .grid-3 { grid-template-columns: 1fr; }
-            .drag-drop-container { flex-direction: column; }
-            .classroom-header { padding: 10px 15px; }
-            h1.slide-title { font-size: 2em; }
-            h2.slide-subtitle { font-size: 1.5em; }
+            .content-wrapper { padding: 0 15px; }
+            .lesson-hero, .content-card { padding: 25px; }
+            .lesson-hero h1 { font-size: 1.5em; }
+            .compare-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-    <header class="classroom-header">
-        <div style="display: flex; align-items: center; gap: 20px;">
-            <a href="index.html" class="back-btn">
-                <span>←</span> Voltar
-            </a>
-            <div class="lesson-info">
-                <h1>Fundamentos do Linux</h1>
-                <span>Módulo 2 • Aula 13</span>
-            </div>
-        </div>
-        <div class="slide-counter">
-            <span id="current-slide">1</span> / <span id="total-slides">14</span>
-        </div>
-    </header>
+<div class="top-bar">
+    <a href="index.html" class="back-btn">&#x2B05; Voltar ao Dashboard</a>
+    <span class="page-badge">2&ordm; Bimestre &mdash; Shell Script</span>
+    <button class="slide-toggle" id="slideToggleBtn">&#x1F4FA; Modo Slide</button>
+</div>
 
-    <div class="viewer-container">
-        
-        <!-- SLIDE 1: Capa -->
-        <div class="slide-card active">
-            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
-                <div style="font-size: 5em;">🔧</div>
-                <h1 class="slide-title">Shell Script: Funções</h1>
-                <div class="content-box box-highlight" style="text-align: center; font-size: 1.2em;">
-                    <p><strong>Reutilize código de forma inteligente!</strong></p>
-                    <p style="margin-top: 10px; opacity: 0.8;">Organize, simplifique, automatize</p>
-                </div>
-                <div class="box-terminal" style="margin-top: 30px; max-width: 500px;">
-                    <span class="shebang">#!/bin/bash</span><br><br>
-                    <span class="function">saudacao</span>() {<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"Olá, $1!"</span><br>
-                    }<br><br>
-                    <span class="function">saudacao</span> <span class="string">"Mundo"</span>
-                </div>
-                <div class="content-box box-info" style="margin-top: 30px;">
-                    💡 Escreva uma vez, use quantas vezes quiser!
-                </div>
-            </div>
-        </div>
+<div class="content-wrapper">
 
-        <!-- SLIDE 2: O que são Funções? -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🎯 O que são Funções?</h2>
-            <div class="content-box box-highlight" style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 1.3em;">Função = <strong>Bloco de código reutilizável</strong> que faz uma tarefa específica</p>
-            </div>
-            <div class="grid-2">
-                <div>
-                    <div class="content-box box-info">
-                        <h3>📦 Analogia: Receita de Bolo</h3>
-                        <p>🍰 Você escreve a receita <strong>uma vez</strong><br>
-                        🍰 Usa <strong>quantas vezes</strong> quiser<br>
-                        🍰 Só muda os <strong>ingredientes</strong> (parâmetros)<br>
-                        🍰 Sempre <strong>funciona igual</strong>!</p>
-                    </div>
-                    <div class="content-box box-success">
-                        <h3>✅ Vantagens</h3>
-                        <div class="bullet-point">Evita repetir código</div>
-                        <div class="bullet-point">Scripts menores</div>
-                        <div class="bullet-point">Fácil de manter</div>
-                        <div class="bullet-point">Código organizado</div>
-                    </div>
-                </div>
-                <div>
-                    <div class="content-box box-warning">
-                        <h3>❌ Sem Função (ruim)</h3>
-                        <div class="box-terminal" style="padding: 10px; font-size: 0.85em;">
-                            <span class="command">echo</span> <span class="string">"Backup iniciando..."</span><br>
-                            <span class="command">cp</span> -r /dados /backup<br>
-                            <span class="command">echo</span> <span class="string">"Backup concluído!"</span><br><br>
-                            <span class="comment"># 50 linhas depois...</span><br>
-                            <span class="command">echo</span> <span class="string">"Backup iniciando..."</span><br>
-                            <span class="command">cp</span> -r /dados /backup<br>
-                            <span class="command">echo</span> <span class="string">"Backup concluído!"</span>
-                        </div>
-                    </div>
-                    <div class="content-box box-success">
-                        <h3>✅ Com Função (bom)</h3>
-                        <div class="box-terminal" style="padding: 10px; font-size: 0.85em;">
-                            <span class="function">fazer_backup</span>() {<br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"Backup iniciando..."</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">cp</span> -r /dados /backup<br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"Backup concluído!"</span><br>
-                            }<br><br>
-                            <span class="function">fazer_backup</span> <span class="comment"># Usa quando quiser!</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 3: Sintaxe Básica -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">📝 Sintaxe Básica</h2>
-            <div class="grid-2">
-                <div>
-                    <div class="content-box box-info">
-                        <h3>🏗️ Forma 1 (mais comum)</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.95em;">
-                            <span class="function">nome_funcao</span>() {<br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;comando1<br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;comando2<br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;comandoN<br>
-                            }
-                        </div>
-                    </div>
-                    <div class="content-box box-success">
-                        <h3>🏗️ Forma 2 (explícita)</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.95em;">
-                            <span class="keyword">function</span> <span class="function">nome_funcao</span>() {<br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;comando1<br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;comando2<br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;comandoN<br>
-                            }
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <div class="content-box box-highlight">
-                        <h3>🎯 Primeiro Exemplo</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.95em;">
-                            <span class="shebang">#!/bin/bash</span><br><br>
-                            <span class="comment"># Definir a função</span><br>
-                            <span class="function">saudacao</span>() {<br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"Olá, bem-vindo!"</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"Hoje é $(date +%d/%m)"</span><br>
-                            }<br><br>
-                            <span class="comment"># Chamar a função</span><br>
-                            <span class="function">saudacao</span>
-                        </div>
-                    </div>
-                    <div class="box-terminal" style="padding: 10px; font-size: 0.9em;">
-                        <span class="output">Olá, bem-vindo!</span><br>
-                        <span class="output">Hoje é 25/12</span>
-                    </div>
-                </div>
-            </div>
-            <div class="content-box box-tip" style="margin-top: 15px;">
-                <h3>⚠️ Regra Importante</h3>
-                <p><strong>Defina a função ANTES de chamá-la!</strong> O Shell lê de cima para baixo.</p>
-            </div>
-        </div>
-
-        <!-- SLIDE 4: Parâmetros -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">📥 Parâmetros de Funções</h2>
-            <div class="content-box box-highlight" style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 1.2em;">Funções podem receber <strong>valores de entrada</strong>!</p>
-            </div>
-            <div class="grid-2">
-                <div>
-                    <div class="content-box box-info">
-                        <h3>📊 Variáveis Especiais</h3>
-                        <table class="reference-table">
-                            <tr><th>Variável</th><th>Significado</th></tr>
-                            <tr><td><code>$1</code></td><td>Primeiro parâmetro</td></tr>
-                            <tr><td><code>$2</code></td><td>Segundo parâmetro</td></tr>
-                            <tr><td><code>$3</code></td><td>Terceiro parâmetro</td></tr>
-                            <tr><td><code>$@</code></td><td>Todos os parâmetros</td></tr>
-                            <tr><td><code>$#</code></td><td>Quantidade de parâmetros</td></tr>
-                        </table>
-                    </div>
-                </div>
-                <div>
-                    <div class="content-box box-success">
-                        <h3>🎯 Exemplo com Parâmetro</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.9em;">
-                            <span class="function">saudar</span>() {<br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"Olá, $1!"</span><br>
-                            }<br><br>
-                            <span class="function">saudar</span> <span class="string">"Maria"</span><br>
-                            <span class="function">saudar</span> <span class="string">"João"</span><br>
-                            <span class="function">saudar</span> <span class="string">"Ana"</span>
-                        </div>
-                    </div>
-                    <div class="box-terminal" style="padding: 10px; font-size: 0.9em;">
-                        <span class="output">Olá, Maria!</span><br>
-                        <span class="output">Olá, João!</span><br>
-                        <span class="output">Olá, Ana!</span>
-                    </div>
-                </div>
-            </div>
-            <div class="content-box box-highlight" style="margin-top: 15px;">
-                <h3>🔢 Múltiplos Parâmetros</h3>
-                <div class="box-terminal" style="padding: 15px; font-size: 0.9em;">
-                    <span class="function">apresentar</span>() {<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"Nome: $1"</span><br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"Idade: $2 anos"</span><br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"Cidade: $3"</span><br>
-                    }<br><br>
-                    <span class="function">apresentar</span> <span class="string">"Pedro"</span> <span class="string">"25"</span> <span class="string">"São Paulo"</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 5: Função com Cálculos -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🧮 Funções com Cálculos</h2>
-            <div class="grid-2">
-                <div>
-                    <div class="content-box box-info">
-                        <h3>➕ Função Soma</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.9em;">
-                            <span class="function">soma</span>() {<br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">RESULTADO</span>=$(($1 + $2))<br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"$1 + $2 = $RESULTADO"</span><br>
-                            }<br><br>
-                            <span class="function">soma</span> 10 5<br>
-                            <span class="function">soma</span> 100 200
-                        </div>
-                    </div>
-                    <div class="box-terminal" style="padding: 10px; font-size: 0.9em;">
-                        <span class="output">10 + 5 = 15</span><br>
-                        <span class="output">100 + 200 = 300</span>
-                    </div>
-                </div>
-                <div>
-                    <div class="content-box box-success">
-                        <h3>📊 Calculadora Completa</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.85em;">
-                            <span class="function">somar</span>() { <span class="command">echo</span> $(($1 + $2)); }<br>
-                            <span class="function">subtrair</span>() { <span class="command">echo</span> $(($1 - $2)); }<br>
-                            <span class="function">multiplicar</span>() { <span class="command">echo</span> $(($1 * $2)); }<br>
-                            <span class="function">dividir</span>() { <span class="command">echo</span> $(($1 / $2)); }<br><br>
-                            <span class="command">echo</span> <span class="string">"Soma: $(somar 10 5)"</span><br>
-                            <span class="command">echo</span> <span class="string">"Subtração: $(subtrair 10 5)"</span><br>
-                            <span class="command">echo</span> <span class="string">"Multiplicação: $(multiplicar 10 5)"</span><br>
-                            <span class="command">echo</span> <span class="string">"Divisão: $(dividir 10 5)"</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="content-box box-tip" style="margin-top: 15px;">
-                <h3>💡 Capturando Resultado</h3>
-                <p>Use <code>$(funcao)</code> para capturar o que a função imprime! Ex: <code>RESULTADO=$(soma 10 5)</code></p>
-            </div>
-        </div>
-
-        <!-- SLIDE 6: Função Interativa -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">💬 Funções Interativas</h2>
-            <div class="grid-2">
-                <div>
-                    <div class="content-box box-info">
-                        <h3>📥 Lendo Entrada do Usuário</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.9em;">
-                            <span class="function">soma_interativa</span>() {<br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">read</span> -p <span class="string">"Número 1: "</span> <span class="variable">N1</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">read</span> -p <span class="string">"Número 2: "</span> <span class="variable">N2</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"Resultado: $(($N1 + $N2))"</span><br>
-                            }<br><br>
-                            <span class="function">soma_interativa</span>
-                        </div>
-                    </div>
-                    <div class="box-terminal" style="padding: 10px; font-size: 0.9em;">
-                        <span class="output">Número 1: </span><span class="variable">10</span><br>
-                        <span class="output">Número 2: </span><span class="variable">5</span><br>
-                        <span class="output">Resultado: 15</span>
-                    </div>
-                </div>
-                <div>
-                    <div class="content-box box-success">
-                        <h3>🔐 Validação de Senha</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.85em;">
-                            <span class="function">verificar_senha</span>() {<br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">read</span> -sp <span class="string">"Senha: "</span> <span class="variable">SENHA</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="comment"># Nova linha</span><br><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span> [ <span class="string">"$SENHA"</span> = <span class="string">"1234"</span> ]; <span class="keyword">then</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"✅ Acesso permitido!"</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">else</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"❌ Senha incorreta!"</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">fi</span><br>
-                            }<br><br>
-                            <span class="function">verificar_senha</span>
-                        </div>
-                    </div>
-                    <div class="content-box box-tip">
-                        <h3>💡 Dica: -s no read</h3>
-                        <p><code>read -s</code> esconde o que é digitado (para senhas)</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 7: Return -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">↩️ Retorno de Funções</h2>
-            <div class="content-box box-highlight" style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 1.2em;"><strong>return</strong> = código de saída (0-255) | <strong>echo</strong> = valor de texto</p>
-            </div>
-            <div class="grid-2">
-                <div>
-                    <div class="content-box box-info">
-                        <h3>🔢 Usando return</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.9em;">
-                            <span class="function">verificar_arquivo</span>() {<br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span> [ -f <span class="string">"$1"</span> ]; <span class="keyword">then</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> 0 <span class="comment"># Sucesso</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">else</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span> 1 <span class="comment"># Erro</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">fi</span><br>
-                            }<br><br>
-                            <span class="keyword">if</span> <span class="function">verificar_arquivo</span> <span class="string">"teste.txt"</span>; <span class="keyword">then</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"Arquivo existe!"</span><br>
-                            <span class="keyword">else</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"Arquivo não existe!"</span><br>
-                            <span class="keyword">fi</span>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <div class="content-box box-success">
-                        <h3>📤 Usando echo (para valores)</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.9em;">
-                            <span class="function">dobrar</span>() {<br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> $(($1 * 2))<br>
-                            }<br><br>
-                            <span class="variable">RESULTADO</span>=$(<span class="function">dobrar</span> 5)<br>
-                            <span class="command">echo</span> <span class="string">"O dobro é: $RESULTADO"</span>
-                        </div>
-                    </div>
-                    <div class="content-box box-tip">
-                        <h3>💡 Quando usar cada um</h3>
-                        <p><strong>return:</strong> para sucesso/falha (use em if)<br>
-                        <strong>echo:</strong> para retornar valores/texto</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 8: Variáveis Locais -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🔒 Variáveis Locais</h2>
-            <div class="content-box box-highlight" style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 1.2em;">Use <strong>local</strong> para variáveis que só existem dentro da função!</p>
-            </div>
-            <div class="grid-2">
-                <div>
-                    <div class="content-box box-warning">
-                        <h3>❌ Sem local (problema)</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.9em;">
-                            <span class="variable">NOME</span>=<span class="string">"Ana"</span><br><br>
-                            <span class="function">mudar_nome</span>() {<br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="variable">NOME</span>=<span class="string">"Pedro"</span> <span class="comment"># Altera global!</span><br>
-                            }<br><br>
-                            <span class="command">echo</span> <span class="string">"Antes: $NOME"</span><br>
-                            <span class="function">mudar_nome</span><br>
-                            <span class="command">echo</span> <span class="string">"Depois: $NOME"</span>
-                        </div>
-                    </div>
-                    <div class="box-terminal" style="padding: 10px; font-size: 0.9em;">
-                        <span class="output">Antes: Ana</span><br>
-                        <span class="output">Depois: Pedro</span> <span class="comment"># Ops!</span>
-                    </div>
-                </div>
-                <div>
-                    <div class="content-box box-success">
-                        <h3>✅ Com local (correto)</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.9em;">
-                            <span class="variable">NOME</span>=<span class="string">"Ana"</span><br><br>
-                            <span class="function">mudar_nome</span>() {<br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">local</span> <span class="variable">NOME</span>=<span class="string">"Pedro"</span><br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"Dentro: $NOME"</span><br>
-                            }<br><br>
-                            <span class="command">echo</span> <span class="string">"Antes: $NOME"</span><br>
-                            <span class="function">mudar_nome</span><br>
-                            <span class="command">echo</span> <span class="string">"Depois: $NOME"</span>
-                        </div>
-                    </div>
-                    <div class="box-terminal" style="padding: 10px; font-size: 0.9em;">
-                        <span class="output">Antes: Ana</span><br>
-                        <span class="output">Dentro: Pedro</span><br>
-                        <span class="output">Depois: Ana</span> <span class="comment"># Preservada!</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 9: Importando Funções -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">📥 Importando Funções</h2>
-            <div class="content-box box-highlight" style="text-align: center; margin-bottom: 20px;">
-                <p style="font-size: 1.2em;">Use <strong>source</strong> ou <strong>.</strong> para importar funções de outros arquivos!</p>
-            </div>
-            <div class="grid-2">
-                <div>
-                    <div class="content-box box-info">
-                        <h3>📁 Arquivo: funcoes.sh</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.9em;">
-                            <span class="shebang">#!/bin/bash</span><br><br>
-                            <span class="function">saudacao</span>() {<br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"Olá, $1!"</span><br>
-                            }<br><br>
-                            <span class="function">despedida</span>() {<br>
-                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"Tchau, $1!"</span><br>
-                            }
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <div class="content-box box-success">
-                        <h3>📁 Arquivo: main.sh</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.9em;">
-                            <span class="shebang">#!/bin/bash</span><br><br>
-                            <span class="comment"># Importar funções</span><br>
-                            <span class="keyword">source</span> funcoes.sh<br>
-                            <span class="comment"># ou: . funcoes.sh</span><br><br>
-                            <span class="comment"># Usar as funções</span><br>
-                            <span class="function">saudacao</span> <span class="string">"Maria"</span><br>
-                            <span class="function">despedida</span> <span class="string">"Maria"</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="content-box box-tip" style="margin-top: 15px;">
-                <h3>💡 Dicas</h3>
-                <p><code>source</code> e <code>.</code> fazem a mesma coisa | Arquivos devem estar na mesma pasta (ou use caminho completo)</p>
-            </div>
-        </div>
-
-        <!-- SLIDE 10: Projeto Menu -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🚀 Projeto: Menu com Funções</h2>
-            <div class="box-terminal" style="font-size: 0.85em; line-height: 1.5;">
-                <span class="shebang">#!/bin/bash</span><br>
-                <span class="comment"># Sistema com menu usando funções</span><br><br>
-                <span class="function">mostrar_menu</span>() {<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"╔═══════════════════════╗"</span><br>
-                &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"║      SISTEMA DE INFOS      ║"</span><br>
-                &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"╠═══════════════════════╣"</span><br>
-                &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"║  1) Ver data/hora     ║"</span><br>
-                &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"║  2) Ver usuário       ║"</span><br>
-                &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"║  3) Ver diretório     ║"</span><br>
-                &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"║  0) Sair              ║"</span><br>
-                &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">echo</span> <span class="string">"╚═══════════════════════╝"</span><br>
-                }<br><br>
-                <span class="function">ver_data</span>() { <span class="command">date</span> <span class="string">"+%d/%m/%Y %H:%M"</span>; }<br>
-                <span class="function">ver_usuario</span>() { <span class="command">whoami</span>; }<br>
-                <span class="function">ver_diretorio</span>() { <span class="command">pwd</span>; }<br><br>
-                <span class="keyword">while</span> true; <span class="keyword">do</span><br>
-                &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">mostrar_menu</span><br>
-                &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">read</span> -p <span class="string">"Opção: "</span> <span class="variable">OPC</span><br>
-                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">case</span> <span class="string">"$OPC"</span> <span class="keyword">in</span><br>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1) <span class="function">ver_data</span> ;;<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2) <span class="function">ver_usuario</span> ;;<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3) <span class="function">ver_diretorio</span> ;;<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0) <span class="command">echo</span> <span class="string">"Tchau!"</span>; <span class="keyword">break</span> ;;<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">esac</span><br>
-                &nbsp;&nbsp;&nbsp;&nbsp;<span class="command">read</span> -p <span class="string">"Enter para continuar..."</span><br>
-                <span class="keyword">done</span>
-            </div>
-        </div>
-
-        <!-- SLIDE 11: Boas Práticas -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">💡 Boas Práticas</h2>
-            <div class="grid-2">
-                <div>
-                    <div class="content-box box-success">
-                        <h3>✅ Faça Isso</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.85em;">
-                            <span class="comment"># Nomes descritivos</span><br>
-                            <span class="function">calcular_media</span>()<br>
-                            <span class="function">verificar_arquivo</span>()<br><br>
-                            <span class="comment"># Use local para variáveis</span><br>
-                            <span class="keyword">local</span> <span class="variable">RESULTADO</span>=0<br><br>
-                            <span class="comment"># Documente suas funções</span><br>
-                            <span class="comment"># Função: calcula a média</span><br>
-                            <span class="comment"># Parâmetros: $1=nota1, $2=nota2</span>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <div class="content-box box-warning">
-                        <h3>❌ Evite Isso</h3>
-                        <div class="box-terminal" style="padding: 15px; font-size: 0.85em;">
-                            <span class="comment"># Nomes genéricos</span><br>
-                            <span class="function">func1</span>()<br>
-                            <span class="function">fazcoisa</span>()<br><br>
-                            <span class="comment"># Funções muito grandes</span><br>
-                            <span class="comment"># (divida em funções menores)</span><br><br>
-                            <span class="comment"># Chamar antes de definir</span><br>
-                            <span class="function">minha_funcao</span> <span class="comment"># Erro!</span><br>
-                            <span class="function">minha_funcao</span>() { ... }
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="content-box box-tip" style="margin-top: 15px;">
-                <h3>🎯 Checklist</h3>
-                <p>✅ Nomes descritivos | ✅ Use <code>local</code> | ✅ Defina antes de chamar | ✅ Uma tarefa por função</p>
-            </div>
-        </div>
-
-        <!-- SLIDE 12: Resumo -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">📋 Resumo dos Comandos</h2>
-            <div class="grid-3">
-                <div class="command-card">
-                    <div class="cmd">nome() { }</div>
-                    <h4>Criar Função</h4>
-                    <p>Define uma função</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">nome</div>
-                    <h4>Chamar Função</h4>
-                    <p>Executa a função</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">$1 $2 $3</div>
-                    <h4>Parâmetros</h4>
-                    <p>Valores de entrada</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">local VAR</div>
-                    <h4>Variável Local</h4>
-                    <p>Só existe na função</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">return N</div>
-                    <h4>Código de Saída</h4>
-                    <p>0=sucesso, 1+=erro</p>
-                </div>
-                <div class="command-card">
-                    <div class="cmd">source arq</div>
-                    <h4>Importar</h4>
-                    <p>Carrega outro arquivo</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- SLIDE 13: Quiz -->
-        <div class="slide-card">
-            <h2 class="slide-subtitle">🎯 Desafio Interativo</h2>
-            <p style="text-align: center; margin-bottom: 20px;">Arraste os conceitos para seus significados!</p>
-            
-            <div class="drag-drop-container">
-                <div class="col-questions">
-                    <div class="question-item">
-                        <div class="question-text">Primeiro parâmetro da função</div>
-                        <div class="drop-zone" data-correct="$1">Arraste aqui</div>
-                    </div>
-                    <div class="question-item">
-                        <div class="question-text">Define variável só dentro da função</div>
-                        <div class="drop-zone" data-correct="local">Arraste aqui</div>
-                    </div>
-                    <div class="question-item">
-                        <div class="question-text">Importa funções de outro arquivo</div>
-                        <div class="drop-zone" data-correct="source">Arraste aqui</div>
-                    </div>
-                    <div class="question-item">
-                        <div class="question-text">Retorna código de saída</div>
-                        <div class="drop-zone" data-correct="return">Arraste aqui</div>
-                    </div>
-                    <div class="question-item">
-                        <div class="question-text">Quantidade de parâmetros recebidos</div>
-                        <div class="drop-zone" data-correct="$#">Arraste aqui</div>
-                    </div>
-                </div>
-
-                <div class="col-answers" id="answersPool"></div>
-            </div>
-
-            <div style="text-align: center; margin-top: 20px; display: flex; gap: 10px; justify-content: center;">
-                <button onclick="checkAnswers()" class="nav-btn" style="background: var(--accent-green);">✅ Verificar</button>
-                <button onclick="resetQuiz()" class="nav-btn" style="background: var(--accent-red);">🔄 Reiniciar</button>
-            </div>
-
-            <div id="quizResult" class="quiz-result"></div>
-        </div>
-
-        <!-- SLIDE 14: Conclusão -->
-        <div class="slide-card">
-            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center;">
-                <div style="font-size: 4em; margin-bottom: 20px;">🎓🔧</div>
-                <h2 class="slide-subtitle" style="border: none;">Parabéns! Você completou a Aula 13!</h2>
-                <div class="content-box box-success" style="max-width: 700px;">
-                    <h3>📚 O que aprendemos:</h3>
-                    <div class="grid-2" style="text-align: left; margin-top: 15px;">
-                        <div>
-                            <div class="bullet-point">Criar funções</div>
-                            <div class="bullet-point">Parâmetros ($1, $2...)</div>
-                            <div class="bullet-point">Variáveis locais</div>
-                        </div>
-                        <div>
-                            <div class="bullet-point">Return e códigos de saída</div>
-                            <div class="bullet-point">Importar com source</div>
-                            <div class="bullet-point">Organizar scripts</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="content-box box-highlight" style="max-width: 700px; margin-top: 20px;">
-                    <h3>🏆 Módulo de Shell Script Completo!</h3>
-                    <p>Você agora domina: variáveis, condicionais, CASE, FOR, WHILE e Funções!</p>
-                </div>
-                <div class="content-box box-tip" style="max-width: 700px; margin-top: 20px;">
-                    <h3>💡 Lembre-se</h3>
-                    <p><code>nome() { }</code> | Defina ANTES de chamar | Use <code>local</code> | <code>source</code> para importar!</p>
-                </div>
-            </div>
-        </div>
-
+    <div class="lesson-hero">
+        <h1>&#x1F527; Fun&ccedil;&otilde;es em Shell Script</h1>
+        <p class="subtitle">Aula 13 &mdash; Reutilize c&oacute;digo de forma inteligente: crie blocos reutiliz&aacute;veis, passe par&acirc;metros e organize seus scripts com fun&ccedil;&otilde;es</p>
     </div>
 
-    <div class="nav-controls">
-        <button class="nav-btn" id="prevBtn" onclick="changeSlide(-1)">⬅️ Anterior</button>
-        <button class="nav-btn" id="nextBtn" onclick="changeSlide(1)">Próximo ➡️</button>
+    <!-- CARD 1 — O que são Funções? -->
+    <div class="content-card">
+        <h2>&#x1F3AF; O que s&atilde;o Fun&ccedil;&otilde;es?</h2>
+        <p>Uma <strong>fun&ccedil;&atilde;o</strong> &eacute; um bloco de c&oacute;digo reutiliz&aacute;vel que executa uma tarefa espec&iacute;fica. Voc&ecirc; a define uma vez e pode cham&aacute;-la quantas vezes precisar, passando diferentes valores (par&acirc;metros) a cada chamada.</p>
+
+        <div class="compare-grid">
+            <div class="compare-box red">
+                <h4>&#x274C; Sem fun&ccedil;&atilde;o &mdash; c&oacute;digo duplicado</h4>
+                <div class="terminal">
+                    <div class="terminal-bar">
+                        <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                    </div>
+                    <div class="terminal-body"><span class="t-cmd">echo</span> <span class="t-str">"Backup iniciando..."</span>
+<span class="t-cmd">cp</span> <span class="t-flag">-r</span> /dados /backup
+<span class="t-cmd">echo</span> <span class="t-str">"Backup conclu&iacute;do!"</span>
+
+<span class="t-comment"># 50 linhas depois... igual!</span>
+<span class="t-cmd">echo</span> <span class="t-str">"Backup iniciando..."</span>
+<span class="t-cmd">cp</span> <span class="t-flag">-r</span> /dados /backup
+<span class="t-cmd">echo</span> <span class="t-str">"Backup conclu&iacute;do!"</span></div>
+                </div>
+            </div>
+            <div class="compare-box green">
+                <h4>&#x2705; Com fun&ccedil;&atilde;o &mdash; escreva uma vez</h4>
+                <div class="terminal">
+                    <div class="terminal-bar">
+                        <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                    </div>
+                    <div class="terminal-body"><span class="t-fn">fazer_backup</span>() {
+    <span class="t-cmd">echo</span> <span class="t-str">"Backup iniciando..."</span>
+    <span class="t-cmd">cp</span> <span class="t-flag">-r</span> /dados /backup
+    <span class="t-cmd">echo</span> <span class="t-str">"Backup conclu&iacute;do!"</span>
+}
+
+<span class="t-fn">fazer_backup</span>  <span class="t-comment"># usa quando quiser!</span>
+<span class="t-fn">fazer_backup</span>  <span class="t-comment"># e de novo!</span></div>
+                </div>
+            </div>
+        </div>
+
+        <ul>
+            <li>Evita repetir c&oacute;digo &mdash; escreva uma vez, use muitas</li>
+            <li>Scripts menores e mais f&aacute;ceis de manter</li>
+            <li>Cada fun&ccedil;&atilde;o tem uma responsabilidade clara</li>
+            <li>Facilita testes e depura&ccedil;&atilde;o</li>
+        </ul>
     </div>
 
-    <script>
-        let currentSlide = 0;
-        const slides = document.querySelectorAll('.slide-card');
-        const totalSlides = slides.length;
+    <!-- CARD 2 — Sintaxe Básica -->
+    <div class="content-card">
+        <h2>&#x1F4DD; Sintaxe B&aacute;sica</h2>
+        <p>No Bash existem duas formas equivalentes de declarar uma fun&ccedil;&atilde;o. Ambas funcionam da mesma maneira; a primeira &eacute; a mais comum em scripts modernos.</p>
 
-        document.getElementById('total-slides').textContent = totalSlides;
+        <h3>Forma 1 &mdash; mais comum</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">sintaxe</span>
+            </div>
+            <div class="terminal-body"><span class="t-fn">nome_funcao</span>() {
+    comando1
+    comando2
+}</div>
+        </div>
 
-        function showSlide(index) {
-            slides.forEach((slide, i) => slide.classList.toggle('active', i === index));
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            document.getElementById('current-slide').textContent = index + 1;
-            document.getElementById('prevBtn').disabled = index === 0;
-            document.getElementById('nextBtn').disabled = index === totalSlides - 1;
-        }
+        <h3>Forma 2 &mdash; palavra-chave expl&iacute;cita</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">sintaxe alternativa</span>
+            </div>
+            <div class="terminal-body"><span class="t-kw">function</span> <span class="t-fn">nome_funcao</span>() {
+    comando1
+    comando2
+}</div>
+        </div>
 
-        function changeSlide(direction) {
-            const newSlide = currentSlide + direction;
-            if (newSlide >= 0 && newSlide < totalSlides) {
-                currentSlide = newSlide;
-                showSlide(currentSlide);
-            }
-        }
+        <h3>Primeiro exemplo completo</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">saudacao.sh</span>
+            </div>
+            <div class="terminal-body"><span class="t-shebang">#!/bin/bash</span>
 
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowLeft') changeSlide(-1);
-            if (e.key === 'ArrowRight') changeSlide(1);
-        });
+<span class="t-comment"># 1. Definir a fun&ccedil;&atilde;o</span>
+<span class="t-fn">saudacao</span>() {
+    <span class="t-cmd">echo</span> <span class="t-str">"Ol&aacute;, bem-vindo!"</span>
+    <span class="t-cmd">echo</span> <span class="t-str">"Hoje &eacute; $(date +%d/%m)"</span>
+}
 
-        const answersData = [
-            { id: '$1', text: '$1' },
-            { id: 'local', text: 'local' },
-            { id: 'source', text: 'source' },
-            { id: 'return', text: 'return' },
-            { id: '$#', text: '$#' }
-        ];
+<span class="t-comment"># 2. Chamar a fun&ccedil;&atilde;o</span>
+<span class="t-fn">saudacao</span>
 
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
-        }
+<span class="t-out">Ol&aacute;, bem-vindo!</span>
+<span class="t-out">Hoje &eacute; 25/02</span></div>
+        </div>
 
-        let draggedItem = null;
+        <div class="alert-box">
+            <p>&#x26A0;&#xFE0F; <strong>Regra importante:</strong> sempre <strong>defina a fun&ccedil;&atilde;o antes de cham&aacute;-la</strong>! O Shell l&ecirc; o script de cima para baixo &mdash; chamar uma fun&ccedil;&atilde;o antes de defini-la causa erro.</p>
+        </div>
+    </div>
 
-        function initQuiz() {
-            const pool = document.getElementById('answersPool');
-            pool.innerHTML = '';
-            const shuffled = shuffleArray([...answersData]);
-            
-            shuffled.forEach(ans => {
-                const div = document.createElement('div');
-                div.className = 'answer-item';
-                div.draggable = true;
-                div.textContent = ans.text;
-                div.dataset.id = ans.id;
-                
-                div.addEventListener('dragstart', (e) => {
-                    draggedItem = e.target;
-                    e.target.classList.add('dragging');
-                });
-                div.addEventListener('dragend', (e) => {
-                    e.target.classList.remove('dragging');
-                    draggedItem = null;
-                });
-                
-                pool.appendChild(div);
-            });
+    <!-- CARD 3 — Parâmetros -->
+    <div class="content-card">
+        <h2>&#x1F4E5; Par&acirc;metros de Fun&ccedil;&otilde;es</h2>
+        <p>Fun&ccedil;&otilde;es podem receber valores de entrada chamados <strong>par&acirc;metros</strong>. Eles s&atilde;o acessados pelas vari&aacute;veis especiais <code>$1</code>, <code>$2</code>, etc., da mesma forma que argumentos de script.</p>
 
-            document.querySelectorAll('.drop-zone').forEach(zone => {
-                zone.innerHTML = 'Arraste aqui';
-                zone.classList.remove('has-answer');
-                zone.style.background = '#f8fafc';
-                
-                zone.addEventListener('dragover', (e) => {
-                    e.preventDefault();
-                    zone.classList.add('drag-over');
-                });
-                
-                zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
-                
-                zone.addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    zone.classList.remove('drag-over');
-                    
-                    if (draggedItem && !zone.querySelector('.answer-item')) {
-                        zone.innerHTML = '';
-                        zone.appendChild(draggedItem);
-                        draggedItem.classList.add('in-drop-zone');
-                        zone.classList.add('has-answer');
-                    }
-                });
-            });
-            
-            document.getElementById('quizResult').style.display = 'none';
-        }
+        <table class="cmp-table">
+            <thead><tr><th>Vari&aacute;vel</th><th>Significado</th></tr></thead>
+            <tbody>
+                <tr><td><code>$1</code></td><td>Primeiro par&acirc;metro</td></tr>
+                <tr><td><code>$2</code></td><td>Segundo par&acirc;metro</td></tr>
+                <tr><td><code>$3</code></td><td>Terceiro par&acirc;metro</td></tr>
+                <tr><td><code>$@</code></td><td>Todos os par&acirc;metros</td></tr>
+                <tr><td><code>$#</code></td><td>Quantidade de par&acirc;metros recebidos</td></tr>
+            </tbody>
+        </table>
 
-        function checkAnswers() {
-            let correct = 0;
-            const zones = document.querySelectorAll('.drop-zone');
-            
-            zones.forEach(zone => {
-                const answer = zone.querySelector('.answer-item');
-                if (answer && answer.dataset.id === zone.dataset.correct) {
-                    correct++;
-                    zone.style.background = '#d1fae5';
-                } else {
-                    zone.style.background = '#fee2e2';
-                }
-            });
+        <h3>Fun&ccedil;&atilde;o com um par&acirc;metro</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">saudar.sh</span>
+            </div>
+            <div class="terminal-body"><span class="t-fn">saudar</span>() {
+    <span class="t-cmd">echo</span> <span class="t-str">"Ol&aacute;, $1!"</span>
+}
 
-            const resultDiv = document.getElementById('quizResult');
-            resultDiv.style.display = 'block';
-            resultDiv.innerHTML = `<h3>Você acertou ${correct} de ${zones.length}!</h3>`;
-            
-            if(correct === zones.length) resultDiv.innerHTML += '<p>🎉 Perfeito! Você domina Funções!</p>';
-            else if(correct >= zones.length/2) resultDiv.innerHTML += '<p>👍 Bom! Revise os erros.</p>';
-            else resultDiv.innerHTML += '<p>📚 Continue praticando!</p>';
-        }
+<span class="t-fn">saudar</span> <span class="t-str">"Maria"</span>
+<span class="t-fn">saudar</span> <span class="t-str">"Jo&atilde;o"</span>
+<span class="t-fn">saudar</span> <span class="t-str">"Ana"</span>
 
-        function resetQuiz() { initQuiz(); }
+<span class="t-out">Ol&aacute;, Maria!</span>
+<span class="t-out">Ol&aacute;, Jo&atilde;o!</span>
+<span class="t-out">Ol&aacute;, Ana!</span></div>
+        </div>
 
-        initQuiz();
-    </script>
+        <h3>Fun&ccedil;&atilde;o com m&uacute;ltiplos par&acirc;metros</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">apresentar.sh</span>
+            </div>
+            <div class="terminal-body"><span class="t-fn">apresentar</span>() {
+    <span class="t-cmd">echo</span> <span class="t-str">"Nome:   $1"</span>
+    <span class="t-cmd">echo</span> <span class="t-str">"Idade:  $2 anos"</span>
+    <span class="t-cmd">echo</span> <span class="t-str">"Cidade: $3"</span>
+}
+
+<span class="t-fn">apresentar</span> <span class="t-str">"Pedro"</span> <span class="t-str">"25"</span> <span class="t-str">"S&atilde;o Paulo"</span>
+
+<span class="t-out">Nome:   Pedro</span>
+<span class="t-out">Idade:  25 anos</span>
+<span class="t-out">Cidade: S&atilde;o Paulo</span></div>
+        </div>
+    </div>
+
+    <!-- CARD 4 — Funções com Cálculos -->
+    <div class="content-card">
+        <h2>&#x1F9EE; Fun&ccedil;&otilde;es com C&aacute;lculos</h2>
+        <p>Fun&ccedil;&otilde;es podem realizar opera&ccedil;&otilde;es aritm&eacute;ticas com <code>$(( ))</code> e retornar o resultado via <code>echo</code>. Para capturar o valor impresso por uma fun&ccedil;&atilde;o, use a substitui&ccedil;&atilde;o de comando <code>$(funcao)</code>.</p>
+
+        <h3>Fun&ccedil;&atilde;o soma</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">soma.sh</span>
+            </div>
+            <div class="terminal-body"><span class="t-fn">soma</span>() {
+    <span class="t-var">RESULTADO</span>=$(($1 + $2))
+    <span class="t-cmd">echo</span> <span class="t-str">"$1 + $2 = $RESULTADO"</span>
+}
+
+<span class="t-fn">soma</span> 10 5
+<span class="t-fn">soma</span> 100 200
+
+<span class="t-out">10 + 5 = 15</span>
+<span class="t-out">100 + 200 = 300</span></div>
+        </div>
+
+        <h3>Calculadora completa com captura de resultado</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">calculadora.sh</span>
+            </div>
+            <div class="terminal-body"><span class="t-fn">somar</span>()      { <span class="t-cmd">echo</span> $(($1 + $2)); }
+<span class="t-fn">subtrair</span>()   { <span class="t-cmd">echo</span> $(($1 - $2)); }
+<span class="t-fn">multiplicar</span>() { <span class="t-cmd">echo</span> $(($1 * $2)); }
+<span class="t-fn">dividir</span>()     { <span class="t-cmd">echo</span> $(($1 / $2)); }
+
+<span class="t-cmd">echo</span> <span class="t-str">"Soma:          $(<span class="t-fn">somar</span> 10 5)"</span>
+<span class="t-cmd">echo</span> <span class="t-str">"Subtra&ccedil;&atilde;o:    $(<span class="t-fn">subtrair</span> 10 5)"</span>
+<span class="t-cmd">echo</span> <span class="t-str">"Multiplica&ccedil;&atilde;o: $(<span class="t-fn">multiplicar</span> 10 5)"</span>
+<span class="t-cmd">echo</span> <span class="t-str">"Divis&atilde;o:       $(<span class="t-fn">dividir</span> 10 5)"</span></div>
+        </div>
+
+        <div class="tip-box">
+            <p>&#x1F4A1; <code>$(funcao arg1 arg2)</code> executa a fun&ccedil;&atilde;o e captura o que ela imprime com <code>echo</code>. Use este padr&atilde;o para armazenar resultados: <code>TOTAL=$(somar 10 5)</code>.</p>
+        </div>
+    </div>
+
+    <!-- CARD 5 — Funções Interativas -->
+    <div class="content-card">
+        <h2>&#x1F4AC; Fun&ccedil;&otilde;es Interativas</h2>
+        <p>Fun&ccedil;&otilde;es podem usar <code>read</code> internamente para coletar dados do usu&aacute;rio, encapsulando toda a l&oacute;gica de intera&ccedil;&atilde;o em um bloco reutiliz&aacute;vel.</p>
+
+        <h3>Soma interativa</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">soma-interativa.sh</span>
+            </div>
+            <div class="terminal-body"><span class="t-fn">soma_interativa</span>() {
+    <span class="t-cmd">read</span> <span class="t-flag">-p</span> <span class="t-str">"N&uacute;mero 1: "</span> <span class="t-var">N1</span>
+    <span class="t-cmd">read</span> <span class="t-flag">-p</span> <span class="t-str">"N&uacute;mero 2: "</span> <span class="t-var">N2</span>
+    <span class="t-cmd">echo</span> <span class="t-str">"Resultado: $(($N1 + $N2))"</span>
+}
+
+<span class="t-fn">soma_interativa</span></div>
+        </div>
+
+        <h3>Valida&ccedil;&atilde;o de senha</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">verificar-senha.sh</span>
+            </div>
+            <div class="terminal-body"><span class="t-fn">verificar_senha</span>() {
+    <span class="t-cmd">read</span> <span class="t-flag">-sp</span> <span class="t-str">"Senha: "</span> <span class="t-var">SENHA</span>
+    <span class="t-cmd">echo</span>  <span class="t-comment"># nova linha ap&oacute;s input oculto</span>
+
+    <span class="t-kw">if</span> [ <span class="t-str">"$SENHA"</span> = <span class="t-str">"1234"</span> ]; <span class="t-kw">then</span>
+        <span class="t-cmd">echo</span> <span class="t-str">"Acesso permitido!"</span>
+    <span class="t-kw">else</span>
+        <span class="t-cmd">echo</span> <span class="t-str">"Senha incorreta!"</span>
+    <span class="t-kw">fi</span>
+}
+
+<span class="t-fn">verificar_senha</span></div>
+        </div>
+
+        <div class="tip-box">
+            <p>&#x1F4A1; <code>read -s</code> oculta o texto digitado &mdash; essencial para senhas. <code>read -sp "texto"</code> combina prompt e modo silencioso em uma s&oacute; op&ccedil;&atilde;o.</p>
+        </div>
+    </div>
+
+    <!-- CARD 6 — Retorno de Funções -->
+    <div class="content-card">
+        <h2>&#x21A9;&#xFE0F; Retorno de Fun&ccedil;&otilde;es</h2>
+        <p>No Bash, fun&ccedil;&otilde;es podem &ldquo;retornar&rdquo; de duas formas distintas dependendo do objetivo: <code>return</code> para c&oacute;digos de status e <code>echo</code> para valores de texto.</p>
+
+        <h3><code>return</code> &mdash; c&oacute;digo de sa&iacute;da (0&ndash;255)</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">verificar-arquivo.sh</span>
+            </div>
+            <div class="terminal-body"><span class="t-fn">verificar_arquivo</span>() {
+    <span class="t-kw">if</span> [ <span class="t-flag">-f</span> <span class="t-str">"$1"</span> ]; <span class="t-kw">then</span>
+        <span class="t-kw">return</span> 0  <span class="t-comment"># sucesso</span>
+    <span class="t-kw">else</span>
+        <span class="t-kw">return</span> 1  <span class="t-comment"># erro</span>
+    <span class="t-kw">fi</span>
+}
+
+<span class="t-kw">if</span> <span class="t-fn">verificar_arquivo</span> <span class="t-str">"dados.txt"</span>; <span class="t-kw">then</span>
+    <span class="t-cmd">echo</span> <span class="t-str">"Arquivo existe!"</span>
+<span class="t-kw">else</span>
+    <span class="t-cmd">echo</span> <span class="t-str">"Arquivo n&atilde;o encontrado!"</span>
+<span class="t-kw">fi</span></div>
+        </div>
+
+        <h3><code>echo</code> &mdash; retornar valores de texto</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">dobrar.sh</span>
+            </div>
+            <div class="terminal-body"><span class="t-fn">dobrar</span>() {
+    <span class="t-cmd">echo</span> $(($1 * 2))
+}
+
+<span class="t-var">RESULTADO</span>=$(<span class="t-fn">dobrar</span> 5)
+<span class="t-cmd">echo</span> <span class="t-str">"O dobro de 5 &eacute;: $RESULTADO"</span>
+
+<span class="t-out">O dobro de 5 &eacute;: 10</span></div>
+        </div>
+
+        <div class="highlight-box">
+            <p>&#x1F4CC; <strong>Quando usar cada um:</strong> <code>return</code> para indicar sucesso/falha (use em <code>if funcao</code>); <code>echo</code> para devolver valores &mdash; capture com <code>VAR=$(funcao)</code>.</p>
+        </div>
+    </div>
+
+    <!-- CARD 7 — Variáveis Locais -->
+    <div class="content-card">
+        <h2>&#x1F512; Vari&aacute;veis Locais com <code>local</code></h2>
+        <p>Por padr&atilde;o, vari&aacute;veis criadas dentro de uma fun&ccedil;&atilde;o s&atilde;o <strong>globais</strong> e podem interferir no restante do script. A palavra-chave <code>local</code> restringe a vari&aacute;vel ao escopo da fun&ccedil;&atilde;o.</p>
+
+        <div class="compare-grid">
+            <div class="compare-box red">
+                <h4>&#x274C; Sem <code>local</code> &mdash; altera o global</h4>
+                <div class="terminal">
+                    <div class="terminal-bar">
+                        <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                    </div>
+                    <div class="terminal-body"><span class="t-var">NOME</span>=<span class="t-str">"Ana"</span>
+
+<span class="t-fn">mudar_nome</span>() {
+    <span class="t-var">NOME</span>=<span class="t-str">"Pedro"</span>  <span class="t-comment"># altera global!</span>
+}
+
+<span class="t-cmd">echo</span> <span class="t-str">"Antes: $NOME"</span>
+<span class="t-fn">mudar_nome</span>
+<span class="t-cmd">echo</span> <span class="t-str">"Depois: $NOME"</span>
+
+<span class="t-out">Antes: Ana</span>
+<span class="t-out">Depois: Pedro</span>  <span class="t-comment"># Ops!</span></div>
+                </div>
+            </div>
+            <div class="compare-box green">
+                <h4>&#x2705; Com <code>local</code> &mdash; preserva o global</h4>
+                <div class="terminal">
+                    <div class="terminal-bar">
+                        <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                    </div>
+                    <div class="terminal-body"><span class="t-var">NOME</span>=<span class="t-str">"Ana"</span>
+
+<span class="t-fn">mudar_nome</span>() {
+    <span class="t-kw">local</span> <span class="t-var">NOME</span>=<span class="t-str">"Pedro"</span>
+    <span class="t-cmd">echo</span> <span class="t-str">"Dentro: $NOME"</span>
+}
+
+<span class="t-cmd">echo</span> <span class="t-str">"Antes: $NOME"</span>
+<span class="t-fn">mudar_nome</span>
+<span class="t-cmd">echo</span> <span class="t-str">"Depois: $NOME"</span>
+
+<span class="t-out">Antes: Ana</span>
+<span class="t-out">Dentro: Pedro</span>
+<span class="t-out">Depois: Ana</span>  <span class="t-comment"># Preservada!</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tip-box">
+            <p>&#x1F4A1; Use <code>local</code> em todas as vari&aacute;veis internas de fun&ccedil;&otilde;es. Isso evita efeitos colaterais imprevis&iacute;veis e torna o script mais previs&iacute;vel e f&aacute;cil de depurar.</p>
+        </div>
+    </div>
+
+    <!-- CARD 8 — Importando Funções -->
+    <div class="content-card">
+        <h2>&#x1F4E5; Importando Fun&ccedil;&otilde;es com <code>source</code></h2>
+        <p>&Eacute; poss&iacute;vel organizar fun&ccedil;&otilde;es em arquivos separados e import&aacute;-las em qualquer script com <code>source</code> ou o atalho <code>.</code> (ponto). Isso cria uma <strong>biblioteca de fun&ccedil;&otilde;es</strong> reutiliz&aacute;vel.</p>
+
+        <h3>Arquivo de biblioteca: <code>funcoes.sh</code></h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">funcoes.sh</span>
+            </div>
+            <div class="terminal-body"><span class="t-shebang">#!/bin/bash</span>
+<span class="t-comment"># Biblioteca de fun&ccedil;&otilde;es compartilhadas</span>
+
+<span class="t-fn">saudacao</span>() {
+    <span class="t-cmd">echo</span> <span class="t-str">"Ol&aacute;, $1!"</span>
+}
+
+<span class="t-fn">despedida</span>() {
+    <span class="t-cmd">echo</span> <span class="t-str">"Tchau, $1!"</span>
+}</div>
+        </div>
+
+        <h3>Script principal: <code>main.sh</code></h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">main.sh</span>
+            </div>
+            <div class="terminal-body"><span class="t-shebang">#!/bin/bash</span>
+
+<span class="t-comment"># Importar fun&ccedil;&otilde;es (duas formas equivalentes)</span>
+<span class="t-kw">source</span> funcoes.sh
+<span class="t-comment"># ou: . funcoes.sh</span>
+
+<span class="t-comment"># Agora pode usar as fun&ccedil;&otilde;es importadas</span>
+<span class="t-fn">saudacao</span> <span class="t-str">"Maria"</span>
+<span class="t-fn">despedida</span> <span class="t-str">"Maria"</span>
+
+<span class="t-out">Ol&aacute;, Maria!</span>
+<span class="t-out">Tchau, Maria!</span></div>
+        </div>
+
+        <div class="highlight-box">
+            <p>&#x1F4CC; <code>source</code> e <code>.</code> (ponto) fazem exatamente a mesma coisa. Os arquivos devem estar no mesmo diret&oacute;rio ou use o caminho completo: <code>source /opt/scripts/funcoes.sh</code>.</p>
+        </div>
+    </div>
+
+    <!-- CARD 9 — Projeto Menu com Funções -->
+    <div class="content-card">
+        <h2>&#x1F680; Projeto: Menu com Fun&ccedil;&otilde;es</h2>
+        <p>Combina&ccedil;&atilde;o de <code>while true</code> + <code>case</code> + fun&ccedil;&otilde;es: cada op&ccedil;&atilde;o do menu chama uma fun&ccedil;&atilde;o espec&iacute;fica, tornando o c&oacute;digo organizado e f&aacute;cil de expandir.</p>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">sistema.sh</span>
+            </div>
+            <div class="terminal-body"><span class="t-shebang">#!/bin/bash</span>
+<span class="t-comment"># Sistema de informa&ccedil;&otilde;es com menu e fun&ccedil;&otilde;es</span>
+
+<span class="t-fn">mostrar_menu</span>() {
+    <span class="t-cmd">echo</span> <span class="t-str">"╔═══════════════════════╗"</span>
+    <span class="t-cmd">echo</span> <span class="t-str">"║   SISTEMA DE INFOS    ║"</span>
+    <span class="t-cmd">echo</span> <span class="t-str">"╠═══════════════════════╣"</span>
+    <span class="t-cmd">echo</span> <span class="t-str">"║  1) Ver data/hora     ║"</span>
+    <span class="t-cmd">echo</span> <span class="t-str">"║  2) Ver usu&aacute;rio       ║"</span>
+    <span class="t-cmd">echo</span> <span class="t-str">"║  3) Ver diret&oacute;rio     ║"</span>
+    <span class="t-cmd">echo</span> <span class="t-str">"║  0) Sair              ║"</span>
+    <span class="t-cmd">echo</span> <span class="t-str">"╚═══════════════════════╝"</span>
+}
+
+<span class="t-fn">ver_data</span>()      { <span class="t-cmd">date</span> <span class="t-str">"+%d/%m/%Y %H:%M"</span>; }
+<span class="t-fn">ver_usuario</span>()   { <span class="t-cmd">whoami</span>; }
+<span class="t-fn">ver_diretorio</span>() { <span class="t-cmd">pwd</span>; }
+
+<span class="t-kw">while</span> true; <span class="t-kw">do</span>
+    <span class="t-fn">mostrar_menu</span>
+    <span class="t-cmd">read</span> <span class="t-flag">-p</span> <span class="t-str">"Op&ccedil;&atilde;o: "</span> <span class="t-var">OPC</span>
+    <span class="t-kw">case</span> <span class="t-str">"$OPC"</span> <span class="t-kw">in</span>
+        1) <span class="t-fn">ver_data</span>      ;;
+        2) <span class="t-fn">ver_usuario</span>   ;;
+        3) <span class="t-fn">ver_diretorio</span> ;;
+        0) <span class="t-cmd">echo</span> <span class="t-str">"Tchau!"</span>; <span class="t-kw">break</span> ;;
+        *) <span class="t-cmd">echo</span> <span class="t-str">"Op&ccedil;&atilde;o inv&aacute;lida!"</span> ;;
+    <span class="t-kw">esac</span>
+    <span class="t-cmd">read</span> <span class="t-flag">-p</span> <span class="t-str">"Enter para continuar..."</span>
+<span class="t-kw">done</span></div>
+        </div>
+    </div>
+
+    <!-- CARD 10 — Boas Práticas -->
+    <div class="content-card">
+        <h2>&#x1F4A1; Boas Pr&aacute;ticas</h2>
+
+        <div class="compare-grid">
+            <div class="compare-box green">
+                <h4>&#x2705; Fa&ccedil;a isso</h4>
+                <div class="terminal">
+                    <div class="terminal-bar">
+                        <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                    </div>
+                    <div class="terminal-body"><span class="t-comment"># Nomes descritivos</span>
+<span class="t-fn">calcular_media</span>()
+<span class="t-fn">verificar_arquivo</span>()
+
+<span class="t-comment"># Use local para vari&aacute;veis internas</span>
+<span class="t-kw">local</span> <span class="t-var">RESULTADO</span>=0
+
+<span class="t-comment"># Documente par&acirc;metros</span>
+<span class="t-comment"># Fun&ccedil;&atilde;o: calcula m&eacute;dia</span>
+<span class="t-comment"># Par&acirc;metros: $1=nota1, $2=nota2</span>
+<span class="t-fn">calcular_media</span>() { ... }</div>
+                </div>
+            </div>
+            <div class="compare-box red">
+                <h4>&#x274C; Evite isso</h4>
+                <div class="terminal">
+                    <div class="terminal-bar">
+                        <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                    </div>
+                    <div class="terminal-body"><span class="t-comment"># Nomes gen&eacute;ricos</span>
+<span class="t-fn">func1</span>()
+<span class="t-fn">fazcoisa</span>()
+
+<span class="t-comment"># Fun&ccedil;&otilde;es enormes</span>
+<span class="t-comment"># (divida em fun&ccedil;&otilde;es menores)</span>
+
+<span class="t-comment"># Chamar antes de definir</span>
+<span class="t-fn">minha_funcao</span>       <span class="t-comment"># ERRO!</span>
+<span class="t-fn">minha_funcao</span>() { ... }</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tip-box">
+            <p>&#x1F4CB; <strong>Checklist:</strong> nomes descritivos &bull; use <code>local</code> para vari&aacute;veis internas &bull; defina sempre antes de chamar &bull; uma tarefa por fun&ccedil;&atilde;o &bull; documente par&acirc;metros nos coment&aacute;rios.</p>
+        </div>
+    </div>
+
+    <!-- CARD 11 — Resumo -->
+    <div class="content-card">
+        <h2>&#x1F4CB; Resumo dos Comandos</h2>
+
+        <div class="cmd-grid">
+            <div class="cmd-card">
+                <span class="cmd">nome()&nbsp;{&nbsp;}</span>
+                <strong>Criar</strong>
+                <span>Define a fun&ccedil;&atilde;o</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">nome</span>
+                <strong>Chamar</strong>
+                <span>Executa a fun&ccedil;&atilde;o</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">$1 $2 $3</span>
+                <strong>Par&acirc;metros</strong>
+                <span>Valores de entrada</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">$@</span>
+                <strong>Todos</strong>
+                <span>Todos os par&acirc;metros</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">$#</span>
+                <strong>Quantidade</strong>
+                <span>N&uacute;m. de par&acirc;metros</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">local VAR</span>
+                <strong>Local</strong>
+                <span>S&oacute; existe na fun&ccedil;&atilde;o</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">return N</span>
+                <strong>Status</strong>
+                <span>0=sucesso, 1+=erro</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">source arq</span>
+                <strong>Importar</strong>
+                <span>Carrega outro arquivo</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">$(funcao)</span>
+                <strong>Capturar</strong>
+                <span>Usa o echo da fun&ccedil;&atilde;o</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- EXERCÍCIO — Arrastar e Conectar -->
+    <div class="content-card exercise-card">
+        <h2>&#x1F3AF; Exerc&iacute;cio &mdash; Arraste e Conecte</h2>
+        <p style="color:#475569;font-size:.9em;margin-bottom:4px;">Relacione cada elemento de fun&ccedil;&otilde;es &agrave; sua descri&ccedil;&atilde;o.</p>
+
+        <div class="ex-drag-root" data-ex="ex01">
+            <div class="ex-drag">
+                <div>
+                    <div class="ex-col-title">Descri&ccedil;&atilde;o</div>
+                    <div class="ex-pool" data-pool="ex01">
+                        <div class="drag-chip" data-id="c1">Primeiro par&acirc;metro recebido pela fun&ccedil;&atilde;o</div>
+                        <div class="drag-chip" data-id="c2">Define vari&aacute;vel que s&oacute; existe dentro da fun&ccedil;&atilde;o</div>
+                        <div class="drag-chip" data-id="c3">Importa fun&ccedil;&otilde;es de outro arquivo</div>
+                        <div class="drag-chip" data-id="c4">Retorna c&oacute;digo de sa&iacute;da (0=sucesso, 1=erro)</div>
+                        <div class="drag-chip" data-id="c5">Quantidade de par&acirc;metros recebidos</div>
+                        <div class="drag-chip" data-id="c6">Captura o que uma fun&ccedil;&atilde;o imprime com echo</div>
+                    </div>
+                </div>
+                <div>
+                    <div class="ex-col-title">Elemento</div>
+                    <div class="ex-zones" data-zones="ex01">
+                        <div class="drop-zone" data-zone="ex01-z1" data-accept="c1">
+                            <span class="zone-name"><code>$1</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z2" data-accept="c2">
+                            <span class="zone-name"><code>local</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z3" data-accept="c3">
+                            <span class="zone-name"><code>source</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z4" data-accept="c4">
+                            <span class="zone-name"><code>return</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z5" data-accept="c5">
+                            <span class="zone-name"><code>$#</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z6" data-accept="c6">
+                            <span class="zone-name"><code>$(funcao)</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ex-actions">
+            <button class="btn-verificar" onclick="dragVerify('ex01')">Verificar</button>
+            <button class="btn-refazer"  onclick="dragReset('ex01')">Refazer</button>
+        </div>
+        <div class="ex-result" id="ex01-result"></div>
+    </div>
+
+    <!-- ATIVIDADE PRÁTICA -->
+    <div class="content-card practical-card" id="prat-01">
+        <h2>&#x1F6E0;&#xFE0F; Atividade Pr&aacute;tica &mdash; Criando Fun&ccedil;&otilde;es</h2>
+        <div class="prat-meta">
+            <span class="prat-tag">&#x23F1; ~35 min</span>
+            <span class="prat-tag">&#x1F4BB; Terminal Bash</span>
+            <span class="prat-tag">&#x1F4F8; Tirar screenshot da sa&iacute;da</span>
+        </div>
+
+        <div class="prat-steps">
+            <div class="prat-step">
+                <div class="step-num">1</div>
+                <div class="step-body">
+                    <div class="step-label">Fun&ccedil;&otilde;es b&aacute;sicas com par&acirc;metros</div>
+                    <div class="step-desc">Crie <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">calculadora.sh</code> com quatro fun&ccedil;&otilde;es: <code>somar</code>, <code>subtrair</code>, <code>multiplicar</code> e <code>dividir</code>. Cada uma recebe dois par&acirc;metros e exibe o resultado. Teste com pelo menos 3 chamadas de cada fun&ccedil;&atilde;o.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">2</div>
+                <div class="step-body">
+                    <div class="step-label">Fun&ccedil;&atilde;o com <code>local</code> e <code>return</code></div>
+                    <div class="step-desc">Crie <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">validar.sh</code> com uma fun&ccedil;&atilde;o <code>verificar_numero</code> que use <code>local</code> para vari&aacute;veis internas e <code>return 0</code> se o par&acirc;metro for um n&uacute;mero positivo ou <code>return 1</code> se for negativo ou zero. Use a fun&ccedil;&atilde;o em um <code>if</code>.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">3</div>
+                <div class="step-body">
+                    <div class="step-label">Biblioteca de fun&ccedil;&otilde;es</div>
+                    <div class="step-desc">Crie <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">lib.sh</code> com fun&ccedil;&otilde;es de utilidade: <code>linha_separadora</code> (imprime 40 h&iacute;fens), <code>cabecalho TITULO</code> (imprime t&iacute;tulo entre linhas) e <code>log MENSAGEM</code> (imprime com data/hora). Importe em <code>main.sh</code> com <code>source</code> e use as tr&ecirc;s fun&ccedil;&otilde;es.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">4</div>
+                <div class="step-body">
+                    <div class="step-label">Menu completo com fun&ccedil;&otilde;es</div>
+                    <div class="step-desc">Crie <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">sistema.sh</code> com fun&ccedil;&otilde;es separadas para: exibir o menu, mostrar informa&ccedil;&otilde;es do sistema (<code>uname -a</code>, <code>uptime</code>), listar usu&aacute;rios logados (<code>who</code>) e verificar espa&ccedil;o em disco (<code>df -h</code>). Use <code>while true</code> + <code>case</code> para chamar cada fun&ccedil;&atilde;o.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="prat-observe">
+            <strong>&#x1F4CC; Para refletir:</strong> fun&ccedil;&otilde;es transformam scripts longos e repetitivos em c&oacute;digo modular e leg&iacute;vel. Com fun&ccedil;&otilde;es, vari&aacute;veis locais e <code>source</code>, voc&ecirc; tem as ferramentas para construir sistemas Shell Script profissionais e de f&aacute;cil manuten&ccedil;&atilde;o.
+        </div>
+
+        <div class="ex-actions">
+            <button class="btn-print" onclick="printPractical('prat-01', 'Aula 13 \u2014 Fun\u00e7\u00f5es em Shell Script')">&#x1F5A8;&#xFE0F; Imprimir roteiro</button>
+        </div>
+    </div>
+
+    <div class="nav-footer">
+        <a href="aula12-loops-while.html" class="nav-link">&#x2B05; Anterior: Loops while</a>
+        <a href="aula14-ip-estatico-netplan.html" class="nav-link">Pr&oacute;xima: IP Est&aacute;tico &#x27A1;</a>
+    </div>
+
+</div>
+
+<script src="slide-mode.js"></script>
+<script src="exercise-drag.js"></script>
+<script src="exercise-print.js"></script>
 </body>
 </html>
