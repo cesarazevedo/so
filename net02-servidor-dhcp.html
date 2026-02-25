@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 2 &mdash; Servidor DHCP</title>
+    <link rel="stylesheet" href="slide-mode.css">
+    <link rel="stylesheet" href="exercise.css">
+    <style>
+        :root {
+            --primary:   #667eea;
+            --secondary: #764ba2;
+            --bg-light:  #f4f7fe;
+            --text-dark: #2d3748;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: var(--bg-light); color: var(--text-dark); line-height: 1.7; }
+
+        /* ── TOP BAR ── */
+        .top-bar { background: white; padding: 15px 30px; display: flex; align-items: center; gap: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 10; }
+        .back-btn { text-decoration: none; color: var(--primary); font-weight: 600; display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 8px; transition: background .3s; }
+        .back-btn:hover { background: rgba(102,126,234,.08); }
+        .page-badge { font-size: .8em; padding: 4px 12px; border-radius: 20px; background: rgba(102,126,234,.12); color: var(--primary); font-weight: 600; }
+
+        /* ── LAYOUT ── */
+        .content-wrapper { max-width: 800px; margin: 40px auto; padding: 0 30px; }
+        .lesson-hero { background: white; border-radius: 16px; padding: 40px; box-shadow: 0 5px 15px rgba(0,0,0,.05); margin-bottom: 30px; border-top: 4px solid var(--primary); }
+        .lesson-hero h1 { font-size: 2em; margin-bottom: 10px; color: var(--primary); }
+        .lesson-hero .subtitle { font-size: 1.05em; color: #718096; }
+        .content-card { background: white; border-radius: 16px; padding: 35px; box-shadow: 0 5px 15px rgba(0,0,0,.05); margin-bottom: 25px; }
+        .content-card h2 { font-size: 1.4em; color: var(--primary); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
+        .content-card h3 { font-size: 1.05em; color: #5a67d8; margin: 20px 0 10px; }
+        .content-card p { margin-bottom: 15px; text-align: justify; }
+        ul, ol { margin: 10px 0 15px 25px; }
+        li { margin-bottom: 8px; }
+
+        /* ── CAIXAS ── */
+        .highlight-box { background: linear-gradient(135deg,rgba(102,126,234,.05),rgba(118,75,162,.06)); border-left: 4px solid var(--primary); padding: 20px 25px; border-radius: 0 12px 12px 0; margin: 20px 0; }
+        .highlight-box p { margin-bottom: 0; font-style: italic; }
+        .alert-box { background: #fff8e1; border-left: 4px solid #f59e0b; padding: 18px 22px; border-radius: 0 12px 12px 0; margin: 20px 0; }
+        .alert-box p { margin: 0; color: #78350f; font-size: .93em; }
+        .tip-box { background: #f0fdf4; border-left: 4px solid #16a34a; padding: 18px 22px; border-radius: 0 12px 12px 0; margin: 20px 0; }
+        .tip-box p { margin: 0; color: #14532d; font-size: .93em; }
+
+        /* ── TERMINAIS ── */
+        .terminal { background: #1a202c; border-radius: 12px; overflow: hidden; margin: 16px 0; box-shadow: 0 4px 20px rgba(0,0,0,.3); }
+        .terminal-bar { background: #2d3748; padding: 8px 16px; display: flex; align-items: center; gap: 8px; }
+        .term-dot { width: 12px; height: 12px; border-radius: 50%; }
+        .term-dot.red    { background: #fc8181; }
+        .term-dot.yellow { background: #f6e05e; }
+        .term-dot.green  { background: #68d391; }
+        .term-title { font-size: .75em; color: #718096; margin-left: 8px; font-family: 'Consolas', monospace; }
+        .terminal-body { padding: 20px 24px; font-family: 'Courier New','Consolas',monospace; font-size: .92em; line-height: 2; color: #a0aec0; white-space: pre-wrap; }
+        .t-prompt  { color: #63b3ed; }
+        .t-cmd     { color: #38ef7d; }
+        .t-flag    { color: #f6e05e; }
+        .t-out     { color: #a0aec0; }
+        .t-comment { color: #4a5568; font-style: italic; }
+        .t-kw      { color: #f687b3; font-weight: bold; }
+        .t-str     { color: #68d391; }
+        .t-var     { color: #fbd38d; }
+
+        /* ── TABELA ── */
+        .cmp-table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: .88em; }
+        .cmp-table th { background: var(--primary); color: white; padding: 10px 14px; text-align: left; }
+        .cmp-table th:first-child { border-radius: 6px 0 0 0; }
+        .cmp-table th:last-child  { border-radius: 0 6px 0 0; }
+        .cmp-table td { padding: 9px 14px; border-bottom: 1px solid #e5e7eb; }
+        .cmp-table tr:nth-child(even) td { background: #f8f7ff; }
+        .cmp-table td code { font-family: 'Consolas',monospace; background: #1e293b; color: #a78bfa; padding: 1px 6px; border-radius: 4px; font-size: .88em; }
+
+        /* ── GRID RESUMO ── */
+        .cmd-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(150px,1fr)); gap: 12px; margin: 16px 0; }
+        .cmd-card { background: #f8f7ff; border-radius: 10px; padding: 16px; text-align: center; border-top: 3px solid var(--primary); }
+        .cmd-card .cmd { font-family: 'Consolas',monospace; font-size: .82em; color: var(--primary); font-weight: 700; display: block; margin-bottom: 6px; }
+        .cmd-card strong { display: block; font-size: .82em; color: #1e293b; margin-bottom: 4px; }
+        .cmd-card span { font-size: .76em; color: #475569; }
+
+        /* ── DORA CARDS ── */
+        .dora-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(160px,1fr)); gap: 12px; margin: 16px 0; }
+        .dora-card { border-radius: 12px; padding: 18px; text-align: center; }
+        .dora-card.d { background: #eff6ff; border-top: 3px solid #3b82f6; }
+        .dora-card.o { background: #fefce8; border-top: 3px solid #eab308; }
+        .dora-card.r { background: #f0fdf4; border-top: 3px solid #16a34a; }
+        .dora-card.a { background: #fdf4ff; border-top: 3px solid #a855f7; }
+        .dora-card .dora-letter { font-size: 2em; font-weight: 900; margin-bottom: 4px; }
+        .dora-card.d .dora-letter { color: #3b82f6; }
+        .dora-card.o .dora-letter { color: #eab308; }
+        .dora-card.r .dora-letter { color: #16a34a; }
+        .dora-card.a .dora-letter { color: #a855f7; }
+        .dora-card strong { display: block; font-size: .85em; margin-bottom: 6px; }
+        .dora-card p { font-size: .78em; color: #475569; margin: 0; text-align: center; }
+
+        /* ── PASSO BADGE ── */
+        .step-badge { display: inline-block; background: var(--primary); color: white; border-radius: 50%; width: 28px; height: 28px; line-height: 28px; text-align: center; font-size: .85em; font-weight: 700; margin-right: 8px; flex-shrink: 0; }
+
+        /* ── NAV ── */
+        .nav-footer { display: flex; justify-content: space-between; margin-top: 40px; padding-bottom: 40px; }
+        .nav-link { text-decoration: none; color: var(--primary); font-weight: 600; padding: 12px 24px; border-radius: 10px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,.05); transition: all .3s; }
+        .nav-link:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.1); }
+
+        @media (max-width: 768px) {
+            .content-wrapper { padding: 0 15px; }
+            .lesson-hero, .content-card { padding: 25px; }
+            .lesson-hero h1 { font-size: 1.5em; }
+            .dora-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-bar">
+    <a href="index.html" class="back-btn">&#x2B05; Voltar ao Dashboard</a>
+    <span class="page-badge">3&ordm; Bimestre &mdash; Servi&ccedil;os de Rede</span>
+    <button class="slide-toggle" id="slideToggleBtn">&#x1F4FA; Modo Slide</button>
+</div>
+
+<div class="content-wrapper">
+
+    <div class="lesson-hero">
+        <h1>&#x1F4E1; Servidor DHCP</h1>
+        <p class="subtitle">Aula 2 &mdash; Configure o ISC-DHCP-SERVER no Ubuntu para distribuir endere&ccedil;os IP automaticamente na rede: instale, configure o <code>dhcpd.conf</code> e gerencie concess&otilde;es</p>
+    </div>
+
+    <!-- CARD 1 — O que é DHCP? -->
+    <div class="content-card">
+        <h2>&#x1F4D6; O que &eacute; DHCP?</h2>
+        <p>O <strong>DHCP</strong> (Dynamic Host Configuration Protocol) &eacute; o protocolo que distribui configura&ccedil;&otilde;es de rede automaticamente para os dispositivos. Sem ele, cada computador precisaria de configura&ccedil;&atilde;o manual.</p>
+
+        <div class="highlight-box">
+            <p>&#x1F4A1; <strong>Analogia do hotel:</strong> o servidor DHCP &eacute; como o recepcionista que atribui quartos (IPs) aos h&oacute;spedes (dispositivos) com uma di&aacute;ria (lease time). Quando o h&oacute;spede vai embora, o quarto fica livre para outro.</p>
+        </div>
+
+        <h3>O que o DHCP distribui</h3>
+        <div class="cmd-grid">
+            <div class="cmd-card">
+                <span class="cmd">IP</span>
+                <strong>Endere&ccedil;o IP</strong>
+                <span>Identidade na rede</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">Mask</span>
+                <strong>M&aacute;scara de rede</strong>
+                <span>Define o bloco de rede</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">GW</span>
+                <strong>Gateway padr&atilde;o</strong>
+                <span>Sa&iacute;da para a internet</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">DNS</span>
+                <strong>Servidores DNS</strong>
+                <span>Resolu&ccedil;&atilde;o de nomes</span>
+            </div>
+        </div>
+
+        <h3>Vantagens do DHCP</h3>
+        <ul>
+            <li>Configura&ccedil;&atilde;o autom&aacute;tica &mdash; sem interven&ccedil;&atilde;o manual</li>
+            <li>Gerenciamento centralizado de todos os IPs da rede</li>
+            <li>Evita conflitos de IP (dois dispositivos com o mesmo endere&ccedil;o)</li>
+            <li>Facilita a administra&ccedil;&atilde;o em redes grandes</li>
+        </ul>
+    </div>
+
+    <!-- CARD 2 — Processo DORA -->
+    <div class="content-card">
+        <h2>&#x1F504; Processo DORA</h2>
+        <p>Quando um dispositivo entra na rede e precisa de um IP, ele passa por quatro etapas conhecidas como <strong>DORA</strong>. Todo esse processo acontece em milissegundos.</p>
+
+        <div class="dora-grid">
+            <div class="dora-card d">
+                <div class="dora-letter">D</div>
+                <strong>DISCOVER</strong>
+                <p>Cliente grita na rede: &ldquo;Tem algum servidor DHCP a&iacute;?&rdquo;</p>
+            </div>
+            <div class="dora-card o">
+                <div class="dora-letter">O</div>
+                <strong>OFFER</strong>
+                <p>Servidor responde: &ldquo;Tenho! Posso te dar o IP 192.168.0.15&rdquo;</p>
+            </div>
+            <div class="dora-card r">
+                <div class="dora-letter">R</div>
+                <strong>REQUEST</strong>
+                <p>Cliente confirma: &ldquo;Aceito! Quero esse IP!&rdquo;</p>
+            </div>
+            <div class="dora-card a">
+                <div class="dora-letter">A</div>
+                <strong>ACK</strong>
+                <p>Servidor finaliza: &ldquo;Pronto! IP 192.168.0.15 &eacute; seu por 2 horas!&rdquo;</p>
+            </div>
+        </div>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">fluxo DORA</span>
+            </div>
+            <div class="terminal-body"><span class="t-out">Cliente          Servidor DHCP
+  |                   |
+  |--- DISCOVER ---&gt;  |   broadcast: "tem DHCP aqui?"
+  |                   |
+  |  &lt;--- OFFER ----  |   "posso te dar 192.168.0.15"
+  |                   |
+  |--- REQUEST ----&gt;  |   "quero o 192.168.0.15!"
+  |                   |
+  |  &lt;---- ACK -----  |   "confirmado! lease: 2 horas"
+  |                   |</span></div>
+        </div>
+    </div>
+
+    <!-- CARD 3 — ISC-DHCP-SERVER -->
+    <div class="content-card">
+        <h2>&#x1F5A5;&#xFE0F; ISC-DHCP-SERVER</h2>
+        <p>O <strong>ISC-DHCP-SERVER</strong> &eacute; o servidor DHCP mais usado no Linux &mdash; robusto, maduro e altamente configur&aacute;vel. Desenvolvido pelo <em>Internet Systems Consortium</em>.</p>
+
+        <h3>Arquivos importantes</h3>
+        <table class="cmp-table">
+            <thead>
+                <tr><th>Arquivo</th><th>Fun&ccedil;&atilde;o</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>/etc/dhcp/dhcpd.conf</code></td><td>Configura&ccedil;&atilde;o principal (subnet, range, DNS...)</td></tr>
+                <tr><td><code>/etc/default/isc-dhcp-server</code></td><td>Define qual interface de rede usar</td></tr>
+                <tr><td><code>/var/lib/dhcp/dhcpd.leases</code></td><td>Banco de dados de concess&otilde;es ativas</td></tr>
+            </tbody>
+        </table>
+
+        <h3>Funcionalidades</h3>
+        <ul>
+            <li>Reserva de IPs fixos por endere&ccedil;o MAC (IP dedicado por m&aacute;quina)</li>
+            <li>Suporte a m&uacute;ltiplas redes e sub-redes</li>
+            <li>Controle granular de lease time</li>
+            <li>Log detalhado para auditoria e diagn&oacute;stico</li>
+        </ul>
+
+        <div class="alert-box">
+            <p>&#x26A0;&#xFE0F; <strong>Apenas UM servidor DHCP por rede!</strong> Se dois servidores DHCP estiverem ativos na mesma rede, os dispositivos receber&atilde;o ofertas conflitantes e ter&atilde;o problemas de conectividade.</p>
+        </div>
+    </div>
+
+    <!-- CARD 4 — Preparação -->
+    <div class="content-card">
+        <h2>&#x1F4CB; Prepara&ccedil;&atilde;o &mdash; O que Voc&ecirc; Precisa</h2>
+        <p>Antes de instalar o servidor DHCP, reuna as informa&ccedil;&otilde;es da rede e confirme os pr&eacute;-requisitos.</p>
+
+        <h3>Informa&ccedil;&otilde;es da rede</h3>
+        <table class="cmp-table">
+            <thead>
+                <tr><th>Item</th><th>Exemplo</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Endere&ccedil;o de rede</td><td>192.168.0.0/24</td></tr>
+                <tr><td>Range de IPs a distribuir</td><td>.2 a .100 (99 endere&ccedil;os)</td></tr>
+                <tr><td>Gateway da rede</td><td>192.168.0.254</td></tr>
+                <tr><td>DNS prim&aacute;rio</td><td>192.168.0.1</td></tr>
+                <tr><td>DNS secund&aacute;rio</td><td>8.8.8.8</td></tr>
+            </tbody>
+        </table>
+
+        <h3>Pr&eacute;-requisitos</h3>
+        <ul>
+            <li>Ubuntu Server instalado e atualizado</li>
+            <li>IP est&aacute;tico configurado no servidor (obrigat&oacute;rio!)</li>
+            <li>Interface de rede dedicada ao DHCP</li>
+            <li>Acesso root (sudo)</li>
+        </ul>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">verificar interfaces e IP</span>
+            </div>
+            <div class="terminal-body"><span class="t-comment"># Ver interfaces disponíveis</span>
+<span class="t-prompt">$</span> <span class="t-cmd">ip</span> link show
+<span class="t-out">1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; ...
+2: enp0s3: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; ...
+3: enp0s8: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; ...</span>
+
+<span class="t-comment"># Verificar IP estático configurado</span>
+<span class="t-prompt">$</span> <span class="t-cmd">ip</span> address show enp0s8</div>
+        </div>
+
+        <div class="alert-box">
+            <p>&#x26A0;&#xFE0F; <strong>O servidor DHCP deve ter IP est&aacute;tico!</strong> N&atilde;o faz sentido o &ldquo;recepcionista&rdquo; mudar de endere&ccedil;o toda hora &mdash; os clientes precisam saber onde encontrar o servidor.</p>
+        </div>
+    </div>
+
+    <!-- CARD 5 — Passo 1: Instalar -->
+    <div class="content-card">
+        <h2>&#x1F4E6; <span class="step-badge">1</span> Instalar o Servidor</h2>
+        <p>A instala&ccedil;&atilde;o &eacute; simples com o apt. Ap&oacute;s instalar, o servi&ccedil;o pode falhar ao iniciar automaticamente &mdash; isso &eacute; <strong>normal</strong> e esperado, pois ainda n&atilde;o configuramos nada.</p>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">instalando isc-dhcp-server</span>
+            </div>
+            <div class="terminal-body"><span class="t-comment"># Atualizar repositórios</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">apt-get</span> update
+
+<span class="t-comment"># Instalar o servidor DHCP</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">apt-get</span> install isc-dhcp-server
+<span class="t-out">Reading package lists... Done
+Building dependency tree... Done
+Selecting previously unselected package isc-dhcp-server...
+Setting up isc-dhcp-server ...</span></div>
+        </div>
+
+        <h3>Arquivos criados pela instala&ccedil;&atilde;o</h3>
+        <ul>
+            <li><code>/etc/dhcp/dhcpd.conf</code> &mdash; arquivo de configura&ccedil;&atilde;o principal (com exemplos)</li>
+            <li><code>/etc/default/isc-dhcp-server</code> &mdash; define qual interface usar</li>
+        </ul>
+
+        <div class="tip-box">
+            <p>&#x2139;&#xFE0F; O servi&ccedil;o falhar&aacute; ao iniciar automaticamente ap&oacute;s a instala&ccedil;&atilde;o. Isso &eacute; esperado &mdash; precisamos configurar o arquivo <code>dhcpd.conf</code> antes de iniciar.</p>
+        </div>
+    </div>
+
+    <!-- CARD 6 — Passo 2: Backup -->
+    <div class="content-card">
+        <h2>&#x1F4BE; <span class="step-badge">2</span> Fazer Backup da Configura&ccedil;&atilde;o</h2>
+        <p>O arquivo <code>dhcpd.conf</code> instalado cont&eacute;m exemplos e coment&aacute;rios &uacute;teis. Fa&ccedil;a um backup com <code>mv</code> para criar um arquivo limpo do zero.</p>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">backup do dhcpd.conf original</span>
+            </div>
+            <div class="terminal-body"><span class="t-comment"># Mover (não copiar) o arquivo original como backup</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">mv</span> /etc/dhcp/dhcpd.conf /etc/dhcp/dhcpd.conf.bkp
+
+<span class="t-comment"># Verificar os arquivos em /etc/dhcp/</span>
+<span class="t-prompt">$</span> <span class="t-cmd">ls</span> /etc/dhcp/
+<span class="t-out">dhcpd.conf.bkp  dhcpd.conf.example</span>
+
+<span class="t-comment"># Para restaurar o backup se precisar:</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">cp</span> /etc/dhcp/dhcpd.conf.bkp /etc/dhcp/dhcpd.conf</div>
+        </div>
+
+        <div class="tip-box">
+            <p>&#x1F4A1; <strong>Por que usar <code>mv</code> e n&atilde;o <code>cp</code>?</strong> O <code>mv</code> move o arquivo original como backup e deixa o caminho vazio para criarmos um arquivo limpo. Com <code>cp</code> ter&iacute;amos dois arquivos com o mesmo conte&uacute;do.</p>
+        </div>
+    </div>
+
+    <!-- CARD 7 — Passo 3: Configuração -->
+    <div class="content-card">
+        <h2>&#x270F;&#xFE0F; <span class="step-badge">3</span> Criar a Configura&ccedil;&atilde;o</h2>
+        <p>Crie o arquivo de configura&ccedil;&atilde;o do zero com as informa&ccedil;&otilde;es da sua rede. Este &eacute; o passo mais importante de toda a instala&ccedil;&atilde;o.</p>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">criar dhcpd.conf</span>
+            </div>
+            <div class="terminal-body"><span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">vim</span> /etc/dhcp/dhcpd.conf</div>
+        </div>
+
+        <h3>Conte&uacute;do do arquivo</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">/etc/dhcp/dhcpd.conf</span>
+            </div>
+            <div class="terminal-body"><span class="t-comment"># Tempo de concessão padrão (em segundos)</span>
+<span class="t-kw">default-lease-time</span> <span class="t-var">600</span>;
+<span class="t-kw">max-lease-time</span> <span class="t-var">7200</span>;
+
+<span class="t-comment"># Configuração da subnet</span>
+<span class="t-kw">subnet</span> <span class="t-str">192.168.0.0</span> <span class="t-kw">netmask</span> <span class="t-str">255.255.255.0</span> {
+  <span class="t-kw">range</span> <span class="t-str">192.168.0.2</span> <span class="t-str">192.168.0.100</span>;
+  <span class="t-kw">option routers</span> <span class="t-str">192.168.0.254</span>;
+  <span class="t-kw">option domain-name-servers</span> <span class="t-str">192.168.0.1</span>, <span class="t-str">8.8.8.8</span>;
+  <span class="t-kw">option domain-name</span> <span class="t-str">"meudominio.local"</span>;
+}
+
+<span class="t-comment"># Este servidor é o DHCP oficial da rede</span>
+<span class="t-kw">authoritative</span>;</div>
+        </div>
+
+        <div class="tip-box">
+            <p>&#x1F4AC; <strong>Salvar no vim:</strong> pressione <strong>ESC</strong>, depois digite <code>:wq</code> e pressione ENTER.</p>
+        </div>
+    </div>
+
+    <!-- CARD 8 — Entendendo a Configuração -->
+    <div class="content-card">
+        <h2>&#x1F4D6; Entendendo a Configura&ccedil;&atilde;o</h2>
+        <p>Cada diretiva do <code>dhcpd.conf</code> tem uma fun&ccedil;&atilde;o espec&iacute;fica. Compreend&ecirc;-las &eacute; essencial para ajustar o servidor &agrave;s necessidades da rede.</p>
+
+        <h3>Tempos de concess&atilde;o</h3>
+        <table class="cmp-table">
+            <thead>
+                <tr><th>Par&acirc;metro</th><th>Valor</th><th>Significado</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>default-lease-time</code></td><td>600</td><td>10 minutos &mdash; tempo padr&atilde;o se o cliente n&atilde;o pedir</td></tr>
+                <tr><td><code>max-lease-time</code></td><td>7200</td><td>2 horas &mdash; tempo m&aacute;ximo que pode ser concedido</td></tr>
+            </tbody>
+        </table>
+
+        <h3>Diretivas da subnet</h3>
+        <table class="cmp-table">
+            <thead>
+                <tr><th>Diretiva</th><th>Significado</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>subnet ... netmask</code></td><td>Define a rede e a m&aacute;scara (bloco de endere&ccedil;os)</td></tr>
+                <tr><td><code>range</code></td><td>Faixa de IPs dispon&iacute;veis para distribui&ccedil;&atilde;o</td></tr>
+                <tr><td><code>option routers</code></td><td>Gateway padr&atilde;o enviado aos clientes</td></tr>
+                <tr><td><code>option domain-name-servers</code></td><td>Servidores DNS enviados aos clientes</td></tr>
+                <tr><td><code>option domain-name</code></td><td>Nome do dom&iacute;nio local da rede</td></tr>
+                <tr><td><code>authoritative</code></td><td>Declara este como o servidor DHCP oficial da rede</td></tr>
+            </tbody>
+        </table>
+
+        <div class="highlight-box">
+            <p>&#x1F4A1; <strong>range 192.168.0.2 192.168.0.100</strong> disponibiliza 99 endere&ccedil;os (.2 at&eacute; .100). Os endere&ccedil;os fora do range (ex.: .101 a .254) ficam reservados para servidores e equipamentos com IP est&aacute;tico.</p>
+        </div>
+    </div>
+
+    <!-- CARD 9 — Passo 4: Configurar Interface -->
+    <div class="content-card">
+        <h2>&#x1F5A7;&#xFE0F; <span class="step-badge">4</span> Configurar a Interface</h2>
+        <p>Defina em qual interface de rede o servidor DHCP vai escutar as requisi&ccedil;&otilde;es. Edite o arquivo <code>/etc/default/isc-dhcp-server</code>.</p>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">descobrir nome da interface</span>
+            </div>
+            <div class="terminal-body"><span class="t-prompt">$</span> <span class="t-cmd">ip</span> link show
+<span class="t-out">1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; ...
+2: enp0s3: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; ...   ← WAN / internet
+3: enp0s8: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; ...   ← LAN / rede interna</span></div>
+        </div>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">/etc/default/isc-dhcp-server</span>
+            </div>
+            <div class="terminal-body"><span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">vim</span> /etc/default/isc-dhcp-server
+
+<span class="t-comment"># Conteúdo do arquivo:</span>
+<span class="t-var">INTERFACESv4</span>=<span class="t-str">"enp0s8"</span>   <span class="t-comment"># interface da rede interna</span>
+<span class="t-var">INTERFACESv6</span>=<span class="t-str">""</span>       <span class="t-comment"># vazio (não usamos IPv6)</span></div>
+        </div>
+
+        <div class="alert-box">
+            <p>&#x26A0;&#xFE0F; <strong>Aten&ccedil;&atilde;o:</strong> a interface configurada aqui deve ser a mesma que est&aacute; na mesma rede do <code>subnet</code> definido no <code>dhcpd.conf</code>. Usar a interface errada faz o servi&ccedil;o falhar.</p>
+        </div>
+    </div>
+
+    <!-- CARD 10 — Passo 5: Iniciar Serviço -->
+    <div class="content-card">
+        <h2>&#x25B6;&#xFE0F; <span class="step-badge">5</span> Iniciar o Servi&ccedil;o</h2>
+        <p>Com os arquivos configurados, valide a configura&ccedil;&atilde;o e inicie o servi&ccedil;o. Use sempre <code>dhcpd -t</code> antes de iniciar para verificar erros de sintaxe.</p>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">validar e iniciar o serviço</span>
+            </div>
+            <div class="terminal-body"><span class="t-comment"># Validar a configuração antes de iniciar</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">dhcpd</span> <span class="t-flag">-t</span>
+
+<span class="t-comment"># Habilitar para iniciar automaticamente no boot</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">systemctl</span> enable isc-dhcp-server
+
+<span class="t-comment"># Iniciar o serviço</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">systemctl</span> start isc-dhcp-server
+
+<span class="t-comment"># Verificar o status</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">systemctl</span> status isc-dhcp-server
+<span class="t-out">● isc-dhcp-server.service - ISC DHCP IPv4 server
+     Loaded: loaded (/lib/systemd/system/isc-dhcp-server.service)
+     Active: <span class="t-str">active (running)</span> since ...</span></div>
+        </div>
+
+        <h3>Comandos &uacute;teis do systemctl</h3>
+        <table class="cmp-table">
+            <thead>
+                <tr><th>Comando</th><th>A&ccedil;&atilde;o</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>systemctl start isc-dhcp-server</code></td><td>Iniciar o servi&ccedil;o</td></tr>
+                <tr><td><code>systemctl stop isc-dhcp-server</code></td><td>Parar o servi&ccedil;o</td></tr>
+                <tr><td><code>systemctl restart isc-dhcp-server</code></td><td>Reiniciar (ap&oacute;s alterar config)</td></tr>
+                <tr><td><code>systemctl status isc-dhcp-server</code></td><td>Ver status e logs recentes</td></tr>
+                <tr><td><code>systemctl enable isc-dhcp-server</code></td><td>Habilitar no boot do sistema</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- CARD 11 — Verificação e Testes -->
+    <div class="content-card">
+        <h2>&#x1F50D; Verifica&ccedil;&atilde;o e Testes</h2>
+        <p>Ap&oacute;s iniciar o servi&ccedil;o, verifique as concess&otilde;es ativas e teste a distribui&ccedil;&atilde;o de IP a partir de um cliente.</p>
+
+        <h3>Ver concess&otilde;es ativas</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">leases ativos no servidor</span>
+            </div>
+            <div class="terminal-body"><span class="t-prompt">$</span> <span class="t-cmd">cat</span> /var/lib/dhcp/dhcpd.leases
+<span class="t-out">lease 192.168.0.15 {
+  starts 2 2024/01/15 10:30:00;
+  ends 2 2024/01/15 10:40:00;
+  hardware ethernet 00:11:22:33:44:55;
+  client-hostname "pc-joao";
+}</span></div>
+        </div>
+
+        <h3>Teste em cliente Linux</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">forçar renovação de IP</span>
+            </div>
+            <div class="terminal-body"><span class="t-comment"># No cliente Linux: solicitar IP via DHCP</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">dhclient</span> <span class="t-flag">-v</span> enp0s3
+
+<span class="t-comment"># Verificar IP recebido</span>
+<span class="t-prompt">$</span> <span class="t-cmd">ip</span> address show enp0s3</div>
+        </div>
+
+        <h3>Teste em cliente Windows</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">cmd — renovar IP no Windows</span>
+            </div>
+            <div class="terminal-body"><span class="t-comment">:: Liberar IP atual</span>
+<span class="t-cmd">ipconfig</span> /release
+
+<span class="t-comment">:: Solicitar novo IP via DHCP</span>
+<span class="t-cmd">ipconfig</span> /renew
+
+<span class="t-comment">:: Ver configuração completa</span>
+<span class="t-cmd">ipconfig</span> /all</div>
+        </div>
+
+        <h3>Monitorar logs em tempo real</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">logs do serviço</span>
+            </div>
+            <div class="terminal-body"><span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">journalctl</span> <span class="t-flag">-u</span> isc-dhcp-server <span class="t-flag">-f</span>
+<span class="t-out">DHCPDISCOVER from 00:11:22:33:44:55 via enp0s8
+DHCPOFFER on 192.168.0.15 to 00:11:22:33:44:55
+DHCPREQUEST for 192.168.0.15 from 00:11:22:33:44:55
+DHCPACK on 192.168.0.15 to 00:11:22:33:44:55</span></div>
+        </div>
+    </div>
+
+    <!-- EXERCÍCIO — Arrastar e Conectar -->
+    <div class="content-card exercise-card">
+        <h2>&#x1F3AF; Exerc&iacute;cio &mdash; Arraste e Conecte</h2>
+        <p style="color:#475569;font-size:.9em;margin-bottom:4px;">Relacione cada diretiva do <code>dhcpd.conf</code> &agrave; sua descri&ccedil;&atilde;o correta.</p>
+
+        <div class="ex-drag-root" data-ex="ex01">
+            <div class="ex-drag">
+                <div>
+                    <div class="ex-col-title">Descri&ccedil;&atilde;o</div>
+                    <div class="ex-pool" data-pool="ex01">
+                        <div class="drag-chip" data-id="c1">Arquivo de configura&ccedil;&atilde;o principal do servidor DHCP</div>
+                        <div class="drag-chip" data-id="c2">Define a faixa de IPs que ser&atilde;o distribu&iacute;dos</div>
+                        <div class="drag-chip" data-id="c3">Tempo m&aacute;ximo de concess&atilde;o em segundos</div>
+                        <div class="drag-chip" data-id="c4">Envia o gateway padr&atilde;o para os clientes</div>
+                        <div class="drag-chip" data-id="c5">Declara este como o servidor DHCP oficial da rede</div>
+                    </div>
+                </div>
+                <div>
+                    <div class="ex-col-title">Elemento</div>
+                    <div class="ex-zones" data-zones="ex01">
+                        <div class="drop-zone" data-zone="ex01-z1" data-accept="c1">
+                            <span class="zone-name"><code>dhcpd.conf</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z2" data-accept="c2">
+                            <span class="zone-name"><code>range</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z3" data-accept="c3">
+                            <span class="zone-name"><code>max-lease-time</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z4" data-accept="c4">
+                            <span class="zone-name"><code>option routers</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z5" data-accept="c5">
+                            <span class="zone-name"><code>authoritative</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ex-actions">
+            <button class="btn-verificar" onclick="dragVerify('ex01')">Verificar</button>
+            <button class="btn-refazer"  onclick="dragReset('ex01')">Refazer</button>
+        </div>
+        <div class="ex-result" id="ex01-result"></div>
+    </div>
+
+    <!-- ATIVIDADE PRÁTICA -->
+    <div class="content-card practical-card" id="prat-01">
+        <h2>&#x1F6E0;&#xFE0F; Atividade Pr&aacute;tica &mdash; Configurando o Servidor DHCP</h2>
+        <div class="prat-meta">
+            <span class="prat-tag">&#x23F1; ~40 min</span>
+            <span class="prat-tag">&#x1F4BB; Ubuntu Server / VM</span>
+            <span class="prat-tag">&#x1F4F8; Tirar screenshot da sa&iacute;da</span>
+        </div>
+
+        <div class="prat-steps">
+            <div class="prat-step">
+                <div class="step-num">1</div>
+                <div class="step-body">
+                    <div class="step-label">Instalar e fazer backup</div>
+                    <div class="step-desc">Execute <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">sudo apt-get install isc-dhcp-server</code>. Em seguida, fa&ccedil;a backup com <code>sudo mv /etc/dhcp/dhcpd.conf /etc/dhcp/dhcpd.conf.bkp</code>. Tire screenshot da listagem de <code>/etc/dhcp/</code> mostrando o arquivo de backup.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">2</div>
+                <div class="step-body">
+                    <div class="step-label">Criar a configura&ccedil;&atilde;o da rede</div>
+                    <div class="step-desc">Crie o arquivo <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">/etc/dhcp/dhcpd.conf</code> com <code>sudo vim</code>. Configure uma subnet com <code>range</code>, <code>option routers</code>, <code>option domain-name-servers</code> e <code>authoritative</code>. Adapte os IPs &agrave; rede da sua VM.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">3</div>
+                <div class="step-body">
+                    <div class="step-label">Configurar a interface e iniciar</div>
+                    <div class="step-desc">Edite <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">/etc/default/isc-dhcp-server</code> com o nome correto da interface. Valide com <code>sudo dhcpd -t</code> e inicie com <code>systemctl start isc-dhcp-server</code>. Tire screenshot do <code>systemctl status</code> mostrando <em>active (running)</em>.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">4</div>
+                <div class="step-body">
+                    <div class="step-label">Testar a distribui&ccedil;&atilde;o de IPs</div>
+                    <div class="step-desc">Em outro cliente da mesma rede, solicite um IP via DHCP. Verifique com <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">ip address show</code> (Linux) ou <code>ipconfig /all</code> (Windows). No servidor, visualize as concess&otilde;es com <code>cat /var/lib/dhcp/dhcpd.leases</code>.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="prat-observe">
+            <strong>&#x1F4CC; Para refletir:</strong> o DHCP centraliza a gest&atilde;o de IPs e elimina configura&ccedil;&atilde;o manual em cada m&aacute;quina. Em redes grandes, isso &eacute; essencial. Compreender o processo DORA e os arquivos de concess&atilde;o &eacute; fundamental para diagnosticar problemas de conectividade em ambientes corporativos.
+        </div>
+
+        <div class="ex-actions">
+            <button class="btn-print" onclick="printPractical('prat-01', 'Aula 2 \u2014 Servidor DHCP')">&#x1F5A8;&#xFE0F; Imprimir roteiro</button>
+        </div>
+    </div>
+
+    <div class="nav-footer">
+        <a href="net01-ip-estatico-netplan.html" class="nav-link">&#x2B05; Anterior: IP Est&aacute;tico</a>
+        <a href="aula16-servidor-samba.html" class="nav-link">Pr&oacute;xima: Servidor Samba &#x27A1;</a>
+    </div>
+
+</div>
+
+<script src="slide-mode.js"></script>
+<script src="exercise-drag.js"></script>
+<script src="exercise-print.js"></script>
+</body>
+</html>
