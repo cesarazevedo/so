@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 4 &mdash; Servidor Web Apache</title>
+    <link rel="stylesheet" href="slide-mode.css">
+    <link rel="stylesheet" href="exercise.css">
+    <style>
+        :root {
+            --primary:   #667eea;
+            --secondary: #764ba2;
+            --bg-light:  #f4f7fe;
+            --text-dark: #2d3748;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: var(--bg-light); color: var(--text-dark); line-height: 1.7; }
+
+        /* ── TOP BAR ── */
+        .top-bar { background: white; padding: 15px 30px; display: flex; align-items: center; gap: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 10; }
+        .back-btn { text-decoration: none; color: var(--primary); font-weight: 600; display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 8px; transition: background .3s; }
+        .back-btn:hover { background: rgba(102,126,234,.08); }
+        .page-badge { font-size: .8em; padding: 4px 12px; border-radius: 20px; background: rgba(102,126,234,.12); color: var(--primary); font-weight: 600; }
+
+        /* ── LAYOUT ── */
+        .content-wrapper { max-width: 800px; margin: 40px auto; padding: 0 30px; }
+        .lesson-hero { background: white; border-radius: 16px; padding: 40px; box-shadow: 0 5px 15px rgba(0,0,0,.05); margin-bottom: 30px; border-top: 4px solid var(--primary); }
+        .lesson-hero h1 { font-size: 2em; margin-bottom: 10px; color: var(--primary); }
+        .lesson-hero .subtitle { font-size: 1.05em; color: #718096; }
+        .content-card { background: white; border-radius: 16px; padding: 35px; box-shadow: 0 5px 15px rgba(0,0,0,.05); margin-bottom: 25px; }
+        .content-card h2 { font-size: 1.4em; color: var(--primary); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
+        .content-card h3 { font-size: 1.05em; color: #5a67d8; margin: 20px 0 10px; }
+        .content-card p { margin-bottom: 15px; text-align: justify; }
+        ul, ol { margin: 10px 0 15px 25px; }
+        li { margin-bottom: 8px; }
+
+        /* ── CAIXAS ── */
+        .highlight-box { background: linear-gradient(135deg,rgba(102,126,234,.05),rgba(118,75,162,.06)); border-left: 4px solid var(--primary); padding: 20px 25px; border-radius: 0 12px 12px 0; margin: 20px 0; }
+        .highlight-box p { margin-bottom: 0; font-style: italic; }
+        .alert-box { background: #fff8e1; border-left: 4px solid #f59e0b; padding: 18px 22px; border-radius: 0 12px 12px 0; margin: 20px 0; }
+        .alert-box p { margin: 0; color: #78350f; font-size: .93em; }
+        .tip-box { background: #f0fdf4; border-left: 4px solid #16a34a; padding: 18px 22px; border-radius: 0 12px 12px 0; margin: 20px 0; }
+        .tip-box p { margin: 0; color: #14532d; font-size: .93em; }
+
+        /* ── TERMINAIS ── */
+        .terminal { background: #1a202c; border-radius: 12px; overflow: hidden; margin: 16px 0; box-shadow: 0 4px 20px rgba(0,0,0,.3); }
+        .terminal-bar { background: #2d3748; padding: 8px 16px; display: flex; align-items: center; gap: 8px; }
+        .term-dot { width: 12px; height: 12px; border-radius: 50%; }
+        .term-dot.red    { background: #fc8181; }
+        .term-dot.yellow { background: #f6e05e; }
+        .term-dot.green  { background: #68d391; }
+        .term-title { font-size: .75em; color: #718096; margin-left: 8px; font-family: 'Consolas', monospace; }
+        .terminal-body { padding: 20px 24px; font-family: 'Courier New','Consolas',monospace; font-size: .92em; line-height: 2; color: #a0aec0; white-space: pre-wrap; }
+        .t-prompt  { color: #63b3ed; }
+        .t-cmd     { color: #38ef7d; }
+        .t-flag    { color: #f6e05e; }
+        .t-out     { color: #a0aec0; }
+        .t-comment { color: #4a5568; font-style: italic; }
+        .t-kw      { color: #f687b3; font-weight: bold; }
+        .t-str     { color: #68d391; }
+        .t-var     { color: #fbd38d; }
+        .t-tag     { color: #63b3ed; }
+        .t-attr    { color: #fbd38d; }
+
+        /* ── TABELA ── */
+        .cmp-table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: .88em; }
+        .cmp-table th { background: var(--primary); color: white; padding: 10px 14px; text-align: left; }
+        .cmp-table th:first-child { border-radius: 6px 0 0 0; }
+        .cmp-table th:last-child  { border-radius: 0 6px 0 0; }
+        .cmp-table td { padding: 9px 14px; border-bottom: 1px solid #e5e7eb; }
+        .cmp-table tr:nth-child(even) td { background: #f8f7ff; }
+        .cmp-table td code { font-family: 'Consolas',monospace; background: #1e293b; color: #a78bfa; padding: 1px 6px; border-radius: 4px; font-size: .88em; }
+
+        /* ── GRID RESUMO ── */
+        .cmd-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(140px,1fr)); gap: 12px; margin: 16px 0; }
+        .cmd-card { background: #f8f7ff; border-radius: 10px; padding: 16px; text-align: center; border-top: 3px solid var(--primary); }
+        .cmd-card .cmd { font-family: 'Consolas',monospace; font-size: .78em; color: var(--primary); font-weight: 700; display: block; margin-bottom: 6px; }
+        .cmd-card strong { display: block; font-size: .82em; color: #1e293b; margin-bottom: 4px; }
+        .cmd-card span { font-size: .76em; color: #475569; }
+
+        /* ── FLUXO ── */
+        .flow-steps { display: flex; flex-direction: column; gap: 8px; margin: 16px 0; }
+        .flow-step { display: flex; align-items: flex-start; gap: 14px; background: #f8f7ff; border-radius: 10px; padding: 14px 18px; }
+        .flow-num { background: var(--primary); color: white; border-radius: 50%; width: 26px; height: 26px; line-height: 26px; text-align: center; font-size: .8em; font-weight: 700; flex-shrink: 0; }
+        .flow-step p { margin: 0; font-size: .9em; }
+
+        /* ── PASSO BADGE ── */
+        .step-badge { display: inline-block; background: var(--primary); color: white; border-radius: 50%; width: 28px; height: 28px; line-height: 28px; text-align: center; font-size: .85em; font-weight: 700; margin-right: 8px; flex-shrink: 0; }
+
+        /* ── NAV ── */
+        .nav-footer { display: flex; justify-content: space-between; margin-top: 40px; padding-bottom: 40px; }
+        .nav-link { text-decoration: none; color: var(--primary); font-weight: 600; padding: 12px 24px; border-radius: 10px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,.05); transition: all .3s; }
+        .nav-link:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.1); }
+
+        @media (max-width: 768px) {
+            .content-wrapper { padding: 0 15px; }
+            .lesson-hero, .content-card { padding: 25px; }
+            .lesson-hero h1 { font-size: 1.5em; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-bar">
+    <a href="index.html" class="back-btn">&#x2B05; Voltar ao Dashboard</a>
+    <span class="page-badge">3&ordm; Bimestre &mdash; Servi&ccedil;os de Rede</span>
+    <button class="slide-toggle" id="slideToggleBtn">&#x1F4FA; Modo Slide</button>
+</div>
+
+<div class="content-wrapper">
+
+    <div class="lesson-hero">
+        <h1>&#x1F310; Servidor Web Apache</h1>
+        <p class="subtitle">Aula 4 &mdash; Hospede sites com o Apache no Ubuntu: instale o servidor, crie Virtual Hosts, configure p&aacute;ginas HTML e gerencie m&uacute;ltiplos sites em um &uacute;nico servidor</p>
+    </div>
+
+    <!-- CARD 1 — O que é um Servidor Web? -->
+    <div class="content-card">
+        <h2>&#x1F4DA; O que &eacute; um Servidor Web?</h2>
+        <p>Um <strong>servidor web</strong> &eacute; um software que recebe requisi&ccedil;&otilde;es HTTP de navegadores e responde com p&aacute;ginas HTML, imagens e outros arquivos. O <strong>Apache</strong> &eacute; o mais popular do mundo, usado por mais de 30% de todos os sites da internet.</p>
+
+        <div class="highlight-box">
+            <p>&#x1F4A1; <strong>Analogia da biblioteca:</strong> a biblioteca &eacute; o servidor web, os livros s&atilde;o as p&aacute;ginas HTML, o leitor &eacute; o navegador e o pedido &eacute; a requisi&ccedil;&atilde;o HTTP. Voc&ecirc; pede um livro pelo t&iacute;tulo (URL) e a biblioteca busca e entrega!</p>
+        </div>
+
+        <h3>Como funciona uma requisi&ccedil;&atilde;o</h3>
+        <div class="flow-steps">
+            <div class="flow-step"><div class="flow-num">1</div><p>Usu&aacute;rio digita a URL no navegador</p></div>
+            <div class="flow-step"><div class="flow-num">2</div><p>Navegador faz uma requisi&ccedil;&atilde;o HTTP para o servidor</p></div>
+            <div class="flow-step"><div class="flow-num">3</div><p>Apache localiza os arquivos do site</p></div>
+            <div class="flow-step"><div class="flow-num">4</div><p>Retorna o HTML, CSS e JS para o navegador</p></div>
+            <div class="flow-step"><div class="flow-num">5</div><p>Navegador renderiza e exibe a p&aacute;gina</p></div>
+        </div>
+
+        <h3>Por que Apache?</h3>
+        <ul>
+            <li>Mais de 30% da internet usa Apache</li>
+            <li>Gratuito, open source e muito est&aacute;vel</li>
+            <li>F&aacute;cil de configurar com Virtual Hosts</li>
+            <li>Suporte a m&oacute;dulos (PHP, SSL, rewrite...)</li>
+            <li>Porta padr&atilde;o: <strong>80</strong> (HTTP) e <strong>443</strong> (HTTPS)</li>
+        </ul>
+    </div>
+
+    <!-- CARD 2 — O que são Virtual Hosts? -->
+    <div class="content-card">
+        <h2>&#x1F3E2; O que s&atilde;o Virtual Hosts?</h2>
+        <p><strong>Virtual Hosts</strong> permitem hospedar v&aacute;rios sites em um &uacute;nico servidor Apache. Cada site tem sua pr&oacute;pria configura&ccedil;&atilde;o, pasta de arquivos e dom&iacute;nio &mdash; tudo no mesmo servidor f&iacute;sico.</p>
+
+        <div class="highlight-box">
+            <p>&#x1F4A1; <strong>Analogia do pr&eacute;dio:</strong> o servidor &eacute; o pr&eacute;dio, e cada Virtual Host &eacute; um apartamento. Todos compartilham o mesmo endere&ccedil;o (IP), mas cada um tem sua pr&oacute;pria entrada (dom&iacute;nio) e interior (arquivos).</p>
+        </div>
+
+        <h3>Vantagens</h3>
+        <ul>
+            <li>Economia de hardware &mdash; v&aacute;rios sites em um servidor</li>
+            <li>Configura&ccedil;&atilde;o independente por site</li>
+            <li>Sites isolados entre si</li>
+            <li>F&aacute;cil ger&ecirc;ncia e escalabilidade</li>
+        </ul>
+
+        <h3>Estrutura de pastas</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">organização dos sites</span>
+            </div>
+            <div class="terminal-body"><span class="t-out">/var/www/
+├── site1.com/
+│   └── public_html/
+│       └── index.html
+├── site2.com/
+│   └── public_html/
+│       └── index.html
+└── informatica.joaocamara/
+    └── public_html/
+        └── index.html</span></div>
+        </div>
+    </div>
+
+    <!-- CARD 3 — Arquivos e Diretórios Importantes -->
+    <div class="content-card">
+        <h2>&#x1F4C1; Arquivos e Diret&oacute;rios Importantes</h2>
+        <p>O Apache organiza sua configura&ccedil;&atilde;o em diret&oacute;rios bem definidos. Conhecer cada um &eacute; essencial para criar e gerenciar sites.</p>
+
+        <h3>Diret&oacute;rios principais</h3>
+        <table class="cmp-table">
+            <thead>
+                <tr><th>Caminho</th><th>Fun&ccedil;&atilde;o</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>/etc/apache2/</code></td><td>Arquivos de configura&ccedil;&atilde;o do servidor</td></tr>
+                <tr><td><code>/var/www/</code></td><td>Raiz dos sites (DocumentRoot)</td></tr>
+                <tr><td><code>/var/log/apache2/</code></td><td>Logs de acesso e erros</td></tr>
+            </tbody>
+        </table>
+
+        <h3>Arquivos de configura&ccedil;&atilde;o</h3>
+        <table class="cmp-table">
+            <thead>
+                <tr><th>Arquivo</th><th>Fun&ccedil;&atilde;o</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>apache2.conf</code></td><td>Configura&ccedil;&atilde;o principal do servidor</td></tr>
+                <tr><td><code>ports.conf</code></td><td>Portas em que o Apache escuta</td></tr>
+                <tr><td><code>sites-available/</code></td><td>Arquivos <code>.conf</code> de sites dispon&iacute;veis</td></tr>
+                <tr><td><code>sites-enabled/</code></td><td>Links simb&oacute;licos dos sites ativos</td></tr>
+            </tbody>
+        </table>
+
+        <h3>Fluxo de trabalho</h3>
+        <div class="flow-steps">
+            <div class="flow-step"><div class="flow-num">1</div><p>Criar arquivo <code>.conf</code> em <code>sites-available/</code></p></div>
+            <div class="flow-step"><div class="flow-num">2</div><p>Ativar com <code>a2ensite</code> (cria link em <code>sites-enabled/</code>)</p></div>
+            <div class="flow-step"><div class="flow-num">3</div><p>Reiniciar o Apache com <code>systemctl restart apache2</code></p></div>
+            <div class="flow-step"><div class="flow-num">4</div><p>Site funcionando!</p></div>
+        </div>
+
+        <div class="cmd-grid">
+            <div class="cmd-card">
+                <span class="cmd">a2ensite</span>
+                <strong>Ativar site</strong>
+                <span>Habilita Virtual Host</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">a2dissite</span>
+                <strong>Desativar site</strong>
+                <span>Desabilita Virtual Host</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">a2enmod</span>
+                <strong>Ativar m&oacute;dulo</strong>
+                <span>Habilita extens&atilde;o</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">a2dismod</span>
+                <strong>Desativar m&oacute;dulo</strong>
+                <span>Desabilita extens&atilde;o</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARD 4 — Passo 1: Instalar -->
+    <div class="content-card">
+        <h2>&#x1F4E6; <span class="step-badge">1</span> Instalar o Apache</h2>
+        <p>A instala&ccedil;&atilde;o &eacute; simples com o apt. Diferente de outros servidores, o Apache j&aacute; inicia automaticamente ap&oacute;s a instala&ccedil;&atilde;o com uma p&aacute;gina padr&atilde;o de boas-vindas.</p>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">instalando apache2</span>
+            </div>
+            <div class="terminal-body"><span class="t-comment"># Atualizar repositórios</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">apt-get</span> update
+
+<span class="t-comment"># Instalar o Apache</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">apt-get</span> install apache2
+
+<span class="t-comment"># Verificar versão instalada</span>
+<span class="t-prompt">$</span> <span class="t-cmd">apache2</span> <span class="t-flag">-v</span>
+<span class="t-out">Server version: Apache/2.4.x (Ubuntu)
+Server built:   ...</span></div>
+        </div>
+
+        <div class="tip-box">
+            <p>&#x2705; Ap&oacute;s a instala&ccedil;&atilde;o, acesse <code>http://localhost</code> ou <code>http://IP-do-servidor</code> no navegador para ver a p&aacute;gina padr&atilde;o &ldquo;Apache2 Ubuntu Default Page&rdquo;. Isso confirma que o servidor est&aacute; funcionando.</p>
+        </div>
+    </div>
+
+    <!-- CARD 5 — Passo 2: Criar Estrutura de Pastas -->
+    <div class="content-card">
+        <h2>&#x1F4C2; <span class="step-badge">2</span> Criar Estrutura de Pastas</h2>
+        <p>Crie o diret&oacute;rio do site dentro de <code>/var/www/</code>, ajuste o propriet&aacute;rio e as permiss&otilde;es. Usaremos o dom&iacute;nio <strong>informatica.joaocamara</strong> como exemplo.</p>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">criar pastas e permissões</span>
+            </div>
+            <div class="terminal-body"><span class="t-comment"># Criar o diretório do site (com subpastas)</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">mkdir</span> <span class="t-flag">-p</span> /var/www/informatica.joaocamara/public_html
+
+<span class="t-comment"># Tornar o usuário atual o dono da pasta</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">chown</span> <span class="t-flag">-R</span> <span class="t-var">$USER</span>:<span class="t-var">$USER</span> /var/www/informatica.joaocamara/public_html
+
+<span class="t-comment"># Ajustar permissões do /var/www</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">chmod</span> <span class="t-flag">-R</span> 755 /var/www</div>
+        </div>
+
+        <h3>Entendendo os comandos</h3>
+        <table class="cmp-table">
+            <thead>
+                <tr><th>Comando</th><th>Significado</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>mkdir -p</code></td><td>Cria pasta e subpastas de uma vez</td></tr>
+                <tr><td><code>chown -R $USER:$USER</code></td><td>Torna o usu&aacute;rio atual o dono recursivamente</td></tr>
+                <tr><td><code>chmod 755</code></td><td>Dono: ler+escrever+executar; outros: ler+executar</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- CARD 6 — Passo 3: Criar Página HTML -->
+    <div class="content-card">
+        <h2>&#x1F5A5;&#xFE0F; <span class="step-badge">3</span> Criar a P&aacute;gina HTML</h2>
+        <p>Crie o arquivo <code>index.html</code> dentro da pasta <code>public_html</code> do site. Este ser&aacute; o arquivo exibido quando algu&eacute;m acessar o dom&iacute;nio.</p>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">criar index.html</span>
+            </div>
+            <div class="terminal-body"><span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">vim</span> /var/www/informatica.joaocamara/public_html/index.html</div>
+        </div>
+
+        <h3>Conte&uacute;do do arquivo</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">index.html</span>
+            </div>
+            <div class="terminal-body"><span class="t-tag">&lt;html&gt;</span>
+<span class="t-tag">&lt;head&gt;</span>
+  <span class="t-tag">&lt;title&gt;</span>Bem vindo ao informatica.joaocamara!<span class="t-tag">&lt;/title&gt;</span>
+<span class="t-tag">&lt;/head&gt;</span>
+<span class="t-tag">&lt;body</span> <span class="t-attr">bgcolor</span>=<span class="t-str">"gray"</span><span class="t-tag">&gt;</span>
+  <span class="t-tag">&lt;h1&gt;</span>Sucesso! O site informatica.joaocamara est&aacute; no ar!<span class="t-tag">&lt;/h1&gt;</span>
+<span class="t-tag">&lt;/body&gt;</span>
+<span class="t-tag">&lt;/html&gt;</span></div>
+        </div>
+
+        <h3>Tags HTML b&aacute;sicas</h3>
+        <table class="cmp-table">
+            <thead>
+                <tr><th>Tag</th><th>Fun&ccedil;&atilde;o</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>&lt;html&gt;</code></td><td>In&iacute;cio e fim do documento HTML</td></tr>
+                <tr><td><code>&lt;head&gt;</code></td><td>Metadados (n&atilde;o vis&iacute;vel na p&aacute;gina)</td></tr>
+                <tr><td><code>&lt;title&gt;</code></td><td>T&iacute;tulo que aparece na aba do navegador</td></tr>
+                <tr><td><code>&lt;body&gt;</code></td><td>Conte&uacute;do vis&iacute;vel da p&aacute;gina</td></tr>
+                <tr><td><code>&lt;h1&gt;</code></td><td>T&iacute;tulo principal (maior destaque)</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- CARD 7 — Passo 4: Criar Virtual Host -->
+    <div class="content-card">
+        <h2>&#x2699;&#xFE0F; <span class="step-badge">4</span> Criar o Virtual Host</h2>
+        <p>Crie um arquivo <code>.conf</code> em <code>sites-available/</code> descrevendo como o Apache deve servir o site. Este arquivo &eacute; o &ldquo;cadastro&rdquo; do site no servidor.</p>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">criar arquivo de configuração</span>
+            </div>
+            <div class="terminal-body"><span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">vim</span> /etc/apache2/sites-available/informatica.joaocamara.conf</div>
+        </div>
+
+        <h3>Conte&uacute;do do Virtual Host</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">informatica.joaocamara.conf</span>
+            </div>
+            <div class="terminal-body"><span class="t-tag">&lt;VirtualHost</span> <span class="t-str">*:80</span><span class="t-tag">&gt;</span>
+  <span class="t-kw">ServerAdmin</span>   <span class="t-str">admin@informatica.joaocamara</span>
+  <span class="t-kw">ServerName</span>    <span class="t-str">informatica.joaocamara</span>
+  <span class="t-kw">ServerAlias</span>   <span class="t-str">www.informatica.joaocamara</span>
+  <span class="t-kw">DocumentRoot</span>  <span class="t-str">/var/www/informatica.joaocamara/public_html</span>
+  <span class="t-kw">ErrorLog</span>      <span class="t-var">${APACHE_LOG_DIR}</span>/error.log
+  <span class="t-kw">CustomLog</span>     <span class="t-var">${APACHE_LOG_DIR}</span>/access.log combined
+<span class="t-tag">&lt;/VirtualHost&gt;</span></div>
+        </div>
+
+        <h3>Diretivas explicadas</h3>
+        <table class="cmp-table">
+            <thead>
+                <tr><th>Diretiva</th><th>Fun&ccedil;&atilde;o</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>*:80</code></td><td>Escuta em qualquer IP na porta 80 (HTTP)</td></tr>
+                <tr><td><code>ServerAdmin</code></td><td>E-mail do administrador do site</td></tr>
+                <tr><td><code>ServerName</code></td><td>Dom&iacute;nio principal do site</td></tr>
+                <tr><td><code>ServerAlias</code></td><td>Dom&iacute;nio alternativo (ex.: vers&atilde;o com www)</td></tr>
+                <tr><td><code>DocumentRoot</code></td><td>Pasta onde ficam os arquivos HTML do site</td></tr>
+                <tr><td><code>ErrorLog</code></td><td>Arquivo de log de erros</td></tr>
+                <tr><td><code>CustomLog</code></td><td>Arquivo de log de acessos</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- CARD 8 — Passo 5: Ativar o Site -->
+    <div class="content-card">
+        <h2>&#x25B6;&#xFE0F; <span class="step-badge">5</span> Ativar o Site</h2>
+        <p>Com o arquivo <code>.conf</code> criado, ative o site com <code>a2ensite</code>, desative o site padr&atilde;o (opcional) e reinicie o Apache para aplicar.</p>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">ativar e reiniciar</span>
+            </div>
+            <div class="terminal-body"><span class="t-comment"># Ativar nosso site</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">a2ensite</span> informatica.joaocamara.conf
+<span class="t-out">Enabling site informatica.joaocamara.
+To activate the new configuration, run: systemctl reload apache2</span>
+
+<span class="t-comment"># Desativar o site padrão (opcional)</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">a2dissite</span> 000-default.conf
+
+<span class="t-comment"># Verificar sintaxe antes de reiniciar</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">apache2ctl</span> <span class="t-flag">-t</span>
+<span class="t-out">Syntax OK</span>
+
+<span class="t-comment"># Reiniciar o Apache</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">systemctl</span> restart apache2</div>
+        </div>
+
+        <h3>Testar no navegador</h3>
+        <ul>
+            <li>Pelo IP: <code>http://192.168.0.1</code></li>
+            <li>Pelo nome (se DNS configurado): <code>http://informatica.joaocamara</code></li>
+        </ul>
+
+        <div class="tip-box">
+            <p>&#x2705; <strong>Sempre teste com <code>apache2ctl -t</code></strong> antes de reiniciar. Se aparecer &ldquo;Syntax OK&rdquo;, a configura&ccedil;&atilde;o est&aacute; correta. Um erro de sintaxe pode impedir o Apache de iniciar.</p>
+        </div>
+    </div>
+
+    <!-- CARD 9 — Portas Alternativas -->
+    <div class="content-card">
+        <h2>&#x1F522; Hospedando v&aacute;rios Sites &mdash; Portas Alternativas</h2>
+        <p>Para hospedar um segundo site no mesmo servidor sem DNS, use uma <strong>porta alternativa</strong>. Adicione a diretiva <code>Listen</code> no <code>.conf</code> do novo site.</p>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">segundo site na porta 700</span>
+            </div>
+            <div class="terminal-body"><span class="t-comment"># Criar pasta e index.html do segundo site</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">mkdir</span> <span class="t-flag">-p</span> /var/www/eletro.joaocamara/public_html
+
+<span class="t-comment"># Arquivo .conf com porta alternativa</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">vim</span> /etc/apache2/sites-available/eletro.joaocamara.conf</div>
+        </div>
+
+        <h3>Conte&uacute;do do .conf com porta 700</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">eletro.joaocamara.conf</span>
+            </div>
+            <div class="terminal-body"><span class="t-kw">Listen</span> <span class="t-var">700</span>
+
+<span class="t-tag">&lt;VirtualHost</span> <span class="t-str">*:700</span><span class="t-tag">&gt;</span>
+  <span class="t-kw">ServerAdmin</span>   <span class="t-str">admin@eletro.joaocamara</span>
+  <span class="t-kw">ServerName</span>    <span class="t-str">eletro.joaocamara</span>
+  <span class="t-kw">DocumentRoot</span>  <span class="t-str">/var/www/eletro.joaocamara/public_html</span>
+<span class="t-tag">&lt;/VirtualHost&gt;</span></div>
+        </div>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">ativar e acessar</span>
+            </div>
+            <div class="terminal-body"><span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">a2ensite</span> eletro.joaocamara.conf
+<span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">systemctl</span> restart apache2
+
+<span class="t-comment"># Acessar com porta alternativa</span>
+<span class="t-out">http://192.168.0.1:700</span></div>
+        </div>
+    </div>
+
+    <!-- CARD 10 — Comandos Úteis -->
+    <div class="content-card">
+        <h2>&#x1F527; Comandos &Uacute;teis</h2>
+        <p>Refer&ecirc;ncia r&aacute;pida dos principais comandos para gerenciar o Apache no dia a dia.</p>
+
+        <table class="cmp-table">
+            <thead>
+                <tr><th>Comando</th><th>Fun&ccedil;&atilde;o</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>a2ensite site.conf</code></td><td>Ativar um Virtual Host</td></tr>
+                <tr><td><code>a2dissite site.conf</code></td><td>Desativar um Virtual Host</td></tr>
+                <tr><td><code>apache2ctl -t</code></td><td>Testar sintaxe da configura&ccedil;&atilde;o</td></tr>
+                <tr><td><code>apache2ctl -S</code></td><td>Listar todos os Virtual Hosts ativos</td></tr>
+                <tr><td><code>systemctl status apache2</code></td><td>Ver status do servi&ccedil;o</td></tr>
+                <tr><td><code>tail -f /var/log/apache2/error.log</code></td><td>Acompanhar erros em tempo real</td></tr>
+            </tbody>
+        </table>
+
+        <h3>Controle do servi&ccedil;o</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">systemctl</span>
+            </div>
+            <div class="terminal-body"><span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">systemctl</span> start apache2    <span class="t-comment"># iniciar</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">systemctl</span> stop apache2     <span class="t-comment"># parar</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">systemctl</span> restart apache2  <span class="t-comment"># reiniciar (aplica mudanças)</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">systemctl</span> reload apache2   <span class="t-comment"># recarregar config sem parar</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">systemctl</span> status apache2  <span class="t-comment"># ver status atual</span></div>
+        </div>
+    </div>
+
+    <!-- EXERCÍCIO — Arrastar e Conectar -->
+    <div class="content-card exercise-card">
+        <h2>&#x1F3AF; Exerc&iacute;cio &mdash; Arraste e Conecte</h2>
+        <p style="color:#475569;font-size:.9em;margin-bottom:4px;">Relacione cada elemento do Apache &agrave; sua descri&ccedil;&atilde;o correta.</p>
+
+        <div class="ex-drag-root" data-ex="ex01">
+            <div class="ex-drag">
+                <div>
+                    <div class="ex-col-title">Descri&ccedil;&atilde;o</div>
+                    <div class="ex-pool" data-pool="ex01">
+                        <div class="drag-chip" data-id="c1">Pasta raiz onde ficam os arquivos dos sites</div>
+                        <div class="drag-chip" data-id="c2">Comando para ativar um Virtual Host</div>
+                        <div class="drag-chip" data-id="c3">Porta padr&atilde;o do protocolo HTTP</div>
+                        <div class="drag-chip" data-id="c4">Diretiva que define o diret&oacute;rio dos arquivos HTML</div>
+                        <div class="drag-chip" data-id="c5">Comando para verificar erros de sintaxe na configura&ccedil;&atilde;o</div>
+                    </div>
+                </div>
+                <div>
+                    <div class="ex-col-title">Elemento</div>
+                    <div class="ex-zones" data-zones="ex01">
+                        <div class="drop-zone" data-zone="ex01-z1" data-accept="c1">
+                            <span class="zone-name"><code>/var/www/</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z2" data-accept="c2">
+                            <span class="zone-name"><code>a2ensite</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z3" data-accept="c3">
+                            <span class="zone-name"><code>80</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z4" data-accept="c4">
+                            <span class="zone-name"><code>DocumentRoot</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z5" data-accept="c5">
+                            <span class="zone-name"><code>apache2ctl -t</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ex-actions">
+            <button class="btn-verificar" onclick="dragVerify('ex01')">Verificar</button>
+            <button class="btn-refazer"  onclick="dragReset('ex01')">Refazer</button>
+        </div>
+        <div class="ex-result" id="ex01-result"></div>
+    </div>
+
+    <!-- ATIVIDADE PRÁTICA -->
+    <div class="content-card practical-card" id="prat-01">
+        <h2>&#x1F6E0;&#xFE0F; Atividade Pr&aacute;tica &mdash; Configurando o Servidor Apache</h2>
+        <div class="prat-meta">
+            <span class="prat-tag">&#x23F1; ~40 min</span>
+            <span class="prat-tag">&#x1F4BB; Ubuntu Server / VM</span>
+            <span class="prat-tag">&#x1F4F8; Tirar screenshot da sa&iacute;da</span>
+        </div>
+
+        <div class="prat-steps">
+            <div class="prat-step">
+                <div class="step-num">1</div>
+                <div class="step-body">
+                    <div class="step-label">Instalar e criar estrutura</div>
+                    <div class="step-desc">Instale o Apache com <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">sudo apt-get install apache2</code>. Crie a pasta <code>/var/www/seu-dominio/public_html</code> com <code>mkdir -p</code>. Ajuste o propriet&aacute;rio com <code>chown -R $USER:$USER</code> e as permiss&otilde;es com <code>chmod -R 755</code>. Tire screenshot.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">2</div>
+                <div class="step-body">
+                    <div class="step-label">Criar p&aacute;gina HTML e Virtual Host</div>
+                    <div class="step-desc">Crie o arquivo <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">index.html</code> dentro de <code>public_html</code> com um conte&uacute;do HTML simples. Crie o arquivo <code>.conf</code> em <code>/etc/apache2/sites-available/</code> com as diretivas <code>ServerName</code>, <code>DocumentRoot</code>, <code>ErrorLog</code> e <code>CustomLog</code>.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">3</div>
+                <div class="step-body">
+                    <div class="step-label">Ativar e reiniciar</div>
+                    <div class="step-desc">Ative o site com <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">sudo a2ensite seu-dominio.conf</code>. Desative o padr&atilde;o com <code>a2dissite 000-default.conf</code>. Valide com <code>apache2ctl -t</code> (deve aparecer &ldquo;Syntax OK&rdquo;). Reinicie com <code>systemctl restart apache2</code>. Tire screenshot do status.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">4</div>
+                <div class="step-body">
+                    <div class="step-label">Testar e criar segundo site</div>
+                    <div class="step-desc">Acesse o site pelo IP no navegador e tire screenshot da p&aacute;gina exibida. Como desafio extra, crie um segundo Virtual Host em uma porta alternativa (ex.: 700) com um segundo <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">index.html</code> diferente e acesse por <code>http://IP:700</code>.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="prat-observe">
+            <strong>&#x1F4CC; Para refletir:</strong> o Apache &eacute; a base de boa parte da infraestrutura web do mundo. Entender Virtual Hosts, a diretiva <code>DocumentRoot</code> e o fluxo <code>sites-available &rarr; a2ensite &rarr; sites-enabled</code> &eacute; essencial para qualquer administrador de sistemas que precise hospedar aplica&ccedil;&otilde;es web.
+        </div>
+
+        <div class="ex-actions">
+            <button class="btn-print" onclick="printPractical('prat-01', 'Aula 4 \u2014 Servidor Web Apache')">&#x1F5A8;&#xFE0F; Imprimir roteiro</button>
+        </div>
+    </div>
+
+    <div class="nav-footer">
+        <a href="net03-servidor-samba.html" class="nav-link">&#x2B05; Anterior: Servidor Samba</a>
+        <a href="aula18-servidor-dns-bind9.html" class="nav-link">Pr&oacute;xima: Servidor DNS &#x27A1;</a>
+    </div>
+
+</div>
+
+<script src="slide-mode.js"></script>
+<script src="exercise-drag.js"></script>
+<script src="exercise-print.js"></script>
+</body>
+</html>
