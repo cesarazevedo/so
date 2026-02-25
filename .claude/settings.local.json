@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd \"c:/Claude/Projetos/so2\" && git add aula11-loops-for.html && git commit -m \"$\\(cat <<'EOF'\nConverter aula11-loops-for.html para layout content-card padrão\n\nCo-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(cd \"c:/Claude/Projetos/so2\" && git push origin main)",
+      "Bash(cd \"c:/Claude/Projetos/so2\" && git add aula12-loops-while.html && git commit -m \"$\\(cat <<'EOF'\nConverter aula12-loops-while.html para layout content-card padrão\n\nCo-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>\nEOF\n\\)\" && git push origin main)",
+      "Bash(cd \"c:/Claude/Projetos/so2\" && git add aula13-funcoes.html && git commit -m \"$\\(cat <<'EOF'\nConverter aula13-funcoes.html para layout content-card padrão\n\nCo-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>\nEOF\n\\)\" && git push origin main)",
+      "Bash(done)",
+      "Bash(cd \"c:/Claude/Projetos/so2\" && git mv aula01-shell-script.html ss01-shell-script.html && git mv aula08-variaveis-interacao.html ss02-variaveis-interacao.html && git mv aula09-condicionais-if.html ss03-condicionais-if.html && git mv aula10-estrutura-case.html ss04-estrutura-case.html && git mv aula11-loops-for.html ss05-loops-for.html && git mv aula12-loops-while.html ss06-loops-while.html && git mv aula13-funcoes.html ss07-funcoes.html)",
+      "Bash(cd \"c:/Claude/Projetos/so2\" && sed -i 's/aula08-variaveis-interacao\\\\.html/ss02-variaveis-interacao.html/g; s/aula01-shell-script\\\\.html/ss01-shell-script.html/g' ss01-shell-script.html ss02-variaveis-interacao.html ss03-condicionais-if.html ss04-estrutura-case.html ss05-loops-for.html ss06-loops-while.html ss07-funcoes.html index.html && echo \"OK\")",
+      "Bash(cd \"c:/Claude/Projetos/so2\" && sed -i 's/aula09-condicionais-if\\\\.html/ss03-condicionais-if.html/g; s/aula10-estrutura-case\\\\.html/ss04-estrutura-case.html/g; s/aula11-loops-for\\\\.html/ss05-loops-for.html/g; s/aula12-loops-while\\\\.html/ss06-loops-while.html/g; s/aula13-funcoes\\\\.html/ss07-funcoes.html/g' ss01-shell-script.html ss02-variaveis-interacao.html ss03-condicionais-if.html ss04-estrutura-case.html ss05-loops-for.html ss06-loops-while.html ss07-funcoes.html index.html && echo \"OK\")",
+      "Bash(cd \"c:/Claude/Projetos/so2\" && git add -A && git commit -m \"$\\(cat <<'EOF'\nRenomear módulo Shell Script para prefixo ss01-ss07\n\naula01-shell-script        → ss01-shell-script\naula08-variaveis-interacao → ss02-variaveis-interacao\naula09-condicionais-if     → ss03-condicionais-if\naula10-estrutura-case      → ss04-estrutura-case\naula11-loops-for           → ss05-loops-for\naula12-loops-while         → ss06-loops-while\naula13-funcoes             → ss07-funcoes\n\nAtualiza todos os links internos e index.html\n\nCo-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>\nEOF\n\\)\" && git push origin main)"
+    ]
+  }
+}
