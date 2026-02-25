@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 3 &mdash; Servidor Samba</title>
+    <link rel="stylesheet" href="slide-mode.css">
+    <link rel="stylesheet" href="exercise.css">
+    <style>
+        :root {
+            --primary:   #667eea;
+            --secondary: #764ba2;
+            --bg-light:  #f4f7fe;
+            --text-dark: #2d3748;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: var(--bg-light); color: var(--text-dark); line-height: 1.7; }
+
+        /* ── TOP BAR ── */
+        .top-bar { background: white; padding: 15px 30px; display: flex; align-items: center; gap: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 10; }
+        .back-btn { text-decoration: none; color: var(--primary); font-weight: 600; display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 8px; transition: background .3s; }
+        .back-btn:hover { background: rgba(102,126,234,.08); }
+        .page-badge { font-size: .8em; padding: 4px 12px; border-radius: 20px; background: rgba(102,126,234,.12); color: var(--primary); font-weight: 600; }
+
+        /* ── LAYOUT ── */
+        .content-wrapper { max-width: 800px; margin: 40px auto; padding: 0 30px; }
+        .lesson-hero { background: white; border-radius: 16px; padding: 40px; box-shadow: 0 5px 15px rgba(0,0,0,.05); margin-bottom: 30px; border-top: 4px solid var(--primary); }
+        .lesson-hero h1 { font-size: 2em; margin-bottom: 10px; color: var(--primary); }
+        .lesson-hero .subtitle { font-size: 1.05em; color: #718096; }
+        .content-card { background: white; border-radius: 16px; padding: 35px; box-shadow: 0 5px 15px rgba(0,0,0,.05); margin-bottom: 25px; }
+        .content-card h2 { font-size: 1.4em; color: var(--primary); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
+        .content-card h3 { font-size: 1.05em; color: #5a67d8; margin: 20px 0 10px; }
+        .content-card p { margin-bottom: 15px; text-align: justify; }
+        ul, ol { margin: 10px 0 15px 25px; }
+        li { margin-bottom: 8px; }
+
+        /* ── CAIXAS ── */
+        .highlight-box { background: linear-gradient(135deg,rgba(102,126,234,.05),rgba(118,75,162,.06)); border-left: 4px solid var(--primary); padding: 20px 25px; border-radius: 0 12px 12px 0; margin: 20px 0; }
+        .highlight-box p { margin-bottom: 0; font-style: italic; }
+        .alert-box { background: #fff8e1; border-left: 4px solid #f59e0b; padding: 18px 22px; border-radius: 0 12px 12px 0; margin: 20px 0; }
+        .alert-box p { margin: 0; color: #78350f; font-size: .93em; }
+        .tip-box { background: #f0fdf4; border-left: 4px solid #16a34a; padding: 18px 22px; border-radius: 0 12px 12px 0; margin: 20px 0; }
+        .tip-box p { margin: 0; color: #14532d; font-size: .93em; }
+
+        /* ── TERMINAIS ── */
+        .terminal { background: #1a202c; border-radius: 12px; overflow: hidden; margin: 16px 0; box-shadow: 0 4px 20px rgba(0,0,0,.3); }
+        .terminal-bar { background: #2d3748; padding: 8px 16px; display: flex; align-items: center; gap: 8px; }
+        .term-dot { width: 12px; height: 12px; border-radius: 50%; }
+        .term-dot.red    { background: #fc8181; }
+        .term-dot.yellow { background: #f6e05e; }
+        .term-dot.green  { background: #68d391; }
+        .term-title { font-size: .75em; color: #718096; margin-left: 8px; font-family: 'Consolas', monospace; }
+        .terminal-body { padding: 20px 24px; font-family: 'Courier New','Consolas',monospace; font-size: .92em; line-height: 2; color: #a0aec0; white-space: pre-wrap; }
+        .t-prompt  { color: #63b3ed; }
+        .t-cmd     { color: #38ef7d; }
+        .t-flag    { color: #f6e05e; }
+        .t-out     { color: #a0aec0; }
+        .t-comment { color: #4a5568; font-style: italic; }
+        .t-kw      { color: #f687b3; font-weight: bold; }
+        .t-str     { color: #68d391; }
+        .t-var     { color: #fbd38d; }
+        .t-section { color: #63b3ed; font-weight: bold; }
+
+        /* ── TABELA ── */
+        .cmp-table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: .88em; }
+        .cmp-table th { background: var(--primary); color: white; padding: 10px 14px; text-align: left; }
+        .cmp-table th:first-child { border-radius: 6px 0 0 0; }
+        .cmp-table th:last-child  { border-radius: 0 6px 0 0; }
+        .cmp-table td { padding: 9px 14px; border-bottom: 1px solid #e5e7eb; }
+        .cmp-table tr:nth-child(even) td { background: #f8f7ff; }
+        .cmp-table td code { font-family: 'Consolas',monospace; background: #1e293b; color: #a78bfa; padding: 1px 6px; border-radius: 4px; font-size: .88em; }
+
+        /* ── GRID RESUMO ── */
+        .cmd-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(140px,1fr)); gap: 12px; margin: 16px 0; }
+        .cmd-card { background: #f8f7ff; border-radius: 10px; padding: 16px; text-align: center; border-top: 3px solid var(--primary); }
+        .cmd-card .cmd { font-family: 'Consolas',monospace; font-size: .82em; color: var(--primary); font-weight: 700; display: block; margin-bottom: 6px; }
+        .cmd-card strong { display: block; font-size: .82em; color: #1e293b; margin-bottom: 4px; }
+        .cmd-card span { font-size: .76em; color: #475569; }
+
+        /* ── COMPARE ── */
+        .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+        .compare-box { border-radius: 12px; padding: 18px; }
+        .compare-box.blue  { background: #eff6ff; border-top: 3px solid #3b82f6; }
+        .compare-box.green { background: #f0fdf4; border-top: 3px solid #16a34a; }
+        .compare-box h4 { font-size: .95em; margin-bottom: 10px; }
+        .compare-box.blue  h4 { color: #1e3a8a; }
+        .compare-box.green h4 { color: #065f46; }
+
+        /* ── PASSO BADGE ── */
+        .step-badge { display: inline-block; background: var(--primary); color: white; border-radius: 50%; width: 28px; height: 28px; line-height: 28px; text-align: center; font-size: .85em; font-weight: 700; margin-right: 8px; flex-shrink: 0; }
+
+        /* ── NAV ── */
+        .nav-footer { display: flex; justify-content: space-between; margin-top: 40px; padding-bottom: 40px; }
+        .nav-link { text-decoration: none; color: var(--primary); font-weight: 600; padding: 12px 24px; border-radius: 10px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,.05); transition: all .3s; }
+        .nav-link:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.1); }
+
+        @media (max-width: 768px) {
+            .content-wrapper { padding: 0 15px; }
+            .lesson-hero, .content-card { padding: 25px; }
+            .lesson-hero h1 { font-size: 1.5em; }
+            .compare-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-bar">
+    <a href="index.html" class="back-btn">&#x2B05; Voltar ao Dashboard</a>
+    <span class="page-badge">3&ordm; Bimestre &mdash; Servi&ccedil;os de Rede</span>
+    <button class="slide-toggle" id="slideToggleBtn">&#x1F4FA; Modo Slide</button>
+</div>
+
+<div class="content-wrapper">
+
+    <div class="lesson-hero">
+        <h1>&#x1F4C2; Servidor de Arquivos Samba</h1>
+        <p class="subtitle">Aula 3 &mdash; Configure o Samba no Ubuntu para compartilhar arquivos entre Linux e Windows: instale, crie compartilhamentos p&uacute;blicos e privados e gerencie usu&aacute;rios SMB</p>
+    </div>
+
+    <!-- CARD 1 — O que é Samba? -->
+    <div class="content-card">
+        <h2>&#x1F914; O que &eacute; Samba?</h2>
+        <p>O <strong>Samba</strong> &eacute; um software de c&oacute;digo aberto que implementa o protocolo SMB/CIFS no Linux, permitindo que servidores Linux compartilhem arquivos e impressoras com m&aacute;quinas Windows como se fossem parte da mesma rede.</p>
+
+        <div class="highlight-box">
+            <p>&#x1F4A1; <strong>Analogia da ponte:</strong> Windows fala &ldquo;SMB/CIFS&rdquo; e Linux fala &ldquo;NFS&rdquo;. O Samba &eacute; o <em>tradutor</em> que permite a comunica&ccedil;&atilde;o entre os dois mundos &mdash; tornando o servidor Linux invisivamente compat&iacute;vel com a rede Windows.</p>
+        </div>
+
+        <div class="compare-grid">
+            <div class="compare-box blue">
+                <h4>&#x1FA9F; O que o Samba faz</h4>
+                <ul>
+                    <li>Compartilha pastas e arquivos</li>
+                    <li>Compartilha impressoras</li>
+                    <li>Autentica usu&aacute;rios</li>
+                    <li>Controla permiss&otilde;es de acesso</li>
+                </ul>
+            </div>
+            <div class="compare-box green">
+                <h4>&#x2705; Vantagens</h4>
+                <ul>
+                    <li>Gratuito e open source</li>
+                    <li>Compat&iacute;vel com Windows 10/11</li>
+                    <li>Configura&ccedil;&atilde;o flex&iacute;vel</li>
+                    <li>Amplamente usado em empresas</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="tip-box">
+            <p>&#x1F3E2; <strong>Cen&aacute;rio t&iacute;pico:</strong> empresa com 50 PCs Windows + 1 servidor Linux = todos acessam os mesmos arquivos de qualquer m&aacute;quina, sem instalar nada nos clientes.</p>
+        </div>
+    </div>
+
+    <!-- CARD 2 — Protocolo SMB/CIFS -->
+    <div class="content-card">
+        <h2>&#x1F50C; Protocolo SMB/CIFS</h2>
+        <p>O <strong>SMB</strong> (Server Message Block) &eacute; o protocolo de rede usado pelo Windows para compartilhar recursos. O Samba implementa esse protocolo no Linux, permitindo integra&ccedil;&atilde;o total.</p>
+
+        <h3>Como funciona</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">fluxo de acesso</span>
+            </div>
+            <div class="terminal-body"><span class="t-out">Windows pede:    \\servidor\pasta
+Samba responde:  OK, aqui est&aacute; o conte&uacute;do!
+Windows v&ecirc;:     Uma pasta local (como se fosse drive Z:)</span></div>
+        </div>
+
+        <h3>Portas utilizadas</h3>
+        <table class="cmp-table">
+            <thead>
+                <tr><th>Porta</th><th>Servi&ccedil;o</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>445</strong></td><td>SMB direto (principal &mdash; Windows moderno)</td></tr>
+                <tr><td><strong>139</strong></td><td>NetBIOS Session (compat. legado)</td></tr>
+                <tr><td><strong>137&ndash;138</strong></td><td>NetBIOS Name / Datagram</td></tr>
+            </tbody>
+        </table>
+
+        <h3>Tipos de compartilhamento</h3>
+        <table class="cmp-table">
+            <thead>
+                <tr><th>Tipo</th><th>Descri&ccedil;&atilde;o</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>P&uacute;blico (guest)</strong></td><td>Sem autentica&ccedil;&atilde;o &mdash; qualquer um acessa</td></tr>
+                <tr><td><strong>Privado</strong></td><td>Requer usu&aacute;rio e senha SMB</td></tr>
+                <tr><td><strong>Somente leitura</strong></td><td>Pode visualizar, n&atilde;o modificar</td></tr>
+                <tr><td><strong>Leitura/Escrita</strong></td><td>Acesso completo para modificar arquivos</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- CARD 3 — Arquivos Importantes -->
+    <div class="content-card">
+        <h2>&#x1F4C1; Arquivos e Servi&ccedil;os</h2>
+        <p>O Samba &eacute; composto por m&uacute;ltiplos servi&ccedil;os e arquivos. Conhecer cada um &eacute; fundamental para instala&ccedil;&atilde;o, configura&ccedil;&atilde;o e diagn&oacute;stico.</p>
+
+        <h3>Arquivos de configura&ccedil;&atilde;o e dados</h3>
+        <table class="cmp-table">
+            <thead>
+                <tr><th>Arquivo / Diret&oacute;rio</th><th>Fun&ccedil;&atilde;o</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>/etc/samba/smb.conf</code></td><td>Configura&ccedil;&atilde;o principal do servidor</td></tr>
+                <tr><td><code>/var/log/samba/</code></td><td>Logs do servi&ccedil;o para diagn&oacute;stico</td></tr>
+                <tr><td><code>/var/lib/samba/</code></td><td>Dados internos (banco de usu&aacute;rios, etc.)</td></tr>
+            </tbody>
+        </table>
+
+        <h3>Servi&ccedil;os do Samba</h3>
+        <div class="cmd-grid">
+            <div class="cmd-card">
+                <span class="cmd">smbd</span>
+                <strong>Compartilhamento</strong>
+                <span>Arquivos e impressoras</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">nmbd</span>
+                <strong>Nomes NetBIOS</strong>
+                <span>Resolu&ccedil;&atilde;o de nomes</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">winbindd</span>
+                <strong>Active Directory</strong>
+                <span>Integra&ccedil;&atilde;o com AD</span>
+            </div>
+        </div>
+
+        <h3>Estrutura do smb.conf</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">estrutura geral</span>
+            </div>
+            <div class="terminal-body"><span class="t-section">[global]</span>           <span class="t-comment"># configurações do servidor</span>
+  <span class="t-kw">netbios name</span> = <span class="t-str">SERVIDOR</span>
+  <span class="t-kw">security</span>     = <span class="t-str">user</span>
+
+<span class="t-section">[public]</span>           <span class="t-comment"># cada [bloco] = um compartilhamento</span>
+  <span class="t-kw">path</span>         = <span class="t-str">/home/usuario/public</span>
+  <span class="t-kw">read only</span>    = <span class="t-str">no</span></div>
+        </div>
+    </div>
+
+    <!-- CARD 4 — Passo 1: Instalar -->
+    <div class="content-card">
+        <h2>&#x1F4E6; <span class="step-badge">1</span> Instalar o Samba</h2>
+        <p>A instala&ccedil;&atilde;o &eacute; feita com o apt. Os servi&ccedil;os <code>smbd</code> e <code>nmbd</code> ser&atilde;o criados automaticamente, mas precisamos configurar antes de usar.</p>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">instalando samba</span>
+            </div>
+            <div class="terminal-body"><span class="t-comment"># Atualizar repositórios</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">apt-get</span> update
+
+<span class="t-comment"># Instalar o Samba</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">apt-get</span> install samba
+
+<span class="t-comment"># Verificar versão instalada</span>
+<span class="t-prompt">$</span> <span class="t-cmd">samba</span> <span class="t-flag">--version</span>
+<span class="t-out">Version 4.15.13-Ubuntu</span></div>
+        </div>
+
+        <h3>O que &eacute; instalado</h3>
+        <ul>
+            <li>Pacote <code>samba</code> com os servi&ccedil;os <code>smbd</code> e <code>nmbd</code></li>
+            <li>Ferramentas de configura&ccedil;&atilde;o (<code>testparm</code>, <code>smbpasswd</code>, <code>pdbedit</code>)</li>
+            <li>Arquivo <code>/etc/samba/smb.conf</code> padr&atilde;o com exemplos</li>
+        </ul>
+    </div>
+
+    <!-- CARD 5 — Passo 2: Backup -->
+    <div class="content-card">
+        <h2>&#x1F4BE; <span class="step-badge">2</span> Backup da Configura&ccedil;&atilde;o</h2>
+        <p>O <code>smb.conf</code> instalado cont&eacute;m muitos exemplos e coment&aacute;rios. Use <code>mv</code> para preserv&aacute;-lo como backup e criar um arquivo limpo do zero.</p>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">backup do smb.conf</span>
+            </div>
+            <div class="terminal-body"><span class="t-comment"># Mover como backup (não copiar)</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">mv</span> /etc/samba/smb.conf /etc/samba/smb.conf.bkp
+
+<span class="t-comment"># Verificar</span>
+<span class="t-prompt">$</span> <span class="t-cmd">ls</span> /etc/samba/
+<span class="t-out">smb.conf.bkp</span>
+
+<span class="t-comment"># Para restaurar o backup se precisar:</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">cp</span> /etc/samba/smb.conf.bkp /etc/samba/smb.conf</div>
+        </div>
+
+        <div class="tip-box">
+            <p>&#x1F4A1; <strong>Por que <code>mv</code> e n&atilde;o <code>cp</code>?</strong> O <code>mv</code> move o original como backup e deixa o caminho livre para criarmos um arquivo limpo. Com <code>cp</code> ter&iacute;amos dois arquivos com o mesmo conte&uacute;do.</p>
+        </div>
+    </div>
+
+    <!-- CARD 6 — Passo 3: Configuração -->
+    <div class="content-card">
+        <h2>&#x270F;&#xFE0F; <span class="step-badge">3</span> Criar a Configura&ccedil;&atilde;o</h2>
+        <p>Crie o <code>smb.conf</code> do zero. Vamos criar dois compartilhamentos: um <strong>privado</strong> (requer senha) e um <strong>p&uacute;blico</strong> (acesso livre, somente leitura).</p>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">criar smb.conf</span>
+            </div>
+            <div class="terminal-body"><span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">vim</span> /etc/samba/smb.conf</div>
+        </div>
+
+        <h3>Conte&uacute;do do arquivo</h3>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">/etc/samba/smb.conf</span>
+            </div>
+            <div class="terminal-body"><span class="t-section">[global]</span>
+  <span class="t-kw">netbios name</span>  = <span class="t-str">SERVIDOR</span>
+  <span class="t-kw">server string</span> = <span class="t-str">Servidor de Arquivos</span>
+  <span class="t-kw">security</span>      = <span class="t-str">user</span>
+  <span class="t-kw">map to guest</span>  = <span class="t-str">Bad User</span>
+  <span class="t-kw">log file</span>      = <span class="t-str">/var/log/samba/samba-log-%m</span>
+
+<span class="t-section">[public]</span>
+  <span class="t-kw">path</span>          = <span class="t-str">/home/usuario/public</span>
+  <span class="t-kw">read only</span>     = <span class="t-str">no</span>
+  <span class="t-kw">browseable</span>    = <span class="t-str">yes</span>
+  <span class="t-kw">guest ok</span>      = <span class="t-str">no</span>
+
+<span class="t-section">[guest]</span>
+  <span class="t-kw">path</span>          = <span class="t-str">/home/usuario/guest</span>
+  <span class="t-kw">read only</span>     = <span class="t-str">yes</span>
+  <span class="t-kw">browseable</span>    = <span class="t-str">yes</span>
+  <span class="t-kw">guest ok</span>      = <span class="t-str">yes</span></div>
+        </div>
+
+        <div class="tip-box">
+            <p>&#x1F4AC; <strong>Salvar no vim:</strong> pressione <strong>ESC</strong>, depois digite <code>:wq</code> e pressione ENTER.</p>
+        </div>
+    </div>
+
+    <!-- CARD 7 — Entendendo a Configuração -->
+    <div class="content-card">
+        <h2>&#x1F4D6; Entendendo a Configura&ccedil;&atilde;o</h2>
+        <p>O <code>smb.conf</code> &eacute; dividido em se&ccedil;&otilde;es. O <code>[global]</code> define o comportamento geral do servidor; cada <code>[nome]</code> define um compartilhamento.</p>
+
+        <h3>Se&ccedil;&atilde;o [global]</h3>
+        <table class="cmp-table">
+            <thead>
+                <tr><th>Par&acirc;metro</th><th>Fun&ccedil;&atilde;o</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>netbios name</code></td><td>Nome do servidor na rede Windows (aparece no Explorador)</td></tr>
+                <tr><td><code>server string</code></td><td>Descri&ccedil;&atilde;o exibida ao navegar na rede</td></tr>
+                <tr><td><code>security</code></td><td>Tipo de autentica&ccedil;&atilde;o (<code>user</code> = por usu&aacute;rio e senha)</td></tr>
+                <tr><td><code>map to guest</code></td><td>Tratar usu&aacute;rios inv&aacute;lidos como convidados</td></tr>
+            </tbody>
+        </table>
+
+        <h3>Se&ccedil;&atilde;o [compartilhamento]</h3>
+        <table class="cmp-table">
+            <thead>
+                <tr><th>Par&acirc;metro</th><th>Fun&ccedil;&atilde;o</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>path</code></td><td>Caminho da pasta no servidor Linux</td></tr>
+                <tr><td><code>read only</code></td><td><code>no</code> = leitura e escrita; <code>yes</code> = somente leitura</td></tr>
+                <tr><td><code>browseable</code></td><td><code>yes</code> = vis&iacute;vel ao navegar na rede Windows</td></tr>
+                <tr><td><code>guest ok</code></td><td><code>yes</code> = acesso livre sem senha; <code>no</code> = exige autentica&ccedil;&atilde;o</td></tr>
+            </tbody>
+        </table>
+
+        <div class="highlight-box">
+            <p>&#x1F4A1; <strong>[public]</strong> exige senha (<code>guest ok = no</code>) mas permite escrita. <strong>[guest]</strong> &eacute; livre (<code>guest ok = yes</code>) mas somente leitura. Use essa combina&ccedil;&atilde;o para separar recursos p&uacute;blicos de privados.</p>
+        </div>
+    </div>
+
+    <!-- CARD 8 — Passo 4: Pastas e Usuário -->
+    <div class="content-card">
+        <h2>&#x1F4C1; <span class="step-badge">4</span> Criar Pastas e Usu&aacute;rio</h2>
+        <p>Crie as pastas referenciadas no <code>smb.conf</code>, ajuste as permiss&otilde;es e crie um usu&aacute;rio Samba para autentica&ccedil;&atilde;o. O usu&aacute;rio Linux e a senha SMB s&atilde;o independentes.</p>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">pastas, permissões e usuário</span>
+            </div>
+            <div class="terminal-body"><span class="t-comment"># Criar as pastas de compartilhamento</span>
+<span class="t-prompt">$</span> <span class="t-cmd">mkdir</span> ~/public ~/guest
+
+<span class="t-comment"># Ajustar permissões (777 para testes)</span>
+<span class="t-prompt">$</span> <span class="t-cmd">chmod</span> 777 ~/public ~/guest
+
+<span class="t-comment"># Criar usuário no Linux</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">useradd</span> samba
+
+<span class="t-comment"># Criar senha SMB para o usuário</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">smbpasswd</span> <span class="t-flag">-a</span> samba
+<span class="t-out">New SMB password: ********
+Retype new SMB password: ********
+Added user samba.</span></div>
+        </div>
+
+        <div class="alert-box">
+            <p>&#x26A0;&#xFE0F; <strong>Permiss&atilde;o 777 &eacute; para testes!</strong> Em produ&ccedil;&atilde;o, use permiss&otilde;es mais restritivas (ex.: <code>750</code> ou <code>755</code>) e defina o propriet&aacute;rio correto com <code>chown</code>.</p>
+        </div>
+
+        <div class="tip-box">
+            <p>&#x1F4A1; <strong>Duas senhas diferentes:</strong> <code>useradd</code> cria o usu&aacute;rio no sistema Linux e <code>smbpasswd -a</code> cria a senha SMB usada para autenticar pelo Windows. S&atilde;o bancos separados.</p>
+        </div>
+    </div>
+
+    <!-- CARD 9 — Passo 5: Testar e Iniciar -->
+    <div class="content-card">
+        <h2>&#x1F680; <span class="step-badge">5</span> Testar e Iniciar</h2>
+        <p>Valide a configura&ccedil;&atilde;o com <code>testparm</code> antes de iniciar. Esse comando verifica erros de sintaxe no <code>smb.conf</code> sem precisar reiniciar o servi&ccedil;o.</p>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">validar e iniciar</span>
+            </div>
+            <div class="terminal-body"><span class="t-comment"># Verificar configuração (sem erros = OK!)</span>
+<span class="t-prompt">$</span> <span class="t-cmd">testparm</span> <span class="t-flag">-s</span>
+<span class="t-out">Load smb config files from /etc/samba/smb.conf
+Loaded services file OK.
+Server role: ROLE_STANDALONE</span>
+
+<span class="t-comment"># Reiniciar os dois serviços</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">systemctl</span> restart smbd nmbd
+
+<span class="t-comment"># Habilitar para iniciar no boot</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">systemctl</span> enable smbd nmbd
+
+<span class="t-comment"># Verificar status</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">systemctl</span> status smbd
+<span class="t-out">● smbd.service - Samba SMB Daemon
+     Active: <span class="t-str">active (running)</span> since ...</span></div>
+        </div>
+    </div>
+
+    <!-- CARD 10 — Acessando e Comandos Úteis -->
+    <div class="content-card">
+        <h2>&#x1FA9F; Acessando e Comandos &Uacute;teis</h2>
+
+        <h3>Acessando pelo Windows</h3>
+        <ol>
+            <li>Abra o <strong>Explorador de Arquivos</strong></li>
+            <li>Na barra de endere&ccedil;o, digite: <code>\\192.168.0.1</code></li>
+            <li>Informe as credenciais: Usu&aacute;rio <code>samba</code> / senha SMB</li>
+            <li>Acesse as pastas <strong>public</strong> e <strong>guest</strong></li>
+        </ol>
+
+        <div class="tip-box">
+            <p>&#x1F5FA;&#xFE0F; <strong>Mapear como drive:</strong> clique direito na pasta &rarr; &ldquo;Mapear unidade de rede&rdquo; &rarr; escolha a letra (ex.: Z:) &rarr; caminho: <code>\\IP\public</code>. O drive aparecer&aacute; no Explorador como qualquer outro disco.</p>
+        </div>
+
+        <h3>Comandos &uacute;teis</h3>
+        <table class="cmp-table">
+            <thead>
+                <tr><th>Comando</th><th>Fun&ccedil;&atilde;o</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>testparm -s</code></td><td>Verificar erros no <code>smb.conf</code></td></tr>
+                <tr><td><code>smbstatus</code></td><td>Ver conex&otilde;es ativas e arquivos abertos</td></tr>
+                <tr><td><code>pdbedit -L</code></td><td>Listar usu&aacute;rios Samba cadastrados</td></tr>
+                <tr><td><code>smbpasswd -a usuario</code></td><td>Adicionar novo usu&aacute;rio Samba</td></tr>
+                <tr><td><code>smbpasswd -x usuario</code></td><td>Remover usu&aacute;rio do Samba</td></tr>
+                <tr><td><code>smbpasswd usuario</code></td><td>Alterar senha de usu&aacute;rio existente</td></tr>
+            </tbody>
+        </table>
+
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">monitorar logs</span>
+            </div>
+            <div class="terminal-body"><span class="t-comment"># Ver logs em tempo real</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">tail</span> <span class="t-flag">-f</span> /var/log/samba/log.smbd
+
+<span class="t-comment"># Limpar credenciais salvas no Windows (cmd)</span>
+<span class="t-out">net use * /d /y</span></div>
+        </div>
+
+        <div class="alert-box">
+            <p>&#x26A0;&#xFE0F; <strong>Windows 10/11:</strong> se aparecer erro de acesso, pode ser necess&aacute;rio habilitar &ldquo;Logon de convidado inseguro&rdquo; via <code>gpedit.msc</code> ou ajustar as configura&ccedil;&otilde;es de seguran&ccedil;a de rede.</p>
+        </div>
+    </div>
+
+    <!-- EXERCÍCIO — Arrastar e Conectar -->
+    <div class="content-card exercise-card">
+        <h2>&#x1F3AF; Exerc&iacute;cio &mdash; Arraste e Conecte</h2>
+        <p style="color:#475569;font-size:.9em;margin-bottom:4px;">Relacione cada elemento do Samba &agrave; sua descri&ccedil;&atilde;o correta.</p>
+
+        <div class="ex-drag-root" data-ex="ex01">
+            <div class="ex-drag">
+                <div>
+                    <div class="ex-col-title">Descri&ccedil;&atilde;o</div>
+                    <div class="ex-pool" data-pool="ex01">
+                        <div class="drag-chip" data-id="c1">Arquivo de configura&ccedil;&atilde;o principal do Samba</div>
+                        <div class="drag-chip" data-id="c2">Comando para verificar erros na configura&ccedil;&atilde;o</div>
+                        <div class="drag-chip" data-id="c3">Servi&ccedil;o respons&aacute;vel pelo compartilhamento de arquivos</div>
+                        <div class="drag-chip" data-id="c4">Define o nome do servidor na rede Windows</div>
+                        <div class="drag-chip" data-id="c5">Comando para criar senha SMB de usu&aacute;rio</div>
+                    </div>
+                </div>
+                <div>
+                    <div class="ex-col-title">Elemento</div>
+                    <div class="ex-zones" data-zones="ex01">
+                        <div class="drop-zone" data-zone="ex01-z1" data-accept="c1">
+                            <span class="zone-name"><code>smb.conf</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z2" data-accept="c2">
+                            <span class="zone-name"><code>testparm</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z3" data-accept="c3">
+                            <span class="zone-name"><code>smbd</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z4" data-accept="c4">
+                            <span class="zone-name"><code>netbios name</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                        <div class="drop-zone" data-zone="ex01-z5" data-accept="c5">
+                            <span class="zone-name"><code>smbpasswd</code></span>
+                            <div class="zone-slot"></div>
+                            <div class="zone-feedback"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ex-actions">
+            <button class="btn-verificar" onclick="dragVerify('ex01')">Verificar</button>
+            <button class="btn-refazer"  onclick="dragReset('ex01')">Refazer</button>
+        </div>
+        <div class="ex-result" id="ex01-result"></div>
+    </div>
+
+    <!-- ATIVIDADE PRÁTICA -->
+    <div class="content-card practical-card" id="prat-01">
+        <h2>&#x1F6E0;&#xFE0F; Atividade Pr&aacute;tica &mdash; Configurando o Servidor Samba</h2>
+        <div class="prat-meta">
+            <span class="prat-tag">&#x23F1; ~40 min</span>
+            <span class="prat-tag">&#x1F4BB; Ubuntu Server / VM</span>
+            <span class="prat-tag">&#x1F4F8; Tirar screenshot da sa&iacute;da</span>
+        </div>
+
+        <div class="prat-steps">
+            <div class="prat-step">
+                <div class="step-num">1</div>
+                <div class="step-body">
+                    <div class="step-label">Instalar e fazer backup</div>
+                    <div class="step-desc">Instale o Samba com <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">sudo apt-get install samba</code> e verifique a vers&atilde;o com <code>samba --version</code>. Fa&ccedil;a backup com <code>sudo mv /etc/samba/smb.conf /etc/samba/smb.conf.bkp</code>. Tire screenshot.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">2</div>
+                <div class="step-body">
+                    <div class="step-label">Criar configura&ccedil;&atilde;o e pastas</div>
+                    <div class="step-desc">Crie o arquivo <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">/etc/samba/smb.conf</code> com as se&ccedil;&otilde;es <code>[global]</code>, <code>[public]</code> e <code>[guest]</code>. Crie as pastas <code>~/public</code> e <code>~/guest</code> com <code>mkdir</code> e ajuste as permiss&otilde;es com <code>chmod 777</code>.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">3</div>
+                <div class="step-body">
+                    <div class="step-label">Criar usu&aacute;rio e testar configura&ccedil;&atilde;o</div>
+                    <div class="step-desc">Crie um usu&aacute;rio com <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">sudo useradd samba</code> e defina a senha SMB com <code>sudo smbpasswd -a samba</code>. Valide o arquivo com <code>testparm -s</code> e reinicie os servi&ccedil;os com <code>systemctl restart smbd nmbd</code>. Tire screenshot do status.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">4</div>
+                <div class="step-body">
+                    <div class="step-label">Acessar pelo Windows e documentar</div>
+                    <div class="step-desc">A partir de uma m&aacute;quina Windows na mesma rede, acesse <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">\\IP_DO_SERVIDOR</code> no Explorador de Arquivos. Forne&ccedil;a as credenciais e navegue pelas pastas. Tire screenshot mostrando os compartilhamentos vis&iacute;veis.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="prat-observe">
+            <strong>&#x1F4CC; Para refletir:</strong> o Samba elimina a barreira entre Linux e Windows em ambientes mistos. Com um servidor Linux rodando Samba, toda a empresa pode compartilhar arquivos de forma centralizada, segura e sem custo de licen&ccedil;as. Entender <code>smb.conf</code> e o gerenciamento de usu&aacute;rios SMB &eacute; essencial para qualquer administrador de redes.
+        </div>
+
+        <div class="ex-actions">
+            <button class="btn-print" onclick="printPractical('prat-01', 'Aula 3 \u2014 Servidor Samba')">&#x1F5A8;&#xFE0F; Imprimir roteiro</button>
+        </div>
+    </div>
+
+    <div class="nav-footer">
+        <a href="net02-servidor-dhcp.html" class="nav-link">&#x2B05; Anterior: Servidor DHCP</a>
+        <a href="aula17-servidor-apache.html" class="nav-link">Pr&oacute;xima: Servidor Apache &#x27A1;</a>
+    </div>
+
+</div>
+
+<script src="slide-mode.js"></script>
+<script src="exercise-drag.js"></script>
+<script src="exercise-print.js"></script>
+</body>
+</html>
