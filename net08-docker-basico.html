@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Docker Básico — SO2</title>
+    <link rel="stylesheet" href="slide-mode.css">
+    <link rel="stylesheet" href="exercise.css">
+</head>
+<body>
+
+<div class="top-bar">
+    <a href="index.html" class="back-btn">&#x2190; Início</a>
+    <span class="page-badge">Redes · Aula 08</span>
+    <button class="slide-toggle-btn" onclick="toggleSlideMode()">&#9654; Modo Slides</button>
+</div>
+
+<div class="content-wrapper">
+
+    <div class="lesson-hero">
+        <div class="hero-badge">NET · 08</div>
+        <h1 class="hero-title">Docker Básico</h1>
+        <p class="hero-sub">Introdução a Containers — empacote, distribua e execute aplicações em qualquer lugar!</p>
+    </div>
+
+    <!-- CARD 1: O que é Docker -->
+    <div class="content-card">
+        <h2 class="card-title">&#x1F914; O que é Docker?</h2>
+
+        <div class="highlight-box">
+            <strong>Docker = Plataforma para criar e executar containers!</strong><br>
+            "Funciona na minha máquina" nunca mais — com Docker, funciona em <em>qualquer lugar</em>!
+        </div>
+
+        <p>Pense no Docker como um <strong>porto de containers de navio</strong>:</p>
+        <ul>
+            <li>&#x1F6A2; <strong>Navio</strong> = Servidor (qualquer máquina)</li>
+            <li>&#x1F4E6; <strong>Container</strong> = Aplicação empacotada com tudo que precisa</li>
+            <li>&#x1F3D7; <strong>Porto</strong> = Docker Engine (gerencia os containers)</li>
+            <li>&#x1F4CB; <strong>Manifesto</strong> = Dockerfile (instruções do container)</li>
+        </ul>
+        <p>Containers são padronizados e funcionam em qualquer servidor — assim como um container de navio cabe em qualquer navio!</p>
+
+        <h3 style="margin-top:1.2rem">Conceitos Principais</h3>
+        <table class="cmp-table">
+            <thead>
+                <tr><th>Conceito</th><th>Definição</th><th>Analogia</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>Imagem</strong></td><td>Template somente-leitura</td><td>&#x1F370; Receita de bolo</td></tr>
+                <tr><td><strong>Container</strong></td><td>Imagem em execução</td><td>&#x1F382; Bolo já pronto</td></tr>
+                <tr><td><strong>Dockerfile</strong></td><td>Instruções para criar imagem</td><td>&#x1F4DD; Lista de ingredientes</td></tr>
+                <tr><td><strong>Registry</strong></td><td>Repositório de imagens</td><td>&#x1F3EA; Supermercado de receitas</td></tr>
+            </tbody>
+        </table>
+
+        <div class="tip-box" style="margin-top:1rem">
+            <strong>&#x1F310; Docker Hub</strong> (<code>hub.docker.com</code>) — mais de 100.000 imagens prontas para usar!
+        </div>
+
+        <h3 style="margin-top:1.2rem">Por que usar Docker?</h3>
+        <ul>
+            <li>&#x2705; Ambiente consistente entre desenvolvimento e produção</li>
+            <li>&#x2705; Isolamento de aplicações sem conflitos</li>
+            <li>&#x2705; Deploy rápido e fácil</li>
+            <li>&#x2705; Economia de recursos comparado a VMs</li>
+        </ul>
+    </div>
+
+    <!-- CARD 2: Container vs VM -->
+    <div class="content-card">
+        <h2 class="card-title">&#x2694;&#xFE0F; Container vs Máquina Virtual</h2>
+
+        <table class="cmp-table">
+            <thead>
+                <tr><th>Característica</th><th>Máquina Virtual (VM)</th><th>Container Docker</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Sistema operacional</td><td>&#x274C; SO completo por instância</td><td>&#x2705; Compartilha kernel do host</td></tr>
+                <tr><td>Espaço em disco</td><td>&#x274C; Gigabytes</td><td>&#x2705; Megabytes</td></tr>
+                <tr><td>Tempo de inicialização</td><td>&#x274C; Minutos</td><td>&#x2705; Segundos</td></tr>
+                <tr><td>Uso de RAM/CPU</td><td>&#x274C; Alto</td><td>&#x2705; Baixo</td></tr>
+                <tr><td>Isolamento</td><td>&#x2705; Total (kernel próprio)</td><td>&#x2705; De processo</td></tr>
+            </tbody>
+        </table>
+
+        <h3 style="margin-top:1.2rem">Arquitetura comparada</h3>
+        <div class="cmd-grid" style="grid-template-columns: 1fr 1fr;">
+            <div class="cmd-card">
+                <div class="cmd-name">&#x1F5A5; Máquina Virtual</div>
+                <div class="cmd-desc">
+                    Hardware → Host OS → <strong>Hypervisor</strong> → Guest OS → App<br><br>
+                    Cada VM precisa de um sistema operacional completo
+                </div>
+            </div>
+            <div class="cmd-card">
+                <div class="cmd-name">&#x1F433; Container Docker</div>
+                <div class="cmd-desc">
+                    Hardware → Host OS → <strong>Docker Engine</strong> → App<br><br>
+                    Todos os containers compartilham o mesmo kernel do host
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARD 3: Passo 1 — Instalar o Docker -->
+    <div class="content-card">
+        <h2 class="card-title">
+            <span class="step-badge">1</span>
+            Instalar o Docker
+        </h2>
+
+        <div class="terminal-block">
+            <div class="terminal-header">bash — instalação do Docker Engine</div>
+            <div class="terminal-body"><span class="t-comment"># Atualizar repositórios e instalar dependências</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo apt-get update</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo apt-get install</span> <span class="t-str">ca-certificates curl gnupg</span>
+
+<span class="t-comment"># Adicionar chave GPG oficial do Docker</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo install -m 0755 -d /etc/apt/keyrings</span>
+<span class="t-prompt">$</span> <span class="t-cmd">curl -fsSL</span> <span class="t-str">https://download.docker.com/linux/ubuntu/gpg</span> <span class="t-flag">|</span> sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+
+<span class="t-comment"># Adicionar repositório oficial</span>
+<span class="t-prompt">$</span> echo <span class="t-str">"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"</span> <span class="t-flag">|</span> sudo tee /etc/apt/sources.list.d/docker.list
+
+<span class="t-comment"># Instalar o Docker</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo apt-get update</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo apt-get install</span> <span class="t-str">docker-ce docker-ce-cli containerd.io docker-compose-plugin</span></div>
+        </div>
+
+        <div class="tip-box">
+            <strong>&#x1F4A1; Usar Docker sem sudo:</strong>
+            <div style="margin-top:0.4rem">
+                <code>sudo usermod -aG docker $USER</code><br>
+                Faça logout e login novamente para a alteração ter efeito.
+            </div>
+        </div>
+    </div>
+
+    <!-- CARD 4: Passo 2 — Verificar Instalação -->
+    <div class="content-card">
+        <h2 class="card-title">
+            <span class="step-badge">2</span>
+            Verificar a Instalação
+        </h2>
+
+        <div class="terminal-block">
+            <div class="terminal-header">bash — verificar versão</div>
+            <div class="terminal-body"><span class="t-prompt">$</span> <span class="t-cmd">docker --version</span>
+<span class="t-out">Docker version 24.0.7, build afdd53b</span></div>
+        </div>
+
+        <div class="terminal-block">
+            <div class="terminal-header">bash — testar com Hello World</div>
+            <div class="terminal-body"><span class="t-prompt">$</span> <span class="t-cmd">docker run hello-world</span>
+<span class="t-out">Unable to find image 'hello-world:latest' locally</span>
+<span class="t-out">latest: Pulling from library/hello-world</span>
+<span class="t-out">Status: Downloaded newer image for hello-world:latest</span>
+
+<span class="t-kw">Hello from Docker!</span>
+<span class="t-out">This message shows that your installation appears to be working correctly.</span></div>
+        </div>
+
+        <div class="highlight-box">
+            <strong>&#x1F389; Se você viu "Hello from Docker!", está tudo funcionando!</strong><br>
+            O Docker baixou a imagem <code>hello-world</code> do Docker Hub, criou um container e executou — tudo automaticamente.
+        </div>
+    </div>
+
+    <!-- CARD 5: Comandos de Imagens -->
+    <div class="content-card">
+        <h2 class="card-title">&#x1F4CB; Comandos — Imagens</h2>
+
+        <div class="terminal-block">
+            <div class="terminal-header">bash — gerenciar imagens</div>
+            <div class="terminal-body"><span class="t-comment"># Baixar uma imagem do Docker Hub</span>
+<span class="t-prompt">$</span> <span class="t-cmd">docker pull</span> <span class="t-str">nginx</span>
+
+<span class="t-comment"># Listar imagens locais</span>
+<span class="t-prompt">$</span> <span class="t-cmd">docker images</span>
+<span class="t-out">REPOSITORY    TAG       IMAGE ID       SIZE</span>
+<span class="t-out">nginx         latest    a6bd71f48f68   187MB</span>
+<span class="t-out">hello-world   latest    d2c94e258dcb   13.3kB</span>
+
+<span class="t-comment"># Remover uma imagem</span>
+<span class="t-prompt">$</span> <span class="t-cmd">docker rmi</span> <span class="t-str">hello-world</span></div>
+        </div>
+
+        <h3 style="margin-top:1.2rem">Imagens Populares no Docker Hub</h3>
+        <table class="cmp-table">
+            <thead>
+                <tr><th>Imagem</th><th>Descrição</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>nginx</code></td><td>Servidor web</td></tr>
+                <tr><td><code>mysql</code></td><td>Banco de dados MySQL</td></tr>
+                <tr><td><code>python</code></td><td>Ambiente Python</td></tr>
+                <tr><td><code>node</code></td><td>Runtime Node.js</td></tr>
+                <tr><td><code>ubuntu</code></td><td>Sistema Ubuntu mínimo</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- CARD 6: Comandos de Containers -->
+    <div class="content-card">
+        <h2 class="card-title">&#x1F4E6; Comandos — Containers</h2>
+
+        <div class="terminal-block">
+            <div class="terminal-header">bash — gerenciar containers</div>
+            <div class="terminal-body"><span class="t-comment"># Criar e executar container</span>
+<span class="t-prompt">$</span> <span class="t-cmd">docker run</span> <span class="t-str">nginx</span>
+
+<span class="t-comment"># Executar em background (-d) com nome (--name)</span>
+<span class="t-prompt">$</span> <span class="t-cmd">docker run</span> <span class="t-flag">-d</span> <span class="t-flag">--name</span> <span class="t-str">meu-nginx</span> <span class="t-str">nginx</span>
+
+<span class="t-comment"># Listar containers em execução</span>
+<span class="t-prompt">$</span> <span class="t-cmd">docker ps</span>
+
+<span class="t-comment"># Listar TODOS os containers (inclusive parados)</span>
+<span class="t-prompt">$</span> <span class="t-cmd">docker ps -a</span>
+
+<span class="t-comment"># Parar um container</span>
+<span class="t-prompt">$</span> <span class="t-cmd">docker stop</span> <span class="t-str">meu-nginx</span>
+
+<span class="t-comment"># Iniciar container parado</span>
+<span class="t-prompt">$</span> <span class="t-cmd">docker start</span> <span class="t-str">meu-nginx</span>
+
+<span class="t-comment"># Remover container</span>
+<span class="t-prompt">$</span> <span class="t-cmd">docker rm</span> <span class="t-str">meu-nginx</span></div>
+        </div>
+    </div>
+
+    <!-- CARD 7: Mapeamento de Portas -->
+    <div class="content-card">
+        <h2 class="card-title">&#x1F50C; Mapeamento de Portas</h2>
+
+        <div class="highlight-box">
+            <strong>Para acessar um serviço dentro do container, é preciso mapear as portas com <code>-p</code>!</strong>
+        </div>
+
+        <div class="terminal-block">
+            <div class="terminal-header">bash — mapear porta host:container</div>
+            <div class="terminal-body"><span class="t-comment"># Sintaxe: -p PORTA_HOST:PORTA_CONTAINER</span>
+<span class="t-prompt">$</span> <span class="t-cmd">docker run</span> <span class="t-flag">-d</span> <span class="t-flag">-p</span> <span class="t-str">8080:80</span> <span class="t-flag">--name</span> <span class="t-str">web</span> <span class="t-str">nginx</span>
+
+<span class="t-comment"># Agora acesse: http://localhost:8080</span></div>
+        </div>
+
+        <p>Entendendo <code>-p 8080:80</code>:</p>
+        <ul>
+            <li><strong><code>8080</code></strong> = Porta do seu computador (host)</li>
+            <li><strong><code>80</code></strong> = Porta dentro do container</li>
+            <li>Todo tráfego na porta 8080 é encaminhado para a porta 80 do container</li>
+        </ul>
+
+        <table class="cmp-table" style="margin-top:1rem">
+            <thead>
+                <tr><th>Exemplo</th><th>Significado</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>-p 80:80</code></td><td>Mesma porta no host e no container</td></tr>
+                <tr><td><code>-p 3000:80</code></td><td>Host porta 3000 → Container porta 80</td></tr>
+                <tr><td><code>-p 8080:8080</code></td><td>Ambos usam porta 8080</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- CARD 8: Volumes -->
+    <div class="content-card">
+        <h2 class="card-title">&#x1F4BE; Volumes — Persistência de Dados</h2>
+
+        <div class="alert-box">
+            <strong>&#x26A0; Containers são efêmeros!</strong> Quando você remove um container, todos os dados dentro dele são perdidos. Volumes resolvem esse problema.
+        </div>
+
+        <div class="terminal-block">
+            <div class="terminal-header">bash — trabalhar com volumes</div>
+            <div class="terminal-body"><span class="t-comment"># Bind Mount: montar pasta local no container</span>
+<span class="t-comment"># Sintaxe: -v /caminho/host:/caminho/container</span>
+<span class="t-prompt">$</span> <span class="t-cmd">docker run</span> <span class="t-flag">-d</span> <span class="t-flag">-p</span> <span class="t-str">8080:80</span> <span class="t-flag">-v</span> <span class="t-str">/home/user/site:/usr/share/nginx/html</span> nginx
+
+<span class="t-comment"># Volume nomeado: Docker gerencia o armazenamento</span>
+<span class="t-prompt">$</span> <span class="t-cmd">docker volume create</span> <span class="t-str">meus-dados</span>
+<span class="t-prompt">$</span> <span class="t-cmd">docker run</span> <span class="t-flag">-d</span> <span class="t-flag">-v</span> <span class="t-str">meus-dados:/var/lib/mysql</span> mysql
+
+<span class="t-comment"># Listar volumes</span>
+<span class="t-prompt">$</span> <span class="t-cmd">docker volume ls</span></div>
+        </div>
+
+        <table class="cmp-table" style="margin-top:1rem">
+            <thead>
+                <tr><th>Tipo</th><th>Sintaxe</th><th>Uso ideal</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>Bind Mount</strong></td><td><code>-v /caminho/host:/caminho</code></td><td>Desenvolvimento — edite e veja na hora</td></tr>
+                <tr><td><strong>Volume Nomeado</strong></td><td><code>-v nome:/caminho</code></td><td>Bancos de dados e dados persistentes</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- CARD 9: Exemplo Prático — Site com Nginx -->
+    <div class="content-card">
+        <h2 class="card-title">&#x1F680; Exemplo Prático: Site com Nginx</h2>
+
+        <p>Vamos colocar um site no ar em um container em menos de 1 minuto:</p>
+
+        <div class="terminal-block">
+            <div class="terminal-header">bash — site em container passo a passo</div>
+            <div class="terminal-body"><span class="t-comment"># 1. Criar pasta para o site</span>
+<span class="t-prompt">$</span> <span class="t-cmd">mkdir ~/meu-site</span>
+<span class="t-prompt">$</span> <span class="t-cmd">cd ~/meu-site</span>
+
+<span class="t-comment"># 2. Criar página HTML</span>
+<span class="t-prompt">$</span> echo <span class="t-str">"&lt;h1&gt;Olá Docker!&lt;/h1&gt;"</span> &gt; index.html
+
+<span class="t-comment"># 3. Executar Nginx com o site mapeado</span>
+<span class="t-prompt">$</span> <span class="t-cmd">docker run</span> <span class="t-flag">-d</span> \
+  <span class="t-flag">--name</span> <span class="t-str">meu-site</span> \
+  <span class="t-flag">-p</span> <span class="t-str">8080:80</span> \
+  <span class="t-flag">-v</span> <span class="t-str">~/meu-site:/usr/share/nginx/html</span> \
+  nginx
+
+<span class="t-comment"># 4. Acessar no navegador: http://localhost:8080</span></div>
+        </div>
+
+        <div class="highlight-box">
+            <strong>&#x2705; Seu site está rodando em um container!</strong><br>
+            Edite o <code>index.html</code> e atualize o navegador — as mudanças aparecem instantaneamente graças ao bind mount.
+        </div>
+
+        <p>Comandos úteis para esse container:</p>
+        <div class="terminal-block">
+            <div class="terminal-header">bash — inspecionar container</div>
+            <div class="terminal-body"><span class="t-comment"># Ver logs do container</span>
+<span class="t-prompt">$</span> <span class="t-cmd">docker logs</span> <span class="t-str">meu-site</span>
+
+<span class="t-comment"># Entrar dentro do container (terminal interativo)</span>
+<span class="t-prompt">$</span> <span class="t-cmd">docker exec</span> <span class="t-flag">-it</span> <span class="t-str">meu-site</span> bash</div>
+        </div>
+    </div>
+
+    <!-- CARD 10: Referência de Comandos -->
+    <div class="content-card">
+        <h2 class="card-title">&#x1F527; Referência de Comandos</h2>
+
+        <div class="cmd-grid">
+            <div class="cmd-card">
+                <div class="cmd-name"><code>docker ps</code></div>
+                <div class="cmd-desc">Lista containers em execução (<code>-a</code> para todos)</div>
+            </div>
+            <div class="cmd-card">
+                <div class="cmd-name"><code>docker images</code></div>
+                <div class="cmd-desc">Lista imagens baixadas localmente</div>
+            </div>
+            <div class="cmd-card">
+                <div class="cmd-name"><code>docker pull</code></div>
+                <div class="cmd-desc">Baixa imagem do Docker Hub</div>
+            </div>
+            <div class="cmd-card">
+                <div class="cmd-name"><code>docker run</code></div>
+                <div class="cmd-desc">Cria e executa um container a partir de uma imagem</div>
+            </div>
+            <div class="cmd-card">
+                <div class="cmd-name"><code>docker stop/start</code></div>
+                <div class="cmd-desc">Para ou inicia um container existente</div>
+            </div>
+            <div class="cmd-card">
+                <div class="cmd-name"><code>docker logs</code></div>
+                <div class="cmd-desc">Exibe a saída (stdout) do container</div>
+            </div>
+        </div>
+
+        <h3 style="margin-top:1.4rem">Limpeza</h3>
+        <div class="terminal-block">
+            <div class="terminal-header">bash — liberar espaço em disco</div>
+            <div class="terminal-body"><span class="t-comment"># Remover containers parados</span>
+<span class="t-prompt">$</span> <span class="t-cmd">docker container prune</span>
+
+<span class="t-comment"># Remover imagens não usadas</span>
+<span class="t-prompt">$</span> <span class="t-cmd">docker image prune</span>
+
+<span class="t-comment"># Limpar TUDO não utilizado (containers, imagens, volumes, redes)</span>
+<span class="t-prompt">$</span> <span class="t-cmd">docker system prune -a</span></div>
+        </div>
+    </div>
+
+    <!-- CARD 11: Exercício -->
+    <div class="content-card">
+        <h2 class="card-title">&#x1F3AF; Desafio Interativo</h2>
+        <p>Arraste cada conceito para seu par correto:</p>
+
+        <div class="ex-drag-root" data-ex="net08">
+            <div class="ex-pool">
+                <div class="drag-chip" data-id="c1">Imagem</div>
+                <div class="drag-chip" data-id="c2">docker ps</div>
+                <div class="drag-chip" data-id="c3">-p</div>
+                <div class="drag-chip" data-id="c4">Docker Hub</div>
+                <div class="drag-chip" data-id="c5">-d</div>
+            </div>
+
+            <div class="ex-zones">
+                <div class="drop-zone" data-zone="z1" data-accept="c1">
+                    <div class="zone-slot"></div>
+                    <div class="zone-label">Template para criar containers</div>
+                    <div class="zone-feedback"></div>
+                </div>
+                <div class="drop-zone" data-zone="z2" data-accept="c2">
+                    <div class="zone-slot"></div>
+                    <div class="zone-label">Comando para listar containers</div>
+                    <div class="zone-feedback"></div>
+                </div>
+                <div class="drop-zone" data-zone="z3" data-accept="c3">
+                    <div class="zone-slot"></div>
+                    <div class="zone-label">Flag para mapear portas</div>
+                    <div class="zone-feedback"></div>
+                </div>
+                <div class="drop-zone" data-zone="z4" data-accept="c4">
+                    <div class="zone-slot"></div>
+                    <div class="zone-label">Repositório público de imagens Docker</div>
+                    <div class="zone-feedback"></div>
+                </div>
+                <div class="drop-zone" data-zone="z5" data-accept="c5">
+                    <div class="zone-slot"></div>
+                    <div class="zone-label">Flag para executar em background</div>
+                    <div class="zone-feedback"></div>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top:1rem; display:flex; gap:0.75rem; flex-wrap:wrap;">
+            <button class="btn-check" onclick="checkExercise('net08')">&#x2705; Verificar</button>
+            <button class="btn-reset" onclick="resetExercise('net08')">&#x1F504; Reiniciar</button>
+        </div>
+    </div>
+
+    <!-- CARD 12: Atividade Prática -->
+    <div class="content-card">
+        <h2 class="card-title">&#x1F6E0; Atividade Prática</h2>
+
+        <div class="practical-card">
+            <div class="prat-meta">
+                <span>&#x1F4BB; Terminal Linux</span>
+                <span>&#x23F1; ~30 min</span>
+                <span>&#x1F9D1;&#x200D;&#x1F4BB; Individual</span>
+            </div>
+
+            <div class="prat-steps">
+                <div class="prat-step">
+                    <div class="step-num">1</div>
+                    <div class="step-body">
+                        <div class="step-label">Instalar e verificar o Docker</div>
+                        <div class="step-desc">Siga os passos de instalação e confirme com <code>docker --version</code>. Execute <code>docker run hello-world</code> para testar.</div>
+                    </div>
+                </div>
+                <div class="prat-step">
+                    <div class="step-num">2</div>
+                    <div class="step-body">
+                        <div class="step-label">Baixar e rodar o Nginx</div>
+                        <div class="step-desc">Execute <code>docker run -d -p 8080:80 --name web nginx</code> e acesse <code>http://localhost:8080</code> no navegador. Confirme que a página padrão do Nginx aparece.</div>
+                    </div>
+                </div>
+                <div class="prat-step">
+                    <div class="step-num">3</div>
+                    <div class="step-body">
+                        <div class="step-label">Criar site com bind mount</div>
+                        <div class="step-desc">Crie a pasta <code>~/meu-site</code> com um <code>index.html</code> personalizado. Suba um container Nginx mapeando essa pasta e acesse no navegador.</div>
+                    </div>
+                </div>
+                <div class="prat-step">
+                    <div class="step-num">4</div>
+                    <div class="step-body">
+                        <div class="step-label">Explorar comandos</div>
+                        <div class="step-desc">Liste os containers com <code>docker ps -a</code>, veja os logs com <code>docker logs</code>, pare e remova os containers criados. Limpe o ambiente com <code>docker system prune</code>.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="prat-observe">
+                <strong>&#x1F4CB; Observe:</strong> Edite o <code>index.html</code> enquanto o container está rodando e recarregue o navegador. O que acontece? Por que a mudança aparece instantaneamente?
+            </div>
+
+            <button class="btn-print" onclick="printPractical()">&#x1F5A8; Imprimir Atividade</button>
+        </div>
+    </div>
+
+    <div class="nav-footer">
+        <a href="net07-webmin.html" class="nav-link">&#x2B05; Anterior: Webmin</a>
+        <a href="index.html" class="nav-link">&#x1F3E0; Página Inicial &#x27A1;</a>
+    </div>
+
+</div>
+
+<script src="slide-mode.js"></script>
+<script src="exercise-drag.js"></script>
+<script src="exercise-print.js"></script>
+</body>
+</html>
