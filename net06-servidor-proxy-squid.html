@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Servidor Proxy Squid — SO2</title>
+    <link rel="stylesheet" href="slide-mode.css">
+    <link rel="stylesheet" href="exercise.css">
+</head>
+<body>
+
+<div class="top-bar">
+    <a href="index.html" class="back-btn">&#x2190; Início</a>
+    <span class="page-badge">Redes · Aula 06</span>
+    <button class="slide-toggle-btn" onclick="toggleSlideMode()">&#9654; Modo Slides</button>
+</div>
+
+<div class="content-wrapper">
+
+    <div class="lesson-hero">
+        <div class="hero-badge">NET · 06</div>
+        <h1 class="hero-title">Servidor Proxy Squid</h1>
+        <p class="hero-sub">Controle de Acesso à Internet — filtragem, cache e monitoramento de tráfego web</p>
+    </div>
+
+    <!-- CARD 1: O que é um Servidor Proxy -->
+    <div class="content-card">
+        <h2 class="card-title">&#x1F914; O que é um Servidor Proxy?</h2>
+
+        <div class="highlight-box">
+            <strong>Proxy = "Intermediário" entre os clientes e a internet.</strong><br>
+            O servidor Proxy decide quem pode acessar o quê na web!
+        </div>
+
+        <p>Pense no proxy como o <strong>porteiro de um prédio</strong>:</p>
+        <ul>
+            <li>&#x1F3E2; <strong>Prédio</strong> = Sua rede local</li>
+            <li>&#x1F46E; <strong>Porteiro</strong> = Servidor Proxy (Squid)</li>
+            <li>&#x1F4E6; <strong>Entregas</strong> = Requisições web dos clientes</li>
+            <li>&#x1F4CB; <strong>Lista de regras</strong> = ACLs do Squid</li>
+        </ul>
+        <p>O porteiro verifica cada requisição antes de deixar passar!</p>
+
+        <h3 style="margin-top:1.2rem">Como funciona?</h3>
+        <div class="flow-steps">
+            <div class="flow-step">
+                <div class="flow-num">1</div>
+                <div>Cliente pede: <em>"Quero acessar google.com"</em></div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-num">2</div>
+                <div>Squid verifica as regras (ACLs)</div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-num">3</div>
+                <div>Se <strong>permitido</strong> → busca na internet e retorna</div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-num">4</div>
+                <div>Se <strong>bloqueado</strong> → nega o acesso com mensagem de erro</div>
+            </div>
+            <div class="flow-step">
+                <div class="flow-num">5</div>
+                <div>Porta padrão do Squid: <strong>3128</strong></div>
+            </div>
+        </div>
+
+        <h3 style="margin-top:1.2rem">Vantagens do Proxy</h3>
+        <ul>
+            <li>&#x1F6AB; Bloquear sites indesejados (redes sociais, entretenimento)</li>
+            <li>&#x1F4BE; Cache — economia de banda ao guardar páginas visitadas</li>
+            <li>&#x1F4CA; Monitorar e registrar todos os acessos</li>
+            <li>&#x1F576; Anonimato parcial dos clientes na internet</li>
+        </ul>
+    </div>
+
+    <!-- CARD 2: O que são ACLs -->
+    <div class="content-card">
+        <h2 class="card-title">&#x1F4CB; O que são ACLs?</h2>
+
+        <div class="highlight-box">
+            <strong>ACL = Access Control List</strong> — Lista de Controle de Acesso.<br>
+            As ACLs definem <em>quem</em> pode acessar <em>o quê</em> e <em>quando</em>.
+        </div>
+
+        <h3>Tipos de ACL</h3>
+        <table class="cmp-table">
+            <thead>
+                <tr><th>Tipo</th><th>Função</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>src</code></td><td>IP de origem (cliente)</td></tr>
+                <tr><td><code>dst</code></td><td>IP de destino</td></tr>
+                <tr><td><code>dstdomain</code></td><td>Domínio de destino</td></tr>
+                <tr><td><code>port</code></td><td>Porta de destino</td></tr>
+                <tr><td><code>time</code></td><td>Horário de acesso</td></tr>
+            </tbody>
+        </table>
+
+        <h3 style="margin-top:1.2rem">Estrutura de uma ACL</h3>
+        <div class="terminal-block">
+            <div class="terminal-header">squid.conf — estrutura</div>
+            <div class="terminal-body"><span class="t-comment"># 1. Definir a ACL</span>
+<span class="t-kw">acl</span> <span class="t-var">nome</span> <span class="t-str">tipo</span> <span class="t-var">valor</span>
+
+<span class="t-comment"># 2. Aplicar a regra</span>
+<span class="t-kw">http_access</span> <span class="t-flag">deny</span>/<span class="t-flag">allow</span> <span class="t-var">nome</span></div>
+        </div>
+
+        <div class="alert-box">
+            <strong>&#x26A0; Ordem das regras importa!</strong><br>
+            As regras são lidas de <strong>cima para baixo</strong>. A primeira que "casar" com a requisição é aplicada. Coloque sempre o <code>deny</code> antes do <code>allow</code>!
+        </div>
+    </div>
+
+    <!-- CARD 3: Arquivos Importantes -->
+    <div class="content-card">
+        <h2 class="card-title">&#x1F4C1; Arquivos Importantes</h2>
+
+        <table class="cmp-table">
+            <thead>
+                <tr><th>Arquivo / Diretório</th><th>Função</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>/etc/squid/squid.conf</code></td><td>Configuração principal do Squid</td></tr>
+                <tr><td><code>/etc/squid/block.txt</code></td><td>Lista de domínios bloqueados</td></tr>
+                <tr><td><code>/var/log/squid/access.log</code></td><td>Log de todos os acessos</td></tr>
+                <tr><td><code>/var/log/squid/cache.log</code></td><td>Log de erros e eventos internos</td></tr>
+            </tbody>
+        </table>
+
+        <h3 style="margin-top:1.2rem">Sobre o squid.conf</h3>
+        <ul>
+            <li>Arquivo <strong>muito grande</strong> — mais de 8000 linhas</li>
+            <li>A maioria das linhas são <strong>comentários</strong> (<code>#</code>)</li>
+            <li>Use busca para encontrar a seção certa</li>
+            <li>Procure pela linha: <code># INSERT YOUR OWN RULE(S) HERE</code></li>
+        </ul>
+
+        <div class="tip-box">
+            <strong>&#x1F4A1; Dica — busca no VIM:</strong><br>
+            Dentro do VIM, digite <code>/INSERT YOUR</code> + <kbd>Enter</kbd> para pular direto à seção correta.
+        </div>
+    </div>
+
+    <!-- CARD 4: Passo 1 — Instalar o Squid -->
+    <div class="content-card">
+        <h2 class="card-title">
+            <span class="step-badge">1</span>
+            Instalar o Squid
+        </h2>
+
+        <div class="terminal-block">
+            <div class="terminal-header">bash — instalação</div>
+            <div class="terminal-body"><span class="t-comment"># Atualizar repositórios</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo apt-get update</span>
+
+<span class="t-comment"># Instalar o Squid</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo apt-get install squid</span></div>
+        </div>
+
+        <p>O que é instalado:</p>
+        <ul>
+            <li>Servidor Squid e seus binários</li>
+            <li>Arquivo de configuração <code>squid.conf</code></li>
+            <li>Serviço systemd para inicialização automática</li>
+            <li>Utilitários de linha de comando</li>
+        </ul>
+
+        <div class="terminal-block">
+            <div class="terminal-header">bash — verificar instalação</div>
+            <div class="terminal-body"><span class="t-prompt">$</span> <span class="t-cmd">systemctl status squid</span>
+<span class="t-out">● squid.service - Squid Web Proxy Server</span>
+<span class="t-out">   Active: <span class="t-kw">active (running)</span></span></div>
+        </div>
+    </div>
+
+    <!-- CARD 5: Passo 2 — Configurar Rotas -->
+    <div class="content-card">
+        <h2 class="card-title">
+            <span class="step-badge">2</span>
+            Configurar Rotas de Rede
+        </h2>
+
+        <p>O servidor Squid possui <strong>duas interfaces de rede</strong>:</p>
+        <table class="cmp-table">
+            <thead>
+                <tr><th>Interface</th><th>Tipo</th><th>IP</th><th>Função</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><code>enp0s3</code></td><td>NAT</td><td>10.0.2.x</td><td>Acesso à internet</td></tr>
+                <tr><td><code>enp0s8</code></td><td>Rede Interna</td><td>192.168.0.1</td><td>Conecta os clientes</td></tr>
+            </tbody>
+        </table>
+
+        <p>Precisamos definir a rota padrão pela interface que tem saída para a internet:</p>
+
+        <div class="terminal-block">
+            <div class="terminal-header">bash — configurar rota padrão</div>
+            <div class="terminal-body"><span class="t-comment"># Remover rota padrão atual</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo ip route del default</span>
+
+<span class="t-comment"># Adicionar rota para internet via NAT</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo ip route add default via 10.0.2.2</span></div>
+        </div>
+
+        <div class="highlight-box">
+            <strong>&#x1F4A1; Analogia:</strong> É como definir a "saída principal" do prédio. Direcionamos o tráfego para a porta que tem acesso à rua (internet).
+        </div>
+    </div>
+
+    <!-- CARD 6: Passo 3 — Criar Lista de Bloqueio -->
+    <div class="content-card">
+        <h2 class="card-title">
+            <span class="step-badge">3</span>
+            Criar Lista de Bloqueio
+        </h2>
+
+        <div class="terminal-block">
+            <div class="terminal-header">bash — criar arquivo block.txt</div>
+            <div class="terminal-body"><span class="t-prompt">$</span> <span class="t-cmd">sudo vim /etc/squid/block.txt</span></div>
+        </div>
+
+        <div class="terminal-block">
+            <div class="terminal-header">/etc/squid/block.txt</div>
+            <div class="terminal-body"><span class="t-comment"># Sites para bloquear (um por linha)</span>
+<span class="t-str">.facebook.com</span>
+<span class="t-str">.instagram.com</span>
+<span class="t-str">.twitter.com</span>
+<span class="t-str">.tiktok.com</span>
+<span class="t-str">.youtube.com</span></div>
+        </div>
+
+        <div class="tip-box">
+            <strong>Por que o ponto inicial (<code>.</code>)?</strong><br>
+            <code>.facebook.com</code> bloqueia <strong>todos os subdomínios</strong>:
+            <code>facebook.com</code>, <code>www.facebook.com</code>, <code>m.facebook.com</code>, <code>pt-br.facebook.com</code> etc.<br>
+            Adicione um domínio por linha — inclua os sites que desejar bloquear!
+        </div>
+    </div>
+
+    <!-- CARD 7: Passo 4 — Configurar ACLs -->
+    <div class="content-card">
+        <h2 class="card-title">
+            <span class="step-badge">4</span>
+            Configurar ACLs no squid.conf
+        </h2>
+
+        <div class="terminal-block">
+            <div class="terminal-header">bash — abrir configuração</div>
+            <div class="terminal-body"><span class="t-prompt">$</span> <span class="t-cmd">sudo vim /etc/squid/squid.conf</span>
+<span class="t-comment"># Busque pela linha: /INSERT YOUR + Enter</span></div>
+        </div>
+
+        <p>Adicione <strong>abaixo</strong> da linha <code># INSERT YOUR OWN RULE(S) HERE</code>:</p>
+
+        <div class="terminal-block">
+            <div class="terminal-header">squid.conf — ACLs de bloqueio</div>
+            <div class="terminal-body"><span class="t-comment"># Criar ACL com a lista de sites bloqueados</span>
+<span class="t-kw">acl</span> <span class="t-var">block</span> <span class="t-str">dstdomain</span> <span class="t-str">"/etc/squid/block.txt"</span>
+
+<span class="t-comment"># Bloquear acesso aos sites da lista</span>
+<span class="t-kw">http_access</span> <span class="t-flag">deny</span> <span class="t-var">block</span>
+
+<span class="t-comment"># Permitir acesso aos demais sites da rede</span>
+<span class="t-kw">http_access</span> <span class="t-flag">allow</span> <span class="t-var">localnet</span></div>
+        </div>
+
+        <div class="alert-box">
+            <strong>&#x26A0; ORDEM IMPORTA!</strong><br>
+            Sempre coloque o <code>deny</code> <strong>antes</strong> do <code>allow</code>. Se inverter, o Squid vai permitir tudo e nunca chegar na regra de bloqueio!
+        </div>
+    </div>
+
+    <!-- CARD 8: Passo 5 — Configurar DNS -->
+    <div class="content-card">
+        <h2 class="card-title">
+            <span class="step-badge">5</span>
+            Configurar DNS do Squid
+        </h2>
+
+        <div class="alert-box">
+            <strong>&#x2757; PASSO MUITO IMPORTANTE!</strong><br>
+            Sem a configuração de DNS, os sites <em>permitidos</em> não funcionarão!
+        </div>
+
+        <div class="terminal-block">
+            <div class="terminal-header">squid.conf — adicionar DNS</div>
+            <div class="terminal-body"><span class="t-comment"># Adicionar próximo ao topo ou após "http_port 3128":</span>
+<span class="t-kw">dns_nameservers</span> <span class="t-str">8.8.8.8</span> <span class="t-str">8.8.4.4</span></div>
+        </div>
+
+        <p>Por quê essa configuração é necessária?</p>
+        <ul>
+            <li>O Squid <strong>não usa</strong> o DNS do sistema operacional</li>
+            <li>Ele precisa de sua própria configuração de resolução de nomes</li>
+            <li><code>8.8.8.8</code> e <code>8.8.4.4</code> = servidores DNS públicos do Google</li>
+        </ul>
+
+        <table class="cmp-table">
+            <thead>
+                <tr><th>Situação</th><th>Sites bloqueados</th><th>Sites permitidos</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Sem <code>dns_nameservers</code></td><td>&#x2705; Funciona</td><td>&#x274C; Erro de DNS</td></tr>
+                <tr><td>Com <code>dns_nameservers</code></td><td>&#x2705; Funciona</td><td>&#x2705; Funciona</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- CARD 9: Passo 6 — Reiniciar -->
+    <div class="content-card">
+        <h2 class="card-title">
+            <span class="step-badge">6</span>
+            Reiniciar o Squid
+        </h2>
+
+        <div class="terminal-block">
+            <div class="terminal-header">bash — reiniciar e verificar</div>
+            <div class="terminal-body"><span class="t-comment"># Aplicar as novas configurações</span>
+<span class="t-prompt">$</span> <span class="t-cmd">sudo systemctl restart squid</span>
+
+<span class="t-comment"># Verificar se está rodando</span>
+<span class="t-prompt">$</span> <span class="t-cmd">systemctl status squid</span>
+<span class="t-out">● squid.service - Squid Web Proxy Server</span>
+<span class="t-out">   Active: <span class="t-kw">active (running)</span></span></div>
+        </div>
+
+        <div class="highlight-box">
+            <strong>&#x2705; Resumo do que foi configurado no servidor:</strong>
+            <ul style="margin-top:0.5rem">
+                <li>&#x2705; Rotas de rede (NAT + rede interna)</li>
+                <li>&#x2705; Lista de sites bloqueados (<code>block.txt</code>)</li>
+                <li>&#x2705; ACLs de controle de acesso</li>
+                <li>&#x2705; DNS do Squid (<code>8.8.8.8</code>)</li>
+                <li>&#x23ED; Falta: Configurar o cliente Windows</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- CARD 10: Passo 7 — Cliente Windows -->
+    <div class="content-card">
+        <h2 class="card-title">
+            <span class="step-badge">7</span>
+            Configurar Cliente Windows
+        </h2>
+
+        <p>Para que o Windows use o Squid como proxy, é preciso configurar nas definições de rede:</p>
+
+        <ol>
+            <li>Abra o <strong>Menu Iniciar</strong></li>
+            <li>Digite <strong>proxy</strong> na busca</li>
+            <li>Clique em <strong>"Configurações de proxy"</strong></li>
+            <li>Ative a opção <strong>"Usar servidor proxy"</strong></li>
+            <li>Preencha os campos:</li>
+        </ol>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Configuração de proxy — Windows</div>
+            <div class="terminal-body"><span class="t-kw">Endereço:</span> <span class="t-str">192.168.0.1</span>
+<span class="t-kw">Porta:</span>    <span class="t-str">3128</span></div>
+        </div>
+
+        <div class="tip-box">
+            O endereço <code>192.168.0.1</code> é o IP da interface interna do servidor Squid (<code>enp0s8</code>) — a interface que está na mesma rede dos clientes.
+        </div>
+    </div>
+
+    <!-- CARD 11: Testando o Proxy -->
+    <div class="content-card">
+        <h2 class="card-title">&#x1F9EA; Testando o Proxy</h2>
+
+        <p>No cliente Windows (com o proxy já configurado), abra o navegador e teste:</p>
+
+        <table class="cmp-table">
+            <thead>
+                <tr><th>Site</th><th>Resultado Esperado</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>google.com</td><td>&#x2705; Deve abrir normalmente</td></tr>
+                <tr><td>wikipedia.org</td><td>&#x2705; Deve abrir normalmente</td></tr>
+                <tr><td>github.com</td><td>&#x2705; Deve abrir normalmente</td></tr>
+                <tr><td>facebook.com</td><td>&#x1F6AB; Deve ser bloqueado</td></tr>
+                <tr><td>instagram.com</td><td>&#x1F6AB; Deve ser bloqueado</td></tr>
+                <tr><td>youtube.com</td><td>&#x1F6AB; Deve ser bloqueado</td></tr>
+            </tbody>
+        </table>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Mensagem de bloqueio do Squid</div>
+            <div class="terminal-body"><span class="t-out">ERROR - Access Denied</span>
+<span class="t-out">"The requested URL could not be retrieved"</span></div>
+        </div>
+    </div>
+
+    <!-- CARD 12: Exercício -->
+    <div class="content-card">
+        <h2 class="card-title">&#x1F3AF; Desafio Interativo</h2>
+        <p>Arraste cada conceito para seu par correto:</p>
+
+        <div class="ex-drag-root" data-ex="net06">
+            <div class="ex-pool">
+                <div class="drag-chip" data-id="c1">3128</div>
+                <div class="drag-chip" data-id="c2">squid.conf</div>
+                <div class="drag-chip" data-id="c3">dstdomain</div>
+                <div class="drag-chip" data-id="c4">http_access deny</div>
+                <div class="drag-chip" data-id="c5">8.8.8.8</div>
+            </div>
+
+            <div class="ex-zones">
+                <div class="drop-zone" data-zone="z1" data-accept="c1">
+                    <div class="zone-slot"></div>
+                    <div class="zone-label">Porta padrão do Squid</div>
+                    <div class="zone-feedback"></div>
+                </div>
+                <div class="drop-zone" data-zone="z2" data-accept="c2">
+                    <div class="zone-slot"></div>
+                    <div class="zone-label">Arquivo de configuração principal</div>
+                    <div class="zone-feedback"></div>
+                </div>
+                <div class="drop-zone" data-zone="z3" data-accept="c3">
+                    <div class="zone-slot"></div>
+                    <div class="zone-label">Tipo de ACL para bloquear domínios</div>
+                    <div class="zone-feedback"></div>
+                </div>
+                <div class="drop-zone" data-zone="z4" data-accept="c4">
+                    <div class="zone-slot"></div>
+                    <div class="zone-label">Comando para negar acesso</div>
+                    <div class="zone-feedback"></div>
+                </div>
+                <div class="drop-zone" data-zone="z5" data-accept="c5">
+                    <div class="zone-slot"></div>
+                    <div class="zone-label">DNS público do Google</div>
+                    <div class="zone-feedback"></div>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top:1rem; display:flex; gap:0.75rem; flex-wrap:wrap;">
+            <button class="btn-check" onclick="checkExercise('net06')">&#x2705; Verificar</button>
+            <button class="btn-reset" onclick="resetExercise('net06')">&#x1F504; Reiniciar</button>
+        </div>
+    </div>
+
+    <!-- CARD 13: Atividade Prática -->
+    <div class="content-card">
+        <h2 class="card-title">&#x1F6E0; Atividade Prática</h2>
+
+        <div class="practical-card">
+            <div class="prat-meta">
+                <span>&#x1F4BB; VirtualBox</span>
+                <span>&#x23F1; ~30 min</span>
+                <span>&#x1F9D1;&#x200D;&#x1F4BB; Individual</span>
+            </div>
+
+            <div class="prat-steps">
+                <div class="prat-step">
+                    <div class="step-num">1</div>
+                    <div class="step-body">
+                        <div class="step-label">Instalar o Squid</div>
+                        <div class="step-desc">No servidor Ubuntu, atualize os repositórios e instale o pacote <code>squid</code>. Verifique com <code>systemctl status squid</code>.</div>
+                    </div>
+                </div>
+                <div class="prat-step">
+                    <div class="step-num">2</div>
+                    <div class="step-body">
+                        <div class="step-label">Configurar rotas</div>
+                        <div class="step-desc">Remova a rota padrão e adicione uma nova via <code>10.0.2.2</code> (interface NAT). Confirme com <code>ip route</code>.</div>
+                    </div>
+                </div>
+                <div class="prat-step">
+                    <div class="step-num">3</div>
+                    <div class="step-body">
+                        <div class="step-label">Criar block.txt</div>
+                        <div class="step-desc">Crie <code>/etc/squid/block.txt</code> com ao menos 5 domínios para bloquear, usando o ponto inicial (<code>.facebook.com</code>).</div>
+                    </div>
+                </div>
+                <div class="prat-step">
+                    <div class="step-num">4</div>
+                    <div class="step-body">
+                        <div class="step-label">Configurar ACLs e DNS</div>
+                        <div class="step-desc">No <code>squid.conf</code>, adicione as ACLs de bloqueio abaixo de "INSERT YOUR" e insira a linha <code>dns_nameservers 8.8.8.8 8.8.4.4</code>.</div>
+                    </div>
+                </div>
+                <div class="prat-step">
+                    <div class="step-num">5</div>
+                    <div class="step-body">
+                        <div class="step-label">Reiniciar e testar</div>
+                        <div class="step-desc">Reinicie o Squid, configure o proxy no Windows (<code>192.168.0.1:3128</code>) e teste acessar sites permitidos e bloqueados.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="prat-observe">
+                <strong>&#x1F4CB; Observe:</strong> O que aparece no navegador ao tentar acessar um site bloqueado? Verifique o log com <code>sudo tail -f /var/log/squid/access.log</code>.
+            </div>
+
+            <button class="btn-print" onclick="printPractical()">&#x1F5A8; Imprimir Atividade</button>
+        </div>
+    </div>
+
+    <div class="nav-footer">
+        <a href="net05-servidor-dns-bind9.html" class="nav-link">&#x2B05; Anterior: Servidor DNS</a>
+        <a href="aula20-webmin.html" class="nav-link">Pr&oacute;xima: Webmin &#x27A1;</a>
+    </div>
+
+</div>
+
+<script src="slide-mode.js"></script>
+<script src="exercise-drag.js"></script>
+<script src="exercise-print.js"></script>
+</body>
+</html>
