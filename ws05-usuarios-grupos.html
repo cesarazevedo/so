@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 5 &mdash; Usu&aacute;rios, Grupos e OUs</title>
+    <link rel="stylesheet" href="slide-mode.css">
+    <link rel="stylesheet" href="exercise.css">
+    <link rel="stylesheet" href="lesson.css">
+</head>
+<body>
+
+<div class="top-bar">
+    <a href="index.html" class="back-btn">&#x2B05; Voltar ao Dashboard</a>
+    <span class="page-badge">4&ordm; Bimestre &mdash; Windows Server</span>
+    <button class="slide-toggle" id="slideToggleBtn">&#x1F4FA; Modo Slide</button>
+</div>
+
+<div class="content-wrapper">
+
+    <div class="lesson-hero">
+        <h1>&#x1F465; Usu&aacute;rios, Grupos e OUs</h1>
+        <p class="subtitle">Aula 5 &mdash; Organize o dom&iacute;nio com Unidades Organizacionais, crie usu&aacute;rios e grupos de seguran&ccedil;a e gerencie tudo pelo ADUC e PowerShell</p>
+    </div>
+
+    <!-- CARD 1 — Unidades Organizacionais -->
+    <div class="content-card">
+        <h2>&#x1F4C1; Unidades Organizacionais (OUs)</h2>
+        <p>Uma <strong>Unidade Organizacional (OU)</strong> &eacute; um cont&ecirc;iner dentro do dom&iacute;nio usado para organizar objetos (usu&aacute;rios, computadores, grupos). &Eacute; como uma <strong>pasta</strong> dentro do Active Directory.</p>
+
+        <div class="compare-grid">
+            <div class="compare-box blue">
+                <h4>&#x2705; Para que servem as OUs</h4>
+                <ul>
+                    <li>Organizar objetos por departamento, filial ou fun&ccedil;&atilde;o</li>
+                    <li>Delegar administra&ccedil;&atilde;o (ex: RH gerencia pr&oacute;pria OU)</li>
+                    <li>Aplicar GPOs espec&iacute;ficas por setor</li>
+                    <li>Facilitar a localiza&ccedil;&atilde;o de objetos no AD</li>
+                </ul>
+            </div>
+            <div class="compare-box green">
+                <h4>&#x1F4A1; Boas pr&aacute;ticas</h4>
+                <ul>
+                    <li>Criar OUs por <strong>fun&ccedil;&atilde;o</strong>, n&atilde;o por tipo de objeto</li>
+                    <li>Ex: OU <em>TI</em> com usu&aacute;rios <em>e</em> computadores da TI</li>
+                    <li>N&atilde;o aninhar OUs em mais de 5 n&iacute;veis</li>
+                    <li>Nomear de forma clara: <code>OU=TI,DC=escola,DC=local</code></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Estrutura de OUs &mdash; escola.local</div>
+            <div style="padding:1rem;line-height:2;font-family:monospace">
+                <span style="color:#a3e635">escola.local</span><br>
+                <span style="color:#a3e635">  &boxvr;&boxh;&boxh; OU: Administracao</span><br>
+                <span style="color:#a3e635">  &boxvr;    &boxvr;&boxh;&boxh; diretor (usu&aacute;rio)</span><br>
+                <span style="color:#a3e635">  &boxvr;    &boxur;&boxh;&boxh; secretaria (usu&aacute;rio)</span><br>
+                <span style="color:#a3e635">  &boxvr;&boxh;&boxh; OU: TI</span><br>
+                <span style="color:#a3e635">  &boxvr;    &boxvr;&boxh;&boxh; admin.ti (usu&aacute;rio)</span><br>
+                <span style="color:#a3e635">  &boxvr;    &boxur;&boxh;&boxh; SRV-ESCOLA (computador)</span><br>
+                <span style="color:#a3e635">  &boxur;&boxh;&boxh; OU: Alunos</span><br>
+                <span style="color:#a3e635">       &boxvr;&boxh;&boxh; aluno01 (usu&aacute;rio)</span><br>
+                <span style="color:#a3e635">       &boxur;&boxh;&boxh; aluno02 (usu&aacute;rio)</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARD 2 — Criar OUs pelo ADUC -->
+    <div class="content-card">
+        <h2>&#x1F5C2;&#xFE0F; Criando OUs no ADUC</h2>
+        <p>O <strong>Active Directory Users and Computers (ADUC)</strong> &eacute; a principal ferramenta gr&aacute;fica para gerenciar objetos do dom&iacute;nio. Abra com <code>dsa.msc</code> ou pelo Server Manager &rarr; Ferramentas.</p>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Criar OU pelo ADUC</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#a3e635">1.</span> Abra o ADUC (<code>dsa.msc</code>)<br>
+                <span style="color:#a3e635">2.</span> Clique com bot&atilde;o direito no dom&iacute;nio <strong>escola.local</strong><br>
+                <span style="color:#a3e635">3.</span> Selecione <strong>Novo &rarr; Unidade Organizacional</strong><br>
+                <span style="color:#a3e635">4.</span> Nome: <strong>Administracao</strong> (sem acento)<br>
+                <span style="color:#a3e635">5.</span> Marque <strong>"Proteger contra exclus&atilde;o acidental"</strong><br>
+                <span style="color:#a3e635">6.</span> Clique em <strong>OK</strong><br>
+                <span style="color:#a3e635">7.</span> Repita para as OUs <strong>TI</strong> e <strong>Alunos</strong>
+            </div>
+        </div>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Criar OUs pelo PowerShell</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#94a3b8"># Criar as tr&ecirc;s OUs de uma vez</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>New-ADOrganizationalUnit -Name "Administracao" -Path "DC=escola,DC=local" -ProtectedFromAccidentalDeletion $true</code><br><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>New-ADOrganizationalUnit -Name "TI" -Path "DC=escola,DC=local" -ProtectedFromAccidentalDeletion $true</code><br><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>New-ADOrganizationalUnit -Name "Alunos" -Path "DC=escola,DC=local" -ProtectedFromAccidentalDeletion $true</code><br><br>
+                <span style="color:#94a3b8"># Listar OUs criadas</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Get-ADOrganizationalUnit -Filter * | Select-Object Name, DistinguishedName</code>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARD 3 — Criar Usuários -->
+    <div class="content-card">
+        <h2>&#x1F464; Criando Usu&aacute;rios</h2>
+        <p>Cada pessoa que precisa fazer login no dom&iacute;nio deve ter uma <strong>conta de usu&aacute;rio</strong> no Active Directory. As contas ficam armazenadas nas OUs correspondentes.</p>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Criar usu&aacute;rio pelo ADUC</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#a3e635">1.</span> No ADUC, expanda <strong>escola.local</strong> &rarr; clique na OU <strong>Administracao</strong><br>
+                <span style="color:#a3e635">2.</span> Bot&atilde;o direito &rarr; <strong>Novo &rarr; Usu&aacute;rio</strong><br>
+                <span style="color:#a3e635">3.</span> Preencha:<br>
+                &nbsp;&nbsp;&nbsp;<strong>Nome:</strong> Jo&atilde;o<br>
+                &nbsp;&nbsp;&nbsp;<strong>Sobrenome:</strong> Silva<br>
+                &nbsp;&nbsp;&nbsp;<strong>Nome de logon:</strong> joao.silva<br>
+                <span style="color:#a3e635">4.</span> Defina uma senha: <code>Escola@2025</code><br>
+                <span style="color:#a3e635">5.</span> Desmarque <strong>"O usu&aacute;rio deve alterar a senha"</strong> (para lab)<br>
+                <span style="color:#a3e635">6.</span> Clique em <strong>Concluir</strong>
+            </div>
+        </div>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Criar usu&aacute;rios pelo PowerShell</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#94a3b8"># Criar usu&aacute;rio na OU Administracao</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>New-ADUser `<br>
+&nbsp;&nbsp;&nbsp;-Name "Joao Silva" `<br>
+&nbsp;&nbsp;&nbsp;-GivenName "Joao" `<br>
+&nbsp;&nbsp;&nbsp;-Surname "Silva" `<br>
+&nbsp;&nbsp;&nbsp;-SamAccountName "joao.silva" `<br>
+&nbsp;&nbsp;&nbsp;-UserPrincipalName "joao.silva@escola.local" `<br>
+&nbsp;&nbsp;&nbsp;-Path "OU=Administracao,DC=escola,DC=local" `<br>
+&nbsp;&nbsp;&nbsp;-AccountPassword (ConvertTo-SecureString "Escola@2025" -AsPlainText -Force) `<br>
+&nbsp;&nbsp;&nbsp;-Enabled $true</code><br><br>
+                <span style="color:#94a3b8"># Listar usu&aacute;rios do dom&iacute;nio</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Get-ADUser -Filter * | Select-Object Name, SamAccountName, Enabled</code>
+            </div>
+        </div>
+
+        <div class="tip-box">
+            <p>&#x2705; <strong>Padr&atilde;o de nome de logon:</strong> use sempre <code>nome.sobrenome</code> (ex: <code>joao.silva</code>). Facilita a identifica&ccedil;&atilde;o e evita conflitos em empresas maiores. Evite nomes gen&eacute;ricos como <code>user1</code> ou <code>teste</code>.</p>
+        </div>
+    </div>
+
+    <!-- CARD 4 — Grupos -->
+    <div class="content-card">
+        <h2>&#x1F465; Grupos de Seguran&ccedil;a</h2>
+        <p>Grupos simplificam a gest&atilde;o de permiss&otilde;es. Em vez de dar acesso a cada usu&aacute;rio individualmente, voc&ecirc; d&aacute; acesso ao <strong>grupo</strong> e adiciona os usu&aacute;rios nele.</p>
+
+        <div class="compare-grid">
+            <div class="compare-box blue">
+                <h4>&#x1F512; Grupo de Seguran&ccedil;a</h4>
+                <ul>
+                    <li>Usado para controlar <strong>permiss&otilde;es</strong> em recursos</li>
+                    <li>Pode receber permiss&otilde;es em pastas, impressoras, etc.</li>
+                    <li>Pode ser usado em GPOs</li>
+                    <li><strong>Mais comum</strong> em ambientes corporativos</li>
+                </ul>
+            </div>
+            <div class="compare-box green">
+                <h4>&#x1F4E7; Grupo de Distribui&ccedil;&atilde;o</h4>
+                <ul>
+                    <li>Usado apenas para <strong>listas de e-mail</strong></li>
+                    <li>N&atilde;o pode receber permiss&otilde;es de seguran&ccedil;a</li>
+                    <li>Usado com Exchange / Microsoft 365</li>
+                    <li>N&atilde;o relevante sem servidor de e-mail</li>
+                </ul>
+            </div>
+        </div>
+
+        <p style="margin-top:1rem;">Escopos dos grupos de seguran&ccedil;a:</p>
+
+        <table class="info-table">
+            <thead>
+                <tr>
+                    <th>Escopo</th>
+                    <th>Membros aceitos</th>
+                    <th>Uso t&iacute;pico</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Dom&iacute;nio Local</strong></td>
+                    <td>Usu&aacute;rios de qualquer dom&iacute;nio da floresta</td>
+                    <td>Permiss&otilde;es em recursos do dom&iacute;nio local</td>
+                </tr>
+                <tr>
+                    <td><strong>Global</strong></td>
+                    <td>Usu&aacute;rios do mesmo dom&iacute;nio</td>
+                    <td>Agrupar usu&aacute;rios por fun&ccedil;&atilde;o (ex: GRP-TI)</td>
+                </tr>
+                <tr>
+                    <td><strong>Universal</strong></td>
+                    <td>Usu&aacute;rios de qualquer dom&iacute;nio</td>
+                    <td>Ambientes com m&uacute;ltiplos dom&iacute;nios</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="highlight-box">
+            <p>&#x1F4A1; <strong>Regra AGDLP:</strong> a Microsoft recomenda: <strong>A</strong>dicionas contas ao grupo <strong>G</strong>lobal, que &eacute; membro do grupo <strong>D</strong>om&iacute;nio <strong>L</strong>ocal, que recebe <strong>P</strong>ermiss&otilde;es. Em lab, simplificamos usando grupos Globais diretamente.</p>
+        </div>
+    </div>
+
+    <!-- CARD 5 — Criar grupos e adicionar membros -->
+    <div class="content-card">
+        <h2>&#x2795; Criando Grupos e Adicionando Membros</h2>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Criar grupo pelo ADUC</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#a3e635">1.</span> No ADUC, clique com bot&atilde;o direito na OU <strong>TI</strong><br>
+                <span style="color:#a3e635">2.</span> Selecione <strong>Novo &rarr; Grupo</strong><br>
+                <span style="color:#a3e635">3.</span> Nome do grupo: <strong>GRP-TI</strong><br>
+                <span style="color:#a3e635">4.</span> Escopo: <strong>Global</strong> | Tipo: <strong>Seguran&ccedil;a</strong><br>
+                <span style="color:#a3e635">5.</span> Clique em <strong>OK</strong><br>
+                <span style="color:#a3e635">6.</span> Clique duas vezes no grupo &rarr; aba <strong>Membros &rarr; Adicionar</strong><br>
+                <span style="color:#a3e635">7.</span> Digite o nome do usu&aacute;rio &rarr; <strong>Verificar Nomes &rarr; OK</strong>
+            </div>
+        </div>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Criar grupos e membros pelo PowerShell</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#94a3b8"># Criar grupo de seguran&ccedil;a global na OU TI</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>New-ADGroup -Name "GRP-TI" -GroupScope Global -GroupCategory Security -Path "OU=TI,DC=escola,DC=local"</code><br><br>
+                <span style="color:#94a3b8"># Adicionar usu&aacute;rio ao grupo</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Add-ADGroupMember -Identity "GRP-TI" -Members "admin.ti"</code><br><br>
+                <span style="color:#94a3b8"># Ver membros do grupo</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Get-ADGroupMember -Identity "GRP-TI"</code><br><br>
+                <span style="color:#94a3b8"># Ver grupos de um usu&aacute;rio</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Get-ADPrincipalGroupMembership -Identity "admin.ti" | Select-Object Name</code>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARD 6 — Política de senha -->
+    <div class="content-card">
+        <h2>&#x1F512; Pol&iacute;tica de Senha do Dom&iacute;nio</h2>
+        <p>O Active Directory possui uma <strong>pol&iacute;tica de senha padr&atilde;o</strong> que se aplica a todos os usu&aacute;rios do dom&iacute;nio. Ela define complexidade, tamanho m&iacute;nimo e expira&ccedil;&atilde;o.</p>
+
+        <table class="info-table">
+            <thead>
+                <tr>
+                    <th>Configura&ccedil;&atilde;o</th>
+                    <th>Padr&atilde;o do AD</th>
+                    <th>Recomendado</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Tamanho m&iacute;nimo</td>
+                    <td>7 caracteres</td>
+                    <td>12+ caracteres</td>
+                </tr>
+                <tr>
+                    <td>Complexidade</td>
+                    <td>Habilitada</td>
+                    <td>Habilitada</td>
+                </tr>
+                <tr>
+                    <td>Validade m&aacute;xima</td>
+                    <td>42 dias</td>
+                    <td>90 dias ou sem expira&ccedil;&atilde;o + MFA</td>
+                </tr>
+                <tr>
+                    <td>Hist&oacute;rico</td>
+                    <td>24 senhas</td>
+                    <td>24 senhas</td>
+                </tr>
+                <tr>
+                    <td>Bloqueio ap&oacute;s falhas</td>
+                    <td>N&atilde;o configurado</td>
+                    <td>5 tentativas</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Ver e ajustar pol&iacute;tica de senha pelo PowerShell</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#94a3b8"># Ver pol&iacute;tica atual</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Get-ADDefaultDomainPasswordPolicy</code><br><br>
+                <span style="color:#94a3b8"># Ajustar: m&iacute;nimo 10 caracteres, bloqueio ap&oacute;s 5 tentativas</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Set-ADDefaultDomainPasswordPolicy `<br>
+&nbsp;&nbsp;&nbsp;-Identity "escola.local" `<br>
+&nbsp;&nbsp;&nbsp;-MinPasswordLength 10 `<br>
+&nbsp;&nbsp;&nbsp;-LockoutThreshold 5 `<br>
+&nbsp;&nbsp;&nbsp;-LockoutDuration "00:30:00"</code>
+            </div>
+        </div>
+
+        <div class="tip-box">
+            <p>&#x2705; <strong>Complexidade obrigat&oria:</strong> quando habilitada, a senha deve conter letras mai&uacute;sculas, min&uacute;sculas, n&uacute;meros e caracteres especiais. Ex.: <code>Escola@2025</code> &mdash; sim. &nbsp; <code>senha123</code> &mdash; n&atilde;o.</p>
+        </div>
+    </div>
+
+    <!-- CARD 7 — Gerenciamento de contas -->
+    <div class="content-card">
+        <h2>&#x1F6E0;&#xFE0F; Gerenciamento de Contas</h2>
+        <p>Opera&ccedil;&otilde;es comuns do dia a dia de um administrador de AD:</p>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Opera&ccedil;&otilde;es comuns via PowerShell</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#94a3b8"># Desabilitar conta</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Disable-ADAccount -Identity "joao.silva"</code><br><br>
+                <span style="color:#94a3b8"># Habilitar conta</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Enable-ADAccount -Identity "joao.silva"</code><br><br>
+                <span style="color:#94a3b8"># Redefinir senha</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Set-ADAccountPassword -Identity "joao.silva" -Reset -NewPassword (ConvertTo-SecureString "NovaSenha@2025" -AsPlainText -Force)</code><br><br>
+                <span style="color:#94a3b8"># For&ccedil;ar troca de senha no pr&oacute;ximo login</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Set-ADUser -Identity "joao.silva" -ChangePasswordAtLogon $true</code><br><br>
+                <span style="color:#94a3b8"># Mover usu&aacute;rio para outra OU</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Move-ADObject -Identity "CN=Joao Silva,OU=TI,DC=escola,DC=local" -TargetPath "OU=Administracao,DC=escola,DC=local"</code><br><br>
+                <span style="color:#94a3b8"># Remover usu&aacute;rio do grupo</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Remove-ADGroupMember -Identity "GRP-TI" -Members "joao.silva" -Confirm:$false</code>
+            </div>
+        </div>
+    </div>
+
+    <!-- ATIVIDADE PRÁTICA -->
+    <div class="content-card exercise-card" id="prat-05">
+        <h2>&#x1F4DD; Atividade Pr&aacute;tica</h2>
+        <p class="prat-intro">Estruturar o dom&iacute;nio <strong>escola.local</strong> com OUs, usu&aacute;rios e grupos de seguran&ccedil;a.</p>
+
+        <div class="prat-steps">
+            <div class="prat-step">
+                <div class="step-num">1</div>
+                <div class="step-body">
+                    <div class="step-label">Criar as OUs</div>
+                    <div class="step-desc">No ADUC, crie as OUs <strong>Administracao</strong>, <strong>TI</strong> e <strong>Alunos</strong> dentro do dom&iacute;nio <code>escola.local</code>. Ative a prote&ccedil;&atilde;o contra exclus&atilde;o acidental em todas.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">2</div>
+                <div class="step-body">
+                    <div class="step-label">Criar usu&aacute;rios</div>
+                    <div class="step-desc">Crie ao menos <strong>5 usu&aacute;rios</strong> distribuídos nas OUs: 2 em <em>Administracao</em>, 1 em <em>TI</em> e 2 em <em>Alunos</em>. Use o padr&atilde;o <code>nome.sobrenome</code> para o logon e a senha <code>Escola@2025</code>.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">3</div>
+                <div class="step-body">
+                    <div class="step-label">Criar grupos e adicionar membros</div>
+                    <div class="step-desc">Crie os grupos de seguran&ccedil;a <strong>GRP-Administracao</strong>, <strong>GRP-TI</strong> e <strong>GRP-Alunos</strong>. Adicione os usu&aacute;rios aos grupos correspondentes. Confirme com <code>Get-ADGroupMember</code>.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div name="step-num">4</div>
+                <div class="step-body">
+                    <div class="step-label">Testar login e documentar</div>
+                    <div class="step-desc">Se tiver uma segunda VM com Windows (cliente), ingresse no dom&iacute;nio e fa&ccedil;a login com um dos usu&aacute;rios criados. Tire screenshot do ADUC mostrando a estrutura de OUs com usu&aacute;rios e grupos criados.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="prat-observe">
+            <strong>&#x1F4CC; Para refletir:</strong> com OUs, usu&aacute;rios e grupos criados, voc&ecirc; j&aacute; tem a base de qualquer infraestrutura Microsoft. A partir daqui, todos os servi&ccedil;os que instalarmos (DHCP, DNS, File Server) usar&atilde;o esses grupos para controlar o acesso &mdash; sem precisar reconfigurar permiss&otilde;es individualmente.
+        </div>
+
+        <div class="ex-actions">
+            <button class="btn-print" onclick="printPractical('prat-05', 'Aula 5 \u2014 Usu\u00e1rios, Grupos e OUs')">&#x1F5A8;&#xFE0F; Imprimir roteiro</button>
+        </div>
+    </div>
+
+    <!-- MÚLTIPLA ESCOLHA -->
+    <div class="content-card exercise-card">
+        <h2>&#x2753; Verifique seu Conhecimento</h2>
+
+        <div class="mc-question" data-correct="b">
+            <p class="mc-q-text">Qual &eacute; a principal diferen&ccedil;a entre um <strong>Grupo de Seguran&ccedil;a</strong> e um <strong>Grupo de Distribui&ccedil;&atilde;o</strong> no AD?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>Grupos de seguran&ccedil;a s&oacute; podem ter usu&aacute;rios; grupos de distribui&ccedil;&atilde;o podem ter computadores</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>Grupos de seguran&ccedil;a controlam permiss&otilde;es a recursos; grupos de distribui&ccedil;&atilde;o s&atilde;o usados apenas para listas de e-mail</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>Grupos de seguran&ccedil;a s&atilde;o locais; grupos de distribui&ccedil;&atilde;o s&atilde;o globais</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>N&atilde;o h&aacute; diferen&ccedil;a pr&aacute;tica entre eles</span></div>
+            </div>
+            <div class="mc-explanation">✓ Grupos de segurança recebem permissões em recursos (pastas, impressoras) e são usados em GPOs. Grupos de distribuição servem apenas para listas de e-mail no Exchange/Microsoft 365.</div>
+        </div>
+        <hr class="mc-sep">
+        <div class="mc-question" data-correct="c">
+            <p class="mc-q-text">Qual comando PowerShell cria uma nova Unidade Organizacional no Active Directory?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span><code>Add-ADOrganizationalUnit</code></span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span><code>Create-ADOU</code></span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span><code>New-ADOrganizationalUnit</code></span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span><code>Set-ADOrganizationalUnit</code></span></div>
+            </div>
+            <div class="mc-explanation">✓ New-ADOrganizationalUnit cria uma nova OU. O padrão do PowerShell para criação de objetos é sempre New-AD*.</div>
+        </div>
+        <hr class="mc-sep">
+        <div class="mc-question" data-correct="a">
+            <p class="mc-q-text">Por que &eacute; recomendado organizar o AD por <strong>fun&ccedil;&atilde;o</strong> (ex: OU=TI com usu&aacute;rios <em>e</em> computadores da TI) em vez de por <strong>tipo</strong> (OU=Usu&aacute;rios, OU=Computadores)?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>Para facilitar a aplica&ccedil;&atilde;o de GPOs e delega&ccedil;&atilde;o administrativa por departamento</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>Porque o AD n&atilde;o permite misturar usu&aacute;rios e computadores na mesma OU</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>Para reduzir o n&uacute;mero de objetos no dom&iacute;nio</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>Porque a Microsoft exige essa estrutura para certificar o servidor</span></div>
+            </div>
+            <div class="mc-explanation">✓ Organizar por função permite aplicar GPOs específicas por departamento (ex: política de wallpaper para TI) e delegar administração (ex: gerente de RH gerencia apenas a OU de RH).</div>
+        </div>
+        <hr class="mc-sep">
+        <div class="mc-question" data-correct="d">
+            <p class="mc-q-text">Qual comando PowerShell lista todos os membros de um grupo no Active Directory?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span><code>Show-ADGroupMember -Identity "GRP-TI"</code></span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span><code>List-ADGroup -Name "GRP-TI"</code></span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span><code>Get-ADGroup -Members "GRP-TI"</code></span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span><code>Get-ADGroupMember -Identity "GRP-TI"</code></span></div>
+            </div>
+            <div class="mc-explanation">✓ Get-ADGroupMember lista todos os membros de um grupo AD. Para ver os grupos de um usuário específico, use Get-ADPrincipalGroupMembership.</div>
+        </div>
+    </div>
+
+    <div class="nav-footer">
+        <a href="ws04-active-directory.html" class="nav-link">&#x2B05; Anterior: Active Directory</a>
+        <a href="ws06-dhcp-server.html" class="nav-link">Pr&oacute;xima: DHCP Server &#x27A1;</a>
+    </div>
+
+</div>
+
+<script src="slide-mode.js"></script>
+<script src="exercise-drag.js"></script>
+<script src="exercise-print.js"></script>
+<script src="exercise-mc.js"></script>
+</body>
+</html>
