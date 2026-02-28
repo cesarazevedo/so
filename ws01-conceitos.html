@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 1 &mdash; Windows Server 2025: Conceitos</title>
+    <link rel="stylesheet" href="slide-mode.css">
+    <link rel="stylesheet" href="exercise.css">
+    <link rel="stylesheet" href="lesson.css">
+</head>
+<body>
+
+<div class="top-bar">
+    <a href="index.html" class="back-btn">&#x2B05; Voltar ao Dashboard</a>
+    <span class="page-badge">4&ordm; Bimestre &mdash; Windows Server</span>
+    <button class="slide-toggle" id="slideToggleBtn">&#x1F4FA; Modo Slide</button>
+</div>
+
+<div class="content-wrapper">
+
+    <div class="lesson-hero">
+        <h1>&#x1FA9F; Windows Server 2025: Conceitos</h1>
+        <p class="subtitle">Aula 1 &mdash; Conhe&ccedil;a o hist&oacute;rico, as edi&ccedil;&otilde;es, os principais pap&eacute;is e o papel central do Active Directory na infraestrutura corporativa Microsoft</p>
+    </div>
+
+    <!-- CARD 1 — O que é Windows Server -->
+    <div class="content-card">
+        <h2>&#x1F5A5;&#xFE0F; O que &eacute; Windows Server</h2>
+        <p>O <strong>Windows Server</strong> &eacute; uma fam&iacute;lia de sistemas operacionais da Microsoft projetada exclusivamente para servidores. Diferente do Windows dom&eacute;stico (Windows 11), ele &eacute; otimizado para:</p>
+
+        <div class="compare-grid">
+            <div class="compare-box blue">
+                <h4>&#x1F3E0; Windows Desktop</h4>
+                <ul>
+                    <li>Uso pessoal e profissional</li>
+                    <li>Interface gr&aacute;fica completa</li>
+                    <li>Jogos, m&uacute;dia, produtividade</li>
+                    <li>1 usu&aacute;rio ativo por vez</li>
+                    <li>Reinicializa&ccedil;&otilde;es frequentes de updates</li>
+                </ul>
+            </div>
+            <div class="compare-box green">
+                <h4>&#x1F3E2; Windows Server</h4>
+                <ul>
+                    <li>Infraestrutura e servi&ccedil;os corporativos</li>
+                    <li>Pode rodar sem interface gr&aacute;fica (Core)</li>
+                    <li>Active Directory, DNS, DHCP, File Server</li>
+                    <li>M&uacute;ltiplos usu&aacute;rios simult&acirc;neos (RDS)</li>
+                    <li>Uptime m&aacute;ximo, updates controlados</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="highlight-box">
+            <p>&#x1F4A1; <strong>Analogia:</strong> Windows Desktop &eacute; como um carro de passeio — confort&aacute;vel para o dia a dia. Windows Server &eacute; como um caminh&atilde;o de carga — projetado para trabalho pesado, rodando 24h por dia, 7 dias por semana.</p>
+        </div>
+    </div>
+
+    <!-- CARD 2 — Histórico e Versões -->
+    <div class="content-card">
+        <h2>&#x1F4C5; Hist&oacute;rico e Vers&otilde;es</h2>
+        <p>A Microsoft lan&ccedil;a uma nova vers&atilde;o do Windows Server aproximadamente a cada 2&ndash;3 anos. Cada vers&atilde;o traz melhorias de seguran&ccedil;a, desempenho e novos recursos.</p>
+
+        <table class="info-table">
+            <thead>
+                <tr>
+                    <th>Vers&atilde;o</th>
+                    <th>Ano</th>
+                    <th>Destaque</th>
+                    <th>Suporte</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Windows Server 2012 R2</strong></td>
+                    <td>2013</td>
+                    <td>Hyper-V avan&ccedil;ado, Storage Spaces</td>
+                    <td>Encerrado 2023</td>
+                </tr>
+                <tr>
+                    <td><strong>Windows Server 2016</strong></td>
+                    <td>2016</td>
+                    <td>Containers Windows, Nano Server</td>
+                    <td>At&eacute; 2027</td>
+                </tr>
+                <tr>
+                    <td><strong>Windows Server 2019</strong></td>
+                    <td>2018</td>
+                    <td>Windows Admin Center, Linux Subsystem</td>
+                    <td>At&eacute; 2029</td>
+                </tr>
+                <tr>
+                    <td><strong>Windows Server 2022</strong></td>
+                    <td>2021</td>
+                    <td>Secured-core, TLS 1.3, SMB compactado</td>
+                    <td>At&eacute; 2031</td>
+                </tr>
+                <tr style="background: rgba(102,126,234,0.08);">
+                    <td><strong>Windows Server 2025 &#x2B50;</strong></td>
+                    <td>2024</td>
+                    <td>Hotpatching, SMB over QUIC, AD modernizado</td>
+                    <td>At&eacute; 2034</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="tip-box">
+            <p>&#x2705; <strong>Dica:</strong> Em ambiente corporativo, sempre use vers&otilde;es com suporte ativo (mainstream + extended). O Windows Server 2025 &eacute; a vers&atilde;o mais atual e ter&aacute; suporte at&eacute; 2034.</p>
+        </div>
+    </div>
+
+    <!-- CARD 3 — Edições do Windows Server 2025 -->
+    <div class="content-card">
+        <h2>&#x1F4E6; Edi&ccedil;&otilde;es do Windows Server 2025</h2>
+        <p>O Windows Server 2025 est&aacute; dispon&iacute;vel em tr&ecirc;s edi&ccedil;&otilde;es principais, cada uma para um tipo de ambiente:</p>
+
+        <div class="cmd-grid">
+            <div class="cmd-card">
+                <span class="cmd">Essentials</span>
+                <strong>Pequenas empresas</strong>
+                <span>At&eacute; 25 usu&aacute;rios, sem virtualiza&ccedil;&atilde;o ilimitada</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">Standard</span>
+                <strong>Uso geral</strong>
+                <span>At&eacute; 2 VMs ou containers Hyper-V por licen&ccedil;a</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">Datacenter</span>
+                <strong>Nuvem e virtualiza&ccedil;&atilde;o</strong>
+                <span>VMs ilimitadas, todos os recursos avan&ccedil;ados</span>
+            </div>
+        </div>
+
+        <p style="margin-top:1rem;">Al&eacute;m das edi&ccedil;&otilde;es, h&aacute; duas op&ccedil;&otilde;es de instala&ccedil;&atilde;o:</p>
+
+        <div class="compare-grid">
+            <div class="compare-box blue">
+                <h4>&#x1F5A5;&#xFE0F; Desktop Experience</h4>
+                <ul>
+                    <li>Interface gr&aacute;fica completa (GUI)</li>
+                    <li>Recomendado para aprendizado</li>
+                    <li>Mais f&aacute;cil de administrar visualmente</li>
+                    <li>Maior consumo de recursos</li>
+                </ul>
+            </div>
+            <div class="compare-box green">
+                <h4>&#x1F4BB; Server Core</h4>
+                <ul>
+                    <li>Sem interface gr&aacute;fica (apenas linha de comando)</li>
+                    <li>Menor superf&iacute;cie de ataque</li>
+                    <li>Menor consumo de RAM e disco</li>
+                    <li>Prefer&iacute;vel em produ&ccedil;&atilde;o corporativa</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARD 4 — Papéis e Recursos (Roles & Features) -->
+    <div class="content-card">
+        <h2>&#x1F9E9; Pap&eacute;is e Recursos (Roles &amp; Features)</h2>
+        <p>O Windows Server usa o conceito de <strong>Roles</strong> (Pap&eacute;is) e <strong>Features</strong> (Recursos). Voc&ecirc; instala apenas o que precisa, mantendo o servidor enxuto e seguro.</p>
+
+        <div class="cmd-grid">
+            <div class="cmd-card">
+                <span class="cmd">AD DS</span>
+                <strong>Active Directory</strong>
+                <span>Ger&ecirc;ncia dom&iacute;nio, usu&aacute;rios e pol&iacute;ticas</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">DNS</span>
+                <strong>Servidor DNS</strong>
+                <span>Resolu&ccedil;&atilde;o de nomes na rede</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">DHCP</span>
+                <strong>Servidor DHCP</strong>
+                <span>Distribui IPs automaticamente</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">IIS</span>
+                <strong>Servidor Web</strong>
+                <span>Hospeda sites e aplica&ccedil;&otilde;es .NET</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">File Server</span>
+                <strong>Servidor de Arquivos</strong>
+                <span>Compartilhamentos SMB, cotas e DFS</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">Hyper-V</span>
+                <strong>Virtualiza&ccedil;&atilde;o</strong>
+                <span>Cria e gerencia m&aacute;quinas virtuais</span>
+            </div>
+        </div>
+
+        <div class="highlight-box">
+            <p>&#x1F4A1; <strong>Analogia:</strong> Pense no Windows Server como um canivete su&iacute;&ccedil;o. Voc&ecirc; n&atilde;o usa todas as ferramentas ao mesmo tempo &mdash; instala apenas o que o ambiente exige. Isso &eacute; mais seguro e eficiente.</p>
+        </div>
+    </div>
+
+    <!-- CARD 5 — Active Directory -->
+    <div class="content-card">
+        <h2>&#x1F3F0; O que &eacute; Active Directory</h2>
+        <p>O <strong>Active Directory Domain Services (AD DS)</strong> &eacute; o servi&ccedil;o de diret&oacute;rio da Microsoft. Ele centraliza o gerenciamento de <strong>identidades</strong> (quem pode entrar) e <strong>recursos</strong> (o que cada um pode acessar) em toda a rede corporativa.</p>
+
+        <p style="margin-top:1rem;">Principais componentes do AD:</p>
+
+        <div class="compare-grid">
+            <div class="compare-box blue">
+                <h4>&#x1F3F7;&#xFE0F; Dom&iacute;nio (Domain)</h4>
+                <p style="margin:0.5rem 0 0">Conjunto de objetos (usu&aacute;rios, computadores, grupos) administrados centralmente. Identificado por um nome DNS como <code>escola.local</code>.</p>
+            </div>
+            <div class="compare-box green">
+                <h4>&#x1F5C2;&#xFE0F; Unidade Organizacional (OU)</h4>
+                <p style="margin:0.5rem 0 0">Pasta dentro do dom&iacute;nio para organizar objetos por departamento (ex: TI, RH, Financeiro).</p>
+            </div>
+            <div class="compare-box blue">
+                <h4>&#x1F4BB; Domain Controller (DC)</h4>
+                <p style="margin:0.5rem 0 0">Servidor que executa o AD DS e autentica usu&aacute;rios no dom&iacute;nio. Todo dom&iacute;nio precisa de ao menos um DC.</p>
+            </div>
+            <div class="compare-box green">
+                <h4>&#x1F4DC; Group Policy (GPO)</h4>
+                <p style="margin:0.5rem 0 0">Conjunto de pol&iacute;ticas aplicadas a usu&aacute;rios e computadores: senha m&iacute;nima, papel de parede, instala&ccedil;&atilde;o de software.</p>
+            </div>
+        </div>
+
+        <div class="tip-box">
+            <p>&#x2705; <strong>Por que o AD &eacute; t&atilde;o importante?</strong> Sem ele, cada servidor teria sua pr&oacute;pria lista de usu&aacute;rios e senhas. Com o AD, um &uacute;nico login d&aacute; acesso a todos os recursos da empresa &mdash; isso se chama <strong>Single Sign-On (SSO)</strong>.</p>
+        </div>
+    </div>
+
+    <!-- CARD 6 — Windows Server 2025: Novidades -->
+    <div class="content-card">
+        <h2>&#x2B50; Novidades do Windows Server 2025</h2>
+        <p>O Windows Server 2025 foi lan&ccedil;ado em novembro de 2024 com v&aacute;rios recursos modernos focados em seguran&ccedil;a e nuvem h&iacute;brida:</p>
+
+        <div class="cmd-grid">
+            <div class="cmd-card">
+                <span class="cmd">Hotpatching</span>
+                <strong>Atualiza&ccedil;&otilde;es sem reiniciar</strong>
+                <span>Aplica patches de seguran&ccedil;a sem downtime</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">SMB over QUIC</span>
+                <strong>Compartilhamento seguro</strong>
+                <span>Acesso a arquivos pela internet sem VPN</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">Secured-core</span>
+                <strong>Seguran&ccedil;a de hardware</strong>
+                <span>Prote&ccedil;&atilde;o baseada em firmware e TPM 2.0</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">AD Modernizado</span>
+                <strong>Active Directory</strong>
+                <span>Novos n&iacute;veis funcionais e seguran&ccedil;a LDAP</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">NVMe/Storage</span>
+                <strong>Armazenamento r&aacute;pido</strong>
+                <span>Suporte nativo a NVMe e Storage Spaces Direct</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">Azure Arc</span>
+                <strong>Nuvem h&iacute;brida</strong>
+                <span>Integra&ccedil;&atilde;o nativa com Azure para ger&ecirc;ncia centralizada</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARD 7 — Windows Server x Linux Server -->
+    <div class="content-card">
+        <h2>&#x2696;&#xFE0F; Windows Server vs Linux Server</h2>
+        <p>Na pr&aacute;tica corporativa, os dois coexistem. Entender as diferen&ccedil;as ajuda a escolher a ferramenta certa para cada cen&aacute;rio.</p>
+
+        <table class="info-table">
+            <thead>
+                <tr>
+                    <th>Aspecto</th>
+                    <th>Windows Server 2025</th>
+                    <th>Linux (Ubuntu Server)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Licen&ccedil;a</strong></td>
+                    <td>Paga (Microsoft)</td>
+                    <td>Gratuita (open source)</td>
+                </tr>
+                <tr>
+                    <td><strong>Interface</strong></td>
+                    <td>GUI completa + PowerShell</td>
+                    <td>Linha de comando + GUI opcional</td>
+                </tr>
+                <tr>
+                    <td><strong>Active Directory</strong></td>
+                    <td>Nativo (AD DS)</td>
+                    <td>Via Samba 4 ou integra&ccedil;&atilde;o</td>
+                </tr>
+                <tr>
+                    <td><strong>Servidor Web</strong></td>
+                    <td>IIS</td>
+                    <td>Apache / Nginx</td>
+                </tr>
+                <tr>
+                    <td><strong>Compartilhamento</strong></td>
+                    <td>SMB nativo</td>
+                    <td>Samba / NFS</td>
+                </tr>
+                <tr>
+                    <td><strong>Virtualizador</strong></td>
+                    <td>Hyper-V</td>
+                    <td>KVM / VirtualBox</td>
+                </tr>
+                <tr>
+                    <td><strong>Uso t&iacute;pico</strong></td>
+                    <td>Ambientes corporativos Microsoft</td>
+                    <td>Servidores web, cloud, DevOps</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="highlight-box">
+            <p>&#x1F4A1; <strong>Realidade do mercado:</strong> a maioria das empresas usa os dois. O Windows Server gerencia usu&aacute;rios (AD) e arquivos internos; o Linux roda aplica&ccedil;&otilde;es web e servi&ccedil;os de nuvem. Saber ambos &eacute; um diferencial valioso.</p>
+        </div>
+    </div>
+
+    <!-- ATIVIDADE PRÁTICA -->
+    <div class="content-card exercise-card" id="prat-01">
+        <h2>&#x1F4DD; Atividade Pr&aacute;tica</h2>
+        <p class="prat-intro">Pesquisa guiada sobre o ambiente Windows Server &mdash; sem precisar instalar nada ainda.</p>
+
+        <div class="prat-steps">
+            <div class="prat-step">
+                <div class="step-num">1</div>
+                <div class="step-body">
+                    <div class="step-label">Comparar edi&ccedil;&otilde;es</div>
+                    <div class="step-desc">Acesse o site da Microsoft e compare as edi&ccedil;&otilde;es Standard e Datacenter do Windows Server 2025. Anote as 3 principais diferen&ccedil;as em termos de virtualiza&ccedil;&atilde;o.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">2</div>
+                <div class="step-body">
+                    <div class="step-label">Identificar pap&eacute;is</div>
+                    <div class="step-desc">Liste quais <em>Server Roles</em> seriam necess&aacute;rios para um servidor que precisa: autenticar usu&aacute;rios, fornecer DNS interno, distribuir IPs e hospedar um site intranet.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">3</div>
+                <div class="step-body">
+                    <div class="step-label">Estrutura de dom&iacute;nio</div>
+                    <div class="step-desc">Desenhe (no papel ou ferramenta digital) uma estrutura de Active Directory para uma escola com tr&ecirc;s departamentos: Administra&ccedil;&atilde;o, TI e Alunos. Inclua OUs, grupos e pelo menos 2 usu&aacute;rios por OU.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">4</div>
+                <div class="step-body">
+                    <div class="step-label">Requisitos de hardware</div>
+                    <div class="step-desc">Consulte os requisitos m&iacute;nimos do Windows Server 2025 (CPU, RAM, disco). Compare com o Ubuntu Server 24.04. Qual dos dois exige menos recursos? Registre sua conclus&atilde;o.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="prat-observe">
+            <strong>&#x1F4CC; Para refletir:</strong> o Windows Server cobre praticamente todos os servi&ccedil;os que estudamos no 3&ordm; bimestre no Linux &mdash; mas de forma integrada e centralizada pelo Active Directory. Na pr&oacute;xima aula vamos instalar o sistema e ver isso na pr&aacute;tica.
+        </div>
+
+        <div class="ex-actions">
+            <button class="btn-print" onclick="printPractical('prat-01', 'Aula 1 \u2014 Windows Server 2025: Conceitos')">&#x1F5A8;&#xFE0F; Imprimir roteiro</button>
+        </div>
+    </div>
+
+    <!-- MÚLTIPLA ESCOLHA -->
+    <div class="content-card exercise-card">
+        <h2>&#x2753; Verifique seu Conhecimento</h2>
+
+        <div class="mc-question" data-correct="c">
+            <p class="mc-q-text">Qual componente do Active Directory &eacute; respons&aacute;vel por autenticar usu&aacute;rios e aplicar pol&iacute;ticas em um dom&iacute;nio?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>DNS Server</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>File Server</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>Domain Controller (DC)</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>DHCP Server</span></div>
+            </div>
+            <div class="mc-explanation">✓ O Domain Controller executa o AD DS e é o servidor que autentica usuários, aplica GPOs e gerencia os objetos do domínio.</div>
+        </div>
+        <hr class="mc-sep">
+        <div class="mc-question" data-correct="b">
+            <p class="mc-q-text">Qual edi&ccedil;&atilde;o do Windows Server 2025 permite criar m&aacute;quinas virtuais ilimitadas com Hyper-V?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>Essentials</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>Datacenter</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>Standard</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>Foundation</span></div>
+            </div>
+            <div class="mc-explanation">✓ A edição Datacenter permite VMs ilimitadas com Hyper-V e inclui todos os recursos avançados do Windows Server 2025.</div>
+        </div>
+        <hr class="mc-sep">
+        <div class="mc-question" data-correct="a">
+            <p class="mc-q-text">O que &eacute; uma Unidade Organizacional (OU) no Active Directory?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>Um cont&ecirc;iner dentro do dom&iacute;nio para organizar usu&aacute;rios e computadores por departamento</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>Um servidor secund&aacute;rio que faz backup do Domain Controller</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>Uma parti&ccedil;&atilde;o de disco reservada para logs do sistema</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>Um tipo de licen&ccedil;a para pequenas empresas</span></div>
+            </div>
+            <div class="mc-explanation">✓ A OU é uma pasta lógica no AD usada para organizar objetos (usuários, computadores, grupos) por departamento, filial ou função.</div>
+        </div>
+        <hr class="mc-sep">
+        <div class="mc-question" data-correct="d">
+            <p class="mc-q-text">Qual recurso do Windows Server 2025 permite aplicar patches de seguran&ccedil;a <strong>sem reiniciar</strong> o servidor?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>SMB over QUIC</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>Secured-core</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>Azure Arc</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>Hotpatching</span></div>
+            </div>
+            <div class="mc-explanation">✓ O Hotpatching é uma das grandes novidades do WS 2025: aplica atualizações de segurança em memória, sem necessidade de reiniciar o servidor.</div>
+        </div>
+    </div>
+
+    <div class="nav-footer">
+        <a href="index.html" class="nav-link">&#x2B05; Voltar ao Dashboard</a>
+        <a href="ws02-instalacao.html" class="nav-link">Pr&oacute;xima: Instala&ccedil;&atilde;o &#x27A1;</a>
+    </div>
+
+</div>
+
+<script src="slide-mode.js"></script>
+<script src="exercise-drag.js"></script>
+<script src="exercise-print.js"></script>
+<script src="exercise-mc.js"></script>
+</body>
+</html>
