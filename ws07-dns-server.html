@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 7 &mdash; DNS Server</title>
+    <link rel="stylesheet" href="slide-mode.css">
+    <link rel="stylesheet" href="exercise.css">
+    <link rel="stylesheet" href="lesson.css">
+</head>
+<body>
+
+<div class="top-bar">
+    <a href="index.html" class="back-btn">&#x2B05; Voltar ao Dashboard</a>
+    <span class="page-badge">4&ordm; Bimestre &mdash; Windows Server</span>
+    <button class="slide-toggle" id="slideToggleBtn">&#x1F4FA; Modo Slide</button>
+</div>
+
+<div class="content-wrapper">
+
+    <div class="lesson-hero">
+        <h1>&#x1F310; DNS Server</h1>
+        <p class="subtitle">Aula 7 &mdash; Configure o servidor DNS no Windows Server 2025: zonas de pesquisa direta e reversa, registros A, CNAME e PTR, DNS integrado ao Active Directory e resolu&ccedil;&atilde;o de nomes na rede</p>
+    </div>
+
+    <!-- CARD 1 — O que é DNS -->
+    <div class="content-card">
+        <h2>&#x1F4D6; O que &eacute; DNS</h2>
+        <p>O <strong>DNS (Domain Name System)</strong> &eacute; o servi&ccedil;o que traduz <strong>nomes</strong> em <strong>endere&ccedil;os IP</strong> &mdash; e vice-versa. &Eacute; a base de toda a comunica&ccedil;&atilde;o em redes modernas.</p>
+
+        <div class="highlight-box">
+            <p>&#x1F4A1; <strong>Analogia:</strong> o DNS &eacute; a agenda telef&ocirc;nica da internet. Voc&ecirc; n&atilde;o memoriza o n&uacute;mero de telefone de cada pessoa &mdash; s&oacute; o nome. O DNS faz o mesmo: transforma <code>escola.local</code> em <code>192.168.1.10</code> automaticamente.</p>
+        </div>
+
+        <div class="compare-grid">
+            <div class="compare-box blue">
+                <h4>&#x1F310; DNS P&uacute;blico (Internet)</h4>
+                <ul>
+                    <li>Resolve nomes como <code>google.com</code></li>
+                    <li>Servidores raiz geridos pela ICANN</li>
+                    <li>Exemplos: 8.8.8.8 (Google), 1.1.1.1 (Cloudflare)</li>
+                    <li>Hier&aacute;rquico: raiz &rarr; TLD &rarr; dom&iacute;nio</li>
+                </ul>
+            </div>
+            <div class="compare-box green">
+                <h4>&#x1F3E2; DNS Interno (AD)</h4>
+                <ul>
+                    <li>Resolve nomes como <code>SRV-ESCOLA.escola.local</code></li>
+                    <li>Gerido pelo pr&oacute;prio Domain Controller</li>
+                    <li>Integrado ao Active Directory</li>
+                    <li>Registros criados automaticamente pelos clientes</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARD 2 — Como o DNS resolve nomes -->
+    <div class="content-card">
+        <h2>&#x1F504; Como o DNS Resolve Nomes</h2>
+        <p>Quando voc&ecirc; digita um endere&ccedil;o, o computador passa por v&aacute;rias etapas antes de encontrar o IP correto:</p>
+
+        <div class="prat-steps" style="margin-top:1rem;">
+            <div class="prat-step">
+                <div class="step-num">1</div>
+                <div class="step-body">
+                    <div class="step-label">Cache local</div>
+                    <div class="step-desc">O computador verifica primeiro o pr&oacute;prio cache DNS. Se j&aacute; resolveu esse nome recentemente, usa o resultado salvo. Veja com: <code>ipconfig /displaydns</code></div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">2</div>
+                <div class="step-body">
+                    <div class="step-label">Arquivo hosts</div>
+                    <div class="step-desc">Verifica o arquivo <code>C:\Windows\System32\drivers\etc\hosts</code>. Entradas manuais aqui t&ecirc;m prioridade sobre o DNS.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">3</div>
+                <div class="step-body">
+                    <div class="step-label">Servidor DNS configurado</div>
+                    <div class="step-desc">Pergunta ao servidor DNS configurado no adaptador de rede (ex: 192.168.1.10). Se o servidor tiver o registro, responde imediatamente.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">4</div>
+                <div class="step-body">
+                    <div class="step-label">Resolu&ccedil;&atilde;o recursiva</div>
+                    <div class="step-desc">Se o servidor DNS local n&atilde;o tiver o registro (ex: <code>google.com</code>), ele consulta servidores externos (forwarders) e retorna a resposta ao cliente.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Ferramentas de diagn&oacute;stico DNS</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#94a3b8"># Resolver um nome</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Resolve-DnsName escola.local</code><br><br>
+                <span style="color:#94a3b8"># Consulta DNS detalhada (equivalente ao nslookup)</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>nslookup SRV-ESCOLA.escola.local</code><br><br>
+                <span style="color:#94a3b8"># Limpar cache DNS do cliente</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>ipconfig /flushdns</code><br><br>
+                <span style="color:#94a3b8"># Ver cache DNS atual do cliente</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>ipconfig /displaydns</code>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARD 3 — Zonas DNS -->
+    <div class="content-card">
+        <h2>&#x1F5C2;&#xFE0F; Zonas DNS</h2>
+        <p>Uma <strong>zona DNS</strong> &eacute; uma base de dados com os registros de um dom&iacute;nio espec&iacute;fico. No Windows Server, existem dois tipos principais:</p>
+
+        <div class="compare-grid">
+            <div class="compare-box blue">
+                <h4>&#x27A1;&#xFE0F; Zona de Pesquisa Direta</h4>
+                <p style="margin:0.5rem 0"><strong>Nome &rarr; IP</strong></p>
+                <ul>
+                    <li>Resolve <code>SRV-ESCOLA.escola.local</code> &rarr; <code>192.168.1.10</code></li>
+                    <li>Criada automaticamente com o AD</li>
+                    <li>Cont&eacute;m registros A, CNAME, MX, SRV</li>
+                    <li>Mais usada no dia a dia</li>
+                </ul>
+            </div>
+            <div class="compare-box green">
+                <h4>&#x2B05;&#xFE0F; Zona de Pesquisa Reversa</h4>
+                <p style="margin:0.5rem 0"><strong>IP &rarr; Nome</strong></p>
+                <ul>
+                    <li>Resolve <code>192.168.1.10</code> &rarr; <code>SRV-ESCOLA.escola.local</code></li>
+                    <li>Criada manualmente</li>
+                    <li>Cont&eacute;m registros PTR</li>
+                    <li>Necess&aacute;ria para logs, e-mail e auditoria</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Criar zona de pesquisa reversa pelo DNS Manager</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#a3e635">1.</span> Abra o <strong>DNS Manager</strong>: Server Manager &rarr; Ferramentas &rarr; DNS<br>
+                <span style="color:#a3e635">2.</span> Expanda o servidor &rarr; bot&atilde;o direito em <strong>Zonas de Pesquisa Reversa</strong><br>
+                <span style="color:#a3e635">3.</span> Selecione <strong>Nova Zona...</strong><br>
+                <span style="color:#a3e635">4.</span> Tipo: <strong>Zona prim&aacute;ria</strong> integrada ao AD<br>
+                <span style="color:#a3e635">5.</span> ID da rede: <strong>192.168.1</strong><br>
+                <span style="color:#a3e635">6.</span> Atualiza&ccedil;&atilde;o din&acirc;mica: <strong>Permitir somente atualiza&ccedil;&otilde;es seguras</strong><br>
+                <span style="color:#a3e635">7.</span> Concluir
+            </div>
+        </div>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Criar zona reversa pelo PowerShell</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#94a3b8"># Criar zona de pesquisa reversa para 192.168.1.x</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Add-DnsServerPrimaryZone -NetworkId "192.168.1.0/24" -ReplicationScope "Domain"</code><br><br>
+                <span style="color:#94a3b8"># Listar todas as zonas</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Get-DnsServerZone</code>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARD 4 — Tipos de registros DNS -->
+    <div class="content-card">
+        <h2>&#x1F4CB; Tipos de Registros DNS</h2>
+        <p>Os registros DNS s&atilde;o as entradas que associam nomes a IPs e definem comportamentos da zona. Cada tipo tem uma finalidade espec&iacute;fica:</p>
+
+        <table class="info-table">
+            <thead>
+                <tr>
+                    <th>Tipo</th>
+                    <th>Nome</th>
+                    <th>Fun&ccedil;&atilde;o</th>
+                    <th>Exemplo</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>A</strong></td>
+                    <td>Address</td>
+                    <td>Nome &rarr; IPv4</td>
+                    <td><code>srv-escola &rarr; 192.168.1.10</code></td>
+                </tr>
+                <tr>
+                    <td><strong>AAAA</strong></td>
+                    <td>IPv6 Address</td>
+                    <td>Nome &rarr; IPv6</td>
+                    <td><code>srv-escola &rarr; ::1</code></td>
+                </tr>
+                <tr>
+                    <td><strong>CNAME</strong></td>
+                    <td>Canonical Name</td>
+                    <td>Alias para outro nome</td>
+                    <td><code>www &rarr; srv-escola</code></td>
+                </tr>
+                <tr>
+                    <td><strong>PTR</strong></td>
+                    <td>Pointer</td>
+                    <td>IP &rarr; Nome (reverso)</td>
+                    <td><code>10 &rarr; srv-escola.escola.local</code></td>
+                </tr>
+                <tr>
+                    <td><strong>MX</strong></td>
+                    <td>Mail Exchange</td>
+                    <td>Servidor de e-mail do dom&iacute;nio</td>
+                    <td><code>escola.local &rarr; mail.escola.local</code></td>
+                </tr>
+                <tr>
+                    <td><strong>SRV</strong></td>
+                    <td>Service</td>
+                    <td>Localiza&ccedil;&atilde;o de servi&ccedil;os</td>
+                    <td><code>_ldap._tcp &rarr; srv-escola:389</code></td>
+                </tr>
+                <tr>
+                    <td><strong>NS</strong></td>
+                    <td>Name Server</td>
+                    <td>Servidor DNS autoritat&iacute;vo da zona</td>
+                    <td><code>escola.local &rarr; srv-escola</code></td>
+                </tr>
+                <tr>
+                    <td><strong>SOA</strong></td>
+                    <td>Start of Authority</td>
+                    <td>Informa&ccedil;&otilde;es gerais da zona</td>
+                    <td>Criado automaticamente</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="tip-box">
+            <p>&#x2705; <strong>Os mais usados no dia a dia:</strong> registros <strong>A</strong> (mapear servidores), <strong>CNAME</strong> (criar alias como <code>intranet</code> apontando para o servidor) e <strong>PTR</strong> (pesquisa reversa). Os registros <strong>SRV</strong> s&atilde;o criados automaticamente pelo Active Directory.</p>
+        </div>
+    </div>
+
+    <!-- CARD 5 — Criar registros DNS -->
+    <div class="content-card">
+        <h2>&#x2795; Criando Registros DNS</h2>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Criar registros pelo DNS Manager (GUI)</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#94a3b8"># Registro A (nome &rarr; IP)</span><br>
+                <span style="color:#a3e635">1.</span> DNS Manager &rarr; Zonas de Pesquisa Direta &rarr; <strong>escola.local</strong><br>
+                <span style="color:#a3e635">2.</span> Bot&atilde;o direito na zona &rarr; <strong>Novo Host (A ou AAAA)...</strong><br>
+                <span style="color:#a3e635">3.</span> Nome: <strong>intranet</strong> | IP: <strong>192.168.1.10</strong><br>
+                <span style="color:#a3e635">4.</span> Marque <strong>"Criar registro PTR associado"</strong><br>
+                <span style="color:#a3e635">5.</span> Clique em <strong>Adicionar Host</strong><br><br>
+                <span style="color:#94a3b8"># Registro CNAME (alias)</span><br>
+                <span style="color:#a3e635">1.</span> Bot&atilde;o direito na zona &rarr; <strong>Novo Alias (CNAME)...</strong><br>
+                <span style="color:#a3e635">2.</span> Nome do alias: <strong>www</strong><br>
+                <span style="color:#a3e635">3.</span> FQDN de destino: <strong>srv-escola.escola.local</strong><br>
+                <span style="color:#a3e635">4.</span> Clique em <strong>OK</strong>
+            </div>
+        </div>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Criar registros pelo PowerShell</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#94a3b8"># Registro A</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Add-DnsServerResourceRecordA -ZoneName "escola.local" -Name "intranet" -IPv4Address "192.168.1.10"</code><br><br>
+                <span style="color:#94a3b8"># Registro CNAME</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Add-DnsServerResourceRecordCName -ZoneName "escola.local" -Name "www" -HostNameAlias "srv-escola.escola.local"</code><br><br>
+                <span style="color:#94a3b8"># Registro PTR (reverso)</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Add-DnsServerResourceRecordPtr -ZoneName "1.168.192.in-addr.arpa" -Name "10" -PtrDomainName "srv-escola.escola.local"</code><br><br>
+                <span style="color:#94a3b8"># Listar todos os registros de uma zona</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Get-DnsServerResourceRecord -ZoneName "escola.local"</code><br><br>
+                <span style="color:#94a3b8"># Remover um registro</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Remove-DnsServerResourceRecord -ZoneName "escola.local" -Name "intranet" -RRType "A" -Force</code>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARD 6 — Forwarders e DNS recursivo -->
+    <div class="content-card">
+        <h2>&#x1F9ED; Forwarders: Resolvendo Nomes Externos</h2>
+        <p>O servidor DNS interno resolve nomes de <code>escola.local</code> perfeitamente. Mas como ele resolve <code>google.com</code>? Atrav&eacute;s dos <strong>Forwarders</strong> &mdash; servidores DNS externos para onde as consultas n&atilde;o resolvidas s&atilde;o encaminhadas.</p>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Configurar Forwarders pelo DNS Manager</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#a3e635">1.</span> DNS Manager &rarr; clique com bot&atilde;o direito no <strong>servidor</strong> (n&atilde;o na zona)<br>
+                <span style="color:#a3e635">2.</span> Selecione <strong>Propriedades</strong><br>
+                <span style="color:#a3e635">3.</span> Aba <strong>Encaminhadores (Forwarders)</strong><br>
+                <span style="color:#a3e635">4.</span> Clique em <strong>Editar...</strong> e adicione:<br>
+                &nbsp;&nbsp;&nbsp;<strong>8.8.8.8</strong> (Google DNS prim&aacute;rio)<br>
+                &nbsp;&nbsp;&nbsp;<strong>8.8.4.4</strong> (Google DNS secund&aacute;rio)<br>
+                <span style="color:#a3e635">5.</span> Clique em <strong>OK</strong>
+            </div>
+        </div>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Configurar Forwarders pelo PowerShell</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#94a3b8"># Adicionar forwarders</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Set-DnsServerForwarder -IPAddress 8.8.8.8, 8.8.4.4</code><br><br>
+                <span style="color:#94a3b8"># Verificar forwarders configurados</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Get-DnsServerForwarder</code><br><br>
+                <span style="color:#94a3b8"># Testar resolu&ccedil;&atilde;o de nome externo</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Resolve-DnsName google.com -Server 192.168.1.10</code>
+            </div>
+        </div>
+
+        <div class="highlight-box">
+            <p>&#x1F4A1; <strong>Fluxo completo:</strong> cliente pergunta ao DC (<code>192.168.1.10</code>) pelo nome <code>google.com</code> &rarr; DC n&atilde;o tem na zona local &rarr; DC encaminha para <code>8.8.8.8</code> &rarr; recebe o IP &rarr; devolve ao cliente. O cliente sempre fala s&oacute; com o DC.</p>
+        </div>
+    </div>
+
+    <!-- CARD 7 — DNS integrado ao AD e DDNS -->
+    <div class="content-card">
+        <h2>&#x1F3F0; DNS Integrado ao AD e DDNS</h2>
+        <p>Quando o DNS roda no Domain Controller, os registros ficam armazenados no pr&oacute;prio banco de dados do Active Directory. Isso traz v&aacute;rias vantagens em rela&ccedil;&atilde;o ao DNS est&aacute;tico tradicional.</p>
+
+        <div class="cmd-grid">
+            <div class="cmd-card">
+                <span class="cmd">Replica&ccedil;&atilde;o AD</span>
+                <strong>Autom&aacute;tica</strong>
+                <span>Registros replicados para todos os DCs da floresta</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">DDNS Seguro</span>
+                <strong>Atualiz. din&acirc;mica</strong>
+                <span>Clientes registram seus IPs automaticamente</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">Seguran&ccedil;a ACL</span>
+                <strong>Controle de acesso</strong>
+                <span>S&oacute; computadores do dom&iacute;nio podem atualizar</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">Scavenging</span>
+                <strong>Limpeza autom&aacute;tica</strong>
+                <span>Remove registros obsoletos automaticamente</span>
+            </div>
+        </div>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Ativar Scavenging (limpeza de registros obsoletos)</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#94a3b8"># Ativar envelhecimento na zona</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Set-DnsServerZoneAging -Name "escola.local" -Aging $true -ScavengeServers 192.168.1.10</code><br><br>
+                <span style="color:#94a3b8"># Ativar scavenging no servidor DNS</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Set-DnsServerScavenging -ScavengingState $true -ScavengingInterval "7.00:00:00"</code><br><br>
+                <span style="color:#94a3b8"># For&ccedil;ar registro do cliente no DNS (no cliente)</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>ipconfig /registerdns</code>
+            </div>
+        </div>
+    </div>
+
+    <!-- ATIVIDADE PRÁTICA -->
+    <div class="content-card exercise-card" id="prat-07">
+        <h2>&#x1F4DD; Atividade Pr&aacute;tica</h2>
+        <p class="prat-intro">Configurar o servidor DNS do dom&iacute;nio <strong>escola.local</strong>: zona reversa, registros personalizados e forwarders.</p>
+
+        <div class="prat-steps">
+            <div class="prat-step">
+                <div class="step-num">1</div>
+                <div class="step-body">
+                    <div class="step-label">Criar zona de pesquisa reversa</div>
+                    <div class="step-desc">No DNS Manager, crie a zona de pesquisa reversa para a rede <strong>192.168.1.0/24</strong>. Verifique se o registro PTR do servidor (<code>10 &rarr; SRV-ESCOLA.escola.local</code>) foi criado automaticamente.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">2</div>
+                <div class="step-body">
+                    <div class="step-label">Criar registros personalizados</div>
+                    <div class="step-desc">Crie um registro <strong>A</strong> chamado <code>intranet</code> apontando para <code>192.168.1.10</code> e um <strong>CNAME</strong> chamado <code>www</code> apontando para <code>srv-escola.escola.local</code>. Teste com <code>Resolve-DnsName intranet.escola.local</code>.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">3</div>
+                <div class="step-body">
+                    <div class="step-label">Configurar Forwarders</div>
+                    <div class="step-desc">Adicione os forwarders <strong>8.8.8.8</strong> e <strong>8.8.4.4</strong> nas propriedades do servidor DNS. Teste resolvendo um nome externo: <code>Resolve-DnsName google.com -Server 192.168.1.10</code>.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">4</div>
+                <div class="step-body">
+                    <div class="step-label">Testar e documentar</div>
+                    <div class="step-desc">Execute <code>nslookup SRV-ESCOLA.escola.local</code> e <code>nslookup 192.168.1.10</code> (reverso). Tire screenshot do DNS Manager mostrando a zona direta com os registros criados e a zona reversa.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="prat-observe">
+            <strong>&#x1F4CC; Para refletir:</strong> o DNS &eacute; o servi&ccedil;o mais cr&iacute;tico de qualquer rede corporativa. Se o DNS para, tudo para &mdash; nomes n&atilde;o s&atilde;o resolvidos, o Active Directory n&atilde;o autentica, os compartilhamentos n&atilde;o s&atilde;o encontrados. Por isso, em produ&ccedil;&atilde;o sempre se configuram <strong>dois Domain Controllers</strong>, cada um com DNS, garantindo alta disponibilidade.
+        </div>
+
+        <div class="ex-actions">
+            <button class="btn-print" onclick="printPractical('prat-07', 'Aula 7 \u2014 DNS Server')">&#x1F5A8;&#xFE0F; Imprimir roteiro</button>
+        </div>
+    </div>
+
+    <!-- MÚLTIPLA ESCOLHA -->
+    <div class="content-card exercise-card">
+        <h2>&#x2753; Verifique seu Conhecimento</h2>
+
+        <div class="mc-question" data-correct="b">
+            <p class="mc-q-text">Qual tipo de registro DNS &eacute; respons&aacute;vel pela resolu&ccedil;&atilde;o <strong>reversa</strong> (IP &rarr; Nome)?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>Registro A</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>Registro PTR</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>Registro CNAME</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>Registro SRV</span></div>
+            </div>
+            <div class="mc-explanation">✓ O registro PTR (Pointer) faz a resolução reversa: dado um IP, retorna o nome do host. Fica na zona de pesquisa reversa (ex: 1.168.192.in-addr.arpa).</div>
+        </div>
+        <hr class="mc-sep">
+        <div class="mc-question" data-correct="d">
+            <p class="mc-q-text">O que &eacute; um <strong>Forwarder</strong> no contexto do servidor DNS?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>Um registro que aponta para outro registro DNS</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>Um servidor DNS secund&aacute;rio que replica a zona prim&aacute;ria</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>Um firewall que protege as consultas DNS externas</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>Um servidor DNS externo para onde consultas n&atilde;o resolvidas localmente s&atilde;o encaminhadas</span></div>
+            </div>
+            <div class="mc-explanation">✓ Forwarder é o servidor DNS externo (ex: 8.8.8.8) que recebe as consultas que o servidor local não consegue resolver. Permite que clientes internos acessem a internet sem contatar os servidores raiz diretamente.</div>
+        </div>
+        <hr class="mc-sep">
+        <div class="mc-question" data-correct="a">
+            <p class="mc-q-text">Qual &eacute; a fun&ccedil;&atilde;o do registro <strong>CNAME</strong>?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>Criar um alias (apelido) que aponta para outro nome DNS</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>Mapear um nome para um endere&ccedil;o IPv6</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>Definir o servidor de e-mail do dom&iacute;nio</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>Indicar o servidor DNS autoritat&iacute;vo da zona</span></div>
+            </div>
+            <div class="mc-explanation">✓ CNAME (Canonical Name) cria um alias: www.escola.local pode apontar para srv-escola.escola.local. Útil para dar nomes amigáveis a servidores sem duplicar registros A.</div>
+        </div>
+        <hr class="mc-sep">
+        <div class="mc-question" data-correct="c">
+            <p class="mc-q-text">Qual comando PowerShell testa a resolu&ccedil;&atilde;o de um nome DNS especificando um servidor espec&iacute;fico?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span><code>Test-DnsName google.com -Server 192.168.1.10</code></span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span><code>Get-DnsRecord google.com -DnsServer 192.168.1.10</code></span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span><code>Resolve-DnsName google.com -Server 192.168.1.10</code></span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span><code>nslookup -server=192.168.1.10 google.com</code></span></div>
+            </div>
+            <div class="mc-explanation">✓ Resolve-DnsName é o cmdlet PowerShell moderno para consultas DNS, com o parâmetro -Server para especificar qual servidor usar. O nslookup também funciona, mas sua sintaxe correta seria: nslookup google.com 192.168.1.10.</div>
+        </div>
+    </div>
+
+    <div class="nav-footer">
+        <a href="ws06-dhcp-server.html" class="nav-link">&#x2B05; Anterior: DHCP Server</a>
+        <a href="ws08-file-server.html" class="nav-link">Pr&oacute;xima: File Server &#x27A1;</a>
+    </div>
+
+</div>
+
+<script src="slide-mode.js"></script>
+<script src="exercise-drag.js"></script>
+<script src="exercise-print.js"></script>
+<script src="exercise-mc.js"></script>
+</body>
+</html>
