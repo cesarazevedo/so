@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 6 &mdash; DHCP Server</title>
+    <link rel="stylesheet" href="slide-mode.css">
+    <link rel="stylesheet" href="exercise.css">
+    <link rel="stylesheet" href="lesson.css">
+</head>
+<body>
+
+<div class="top-bar">
+    <a href="index.html" class="back-btn">&#x2B05; Voltar ao Dashboard</a>
+    <span class="page-badge">4&ordm; Bimestre &mdash; Windows Server</span>
+    <button class="slide-toggle" id="slideToggleBtn">&#x1F4FA; Modo Slide</button>
+</div>
+
+<div class="content-wrapper">
+
+    <div class="lesson-hero">
+        <h1>&#x1F4E1; DHCP Server</h1>
+        <p class="subtitle">Aula 6 &mdash; Instale e configure o servidor DHCP no Windows Server 2025: crie escopos, defina exclus&otilde;es, configure reservas e autorize o servi&ccedil;o no dom&iacute;nio Active Directory</p>
+    </div>
+
+    <!-- CARD 1 — O que é DHCP -->
+    <div class="content-card">
+        <h2>&#x1F4A1; O que &eacute; DHCP</h2>
+        <p>O <strong>DHCP (Dynamic Host Configuration Protocol)</strong> automatiza a distribui&ccedil;&atilde;o de endere&ccedil;os IP e configura&ccedil;&otilde;es de rede para os dispositivos. Sem ele, cada m&aacute;quina precisaria ser configurada manualmente.</p>
+
+        <div class="highlight-box">
+            <p>&#x1F4A1; <strong>Analogia:</strong> o DHCP &eacute; como um recepcionista de hotel. Quando um h&oacute;spede chega, ele atribui automaticamente um quarto dispon&iacute;vel, d&aacute; a chave e informa o n&uacute;mero do andar (gateway). Quando o h&oacute;spede vai embora, o quarto volta a ficar dispon&iacute;vel para outros.</p>
+        </div>
+
+        <p style="margin-top:1rem;">O DHCP distribui automaticamente:</p>
+
+        <div class="cmd-grid">
+            <div class="cmd-card">
+                <span class="cmd">IP Address</span>
+                <strong>Endere&ccedil;o IP</strong>
+                <span>Ex: 192.168.1.50</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">Subnet Mask</span>
+                <strong>M&aacute;scara</strong>
+                <span>Ex: 255.255.255.0</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">Default Gateway</span>
+                <strong>Gateway padr&atilde;o</strong>
+                <span>Ex: 192.168.1.1 (roteador)</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">DNS Servers</span>
+                <strong>Servidores DNS</strong>
+                <span>Ex: 192.168.1.10 (DC)</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">Lease Time</span>
+                <strong>Tempo de concess&atilde;o</strong>
+                <span>Por quanto tempo o IP &eacute; v&aacute;lido</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">Domain Name</span>
+                <strong>Nome do dom&iacute;nio</strong>
+                <span>Ex: escola.local</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARD 2 — Como funciona o DHCP -->
+    <div class="content-card">
+        <h2>&#x1F504; Como Funciona o DHCP (DORA)</h2>
+        <p>A negocia&ccedil;&atilde;o entre cliente e servidor DHCP ocorre em <strong>4 etapas</strong>, conhecidas pela sigla <strong>DORA</strong>:</p>
+
+        <div class="prat-steps" style="margin-top:1rem;">
+            <div class="prat-step">
+                <div class="step-num">D</div>
+                <div class="step-body">
+                    <div class="step-label">Discover &mdash; Cliente pergunta</div>
+                    <div class="step-desc">O cliente envia um broadcast na rede: <em>"Tem algum servidor DHCP aqui? Preciso de um IP!"</em> (UDP porta 67, destino 255.255.255.255)</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">O</div>
+                <div class="step-body">
+                    <div class="step-label">Offer &mdash; Servidor oferece</div>
+                    <div class="step-desc">O servidor DHCP responde com uma oferta: <em>"Posso te dar o IP 192.168.1.50 por 8 horas."</em></div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">R</div>
+                <div class="step-body">
+                    <div class="step-label">Request &mdash; Cliente solicita</div>
+                    <div class="step-desc">O cliente aceita a oferta e solicita formalmente: <em>"Quero o IP 192.168.1.50 do servidor X."</em> (ainda em broadcast, para avisar outros servidores)</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">A</div>
+                <div class="step-body">
+                    <div class="step-label">Acknowledge &mdash; Servidor confirma</div>
+                    <div class="step-desc">O servidor confirma: <em>"Pode usar! IP 192.168.1.50 concedido por 8 horas."</em> O cliente configura o IP e entra na rede.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tip-box">
+            <p>&#x2705; <strong>Renova&ccedil;&atilde;o da concess&atilde;o:</strong> quando metade do tempo de concess&atilde;o passa, o cliente tenta renovar automaticamente. Isso evita que IPs expirem enquanto o dispositivo ainda est&aacute; na rede.</p>
+        </div>
+    </div>
+
+    <!-- CARD 3 — Instalar o papel DHCP -->
+    <div class="content-card">
+        <h2>&#x1F4E6; Instalando o Papel DHCP</h2>
+        <p>Assim como o AD DS, o DHCP &eacute; instalado como um <strong>Server Role</strong> no Windows Server.</p>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Instalar DHCP pelo Server Manager</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#a3e635">1.</span> Server Manager &rarr; <strong>Gerenciar &rarr; Adicionar Fun&ccedil;&otilde;es e Recursos</strong><br>
+                <span style="color:#a3e635">2.</span> Tipo: <strong>Instala&ccedil;&atilde;o baseada em fun&ccedil;&atilde;o ou recurso</strong><br>
+                <span style="color:#a3e635">3.</span> Servidor: <strong>SRV-ESCOLA</strong><br>
+                <span style="color:#a3e635">4.</span> Fun&ccedil;&otilde;es: marque <strong>Servidor DHCP</strong><br>
+                <span style="color:#a3e635">5.</span> Clique em <strong>Adicionar Recursos</strong> na janela que aparecer<br>
+                <span style="color:#a3e635">6.</span> Avan&ccedil;ar at&eacute; o final &rarr; <strong>Instalar</strong>
+            </div>
+        </div>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Instalar DHCP pelo PowerShell</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#94a3b8"># Instalar papel DHCP com ferramentas de gerenciamento</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Install-WindowsFeature -Name DHCP -IncludeManagementTools</code><br><br>
+                <span style="color:#94a3b8"># Verificar instala&ccedil;&atilde;o</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Get-WindowsFeature DHCP</code>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARD 4 — Autorizar o DHCP no domínio -->
+    <div class="content-card">
+        <h2>&#x1F512; Autorizando o DHCP no Dom&iacute;nio</h2>
+        <p>Em redes com Active Directory, o servidor DHCP precisa ser <strong>autorizado</strong> antes de funcionar. Isso evita que servidores DHCP n&atilde;o autorizados (chamados de <em>rogue DHCP</em>) distribuam IPs errados na rede.</p>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Autorizar pelo Server Manager</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#a3e635">1.</span> Ap&oacute;s instalar, clique no <strong>sinalizador amarelo</strong> no Server Manager<br>
+                <span style="color:#a3e635">2.</span> Clique em <strong>"Concluir configura&ccedil;&atilde;o do DHCP"</strong><br>
+                <span style="color:#a3e635">3.</span> Na tela de autoriza&ccedil;&atilde;o, mantenha as credenciais de <strong>ESCOLA\Administrator</strong><br>
+                <span style="color:#a3e635">4.</span> Clique em <strong>Confirmar &rarr; Fechar</strong>
+            </div>
+        </div>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Autorizar pelo PowerShell</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#94a3b8"># Autorizar o servidor DHCP no AD</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Add-DhcpServerInDC -DnsName "SRV-ESCOLA.escola.local" -IPAddress 192.168.1.10</code><br><br>
+                <span style="color:#94a3b8"># Verificar servidores autorizados no dom&iacute;nio</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Get-DhcpServerInDC</code>
+            </div>
+        </div>
+
+        <div class="highlight-box">
+            <p>&#x26A0;&#xFE0F; <strong>DHCP n&atilde;o autorizado n&atilde;o funciona!</strong> Se o servidor DHCP estiver instalado mas n&atilde;o autorizado no AD, ele n&atilde;o vai responder a nenhuma solicita&ccedil;&atilde;o. Sempre verifique a autoriza&ccedil;&atilde;o antes de testar.</p>
+        </div>
+    </div>
+
+    <!-- CARD 5 — Criar Escopo -->
+    <div class="content-card">
+        <h2>&#x1F4CB; Criando o Escopo (Scope)</h2>
+        <p>Um <strong>escopo</strong> &eacute; o intervalo de endere&ccedil;os IP que o servidor DHCP pode distribuir para os clientes. Cada subrede precisa de um escopo.</p>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Criar escopo pelo DHCP Manager</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#a3e635">1.</span> Abra o <strong>DHCP Manager</strong>: Server Manager &rarr; Ferramentas &rarr; DHCP<br>
+                <span style="color:#a3e635">2.</span> Expanda o servidor &rarr; clique com bot&atilde;o direito em <strong>IPv4</strong><br>
+                <span style="color:#a3e635">3.</span> Selecione <strong>Novo Escopo...</strong><br>
+                <span style="color:#a3e635">4.</span> Nome: <strong>Rede Escola</strong><br>
+                <span style="color:#a3e635">5.</span> Intervalo de IPs:<br>
+                &nbsp;&nbsp;&nbsp;<strong>In&iacute;cio:</strong> 192.168.1.100<br>
+                &nbsp;&nbsp;&nbsp;<strong>Fim:</strong> 192.168.1.200<br>
+                &nbsp;&nbsp;&nbsp;<strong>M&aacute;scara:</strong> 255.255.255.0<br>
+                <span style="color:#a3e635">6.</span> Exclus&otilde;es: deixar vazio por enquanto<br>
+                <span style="color:#a3e635">7.</span> Dura&ccedil;&atilde;o da concess&atilde;o: <strong>8 horas</strong><br>
+                <span style="color:#a3e635">8.</span> Configurar op&ccedil;&otilde;es: <strong>Sim, configurar agora</strong><br>
+                &nbsp;&nbsp;&nbsp;<strong>Gateway:</strong> 192.168.1.1<br>
+                &nbsp;&nbsp;&nbsp;<strong>DNS:</strong> 192.168.1.10 (DC)<br>
+                &nbsp;&nbsp;&nbsp;<strong>Dom&iacute;nio:</strong> escola.local<br>
+                <span style="color:#a3e635">9.</span> Ativar escopo: <strong>Sim</strong> &rarr; Concluir
+            </div>
+        </div>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Criar escopo pelo PowerShell</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#94a3b8"># Criar o escopo</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Add-DhcpServerv4Scope `<br>
+&nbsp;&nbsp;&nbsp;-Name "Rede Escola" `<br>
+&nbsp;&nbsp;&nbsp;-StartRange 192.168.1.100 `<br>
+&nbsp;&nbsp;&nbsp;-EndRange 192.168.1.200 `<br>
+&nbsp;&nbsp;&nbsp;-SubnetMask 255.255.255.0 `<br>
+&nbsp;&nbsp;&nbsp;-LeaseDuration "08:00:00" `<br>
+&nbsp;&nbsp;&nbsp;-State Active</code><br><br>
+                <span style="color:#94a3b8"># Configurar op&ccedil;&otilde;es do escopo (gateway e DNS)</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Set-DhcpServerv4OptionValue `<br>
+&nbsp;&nbsp;&nbsp;-ScopeId 192.168.1.0 `<br>
+&nbsp;&nbsp;&nbsp;-Router 192.168.1.1 `<br>
+&nbsp;&nbsp;&nbsp;-DnsServer 192.168.1.10 `<br>
+&nbsp;&nbsp;&nbsp;-DnsDomain "escola.local"</code>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARD 6 — Exclusões e Reservas -->
+    <div class="content-card">
+        <h2>&#x1F6AB; Exclus&otilde;es e Reservas</h2>
+
+        <div class="compare-grid">
+            <div class="compare-box blue">
+                <h4>&#x1F6AB; Exclus&otilde;es (Exclusions)</h4>
+                <p style="margin:0.5rem 0">IPs <strong>dentro do escopo</strong> que o servidor <strong>n&atilde;o deve distribuir</strong>. Usados para servidores e dispositivos com IP est&aacute;tico que est&atilde;o no mesmo intervalo.</p>
+                <p style="margin:0">Exemplo: excluir 192.168.1.1&ndash;192.168.1.20 para roteadores e servidores.</p>
+            </div>
+            <div class="compare-box green">
+                <h4>&#x1F4CC; Reservas (Reservations)</h4>
+                <p style="margin:0.5rem 0">Garante que um dispositivo espec&iacute;fico <strong>sempre receba o mesmo IP</strong>, baseado no endere&ccedil;o MAC. O IP ainda &eacute; concedido via DHCP, mas &eacute; sempre o mesmo.</p>
+                <p style="margin:0">Exemplo: impressora sempre recebe 192.168.1.150.</p>
+            </div>
+        </div>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Criar exclus&atilde;o e reserva pelo PowerShell</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#94a3b8"># Excluir intervalo de IPs do escopo (para servidores com IP est&aacute;tico)</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Add-DhcpServerv4ExclusionRange -ScopeId 192.168.1.0 -StartRange 192.168.1.1 -EndRange 192.168.1.20</code><br><br>
+                <span style="color:#94a3b8"># Criar reserva para impressora (substitua o MAC pelo real)</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Add-DhcpServerv4Reservation `<br>
+&nbsp;&nbsp;&nbsp;-ScopeId 192.168.1.0 `<br>
+&nbsp;&nbsp;&nbsp;-IPAddress 192.168.1.150 `<br>
+&nbsp;&nbsp;&nbsp;-ClientId "AA-BB-CC-DD-EE-FF" `<br>
+&nbsp;&nbsp;&nbsp;-Description "Impressora HP - Sala TI"</code><br><br>
+                <span style="color:#94a3b8"># Listar reservas do escopo</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Get-DhcpServerv4Reservation -ScopeId 192.168.1.0</code>
+            </div>
+        </div>
+
+        <div class="tip-box">
+            <p>&#x2705; <strong>Boas pr&aacute;ticas:</strong> use o intervalo <strong>192.168.1.1&ndash;99</strong> para dispositivos est&aacute;ticos (servidores, impressoras, roteadores) e o escopo DHCP para <strong>192.168.1.100&ndash;200</strong> para PCs e notebooks dos usu&aacute;rios.</p>
+        </div>
+    </div>
+
+    <!-- CARD 7 — Monitorar e gerenciar concessões -->
+    <div class="content-card">
+        <h2>&#x1F4CA; Monitorando Concess&otilde;es</h2>
+        <p>O DHCP Manager permite visualizar todos os IPs concedidos atualmente, quando expiram e para qual dispositivo foram alocados.</p>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Ver e gerenciar concess&otilde;es pelo PowerShell</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#94a3b8"># Listar todas as concess&otilde;es ativas do escopo</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Get-DhcpServerv4Lease -ScopeId 192.168.1.0</code><br><br>
+                <span style="color:#94a3b8"># Ver estat&iacute;sticas do escopo (IPs usados x dispon&iacute;veis)</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Get-DhcpServerv4ScopeStatistics -ScopeId 192.168.1.0</code><br><br>
+                <span style="color:#94a3b8"># Ver todos os escopos configurados</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Get-DhcpServerv4Scope</code><br><br>
+                <span style="color:#94a3b8"># Remover concess&atilde;o espec&iacute;fica (liberar IP)</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Remove-DhcpServerv4Lease -ScopeId 192.168.1.0 -ClientId "AA-BB-CC-DD-EE-FF"</code><br><br>
+                <span style="color:#94a3b8"># No cliente: liberar e renovar IP manualmente</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>ipconfig /release</code><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>ipconfig /renew</code>
+            </div>
+        </div>
+
+        <div class="compare-grid">
+            <div class="compare-box blue">
+                <h4>&#x1F4C5; Tempo de concess&atilde;o ideal</h4>
+                <ul>
+                    <li><strong>8 horas</strong> &mdash; escrit&oacute;rios (PCs fixos, jornada de trabalho)</li>
+                    <li><strong>1 hora</strong> &mdash; redes p&uacute;blicas / Wi-Fi de visitantes</li>
+                    <li><strong>24 horas</strong> &mdash; redes est&aacute;veis com poucos dispositivos</li>
+                    <li><strong>Reserva</strong> &mdash; impressoras e dispositivos fixos</li>
+                </ul>
+            </div>
+            <div class="compare-box green">
+                <h4>&#x26A0;&#xFE0F; Problemas comuns</h4>
+                <ul>
+                    <li><strong>Escopo esgotado:</strong> todos os IPs em uso &mdash; ampliar o escopo</li>
+                    <li><strong>IP duplicado:</strong> dispositivo com IP est&aacute;tico dentro do escopo sem exclus&atilde;o</li>
+                    <li><strong>Cliente n&atilde;o recebe IP:</strong> verificar autoriza&ccedil;&atilde;o e firewall</li>
+                    <li><strong>DNS errado:</strong> conferir op&ccedil;&otilde;es do escopo</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- ATIVIDADE PRÁTICA -->
+    <div class="content-card exercise-card" id="prat-06">
+        <h2>&#x1F4DD; Atividade Pr&aacute;tica</h2>
+        <p class="prat-intro">Instalar e configurar o servidor DHCP no <strong>SRV-ESCOLA</strong> para a rede <strong>192.168.1.0/24</strong>.</p>
+
+        <div class="prat-steps">
+            <div class="prat-step">
+                <div class="step-num">1</div>
+                <div class="step-body">
+                    <div class="step-label">Instalar e autorizar</div>
+                    <div class="step-desc">Instale o papel <strong>Servidor DHCP</strong> via Server Manager ou PowerShell. Ap&oacute;s instalar, autorize o servidor no dom&iacute;nio pelo sinalizador amarelo. Confirme com <code>Get-DhcpServerInDC</code>.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">2</div>
+                <div class="step-body">
+                    <div class="step-label">Criar o escopo</div>
+                    <div class="step-desc">Crie o escopo <strong>"Rede Escola"</strong> com intervalo de <strong>192.168.1.100 a 192.168.1.200</strong>, m&aacute;scara <strong>/24</strong>, concess&atilde;o de <strong>8 horas</strong>. Defina gateway <strong>192.168.1.1</strong> e DNS <strong>192.168.1.10</strong>.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">3</div>
+                <div class="step-body">
+                    <div class="step-label">Configura exclus&atilde;o e reserva</div>
+                    <div class="step-desc">Adicione uma exclus&atilde;o para o intervalo <strong>192.168.1.100&ndash;110</strong> (simula equipamentos est&aacute;ticos). Crie uma reserva para o IP <strong>192.168.1.150</strong> usando um MAC fictício como <code>AA-BB-CC-11-22-33</code>.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">4</div>
+                <div class="step-body">
+                    <div class="step-label">Testar e documentar</div>
+                    <div class="step-desc">Se tiver uma VM cliente na mesma rede, configure-a para DHCP e execute <code>ipconfig /release</code> seguido de <code>ipconfig /renew</code>. Verifique no servidor com <code>Get-DhcpServerv4Lease</code>. Tire screenshot do DHCP Manager com o escopo ativo e as concess&otilde;es.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="prat-observe">
+            <strong>&#x1F4CC; Para refletir:</strong> o DHCP do Windows Server &eacute; integrado ao Active Directory &mdash; os computadores que ingressam no dom&iacute;nio registram seus nomes automaticamente no DNS ao receber um IP. Isso &eacute; o <strong>DDNS (Dynamic DNS)</strong>, e elimina a necessidade de criar registros DNS manualmente para cada PC da rede.
+        </div>
+
+        <div class="ex-actions">
+            <button class="btn-print" onclick="printPractical('prat-06', 'Aula 6 \u2014 DHCP Server')">&#x1F5A8;&#xFE0F; Imprimir roteiro</button>
+        </div>
+    </div>
+
+    <!-- MÚLTIPLA ESCOLHA -->
+    <div class="content-card exercise-card">
+        <h2>&#x2753; Verifique seu Conhecimento</h2>
+
+        <div class="mc-question" data-correct="c">
+            <p class="mc-q-text">O que significa a sigla <strong>DORA</strong> no contexto do protocolo DHCP?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>Domain, Organization, Routing, Allocation</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>Distribute, Operate, Renew, Authenticate</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>Discover, Offer, Request, Acknowledge</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>Dynamic, Override, Reserve, Assign</span></div>
+            </div>
+            <div class="mc-explanation">✓ DORA descreve as 4 etapas da negociação DHCP: o cliente Descobre servidores, o servidor faz uma Oferta, o cliente faz um Request e o servidor confirma com Acknowledge.</div>
+        </div>
+        <hr class="mc-sep">
+        <div class="mc-question" data-correct="a">
+            <p class="mc-q-text">Por que o servidor DHCP precisa ser <strong>autorizado</strong> em redes com Active Directory?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>Para evitar que servidores DHCP n&atilde;o autorizados (rogue DHCP) distribuam IPs incorretos na rede</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>Porque o protocolo DHCP s&oacute; funciona com autentica&ccedil;&atilde;o Kerberos</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>Para que o servidor DHCP possa criar registros no DNS automaticamente</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>Porque a licen&ccedil;a do Windows Server exige autoriza&ccedil;&atilde;o para o servi&ccedil;o DHCP</span></div>
+            </div>
+            <div class="mc-explanation">✓ O AD verifica se o servidor DHCP está autorizado antes de permitir que ele responda requisições. Isso impede que um servidor DHCP não autorizado (rogue) cause conflitos de IP na rede.</div>
+        </div>
+        <hr class="mc-sep">
+        <div class="mc-question" data-correct="d">
+            <p class="mc-q-text">Qual &eacute; a diferen&ccedil;a entre uma <strong>Exclus&atilde;o</strong> e uma <strong>Reserva</strong> no DHCP?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>Exclus&atilde;o remove o IP da rede permanentemente; Reserva bloqueia o IP por tempo limitado</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>Exclus&atilde;o &eacute; para servidores; Reserva &eacute; para usu&aacute;rios</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>N&atilde;o h&aacute; diferen&ccedil;a; ambas impedem que um IP seja distribu&iacute;do</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>Exclus&atilde;o impede que um intervalo de IPs seja distribu&iacute;do; Reserva garante que um dispositivo espec&iacute;fico sempre receba o mesmo IP via MAC</span></div>
+            </div>
+            <div class="mc-explanation">✓ Exclusão remove um intervalo de IPs da distribuição (para dispositivos com IP estático). Reserva vincula um IP específico a um endereço MAC, garantindo que aquele dispositivo sempre receba o mesmo IP.</div>
+        </div>
+        <hr class="mc-sep">
+        <div class="mc-question" data-correct="b">
+            <p class="mc-q-text">Qual comando no cliente Windows libera o IP atual e solicita um novo endere&ccedil;o ao servidor DHCP?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span><code>ipconfig /flushdns</code> seguido de <code>ipconfig /registerdns</code></span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span><code>ipconfig /release</code> seguido de <code>ipconfig /renew</code></span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span><code>ipconfig /reset</code> seguido de <code>ipconfig /start</code></span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span><code>netsh ip reset</code> seguido de <code>netsh ip renew</code></span></div>
+            </div>
+            <div class="mc-explanation">✓ ipconfig /release libera o IP atual (envia DHCP Release ao servidor) e ipconfig /renew inicia uma nova negociação DORA para obter um novo endereço IP.</div>
+        </div>
+    </div>
+
+    <div class="nav-footer">
+        <a href="ws05-usuarios-grupos.html" class="nav-link">&#x2B05; Anterior: Usu&aacute;rios e Grupos</a>
+        <a href="ws07-dns-server.html" class="nav-link">Pr&oacute;xima: DNS Server &#x27A1;</a>
+    </div>
+
+</div>
+
+<script src="slide-mode.js"></script>
+<script src="exercise-drag.js"></script>
+<script src="exercise-print.js"></script>
+<script src="exercise-mc.js"></script>
+</body>
+</html>
