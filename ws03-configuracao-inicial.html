@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 3 &mdash; Configura&ccedil;&atilde;o Inicial do Servidor</title>
+    <link rel="stylesheet" href="slide-mode.css">
+    <link rel="stylesheet" href="exercise.css">
+    <link rel="stylesheet" href="lesson.css">
+</head>
+<body>
+
+<div class="top-bar">
+    <a href="index.html" class="back-btn">&#x2B05; Voltar ao Dashboard</a>
+    <span class="page-badge">4&ordm; Bimestre &mdash; Windows Server</span>
+    <button class="slide-toggle" id="slideToggleBtn">&#x1F4FA; Modo Slide</button>
+</div>
+
+<div class="content-wrapper">
+
+    <div class="lesson-hero">
+        <h1>&#x1F527; Configura&ccedil;&atilde;o Inicial do Servidor</h1>
+        <p class="subtitle">Aula 3 &mdash; Prepare o Windows Server 2025 para o ambiente corporativo: renomeie o servidor, configure IP est&aacute;tico, ajuste o fuso hor&aacute;rio, ative o RDP e domine o Server Manager</p>
+    </div>
+
+    <!-- CARD 1 — Server Manager -->
+    <div class="content-card">
+        <h2>&#x1F5A5;&#xFE0F; Server Manager: o painel de controle</h2>
+        <p>O <strong>Server Manager</strong> &eacute; o centro de administra&ccedil;&atilde;o do Windows Server. Ele abre automaticamente ap&oacute;s o login e permite gerenciar pap&eacute;is, recursos e configura&ccedil;&otilde;es do servidor.</p>
+
+        <div class="cmd-grid">
+            <div class="cmd-card">
+                <span class="cmd">Dashboard</span>
+                <strong>Vis&atilde;o geral</strong>
+                <span>Status dos servi&ccedil;os, alertas e eventos recentes</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">Servidor Local</span>
+                <strong>Configura&ccedil;&otilde;es b&aacute;sicas</strong>
+                <span>Nome, IP, firewall, RDP, fuso hor&aacute;rio</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">Adicionar Fun&ccedil;&otilde;es</span>
+                <strong>Instalar Roles</strong>
+                <span>AD DS, DNS, DHCP, IIS, File Server e outros</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">Ferramentas</span>
+                <strong>Administra&ccedil;&atilde;o</strong>
+                <span>Acesso r&aacute;pido ao ADUC, DNS, DHCP, etc.</span>
+            </div>
+        </div>
+
+        <div class="highlight-box">
+            <p>&#x1F4A1; <strong>Dica:</strong> todas as configura&ccedil;&otilde;es desta aula podem ser feitas diretamente pelo painel <strong>Servidor Local</strong> do Server Manager &mdash; clicando nos links azuis ao lado de cada item.</p>
+        </div>
+    </div>
+
+    <!-- CARD 2 — Renomear o Servidor -->
+    <div class="content-card">
+        <h2>&#x1F3F7;&#xFE0F; Renomear o Servidor</h2>
+        <p>Por padr&atilde;o, o Windows Server recebe um nome aleat&oacute;rio como <code>WIN-K3F8D2J1</code>. Em ambientes corporativos, o nome do servidor deve ser <strong>descritivo e padronizado</strong>.</p>
+
+        <div class="compare-grid">
+            <div class="compare-box blue">
+                <h4>&#x274C; Nomes ruins</h4>
+                <ul>
+                    <li><code>WIN-K3F8D2J1</code> &mdash; nome padr&atilde;o aleat&oacute;rio</li>
+                    <li><code>servidor</code> &mdash; gen&eacute;rico demais</li>
+                    <li><code>meu pc</code> &mdash; espa&ccedil;os n&atilde;o s&atilde;o permitidos</li>
+                    <li><code>SERVIDOR-DA-EMPRESA-TI-2025</code> &mdash; longo demais</li>
+                </ul>
+            </div>
+            <div class="compare-box green">
+                <h4>&#x2705; Nomes bons</h4>
+                <ul>
+                    <li><code>SRV-DC01</code> &mdash; servidor, Domain Controller 01</li>
+                    <li><code>SRV-FILE01</code> &mdash; servidor de arquivos</li>
+                    <li><code>SRV-WEB01</code> &mdash; servidor web</li>
+                    <li><code>SRV-ESCOLA</code> &mdash; ambiente de lab</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Como renomear pelo Server Manager</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#a3e635">1.</span> Server Manager &rarr; <strong>Servidor Local</strong><br>
+                <span style="color:#a3e635">2.</span> Clique no nome atual ao lado de <em>Nome do Computador</em><br>
+                <span style="color:#a3e635">3.</span> Clique em <strong>Alterar...</strong><br>
+                <span style="color:#a3e635">4.</span> Digite o novo nome: <strong>SRV-ESCOLA</strong><br>
+                <span style="color:#a3e635">5.</span> Clique em <strong>OK</strong> &rarr; <strong>Reiniciar agora</strong>
+            </div>
+        </div>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Como renomear pelo PowerShell</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#a3e635">&#x25B6;</span> <code>Rename-Computer -NewName "SRV-ESCOLA" -Restart</code>
+            </div>
+        </div>
+
+        <div class="tip-box">
+            <p>&#x2705; <strong>Regras para nome de servidor:</strong> m&aacute;ximo 15 caracteres, apenas letras, n&uacute;meros e h&iacute;fen. N&atilde;o pode come&ccedil;ar nem terminar com h&iacute;fen. Nomes v&aacute;lidos para DNS.</p>
+        </div>
+    </div>
+
+    <!-- CARD 3 — Configurar IP Estático -->
+    <div class="content-card">
+        <h2>&#x1F4F6; Configurar IP Est&aacute;tico</h2>
+        <p>Todo servidor precisa de IP fixo. No Windows Server, configure pelo painel de <strong>Conex&otilde;es de Rede</strong> ou pelo PowerShell.</p>
+
+        <p style="margin-top:1rem;">Exemplo de endere&ccedil;amento para o laborat&oacute;rio:</p>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Endere&ccedil;amento IP &mdash; Lab</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#94a3b8"># Adapte conforme sua rede</span><br>
+                <span style="color:#a3e635">Endere&ccedil;o IP:</span>   192.168.1.10<br>
+                <span style="color:#a3e635">M&aacute;scara:</span>       255.255.255.0 (/24)<br>
+                <span style="color:#a3e635">Gateway:</span>        192.168.1.1<br>
+                <span style="color:#a3e635">DNS Prim&aacute;rio:</span>  127.0.0.1 <span style="color:#94a3b8"># o pr&oacute;prio servidor (ap&oacute;s instalar DNS)</span><br>
+                <span style="color:#a3e635">DNS Secund&aacute;rio:</span> 8.8.8.8 <span style="color:#94a3b8"># Google como fallback</span>
+            </div>
+        </div>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Configurar IP pela interface gr&aacute;fica</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#a3e635">1.</span> Server Manager &rarr; <strong>Servidor Local</strong> &rarr; clique no link da conex&atilde;o de rede<br>
+                <span style="color:#a3e635">2.</span> Clique com o bot&atilde;o direito no adaptador &rarr; <strong>Propriedades</strong><br>
+                <span style="color:#a3e635">3.</span> Selecione <strong>Protocolo IP Vers&atilde;o 4 (TCP/IPv4)</strong> &rarr; <strong>Propriedades</strong><br>
+                <span style="color:#a3e635">4.</span> Selecione <strong>Usar o seguinte endere&ccedil;o IP</strong> e preencha os campos<br>
+                <span style="color:#a3e635">5.</span> Clique em <strong>OK</strong> para aplicar
+            </div>
+        </div>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Configurar IP pelo PowerShell</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#94a3b8"># Ver adaptadores dispon&iacute;veis</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Get-NetAdapter</code><br><br>
+                <span style="color:#94a3b8"># Definir IP est&aacute;tico (substitua "Ethernet" pelo nome do adaptador)</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>New-NetIPAddress -InterfaceAlias "Ethernet" -IPAddress 192.168.1.10 -PrefixLength 24 -DefaultGateway 192.168.1.1</code><br><br>
+                <span style="color:#94a3b8"># Definir servidores DNS</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Set-DnsClientServerAddress -InterfaceAlias "Ethernet" -ServerAddresses 127.0.0.1, 8.8.8.8</code><br><br>
+                <span style="color:#94a3b8"># Verificar configura&ccedil;&atilde;o</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>ipconfig /all</code>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARD 4 — Fuso Horário e Idioma -->
+    <div class="content-card">
+        <h2>&#x1F55B; Fuso Hor&aacute;rio e Configura&ccedil;&otilde;es Regionais</h2>
+        <p>O fuso hor&aacute;rio correto &eacute; cr&iacute;tico para o Active Directory. Todos os servidores e clientes do dom&iacute;nio devem estar sincronizados &mdash; diferen&ccedil;as de mais de 5 minutos causam falhas de autentica&ccedil;&atilde;o no Kerberos.</p>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Configurar fuso hor&aacute;rio pela GUI</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#a3e635">1.</span> Server Manager &rarr; <strong>Servidor Local</strong> &rarr; clique no fuso hor&aacute;rio atual<br>
+                <span style="color:#a3e635">2.</span> Clique em <strong>Alterar fuso hor&aacute;rio...</strong><br>
+                <span style="color:#a3e635">3.</span> Selecione <strong>(UTC-03:00) Bras&iacute;lia</strong><br>
+                <span style="color:#a3e635">4.</span> Clique em <strong>OK</strong>
+            </div>
+        </div>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Configurar fuso hor&aacute;rio pelo PowerShell</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#94a3b8"># Definir fuso hor&aacute;rio de Bras&iacute;lia</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Set-TimeZone -Id "E. South America Standard Time"</code><br><br>
+                <span style="color:#94a3b8"># Verificar</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Get-TimeZone</code>
+            </div>
+        </div>
+
+        <div class="tip-box">
+            <p>&#x2705; <strong>Sincroniza&ccedil;&atilde;o NTP:</strong> ap&oacute;s instalar o Active Directory, o Domain Controller passa a ser o servidor NTP da rede. Todos os clientes sincronizam hor&aacute;rio automaticamente com ele.</p>
+        </div>
+    </div>
+
+    <!-- CARD 5 — Ativar Remote Desktop -->
+    <div class="content-card">
+        <h2>&#x1F5A5;&#xFE0F; Ativar Remote Desktop (RDP)</h2>
+        <p>O <strong>Remote Desktop Protocol (RDP)</strong> permite administrar o servidor remotamente sem precisar de acesso f&iacute;sico &mdash; essencial em ambientes corporativos e de nuvem.</p>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Ativar RDP pelo Server Manager</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#a3e635">1.</span> Server Manager &rarr; <strong>Servidor Local</strong><br>
+                <span style="color:#a3e635">2.</span> Clique em <strong>Desabilitado</strong> ao lado de <em>&Aacute;rea de Trabalho Remota</em><br>
+                <span style="color:#a3e635">3.</span> Selecione <strong>Permitir conex&otilde;es remotas a este computador</strong><br>
+                <span style="color:#a3e635">4.</span> Mantenha marcado <strong>Permitir conex&otilde;es somente com Autentica&ccedil;&atilde;o de N&iacute;vel de Rede (NLA)</strong><br>
+                <span style="color:#a3e635">5.</span> Clique em <strong>OK</strong>
+            </div>
+        </div>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Ativar RDP pelo PowerShell</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#94a3b8"># Habilitar RDP</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name "fDenyTSConnections" -Value 0</code><br><br>
+                <span style="color:#94a3b8"># Liberar no Firewall</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Enable-NetFirewallRule -DisplayGroup "Remote Desktop"</code><br><br>
+                <span style="color:#94a3b8"># Conectar de outro computador: iniciar &rarr; mstsc</span><br>
+                <span style="color:#94a3b8"># Digite o IP do servidor e fa&ccedil;a login com Administrator</span>
+            </div>
+        </div>
+
+        <div class="highlight-box">
+            <p>&#x26A0;&#xFE0F; <strong>Seguran&ccedil;a:</strong> sempre mantenha o NLA ativado. Ele exige autentica&ccedil;&atilde;o antes de criar a sess&atilde;o remota, protegendo contra ataques de for&ccedil;a bruta. Nunca deixe o RDP exposto diretamente &agrave; internet sem VPN ou firewall.</p>
+        </div>
+    </div>
+
+    <!-- CARD 6 — Windows Update e Firewall -->
+    <div class="content-card">
+        <h2>&#x1F6E1;&#xFE0F; Windows Update e Firewall</h2>
+        <p>Antes de instalar qualquer role, &eacute; boa pr&aacute;tica manter o sistema atualizado e revisar as configura&ccedil;&otilde;es do firewall.</p>
+
+        <div class="compare-grid">
+            <div class="compare-box blue">
+                <h4>&#x1F504; Windows Update</h4>
+                <ul>
+                    <li>Abra: <strong>Configura&ccedil;&otilde;es &rarr; Windows Update</strong></li>
+                    <li>Clique em <strong>Verificar atualiza&ccedil;&otilde;es</strong></li>
+                    <li>Instale todas as atualiza&ccedil;&otilde;es cr&iacute;ticas</li>
+                    <li>Em produ&ccedil;&atilde;o: agendar manuten&ccedil;&atilde;o fora do hor&aacute;rio comercial</li>
+                    <li>WS 2025 suporta <strong>Hotpatching</strong> (sem reiniciar)</li>
+                </ul>
+            </div>
+            <div class="compare-box green">
+                <h4>&#x1F525; Windows Firewall</h4>
+                <ul>
+                    <li>Abra: Server Manager &rarr; <strong>Ferramentas &rarr; Firewall do Windows</strong></li>
+                    <li>Perfis: Dom&iacute;nio, Privado, P&uacute;blico</li>
+                    <li>Regras de entrada e sa&iacute;da por porta/programa</li>
+                    <li>N&atilde;o desative o Firewall &mdash; crie regras espec&iacute;ficas</li>
+                    <li>Roles instaladas criam regras automaticamente</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Verificar e atualizar pelo PowerShell</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#94a3b8"># Verificar atualiza&ccedil;&otilde;es dispon&iacute;veis (requer m&oacute;dulo PSWindowsUpdate)</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Install-Module PSWindowsUpdate -Force</code><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Get-WindowsUpdate</code><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Install-WindowsUpdate -AcceptAll -AutoReboot</code>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARD 7 — Checklist de configuração inicial -->
+    <div class="content-card">
+        <h2>&#x2705; Checklist de Configura&ccedil;&atilde;o Inicial</h2>
+        <p>Use esta lista para garantir que o servidor est&aacute; pronto antes de instalar o Active Directory:</p>
+
+        <table class="info-table">
+            <thead>
+                <tr>
+                    <th>Tarefa</th>
+                    <th>Onde configurar</th>
+                    <th>Valor esperado</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>&#x1F3F7;&#xFE0F; Nome do servidor</td>
+                    <td>Server Manager &rarr; Servidor Local</td>
+                    <td><code>SRV-ESCOLA</code> (ou similar)</td>
+                </tr>
+                <tr>
+                    <td>&#x1F4F6; IP est&aacute;tico</td>
+                    <td>Propriedades do adaptador / PowerShell</td>
+                    <td>Ex: <code>192.168.1.10/24</code></td>
+                </tr>
+                <tr>
+                    <td>&#x1F55B; Fuso hor&aacute;rio</td>
+                    <td>Server Manager &rarr; Servidor Local</td>
+                    <td>UTC-03:00 Bras&iacute;lia</td>
+                </tr>
+                <tr>
+                    <td>&#x1F5A5;&#xFE0F; Remote Desktop</td>
+                    <td>Server Manager &rarr; Servidor Local</td>
+                    <td>Habilitado (com NLA)</td>
+                </tr>
+                <tr>
+                    <td>&#x1F504; Windows Update</td>
+                    <td>Configura&ccedil;&otilde;es &rarr; Windows Update</td>
+                    <td>Atualiza&ccedil;&otilde;es instaladas</td>
+                </tr>
+                <tr>
+                    <td>&#x1F4F8; Snapshot</td>
+                    <td>VirtualBox &rarr; M&aacute;quina &rarr; Instant&acirc;neo</td>
+                    <td>"Servidor configurado &mdash; pr&eacute;-AD"</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="highlight-box">
+            <p>&#x1F4A1; <strong>Por que o snapshot antes do AD?</strong> A promo&ccedil;&atilde;o a Domain Controller &eacute; uma opera&ccedil;&atilde;o que altera profundamente o sistema. Se algo der errado, voc&ecirc; restaura o snapshot e come&ccedil;a o processo novamente sem reinstalar tudo.</p>
+        </div>
+    </div>
+
+    <!-- ATIVIDADE PRÁTICA -->
+    <div class="content-card exercise-card" id="prat-03">
+        <h2>&#x1F4DD; Atividade Pr&aacute;tica</h2>
+        <p class="prat-intro">Executar a configura&ccedil;&atilde;o inicial completa do Windows Server 2025 instalado na aula anterior.</p>
+
+        <div class="prat-steps">
+            <div class="prat-step">
+                <div class="step-num">1</div>
+                <div class="step-body">
+                    <div class="step-label">Renomear o servidor</div>
+                    <div class="step-desc">Renomeie o servidor para <strong>SRV-ESCOLA</strong> via Server Manager. Reinicie quando solicitado e confirme o novo nome ap&oacute;s o login.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">2</div>
+                <div class="step-body">
+                    <div class="step-label">Configurar IP est&aacute;tico</div>
+                    <div class="step-desc">Defina IP <strong>192.168.1.10</strong>, m&aacute;scara <strong>255.255.255.0</strong>, gateway <strong>192.168.1.1</strong>, DNS <strong>127.0.0.1</strong> e <strong>8.8.8.8</strong>. Confirme com <code>ipconfig /all</code> no PowerShell.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">3</div>
+                <div class="step-body">
+                    <div class="step-label">Ajustar fuso hor&aacute;rio e RDP</div>
+                    <div class="step-desc">Configure o fuso hor&aacute;rio para <strong>Bras&iacute;lia (UTC-03:00)</strong> e habilite o <strong>Remote Desktop com NLA</strong>. Teste a conex&atilde;o RDP do computador host para a VM.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">4</div>
+                <div class="step-body">
+                    <div class="step-label">Atualizar e criar snapshot</div>
+                    <div class="step-desc">Execute o Windows Update e instale todas as atualiza&ccedil;&otilde;es dispon&iacute;veis. Ap&oacute;s reiniciar, crie um snapshot chamado <strong>"Servidor configurado &mdash; pr&eacute;-AD"</strong> e tire screenshot do Server Manager com todas as configura&ccedil;&otilde;es verdes.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="prat-observe">
+            <strong>&#x1F4CC; Para refletir:</strong> essas 4 etapas s&atilde;o o checklist padr&atilde;o de qualquer administrador ao receber um servidor novo &mdash; f&iacute;sico ou virtual. Com o servidor configurado corretamente, a instala&ccedil;&atilde;o do Active Directory na pr&oacute;xima aula ser&aacute; muito mais tranquila.
+        </div>
+
+        <div class="ex-actions">
+            <button class="btn-print" onclick="printPractical('prat-03', 'Aula 3 \u2014 Configura\u00e7\u00e3o Inicial do Servidor')">&#x1F5A8;&#xFE0F; Imprimir roteiro</button>
+        </div>
+    </div>
+
+    <!-- MÚLTIPLA ESCOLHA -->
+    <div class="content-card exercise-card">
+        <h2>&#x2753; Verifique seu Conhecimento</h2>
+
+        <div class="mc-question" data-correct="b">
+            <p class="mc-q-text">Por que o fuso hor&aacute;rio correto &eacute; cr&iacute;tico em servidores com Active Directory?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>Porque o Windows Update s&oacute; funciona com o hor&aacute;rio correto</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>Porque o Kerberos falha de autentica&ccedil;&atilde;o se a diferen&ccedil;a entre servidor e cliente for maior que 5 minutos</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>Porque o RDP s&oacute; funciona com hor&aacute;rio sincronizado</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>Porque o firewall bloqueia conex&otilde;es fora do hor&aacute;rio configurado</span></div>
+            </div>
+            <div class="mc-explanation">✓ O protocolo Kerberos (usado pelo AD para autenticação) recusa tickets com diferença de horário maior que 5 minutos. Servidores fora de sincronia causam falhas de login em toda a rede.</div>
+        </div>
+        <hr class="mc-sep">
+        <div class="mc-question" data-correct="d">
+            <p class="mc-q-text">Qual &eacute; a quantidade m&aacute;xima de caracteres permitida no nome de um servidor Windows?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>8 caracteres</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>20 caracteres</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>32 caracteres</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>15 caracteres</span></div>
+            </div>
+            <div class="mc-explanation">✓ O nome NetBIOS do computador tem limite de 15 caracteres. Isso vem de uma limitação histórica do protocolo NetBIOS, ainda respeitada pelo Active Directory.</div>
+        </div>
+        <hr class="mc-sep">
+        <div class="mc-question" data-correct="a">
+            <p class="mc-q-text">O que significa NLA no contexto do Remote Desktop?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>Network Level Authentication &mdash; exige autentica&ccedil;&atilde;o antes de criar a sess&atilde;o remota</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>Network Login Access &mdash; tipo de conta para acesso remoto</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>New License Agreement &mdash; aceite de termos para uso do RDP</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>Network Layer Adapter &mdash; driver de rede para conex&otilde;es remotas</span></div>
+            </div>
+            <div class="mc-explanation">✓ NLA (Network Level Authentication) autentica o usuário antes de estabelecer a sessão RDP completa, protegendo contra ataques de força bruta e negação de serviço.</div>
+        </div>
+        <hr class="mc-sep">
+        <div class="mc-question" data-correct="c">
+            <p class="mc-q-text">Qual comando PowerShell lista os adaptadores de rede dispon&iacute;veis no Windows Server?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span><code>ipconfig /all</code></span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span><code>Show-NetAdapter</code></span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span><code>Get-NetAdapter</code></span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span><code>List-NetworkInterface</code></span></div>
+            </div>
+            <div class="mc-explanation">✓ Get-NetAdapter é o cmdlet PowerShell que lista os adaptadores de rede com nome, status e velocidade. O ipconfig /all também funciona, mas é um comando legado do CMD.</div>
+        </div>
+    </div>
+
+    <div class="nav-footer">
+        <a href="ws02-instalacao.html" class="nav-link">&#x2B05; Anterior: Instala&ccedil;&atilde;o</a>
+        <a href="ws04-active-directory.html" class="nav-link">Pr&oacute;xima: Active Directory &#x27A1;</a>
+    </div>
+
+</div>
+
+<script src="slide-mode.js"></script>
+<script src="exercise-drag.js"></script>
+<script src="exercise-print.js"></script>
+<script src="exercise-mc.js"></script>
+</body>
+</html>
