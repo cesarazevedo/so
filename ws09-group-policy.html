@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 9 &mdash; Group Policy (GPO)</title>
+    <link rel="stylesheet" href="slide-mode.css">
+    <link rel="stylesheet" href="exercise.css">
+    <link rel="stylesheet" href="lesson.css">
+</head>
+<body>
+
+<div class="top-bar">
+    <a href="index.html" class="back-btn">&#x2B05; Voltar ao Dashboard</a>
+    <span class="page-badge">4&ordm; Bimestre &mdash; Windows Server</span>
+    <button class="slide-toggle" id="slideToggleBtn">&#x1F4FA; Modo Slide</button>
+</div>
+
+<div class="content-wrapper">
+
+    <div class="lesson-hero">
+        <h1>&#x1F4DC; Group Policy (GPO)</h1>
+        <p class="subtitle">Aula 9 &mdash; Crie e vincule GPOs para aplicar pol&iacute;ticas de seguran&ccedil;a, desktop e software em toda a rede &mdash; automatizando a administra&ccedil;&atilde;o de usu&aacute;rios e computadores do dom&iacute;nio</p>
+    </div>
+
+    <!-- CARD 1 — O que é GPO -->
+    <div class="content-card">
+        <h2>&#x1F4DC; O que &eacute; Group Policy</h2>
+        <p>O <strong>Group Policy (Pol&iacute;tica de Grupo)</strong> &eacute; o mecanismo do Active Directory que permite aplicar configura&ccedil;&otilde;es, restri&ccedil;&otilde;es e prefer&ecirc;ncias de forma centralizada a <strong>usu&aacute;rios e computadores</strong> do dom&iacute;nio.</p>
+
+        <div class="highlight-box">
+            <p>&#x1F4A1; <strong>Analogia:</strong> imagine que voc&ecirc; precisa configurar 500 computadores da escola para bloquear o acesso ao Painel de Controle, definir um papel de parede padr&atilde;o e mapear automaticamente a pasta do servidor. Sem GPO: configura&ccedil;&atilde;o manual em cada m&aacute;quina. Com GPO: uma &uacute;nica pol&iacute;tica aplica tudo em todas ao mesmo tempo.</p>
+        </div>
+
+        <div class="cmd-grid">
+            <div class="cmd-card">
+                <span class="cmd">Seguran&ccedil;a</span>
+                <strong>Senha e bloqueio</strong>
+                <span>Complexidade, expira&ccedil;&atilde;o, tentativas</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">Desktop</span>
+                <strong>Interface do usu&aacute;rio</strong>
+                <span>Papel de parede, acesso ao Painel de Controle</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">Scripts</span>
+                <strong>Logon/Logoff</strong>
+                <span>Executar scripts ao entrar ou sair do sistema</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">Software</span>
+                <strong>Instala&ccedil;&atilde;o</strong>
+                <span>Distribuir programas automaticamente via MSI</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">Unidades</span>
+                <strong>Mapear drives</strong>
+                <span>Drive Z: mapeado automaticamente no login</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">Firewall</span>
+                <strong>Regras de rede</strong>
+                <span>Configurar Firewall do Windows centralmente</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARD 2 — Estrutura e ordem de processamento -->
+    <div class="content-card">
+        <h2>&#x1F9F1; Ordem de Processamento: LSDOU</h2>
+        <p>Quando um usu&aacute;rio faz login ou um computador inicializa, as GPOs s&atilde;o aplicadas em uma ordem espec&iacute;fica. A sigla <strong>LSDOU</strong> resume essa ordem &mdash; e a &uacute;ltima aplicada vence em caso de conflito.</p>
+
+        <div class="prat-steps" style="margin-top:1rem;">
+            <div class="prat-step">
+                <div class="step-num">L</div>
+                <div class="step-body">
+                    <div class="step-label">Local &mdash; Pol&iacute;tica local do computador</div>
+                    <div class="step-desc">Aplicada primeiro. &Eacute; a pol&iacute;tica definida localmente em cada m&aacute;quina via <code>gpedit.msc</code>. A &uacute;ltima a ser sobrescrita.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">S</div>
+                <div class="step-body">
+                    <div class="step-label">Site &mdash; GPO vinculada ao Site do AD</div>
+                    <div class="step-desc">Aplica-se a todos os objetos do site (localiza&ccedil;&atilde;o f&iacute;sica). Usada em ambientes com m&uacute;ltiplas filiais.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">D</div>
+                <div class="step-body">
+                    <div class="step-label">Dom&iacute;nio &mdash; GPO vinculada ao dom&iacute;nio</div>
+                    <div class="step-desc">Aplica-se a todos os objetos do dom&iacute;nio. A <strong>Default Domain Policy</strong> fica aqui. Configura&ccedil;&otilde;es gerais para toda a empresa.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">OU</div>
+                <div class="step-body">
+                    <div class="step-label">OU &mdash; GPO vinculada a uma Unidade Organizacional</div>
+                    <div class="step-desc">Aplicada por &uacute;ltimo &mdash; portanto, <strong>tem maior prioridade</strong>. GPOs em OUs filhas sobrescrevem OUs pai. Ideal para pol&iacute;ticas espec&iacute;ficas por departamento.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tip-box">
+            <p>&#x2705; <strong>Regra da prioridade:</strong> OU &gt; Dom&iacute;nio &gt; Site &gt; Local. Em caso de conflito entre uma GPO de dom&iacute;nio e uma de OU, a <strong>GPO da OU prevalece</strong>. Isso permite criar pol&iacute;ticas gerais no dom&iacute;nio e sobrescrev&ecirc;-las para departamentos espec&iacute;ficos.</p>
+        </div>
+    </div>
+
+    <!-- CARD 3 — GPMC: ferramenta de gerenciamento -->
+    <div class="content-card">
+        <h2>&#x1F6E0;&#xFE0F; GPMC: Console de Gerenciamento de GPO</h2>
+        <p>O <strong>Group Policy Management Console (GPMC)</strong> &eacute; a ferramenta gr&aacute;fica central para criar, editar, vincular e monitorar GPOs. Abra com <code>gpmc.msc</code> ou pelo Server Manager &rarr; Ferramentas.</p>
+
+        <div class="compare-grid">
+            <div class="compare-box blue">
+                <h4>&#x1F4DC; GPOs padr&atilde;o do dom&iacute;nio</h4>
+                <ul>
+                    <li><strong>Default Domain Policy:</strong> vinculada ao dom&iacute;nio, define pol&iacute;tica de senha padr&atilde;o</li>
+                    <li><strong>Default Domain Controllers Policy:</strong> vinculada &agrave; OU Domain Controllers, define configura&ccedil;&otilde;es dos DCs</li>
+                    <li>N&atilde;o modifique diretamente &mdash; crie novas GPOs</li>
+                </ul>
+            </div>
+            <div class="compare-box green">
+                <h4>&#x1F9F0; Fluxo de trabalho no GPMC</h4>
+                <ul>
+                    <li><strong>1.</strong> Criar a GPO (objeto)</li>
+                    <li><strong>2.</strong> Editar as configura&ccedil;&otilde;es</li>
+                    <li><strong>3.</strong> Vincular a GPO (a um dom&iacute;nio ou OU)</li>
+                    <li><strong>4.</strong> Forc&ccedil;ar/aguardar aplica&ccedil;&atilde;o</li>
+                    <li><strong>5.</strong> Verificar resultado com <code>gpresult</code></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Estrutura do GPMC</div>
+            <div style="padding:1rem;line-height:2;font-family:monospace">
+                <span style="color:#a3e635">Forest: escola.local</span><br>
+                <span style="color:#a3e635">  &boxvr;&boxh;&boxh; Dom&iacute;nios</span><br>
+                <span style="color:#a3e635">  &boxvr;    &boxvr;&boxh;&boxh; escola.local</span><br>
+                <span style="color:#a3e635">  &boxvr;         &boxvr;&boxh;&boxh; Default Domain Policy</span> <span style="color:#94a3b8">&larr; vinculada ao dom&iacute;nio</span><br>
+                <span style="color:#a3e635">  &boxvr;         &boxvr;&boxh;&boxh; OU: TI</span><br>
+                <span style="color:#a3e635">  &boxvr;         &boxvr;    &boxur;&boxh;&boxh; GPO-TI-Restricoes</span> <span style="color:#94a3b8">&larr; s&oacute; para OU TI</span><br>
+                <span style="color:#a3e635">  &boxvr;         &boxur;&boxh;&boxh; OU: Alunos</span><br>
+                <span style="color:#a3e635">  &boxvr;              &boxur;&boxh;&boxh; GPO-Alunos-Desktop</span> <span style="color:#94a3b8">&larr; s&oacute; para OU Alunos</span><br>
+                <span style="color:#a3e635">  &boxur;&boxh;&boxh; Objetos de Pol&iacute;tica de Grupo</span> <span style="color:#94a3b8">&larr; todas as GPOs ficam aqui</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARD 4 — Criar e editar uma GPO -->
+    <div class="content-card">
+        <h2>&#x2795; Criando e Editando uma GPO</h2>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Criar e vincular GPO pelo GPMC</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#a3e635">1.</span> Abra o GPMC (<code>gpmc.msc</code>)<br>
+                <span style="color:#a3e635">2.</span> Expanda <strong>escola.local</strong> &rarr; clique com bot&atilde;o direito na OU <strong>Alunos</strong><br>
+                <span style="color:#a3e635">3.</span> Selecione <strong>"Criar uma GPO neste dom&iacute;nio e vincul&aacute;-la aqui..."</strong><br>
+                <span style="color:#a3e635">4.</span> Nome: <strong>GPO-Alunos-Desktop</strong> &rarr; OK<br>
+                <span style="color:#a3e635">5.</span> Clique com bot&atilde;o direito na GPO criada &rarr; <strong>Editar...</strong><br>
+                <span style="color:#a3e635">6.</span> O <strong>Editor de Gerenciamento de Pol&iacute;tica de Grupo</strong> ser&aacute; aberto
+            </div>
+        </div>
+
+        <p style="margin-top:1rem;">Dentro do Editor, as configura&ccedil;&otilde;es s&atilde;o divididas em duas se&ccedil;&otilde;es:</p>
+
+        <div class="compare-grid">
+            <div class="compare-box blue">
+                <h4>&#x1F4BB; Configura&ccedil;&atilde;o do Computador</h4>
+                <ul>
+                    <li>Aplicada quando o computador inicializa</li>
+                    <li>Independe de qual usu&aacute;rio est&aacute; logado</li>
+                    <li>Ex: instalar software, configurar firewall, scripts de inicializa&ccedil;&atilde;o</li>
+                    <li>O computador precisa estar na OU correta</li>
+                </ul>
+            </div>
+            <div class="compare-box green">
+                <h4>&#x1F464; Configura&ccedil;&atilde;o do Usu&aacute;rio</h4>
+                <ul>
+                    <li>Aplicada quando o usu&aacute;rio faz login</li>
+                    <li>Segue o usu&aacute;rio independente do computador</li>
+                    <li>Ex: papel de parede, mapear drives, restringir Painel de Controle</li>
+                    <li>O usu&aacute;rio precisa estar na OU correta</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARD 5 — Exemplos de GPOs comuns -->
+    <div class="content-card">
+        <h2>&#x1F4CB; GPOs Comuns no Dia a Dia</h2>
+        <p>Veja o caminho no Editor de GPO para as pol&iacute;ticas mais usadas em ambientes corporativos e educacionais:</p>
+
+        <table class="info-table">
+            <thead>
+                <tr>
+                    <th>Pol&iacute;tica</th>
+                    <th>Caminho no Editor</th>
+                    <th>Configura&ccedil;&atilde;o</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Papel de parede</strong></td>
+                    <td>Config. Usu&aacute;rio &rarr; Modelos Adm. &rarr; Desktop &rarr; Desktop</td>
+                    <td>Papel de parede da &Aacute;rea de Trabalho &rarr; caminho da imagem</td>
+                </tr>
+                <tr>
+                    <td><strong>Bloquear Painel de Controle</strong></td>
+                    <td>Config. Usu&aacute;rio &rarr; Modelos Adm. &rarr; Painel de Controle</td>
+                    <td>Proibir acesso ao Painel de Controle &rarr; Habilitado</td>
+                </tr>
+                <tr>
+                    <td><strong>Mapear unidade de rede</strong></td>
+                    <td>Config. Usu&aacute;rio &rarr; Prefer&ecirc;ncias &rarr; Config. do Windows &rarr; Mapea. de Unidades</td>
+                    <td>Nova unidade &rarr; caminho UNC e letra do drive</td>
+                </tr>
+                <tr>
+                    <td><strong>Pol&iacute;tica de senha</strong></td>
+                    <td>Config. Computador &rarr; Configura&ccedil;&otilde;es do Windows &rarr; Configura&ccedil;&otilde;es de Seguran&ccedil;a &rarr; Pol&iacute;ticas de Conta</td>
+                    <td>Tamanho m&iacute;nimo, complexidade, validade</td>
+                </tr>
+                <tr>
+                    <td><strong>Bloquear USB</strong></td>
+                    <td>Config. Computador &rarr; Modelos Adm. &rarr; Sistema &rarr; Acesso de Armazenamento Remov&iacute;vel</td>
+                    <td>Todos os armazenamentos removíveis: negar leitura/escrita</td>
+                </tr>
+                <tr>
+                    <td><strong>Script de logon</strong></td>
+                    <td>Config. Usu&aacute;rio &rarr; Configura&ccedil;&otilde;es do Windows &rarr; Scripts &rarr; Logon</td>
+                    <td>Adicionar script .bat ou .ps1</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- CARD 6 — GPO pelo PowerShell -->
+    <div class="content-card">
+        <h2>&#x1F4BB; Gerenciando GPOs pelo PowerShell</h2>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Opera&ccedil;&otilde;es comuns de GPO via PowerShell</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#94a3b8"># Criar nova GPO</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>New-GPO -Name "GPO-Alunos-Desktop" -Domain "escola.local"</code><br><br>
+                <span style="color:#94a3b8"># Vincular GPO a uma OU</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>New-GPLink -Name "GPO-Alunos-Desktop" -Target "OU=Alunos,DC=escola,DC=local"</code><br><br>
+                <span style="color:#94a3b8"># Listar todas as GPOs do dom&iacute;nio</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Get-GPO -All | Select-Object DisplayName, GpoStatus, CreationTime</code><br><br>
+                <span style="color:#94a3b8"># Ver GPOs vinculadas a uma OU espec&iacute;fica</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Get-GPInheritance -Target "OU=Alunos,DC=escola,DC=local"</code><br><br>
+                <span style="color:#94a3b8"># Desabilitar uma GPO (sem excluir)</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Set-GPO -Name "GPO-Alunos-Desktop" -GpoStatus AllSettingsDisabled</code><br><br>
+                <span style="color:#94a3b8"># Excluir uma GPO</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Remove-GPO -Name "GPO-Alunos-Desktop"</code>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARD 7 — Forçar atualização e diagnosticar -->
+    <div class="content-card">
+        <h2>&#x1F504; For&ccedil;ar Atualiza&ccedil;&atilde;o e Diagnosticar</h2>
+        <p>Por padr&atilde;o, as GPOs s&atilde;o atualizadas automaticamente a cada <strong>90 minutos</strong> (com offset aleat&oacute;rio de at&eacute; 30 min) e sempre ao inicializar o computador ou fazer login. Para aplicar imediatamente:</p>
+
+        <div class="terminal-block">
+            <div class="terminal-header">For&ccedil;ar atualiza&ccedil;&atilde;o de GPO</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#94a3b8"># No cliente ou servidor: atualizar GPOs imediatamente</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>gpupdate /force</code><br><br>
+                <span style="color:#94a3b8"># For&ccedil;ar atualiza&ccedil;&atilde;o remotamente (em todos os computadores da OU)</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Invoke-GPUpdate -Computer "PC-ALUNO01" -Force</code><br><br>
+                <span style="color:#94a3b8"># Ver quais GPOs est&atilde;o aplicadas no computador atual</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>gpresult /r</code><br><br>
+                <span style="color:#94a3b8"># Relat&oacute;rio HTML detalhado das GPOs aplicadas</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>gpresult /h C:\relatorio-gpo.html /f</code><br><br>
+                <span style="color:#94a3b8"># Ver GPOs aplicadas a um usu&aacute;rio espec&iacute;fico</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>gpresult /r /user ESCOLA\joao.silva</code>
+            </div>
+        </div>
+
+        <div class="compare-grid">
+            <div class="compare-box blue">
+                <h4>&#x26A0;&#xFE0F; GPO n&atilde;o est&aacute; sendo aplicada?</h4>
+                <ul>
+                    <li>Verifique se a GPO est&aacute; <strong>vinculada</strong> &agrave; OU correta</li>
+                    <li>Verifique se o objeto (usu&aacute;rio/PC) est&aacute; na <strong>OU correta</strong></li>
+                    <li>Verifique o <strong>filtro de seguran&ccedil;a</strong> da GPO (deve incluir o grupo correto)</li>
+                    <li>Execute <code>gpupdate /force</code> e aguarde</li>
+                    <li>Use <code>gpresult /r</code> para ver o que est&aacute; sendo aplicado</li>
+                </ul>
+            </div>
+            <div class="compare-box green">
+                <h4>&#x1F512; Filtro de Seguran&ccedil;a</h4>
+                <ul>
+                    <li>Controla <strong>quem</strong> recebe a GPO dentro da OU</li>
+                    <li>Padr&atilde;o: <strong>Authenticated Users</strong> (todos no dom&iacute;nio)</li>
+                    <li>Pode restringir a um grupo espec&iacute;fico</li>
+                    <li>Ex: GPO s&oacute; para <code>GRP-Alunos</code></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- ATIVIDADE PRÁTICA -->
+    <div class="content-card exercise-card" id="prat-09">
+        <h2>&#x1F4DD; Atividade Pr&aacute;tica</h2>
+        <p class="prat-intro">Criar e aplicar GPOs no dom&iacute;nio <strong>escola.local</strong> para os departamentos TI e Alunos.</p>
+
+        <div class="prat-steps">
+            <div class="prat-step">
+                <div class="step-num">1</div>
+                <div class="step-body">
+                    <div class="step-label">GPO de desktop para Alunos</div>
+                    <div class="step-desc">Crie e vincule a GPO <strong>GPO-Alunos-Desktop</strong> &agrave; OU Alunos. Configure: <strong>bloquear o Painel de Controle</strong> (Config. Usu&aacute;rio &rarr; Modelos Adm. &rarr; Painel de Controle). Execute <code>gpupdate /force</code> e verifique com <code>gpresult /r</code>.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">2</div>
+                <div class="step-body">
+                    <div class="step-label">GPO de mapeamento de drive</div>
+                    <div class="step-desc">Crie a GPO <strong>GPO-Alunos-Drive</strong> vinculada &agrave; OU Alunos. Configure o mapeamento autom&aacute;tico da unidade <strong>Z: &rarr; \\SRV-ESCOLA\Alunos</strong> (Config. Usu&aacute;rio &rarr; Prefer&ecirc;ncias &rarr; Mapea. de Unidades).</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">3</div>
+                <div class="step-body">
+                    <div class="step-label">GPO de pol&iacute;tica de senha</div>
+                    <div class="step-desc">Edite a <strong>Default Domain Policy</strong> (n&atilde;o crie uma nova). Configure: tamanho m&iacute;nimo de senha <strong>10 caracteres</strong>, validade m&aacute;xima <strong>90 dias</strong> e bloqueio ap&oacute;s <strong>5 tentativas</strong> por 30 minutos.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">4</div>
+                <div class="step-body">
+                    <div class="step-label">Gerar relat&oacute;rio e documentar</div>
+                    <div class="step-desc">Execute <code>gpresult /h C:\relatorio-gpo.html /f</code> e abra o arquivo no navegador. Tire screenshot do GPMC mostrando as GPOs criadas e vinculadas nas OUs correspondentes.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="prat-observe">
+            <strong>&#x1F4CC; Para refletir:</strong> com as 9 aulas deste bimestre, voc&ecirc; configurou do zero uma infraestrutura Windows Server completa: instala&ccedil;&atilde;o, configura&ccedil;&atilde;o inicial, Active Directory, usu&aacute;rios e grupos, DHCP, DNS, servidor de arquivos e pol&iacute;ticas de grupo. Esse &eacute; exatamente o conjunto de habilidades de um administrador de sistemas Windows em ambiente corporativo.
+        </div>
+
+        <div class="ex-actions">
+            <button class="btn-print" onclick="printPractical('prat-09', 'Aula 9 \u2014 Group Policy (GPO)')">&#x1F5A8;&#xFE0F; Imprimir roteiro</button>
+        </div>
+    </div>
+
+    <!-- MÚLTIPLA ESCOLHA -->
+    <div class="content-card exercise-card">
+        <h2>&#x2753; Verifique seu Conhecimento</h2>
+
+        <div class="mc-question" data-correct="d">
+            <p class="mc-q-text">Na ordem de processamento LSDOU, qual n&iacute;vel tem a <strong>maior prioridade</strong> em caso de conflito entre pol&iacute;ticas?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>Local</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>Site</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>Dom&iacute;nio</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>OU (Unidade Organizacional)</span></div>
+            </div>
+            <div class="mc-explanation">✓ Na ordem LSDOU, as GPOs são aplicadas de Local até OU. Como a OU é aplicada por último, ela prevalece em conflitos. GPOs de OUs filhas sobrescrevem OUs pai.</div>
+        </div>
+        <hr class="mc-sep">
+        <div class="mc-question" data-correct="b">
+            <p class="mc-q-text">Qual comando exibe um relat&oacute;rio detalhado de quais GPOs est&atilde;o sendo aplicadas no computador atual?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span><code>gpupdate /force</code></span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span><code>gpresult /r</code></span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span><code>gpedit /show</code></span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span><code>Get-GPO -All</code></span></div>
+            </div>
+            <div class="mc-explanation">✓ gpresult /r exibe o Resultant Set of Policy (RSoP) — quais GPOs estão sendo aplicadas ao usuário e computador atual. Use /h para gerar um relatório HTML completo.</div>
+        </div>
+        <hr class="mc-sep">
+        <div class="mc-question" data-correct="a">
+            <p class="mc-q-text">Qual &eacute; a diferen&ccedil;a entre <strong>Configura&ccedil;&atilde;o do Computador</strong> e <strong>Configura&ccedil;&atilde;o do Usu&aacute;rio</strong> em uma GPO?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>Configura&ccedil;&atilde;o do Computador &eacute; aplicada na inicializa&ccedil;&atilde;o; Configura&ccedil;&atilde;o do Usu&aacute;rio &eacute; aplicada no login do usu&aacute;rio</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>Configura&ccedil;&atilde;o do Computador s&oacute; funciona em servidores; Configura&ccedil;&atilde;o do Usu&aacute;rio s&oacute; em esta&ccedil;&otilde;es de trabalho</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>S&atilde;o sin&ocirc;nimos &mdash; ambas s&atilde;o aplicadas no mesmo momento</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>Configura&ccedil;&atilde;o do Computador tem maior prioridade que Configura&ccedil;&atilde;o do Usu&aacute;rio</span></div>
+            </div>
+            <div class="mc-explanation">✓ Configuração do Computador é processada quando o computador inicializa (antes do login). Configuração do Usuário é processada quando o usuário faz login. As duas seções são independentes.</div>
+        </div>
+        <hr class="mc-sep">
+        <div class="mc-question" data-correct="c">
+            <p class="mc-q-text">Por que <strong>n&atilde;o &eacute; recomendado</strong> modificar diretamente a <strong>Default Domain Policy</strong> para novas configura&ccedil;&otilde;es?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>Porque a Default Domain Policy n&atilde;o pode ser editada pelo administrador</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>Porque ela s&oacute; aceita configura&ccedil;&otilde;es de senha</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>Para facilitar o diagn&oacute;stico e manter a pol&iacute;tica padr&atilde;o intacta como refer&ecirc;ncia; novas configura&ccedil;&otilde;es devem ficar em GPOs separadas</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>Porque ela &eacute; sobrescrita automaticamente pelo Windows Update</span></div>
+            </div>
+            <div class="mc-explanation">✓ A Default Domain Policy deve ser preservada para as configurações básicas de senha e conta. Criar GPOs separadas facilita o diagnóstico (sabe exatamente de onde vem cada política), a manutenção e a reversão de mudanças.</div>
+        </div>
+    </div>
+
+    <div class="nav-footer">
+        <a href="ws08-file-server.html" class="nav-link">&#x2B05; Anterior: File Server</a>
+        <a href="index.html" class="nav-link">&#x1F3E0; Voltar ao Dashboard &#x27A1;</a>
+    </div>
+
+</div>
+
+<script src="slide-mode.js"></script>
+<script src="exercise-drag.js"></script>
+<script src="exercise-print.js"></script>
+<script src="exercise-mc.js"></script>
+</body>
+</html>
