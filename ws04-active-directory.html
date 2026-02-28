@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 4 &mdash; Active Directory: Dom&iacute;nio</title>
+    <link rel="stylesheet" href="slide-mode.css">
+    <link rel="stylesheet" href="exercise.css">
+    <link rel="stylesheet" href="lesson.css">
+</head>
+<body>
+
+<div class="top-bar">
+    <a href="index.html" class="back-btn">&#x2B05; Voltar ao Dashboard</a>
+    <span class="page-badge">4&ordm; Bimestre &mdash; Windows Server</span>
+    <button class="slide-toggle" id="slideToggleBtn">&#x1F4FA; Modo Slide</button>
+</div>
+
+<div class="content-wrapper">
+
+    <div class="lesson-hero">
+        <h1>&#x1F3F0; Active Directory: Dom&iacute;nio</h1>
+        <p class="subtitle">Aula 4 &mdash; Instale o AD DS, promova o servidor a Domain Controller e crie o dom&iacute;nio da sua rede &mdash; o cora&ccedil;&atilde;o da infraestrutura Microsoft</p>
+    </div>
+
+    <!-- CARD 1 — O que é AD DS -->
+    <div class="content-card">
+        <h2>&#x1F3F0; O que &eacute; AD DS</h2>
+        <p>O <strong>Active Directory Domain Services (AD DS)</strong> &eacute; o servi&ccedil;o de diret&oacute;rio da Microsoft. Ele armazena informa&ccedil;&otilde;es sobre <strong>usu&aacute;rios, computadores, grupos e recursos</strong> da rede e controla quem pode acessar o qu&ecirc;.</p>
+
+        <div class="highlight-box">
+            <p>&#x1F4A1; <strong>Analogia:</strong> imagine uma escola. Sem o AD, cada sala tem sua pr&oacute;pria lista de chamada e chave. Com o AD, existe uma secretaria central que conhece todos os alunos, professores e salas &mdash; e decide quem pode entrar onde, com um &uacute;nico crachá.</p>
+        </div>
+
+        <p style="margin-top:1rem;">Os principais conceitos do AD DS:</p>
+
+        <div class="cmd-grid">
+            <div class="cmd-card">
+                <span class="cmd">Forest</span>
+                <strong>Floresta</strong>
+                <span>Limite m&aacute;ximo de seguran&ccedil;a; cont&eacute;m um ou mais dom&iacute;nios</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">Domain</span>
+                <strong>Dom&iacute;nio</strong>
+                <span>Unidade administrativa; ex: <code>escola.local</code></span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">DC</span>
+                <strong>Domain Controller</strong>
+                <span>Servidor que executa o AD DS e autentica usu&aacute;rios</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">OU</span>
+                <strong>Unid. Organizacional</strong>
+                <span>Pasta para organizar objetos por departamento</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">Objeto</span>
+                <strong>Usu&aacute;rios, PCs, Grupos</strong>
+                <span>Qualquer recurso gerenciado pelo AD</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">GPO</span>
+                <strong>Group Policy</strong>
+                <span>Pol&iacute;ticas aplicadas a usu&aacute;rios e computadores</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARD 2 — Estrutura do AD -->
+    <div class="content-card">
+        <h2>&#x1F5C2;&#xFE0F; Estrutura L&oacute;gica do Active Directory</h2>
+        <p>O AD organiza os recursos em uma hierarquia l&oacute;gica. Entender essa estrutura &eacute; fundamental antes de criar o dom&iacute;nio.</p>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Hierarquia do AD &mdash; do maior para o menor</div>
+            <div style="padding:1rem;line-height:2;font-family:monospace">
+                <span style="color:#a3e635">Forest: escola.local</span> <span style="color:#94a3b8">&larr; limite de seguran&ccedil;a m&aacute;ximo</span><br>
+                <span style="color:#a3e635">  &boxvr;&boxh;&boxh; Domain: escola.local</span> <span style="color:#94a3b8">&larr; unidade administrativa</span><br>
+                <span style="color:#a3e635">       &boxvr;&boxh;&boxh; OU: Administracao</span><br>
+                <span style="color:#a3e635">       &boxvr;    &boxvr;&boxh;&boxh; Usu&aacute;rio: diretor</span><br>
+                <span style="color:#a3e635">       &boxvr;    &boxur;&boxh;&boxh; Usu&aacute;rio: secretaria</span><br>
+                <span style="color:#a3e635">       &boxvr;&boxh;&boxh; OU: TI</span><br>
+                <span style="color:#a3e635">       &boxvr;    &boxvr;&boxh;&boxh; Usu&aacute;rio: admin</span><br>
+                <span style="color:#a3e635">       &boxvr;    &boxur;&boxh;&boxh; Computador: SRV-ESCOLA</span><br>
+                <span style="color:#a3e635">       &boxur;&boxh;&boxh; OU: Alunos</span><br>
+                <span style="color:#a3e635">            &boxvr;&boxh;&boxh; Usu&aacute;rio: aluno01</span><br>
+                <span style="color:#a3e635">            &boxur;&boxh;&boxh; Usu&aacute;rio: aluno02</span>
+            </div>
+        </div>
+
+        <div class="compare-grid">
+            <div class="compare-box blue">
+                <h4>&#x1F310; Nome do Dom&iacute;nio</h4>
+                <p style="margin:0.5rem 0 0">Use sufixo <code>.local</code> para redes internas (ex: <code>escola.local</code>, <code>empresa.local</code>). Evite usar nomes p&uacute;blicos como <code>.com</code> ou <code>.com.br</code> em lab.</p>
+            </div>
+            <div class="compare-box green">
+                <h4>&#x1F512; NETBIOS do Dom&iacute;nio</h4>
+                <p style="margin:0.5rem 0 0">Vers&atilde;o curta do nome do dom&iacute;nio usada por sistemas legados. Para <code>escola.local</code>, o NETBIOS ser&aacute; <code>ESCOLA</code> (gerado automaticamente).</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARD 3 — Instalar o papel AD DS -->
+    <div class="content-card">
+        <h2>&#x1F4E6; Passo 1: Instalar o Papel AD DS</h2>
+        <p>A instala&ccedil;&atilde;o do Active Directory &eacute; feita em duas etapas: primeiro instala-se o <strong>papel (role)</strong>, depois promove-se o servidor a <strong>Domain Controller</strong>.</p>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Instalar AD DS pelo Server Manager</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#a3e635">1.</span> Server Manager &rarr; <strong>Gerenciar &rarr; Adicionar Fun&ccedil;&otilde;es e Recursos</strong><br>
+                <span style="color:#a3e635">2.</span> Tipo de instala&ccedil;&atilde;o: <strong>Instala&ccedil;&atilde;o baseada em fun&ccedil;&atilde;o ou recurso</strong><br>
+                <span style="color:#a3e635">3.</span> Selecionar servidor: <strong>SRV-ESCOLA</strong><br>
+                <span style="color:#a3e635">4.</span> Fun&ccedil;&otilde;es de servidor: marcar <strong>Active Directory Domain Services</strong><br>
+                <span style="color:#a3e635">5.</span> Na janela que aparecer, clique em <strong>Adicionar Recursos</strong><br>
+                <span style="color:#a3e635">6.</span> Avan&ccedil;ar at&eacute; o final &rarr; <strong>Instalar</strong> (n&atilde;o reinicia)
+            </div>
+        </div>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Instalar AD DS pelo PowerShell</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#94a3b8"># Instalar o papel AD DS (n&atilde;o reinicia)</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Install-WindowsFeature -Name AD-Domain-Services -IncludeManagementTools</code><br><br>
+                <span style="color:#94a3b8"># Verificar se foi instalado</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Get-WindowsFeature AD-Domain-Services</code>
+            </div>
+        </div>
+
+        <div class="tip-box">
+            <p>&#x2705; Ap&oacute;s a instala&ccedil;&atilde;o, o Server Manager exibir&aacute; um aviso amarelo com a mensagem <em>"Configura&ccedil;&atilde;o necess&aacute;ria para o Active Directory Domain Services"</em>. Esse &eacute; o gatilho para o pr&oacute;ximo passo.</p>
+        </div>
+    </div>
+
+    <!-- CARD 4 — Promover a Domain Controller -->
+    <div class="content-card">
+        <h2>&#x1F451; Passo 2: Promover a Domain Controller</h2>
+        <p>Ap&oacute;s instalar o papel, &eacute; preciso <strong>promover</strong> o servidor a Domain Controller e criar o dom&iacute;nio. Este processo &eacute; chamado de <strong>dcpromo</strong>.</p>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Promover pelo Server Manager (GUI)</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#a3e635">1.</span> Clique no <strong>sinalizador amarelo</strong> no canto superior do Server Manager<br>
+                <span style="color:#a3e635">2.</span> Clique em <strong>"Promover este servidor a um controlador de dom&iacute;nio"</strong><br>
+                <span style="color:#a3e635">3.</span> Selecione: <strong>Adicionar uma nova floresta</strong><br>
+                <span style="color:#a3e635">4.</span> Nome do dom&iacute;nio raiz: <strong>escola.local</strong><br>
+                <span style="color:#a3e635">5.</span> N&iacute;vel funcional da floresta: <strong>Windows Server 2016</strong> (ou superior)<br>
+                <span style="color:#a3e635">6.</span> Marcar: <strong>Servidor DNS</strong> e <strong>Cat&aacute;logo Global (GC)</strong><br>
+                <span style="color:#a3e635">7.</span> Definir senha do <strong>DSRM</strong> (modo de restaura&ccedil;&atilde;o): ex. <code>Dsrm@2025</code><br>
+                <span style="color:#a3e635">8.</span> Nome NETBIOS: <strong>ESCOLA</strong> (gerado automaticamente)<br>
+                <span style="color:#a3e635">9.</span> Caminhos padr&atilde;o: manter os padr&otilde;es<br>
+                <span style="color:#a3e635">10.</span> Verificar pr&eacute;-requisitos &rarr; <strong>Instalar</strong> &rarr; servidor reinicia automaticamente
+            </div>
+        </div>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Promover pelo PowerShell</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#94a3b8"># Importar m&oacute;dulo</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Import-Module ADDSDeployment</code><br><br>
+                <span style="color:#94a3b8"># Criar nova floresta e dom&iacute;nio (vai pedir a senha DSRM)</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Install-ADDSForest `<br>
+&nbsp;&nbsp;&nbsp;-DomainName "escola.local" `<br>
+&nbsp;&nbsp;&nbsp;-DomainNetbiosName "ESCOLA" `<br>
+&nbsp;&nbsp;&nbsp;-ForestMode "WinThreshold" `<br>
+&nbsp;&nbsp;&nbsp;-DomainMode "WinThreshold" `<br>
+&nbsp;&nbsp;&nbsp;-InstallDns `<br>
+&nbsp;&nbsp;&nbsp;-Force</code>
+            </div>
+        </div>
+
+        <div class="highlight-box">
+            <p>&#x26A0;&#xFE0F; <strong>Senha DSRM:</strong> o Directory Services Restore Mode &eacute; um modo especial de inicializa&ccedil;&atilde;o para recupera&ccedil;&atilde;o do AD. A senha DSRM <strong>n&atilde;o &eacute; a mesma</strong> do Administrator. Anote-a em local seguro &mdash; &eacute; necess&aacute;ria em emerg&ecirc;ncias.</p>
+        </div>
+    </div>
+
+    <!-- CARD 5 — Após a promoção -->
+    <div class="content-card">
+        <h2>&#x2705; Ap&oacute;s a Promo&ccedil;&atilde;o: verificando o AD</h2>
+        <p>Ap&oacute;s o servidor reiniciar, ele j&aacute; &eacute; um Domain Controller. O login agora &eacute; feito com o usu&aacute;rio <code>ESCOLA\Administrator</code> (dom&iacute;nio + nome).</p>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Verificar o Active Directory</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#94a3b8"># Verificar se o AD est&aacute; funcionando</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Get-ADDomain</code><br><br>
+                <span style="color:#94a3b8"># Ver informa&ccedil;&otilde;es do controlador de dom&iacute;nio</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Get-ADDomainController</code><br><br>
+                <span style="color:#94a3b8"># Verificar servi&ccedil;os do AD</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>dcdiag /test:services</code><br><br>
+                <span style="color:#94a3b8"># Verificar replica&ccedil;&atilde;o (mesmo que seja s&oacute; um DC)</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>repadmin /showrepl</code>
+            </div>
+        </div>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Ferramentas gr&aacute;ficas instaladas automaticamente</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#a3e635">&#x25B6;</span> <strong>ADUC</strong> &mdash; Active Directory Users and Computers <span style="color:#94a3b8">(usu&aacute;rios e grupos)</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <strong>ADSS</strong> &mdash; Active Directory Sites and Services <span style="color:#94a3b8">(topologia de rede)</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <strong>ADDT</strong> &mdash; Active Directory Domains and Trusts <span style="color:#94a3b8">(confian&ccedil;as entre dom&iacute;nios)</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <strong>GPMC</strong> &mdash; Group Policy Management Console <span style="color:#94a3b8">(gerenciar GPOs)</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <strong>DNS Manager</strong> &mdash; Gerenciar zonas DNS integradas ao AD
+            </div>
+        </div>
+
+        <div class="tip-box">
+            <p>&#x2705; <strong>Acesso r&aacute;pido:</strong> Server Manager &rarr; <strong>Ferramentas</strong> (menu superior direito) lista todas essas consolas. Voc&ecirc; tamb&eacute;m pode abri-las digitando <code>dsa.msc</code> (ADUC), <code>dnsmgmt.msc</code> (DNS) ou <code>gpmc.msc</code> (GPMC) no PowerShell ou Executar.</p>
+        </div>
+    </div>
+
+    <!-- CARD 6 — DNS integrado ao AD -->
+    <div class="content-card">
+        <h2>&#x1F310; DNS Integrado ao Active Directory</h2>
+        <p>Quando o AD DS &eacute; instalado com a op&ccedil;&atilde;o <strong>Servidor DNS</strong>, o Windows Server cria automaticamente uma zona DNS para o dom&iacute;nio. Isso &eacute; chamado de <strong>DNS integrado ao AD</strong>.</p>
+
+        <div class="compare-grid">
+            <div class="compare-box blue">
+                <h4>&#x1F9E9; Como funciona</h4>
+                <ul>
+                    <li>Zona DNS de <code>escola.local</code> criada automaticamente</li>
+                    <li>Computadores que entram no dom&iacute;nio registram seus IPs no DNS</li>
+                    <li>O DC registra seus pr&oacute;prios registros SRV (localiza&ccedil;&atilde;o de servi&ccedil;os)</li>
+                    <li>Clientes usam o IP do DC como servidor DNS</li>
+                </ul>
+            </div>
+            <div class="compare-box green">
+                <h4>&#x2705; Vantagens</h4>
+                <ul>
+                    <li>Replica&ccedil;&atilde;o autom&aacute;tica com o AD</li>
+                    <li>Mais seguro: apenas DCs podem modificar a zona</li>
+                    <li>Atualiza&ccedil;&atilde;o din&acirc;mica segura (DDNS)</li>
+                    <li>Sem necessidade de servidor DNS separado</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Verificar DNS ap&oacute;s instala&ccedil;&atilde;o do AD</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#94a3b8"># Verificar zona DNS criada</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Get-DnsServerZone</code><br><br>
+                <span style="color:#94a3b8"># Testar resolu&ccedil;&atilde;o do dom&iacute;nio</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Resolve-DnsName escola.local</code><br><br>
+                <span style="color:#94a3b8"># Ver registros SRV do AD (localiza&ccedil;&atilde;o dos servi&ccedil;os)</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Resolve-DnsName _ldap._tcp.escola.local -Type SRV</code>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARD 7 — Ingressar um cliente no domínio -->
+    <div class="content-card">
+        <h2>&#x1F4BB; Ingressar um Cliente no Dom&iacute;nio</h2>
+        <p>Ap&oacute;s criar o dom&iacute;nio, outros computadores (clientes Windows) podem <strong>ingressar no dom&iacute;nio</strong> para usar autentica&ccedil;&atilde;o centralizada.</p>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Pr&eacute;-requisitos no cliente</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#a3e635">&#x25B6;</span> DNS prim&aacute;rio configurado para o IP do DC: <strong>192.168.1.10</strong><br>
+                <span style="color:#a3e635">&#x25B6;</span> Conex&atilde;o de rede com o servidor (mesma rede ou roteada)<br>
+                <span style="color:#a3e635">&#x25B6;</span> Credenciais de um usu&aacute;rio com permiss&atilde;o para ingressar computadores
+            </div>
+        </div>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Ingressar no dom&iacute;nio pela GUI (cliente Windows)</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#a3e635">1.</span> Painel de Controle &rarr; <strong>Sistema &rarr; Alterar configura&ccedil;&otilde;es</strong><br>
+                <span style="color:#a3e635">2.</span> Clique em <strong>Alterar...</strong> &rarr; selecione <strong>Dom&iacute;nio</strong><br>
+                <span style="color:#a3e635">3.</span> Digite: <strong>escola.local</strong><br>
+                <span style="color:#a3e635">4.</span> Informe credenciais: <strong>ESCOLA\Administrator</strong> + senha<br>
+                <span style="color:#a3e635">5.</span> Mensagem: <em>"Bem-vindo ao dom&iacute;nio escola.local"</em> &rarr; Reiniciar
+            </div>
+        </div>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Ingressar no dom&iacute;nio pelo PowerShell (cliente)</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#a3e635">&#x25B6;</span> <code>Add-Computer -DomainName "escola.local" -Credential "ESCOLA\Administrator" -Restart</code>
+            </div>
+        </div>
+    </div>
+
+    <!-- ATIVIDADE PRÁTICA -->
+    <div class="content-card exercise-card" id="prat-04">
+        <h2>&#x1F4DD; Atividade Pr&aacute;tica</h2>
+        <p class="prat-intro">Instalar o AD DS e promover o servidor <strong>SRV-ESCOLA</strong> a Domain Controller do dom&iacute;nio <strong>escola.local</strong>.</p>
+
+        <div class="prat-steps">
+            <div class="prat-step">
+                <div class="step-num">1</div>
+                <div class="step-body">
+                    <div class="step-label">Verificar pr&eacute;-requisitos</div>
+                    <div class="step-desc">Confirme que o servidor est&aacute; com nome <strong>SRV-ESCOLA</strong>, IP est&aacute;tico <strong>192.168.1.10</strong> e fuso hor&aacute;rio Bras&iacute;lia. Se necess&aacute;rio, revise a Aula 3 antes de continuar. Crie um snapshot <em>"pr&eacute;-AD DS"</em>.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">2</div>
+                <div class="step-body">
+                    <div class="step-label">Instalar o papel AD DS</div>
+                    <div class="step-desc">Via Server Manager ou PowerShell, instale o papel <strong>Active Directory Domain Services</strong> com as ferramentas de gerenciamento. Aguarde a conclus&atilde;o sem reiniciar.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">3</div>
+                <div class="step-body">
+                    <div class="step-label">Promover a Domain Controller</div>
+                    <div class="step-desc">Clique no sinalizador amarelo do Server Manager e promova o servidor. Crie a floresta com dom&iacute;nio <strong>escola.local</strong>, defina a senha DSRM e aguarde o servidor reiniciar.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">4</div>
+                <div class="step-body">
+                    <div class="step-label">Verificar e documentar</div>
+                    <div class="step-desc">Ap&oacute;s reiniciar, fa&ccedil;a login com <strong>ESCOLA\Administrator</strong>. Execute <code>Get-ADDomain</code> e <code>dcdiag /test:services</code> no PowerShell. Abra o ADUC (<code>dsa.msc</code>) e tire screenshot mostrando o dom&iacute;nio criado.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="prat-observe">
+            <strong>&#x1F4CC; Para refletir:</strong> ao promover o servidor, o Windows instalou e configurou automaticamente o DNS, o Kerberos, o LDAP e outros servi&ccedil;os. Tudo isso em alguns cliques. Essa integra&ccedil;&atilde;o &eacute; o grande diferencial do Windows Server em rela&ccedil;&atilde;o a montar o mesmo ambiente no Linux, onde cada servi&ccedil;o &eacute; configurado separadamente.
+        </div>
+
+        <div class="ex-actions">
+            <button class="btn-print" onclick="printPractical('prat-04', 'Aula 4 \u2014 Active Directory: Dom\u00ednio')">&#x1F5A8;&#xFE0F; Imprimir roteiro</button>
+        </div>
+    </div>
+
+    <!-- MÚLTIPLA ESCOLHA -->
+    <div class="content-card exercise-card">
+        <h2>&#x2753; Verifique seu Conhecimento</h2>
+
+        <div class="mc-question" data-correct="a">
+            <p class="mc-q-text">Qual &eacute; a diferen&ccedil;a entre <strong>Forest</strong> (Floresta) e <strong>Domain</strong> (Dom&iacute;nio) no Active Directory?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>Forest &eacute; o limite m&aacute;ximo de seguran&ccedil;a e pode conter m&uacute;ltiplos dom&iacute;nios; Domain &eacute; a unidade administrativa dentro da floresta</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>Forest &eacute; um dom&iacute;nio com mais de 100 usu&aacute;rios; Domain &eacute; para redes menores</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>Forest &eacute; o nome do servidor DNS; Domain &eacute; o nome do servidor DHCP</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>S&atilde;o sin&ocirc;nimos &mdash; ambos se referem ao mesmo conceito</span></div>
+            </div>
+            <div class="mc-explanation">✓ A Forest é o contêiner de mais alto nível e representa o limite de segurança. Um único Forest pode ter múltiplos Domains (ex: escola.local e filial.escola.local).</div>
+        </div>
+        <hr class="mc-sep">
+        <div class="mc-question" data-correct="c">
+            <p class="mc-q-text">Para qu&ecirc; serve a senha <strong>DSRM</strong> definida durante a promo&ccedil;&atilde;o do Domain Controller?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>&Eacute; a senha do usu&aacute;rio Administrator do dom&iacute;nio</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>&Eacute; usada para desinstalar o papel AD DS</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>&Eacute; usada para acessar o servidor em modo de recupera&ccedil;&atilde;o quando o AD n&atilde;o consegue iniciar</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>&Eacute; a senha de acesso remoto via RDP</span></div>
+            </div>
+            <div class="mc-explanation">✓ DSRM (Directory Services Restore Mode) é um modo especial de boot para recuperação do AD. Sua senha é independente da conta Administrator e deve ser guardada com segurança.</div>
+        </div>
+        <hr class="mc-sep">
+        <div class="mc-question" data-correct="b">
+            <p class="mc-q-text">Por que &eacute; recomendado usar o sufixo <code>.local</code> no nome do dom&iacute;nio interno?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>Porque o Windows Server s&oacute; aceita dom&iacute;nios terminados em .local</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>Para evitar conflitos com dom&iacute;nios p&uacute;blicos registrados na internet</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>Porque &eacute; obrigat&oacute;rio pelo RFC do Active Directory</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>Para melhorar a velocidade de autentica&ccedil;&atilde;o Kerberos</span></div>
+            </div>
+            <div class="mc-explanation">✓ Usar .local evita conflitos com domínios DNS públicos. Se a empresa usasse empresa.com.br internamente, poderia haver conflito com o site real da empresa na internet.</div>
+        </div>
+        <hr class="mc-sep">
+        <div class="mc-question" data-correct="d">
+            <p class="mc-q-text">Qual ferramenta gr&aacute;fica &eacute; usada para gerenciar usu&aacute;rios e computadores no Active Directory?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>gpmc.msc</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>dnsmgmt.msc</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>compmgmt.msc</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>dsa.msc</span></div>
+            </div>
+            <div class="mc-explanation">✓ dsa.msc abre o Active Directory Users and Computers (ADUC), a ferramenta principal para gerenciar usuários, grupos, OUs e computadores do domínio.</div>
+        </div>
+    </div>
+
+    <div class="nav-footer">
+        <a href="ws03-configuracao-inicial.html" class="nav-link">&#x2B05; Anterior: Configura&ccedil;&atilde;o Inicial</a>
+        <a href="ws05-usuarios-grupos.html" class="nav-link">Pr&oacute;xima: Usu&aacute;rios e Grupos &#x27A1;</a>
+    </div>
+
+</div>
+
+<script src="slide-mode.js"></script>
+<script src="exercise-drag.js"></script>
+<script src="exercise-print.js"></script>
+<script src="exercise-mc.js"></script>
+</body>
+</html>
