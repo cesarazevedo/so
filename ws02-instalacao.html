@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 2 &mdash; Instala&ccedil;&atilde;o Windows Server 2025</title>
+    <link rel="stylesheet" href="slide-mode.css">
+    <link rel="stylesheet" href="exercise.css">
+    <link rel="stylesheet" href="lesson.css">
+</head>
+<body>
+
+<div class="top-bar">
+    <a href="index.html" class="back-btn">&#x2B05; Voltar ao Dashboard</a>
+    <span class="page-badge">4&ordm; Bimestre &mdash; Windows Server</span>
+    <button class="slide-toggle" id="slideToggleBtn">&#x1F4FA; Modo Slide</button>
+</div>
+
+<div class="content-wrapper">
+
+    <div class="lesson-hero">
+        <h1>&#x1F4BF; Instala&ccedil;&atilde;o Windows Server 2025</h1>
+        <p class="subtitle">Aula 2 &mdash; Instale o Windows Server 2025 em uma M&aacute;quina Virtual no VirtualBox: da cria&ccedil;&atilde;o da VM ao primeiro login no servidor</p>
+    </div>
+
+    <!-- CARD 1 — Requisitos de Hardware -->
+    <div class="content-card">
+        <h2>&#x1F4BB; Requisitos de Hardware</h2>
+        <p>Antes de instalar, verifique se o hardware (ou a VM) atende aos requisitos m&iacute;nimos do Windows Server 2025:</p>
+
+        <table class="info-table">
+            <thead>
+                <tr>
+                    <th>Componente</th>
+                    <th>M&iacute;nimo</th>
+                    <th>Recomendado (Lab)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Processador</strong></td>
+                    <td>1,4 GHz 64-bit</td>
+                    <td>2 n&uacute;cleos (vCPUs)</td>
+                </tr>
+                <tr>
+                    <td><strong>Mem&oacute;ria RAM</strong></td>
+                    <td>512 MB (Server Core) / 2 GB (Desktop)</td>
+                    <td>4 GB</td>
+                </tr>
+                <tr>
+                    <td><strong>Disco</strong></td>
+                    <td>32 GB</td>
+                    <td>60 GB</td>
+                </tr>
+                <tr>
+                    <td><strong>Rede</strong></td>
+                    <td>1 adaptador Ethernet</td>
+                    <td>1 adaptador (modo Bridge ou NAT)</td>
+                </tr>
+                <tr>
+                    <td><strong>Firmware</strong></td>
+                    <td>UEFI / TPM 2.0 recomendado</td>
+                    <td>UEFI habilitado na VM</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="tip-box">
+            <p>&#x2705; <strong>Para o laboratório:</strong> crie a VM com <strong>4 GB de RAM</strong> e <strong>60 GB de disco</strong>. Com menos que isso, a instala&ccedil;&atilde;o fica lenta e a experi&ecirc;ncia prejudicada.</p>
+        </div>
+    </div>
+
+    <!-- CARD 2 — Obtendo a ISO -->
+    <div class="content-card">
+        <h2>&#x1F4E5; Obtendo a ISO do Windows Server 2025</h2>
+        <p>A Microsoft disponibiliza uma vers&atilde;o de avalia&ccedil;&atilde;o gratuita de <strong>180 dias</strong> do Windows Server 2025, ideal para uso em laborat&oacute;rio.</p>
+
+        <div class="highlight-box">
+            <p>&#x1F310; Acesse <strong>microsoft.com/evalcenter</strong> e busque por <em>Windows Server 2025</em>. Fa&ccedil;a o cadastro gratuito e baixe a ISO (aproximadamente <strong>5 GB</strong>).</p>
+        </div>
+
+        <p style="margin-top:1rem;">Existem duas op&ccedil;&otilde;es de download:</p>
+
+        <div class="compare-grid">
+            <div class="compare-box blue">
+                <h4>&#x1F4BF; ISO 64-bit</h4>
+                <ul>
+                    <li>Arquivo &uacute;nico para gravar em DVD ou montar em VM</li>
+                    <li>Inclui Desktop Experience e Server Core</li>
+                    <li>Ideal para VirtualBox</li>
+                    <li>Tamanho: ~5 GB</li>
+                </ul>
+            </div>
+            <div class="compare-box green">
+                <h4>&#x1F4E6; VHDX pr&eacute;-instalado</h4>
+                <ul>
+                    <li>Disco virtual pronto para usar no Hyper-V</li>
+                    <li>N&atilde;o requer instala&ccedil;&atilde;o</li>
+                    <li>N&atilde;o funciona diretamente no VirtualBox</li>
+                    <li>Tamanho: ~8 GB</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="tip-box">
+            <p>&#x2705; Baixe a op&ccedil;&atilde;o <strong>ISO 64-bit</strong> para usar no VirtualBox.</p>
+        </div>
+    </div>
+
+    <!-- CARD 3 — Criando a VM no VirtualBox -->
+    <div class="content-card">
+        <h2>&#x1F4E6; Criando a VM no VirtualBox</h2>
+        <p>Com a ISO baixada, crie uma nova m&aacute;quina virtual no VirtualBox seguindo os passos abaixo:</p>
+
+        <div class="terminal-block">
+            <div class="terminal-header">VirtualBox &mdash; Nova VM</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#a3e635">&#x25B6;</span> <strong>Nome:</strong> WinServer2025<br>
+                <span style="color:#a3e635">&#x25B6;</span> <strong>Tipo:</strong> Microsoft Windows<br>
+                <span style="color:#a3e635">&#x25B6;</span> <strong>Vers&atilde;o:</strong> Windows 2022 (64-bit) <span style="color:#94a3b8"># ou Windows Server 2025 se dispon&iacute;vel</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <strong>RAM:</strong> 4096 MB (4 GB)<br>
+                <span style="color:#a3e635">&#x25B6;</span> <strong>Disco:</strong> VDI din&acirc;mico &mdash; 60 GB<br>
+                <span style="color:#a3e635">&#x25B6;</span> <strong>Firmware:</strong> UEFI (em Configura&ccedil;&otilde;es &rarr; Sistema)
+            </div>
+        </div>
+
+        <p style="margin-top:1rem;">Ap&oacute;s criar a VM, ajuste estas configura&ccedil;&otilde;es antes de iniciar:</p>
+
+        <div class="cmd-grid">
+            <div class="cmd-card">
+                <span class="cmd">Sistema &rarr; Processador</span>
+                <strong>2 CPUs</strong>
+                <span>Ativa 2 n&uacute;cleos para melhor desempenho</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">Tela &rarr; Mem&oacute;ria de V&iacute;deo</span>
+                <strong>128 MB</strong>
+                <span>Evita tela preta na instala&ccedil;&atilde;o gr&aacute;fica</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">Rede &rarr; Adaptador 1</span>
+                <strong>NAT ou Bridge</strong>
+                <span>NAT para internet; Bridge para rede local</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">Armazenamento &rarr; &Oacute;tico</span>
+                <strong>Montar ISO</strong>
+                <span>Selecionar a ISO baixada do Eval Center</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARD 4 — Instalação Passo a Passo -->
+    <div class="content-card">
+        <h2>&#x1F4E5; Instala&ccedil;&atilde;o Passo a Passo</h2>
+        <p>Inicie a VM. O instalador do Windows Server 2025 ser&aacute; carregado automaticamente pela ISO.</p>
+
+        <div class="prat-steps" style="margin-top:1rem;">
+            <div class="prat-step">
+                <div class="step-num">1</div>
+                <div class="step-body">
+                    <div class="step-label">Configura&ccedil;&otilde;es regionais</div>
+                    <div class="step-desc">Selecione <strong>Idioma: Portugu&ecirc;s (Brasil)</strong>, Formato de hora e moeda, e Layout de teclado <strong>ABNT2</strong>. Clique em <em>Avan&ccedil;ar</em> &rarr; <em>Instalar agora</em>.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">2</div>
+                <div class="step-body">
+                    <div class="step-label">Escolha da edi&ccedil;&atilde;o</div>
+                    <div class="step-desc">Selecione <strong>Windows Server 2025 Standard Evaluation (Desktop Experience)</strong>. A op&ccedil;&atilde;o sem "Desktop Experience" instala o Server Core (sem interface gr&aacute;fica).</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">3</div>
+                <div class="step-body">
+                    <div class="step-label">Tipo de instala&ccedil;&atilde;o</div>
+                    <div class="step-desc">Escolha <strong>Personalizada: instalar somente o Windows</strong>. Na pr&oacute;xima tela, selecione o disco dispon&iacute;vel e clique em <em>Avan&ccedil;ar</em>. A instala&ccedil;&atilde;o come&ccedil;ar&aacute; automaticamente.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">4</div>
+                <div class="step-body">
+                    <div class="step-label">Aguardar e reiniciar</div>
+                    <div class="step-desc">O instalador copia arquivos, instala recursos e reinicia a VM automaticamente (pode reiniciar 2&ndash;3 vezes). O processo leva entre <strong>10 e 20 minutos</strong> dependendo do hardware.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">5</div>
+                <div class="step-body">
+                    <div class="step-label">Definir senha do Administrador</div>
+                    <div class="step-desc">Ap&oacute;s a instala&ccedil;&atilde;o, o sistema pede a senha do usu&aacute;rio <strong>Administrator</strong>. Use uma senha forte (ex: <code>Senha@2025</code>). A senha deve ter letras mai&uacute;sculas, min&uacute;sculas, n&uacute;meros e s&iacute;mbolos.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">6</div>
+                <div class="step-body">
+                    <div class="step-label">Primeiro login</div>
+                    <div class="step-desc">Pressione <strong>Ctrl + Alt + Del</strong> (ou <em>Entrada</em> &rarr; <em>Inserir Ctrl+Alt+Del</em> no VirtualBox). Digite a senha definida e acesse o Desktop do Windows Server 2025.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="highlight-box">
+            <p>&#x26A0;&#xFE0F; <strong>Aten&ccedil;&atilde;o:</strong> ap&oacute;s o primeiro login, o <strong>Server Manager</strong> abre automaticamente. N&atilde;o feche &mdash; vamos us&aacute;-lo na pr&oacute;xima aula para configurar o servidor.</p>
+        </div>
+    </div>
+
+    <!-- CARD 5 — Guest Additions -->
+    <div class="content-card">
+        <h2>&#x1F527; Instalar Guest Additions (VirtualBox)</h2>
+        <p>As <strong>Guest Additions</strong> s&atilde;o drivers extras que melhoram a integra&ccedil;&atilde;o entre a VM e o sistema hospedeiro. Instale logo ap&oacute;s o primeiro login.</p>
+
+        <div class="cmd-grid">
+            <div class="cmd-card">
+                <span class="cmd">Resolu&ccedil;&atilde;o</span>
+                <strong>Tela din&acirc;mica</strong>
+                <span>A VM se ajusta ao tamanho da janela</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">Clipboard</span>
+                <strong>Copiar e Colar</strong>
+                <span>Compartilha &aacute;rea de transfer&ecirc;ncia com o host</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">Pastas</span>
+                <strong>Shared Folders</strong>
+                <span>Acesso a pastas do computador f&iacute;sico</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">Mouse</span>
+                <strong>Integra&ccedil;&atilde;o total</strong>
+                <span>Sem precisar pressionar Host para sair da VM</span>
+            </div>
+        </div>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Como instalar as Guest Additions</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#a3e635">1.</span> No menu do VirtualBox: <strong>Dispositivos &rarr; Inserir imagem de CD das Guest Additions</strong><br>
+                <span style="color:#a3e635">2.</span> Dentro da VM, abra o <strong>Explorador de Arquivos</strong> &rarr; <strong>Este Computador</strong><br>
+                <span style="color:#a3e635">3.</span> Clique duas vezes em <strong>VirtualBox Guest Additions (D:)</strong><br>
+                <span style="color:#a3e635">4.</span> Execute <strong>VBoxWindowsAdditions-amd64.exe</strong> como Administrador<br>
+                <span style="color:#a3e635">5.</span> Siga o assistente e reinicie a VM ao final
+            </div>
+        </div>
+    </div>
+
+    <!-- CARD 6 — Snapshot: seu ponto de restauração -->
+    <div class="content-card">
+        <h2>&#x1F4F8; Snapshot: Ponto de Restaura&ccedil;&atilde;o</h2>
+        <p>Antes de fazer qualquer configura&ccedil;&atilde;o, crie um <strong>Snapshot</strong> da VM. &Eacute; como um ponto de restaura&ccedil;&atilde;o &mdash; se algo der errado, voc&ecirc; volta ao estado atual em segundos.</p>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Criando um Snapshot no VirtualBox</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#a3e635">1.</span> Com a VM <strong>ligada ou desligada</strong>, clique no menu <strong>M&aacute;quina &rarr; Tirar Instant&acirc;neo...</strong><br>
+                <span style="color:#a3e635">2.</span> D&ecirc; um nome descritivo: <strong>"Instala&ccedil;&atilde;o limpa &mdash; sem configura&ccedil;&atilde;o"</strong><br>
+                <span style="color:#a3e635">3.</span> Clique em <strong>OK</strong><br>
+                <span style="color:#a3e635">&#x2714;</span> Pronto! Para restaurar: <strong>M&aacute;quina &rarr; Restaurar instant&acirc;neo</strong>
+            </div>
+        </div>
+
+        <div class="tip-box">
+            <p>&#x2705; <strong>Boas pr&aacute;ticas:</strong> crie snapshots antes de grandes mudan&ccedil;as: instala&ccedil;&atilde;o limpa, antes de promover a DC, antes de instalar roles. Mantenha no m&aacute;ximo 3&ndash;4 snapshots &mdash; cada um ocupa espa&ccedil;o em disco.</p>
+        </div>
+    </div>
+
+    <!-- ATIVIDADE PRÁTICA -->
+    <div class="content-card exercise-card" id="prat-02">
+        <h2>&#x1F4DD; Atividade Pr&aacute;tica</h2>
+        <p class="prat-intro">Instalar o Windows Server 2025 em uma m&aacute;quina virtual do zero.</p>
+
+        <div class="prat-steps">
+            <div class="prat-step">
+                <div class="step-num">1</div>
+                <div class="step-body">
+                    <div class="step-label">Baixar a ISO</div>
+                    <div class="step-desc">Acesse o Microsoft Eval Center, fa&ccedil;a o cadastro e baixe a ISO do Windows Server 2025 (64-bit). Anote o tamanho do arquivo baixado.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">2</div>
+                <div class="step-body">
+                    <div class="step-label">Criar e configurar a VM</div>
+                    <div class="step-desc">Crie a VM no VirtualBox com as configura&ccedil;&otilde;es recomendadas: 4 GB RAM, 60 GB disco VDI din&acirc;mico, 2 vCPUs, UEFI habilitado, 128 MB de v&iacute;deo. Anexe a ISO ao drive &oacute;tico.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">3</div>
+                <div class="step-body">
+                    <div class="step-label">Instalar o sistema</div>
+                    <div class="step-desc">Execute a instala&ccedil;&atilde;o completa: idioma portugu&ecirc;s/ABNT2, edi&ccedil;&atilde;o <strong>Standard Desktop Experience</strong>, instala&ccedil;&atilde;o personalizada. Defina a senha do Administrator e fa&ccedil;a o primeiro login.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">4</div>
+                <div class="step-body">
+                    <div class="step-label">Finalizar e documentar</div>
+                    <div class="step-desc">Instale as Guest Additions, crie um snapshot chamado <strong>"Instala&ccedil;&atilde;o limpa"</strong> e tire um screenshot do desktop com o Server Manager aberto. Entregue o print como comprova&ccedil;&atilde;o.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="prat-observe">
+            <strong>&#x1F4CC; Para refletir:</strong> a instala&ccedil;&atilde;o do Windows Server &eacute; muito similar &agrave; do Windows desktop, mas com foco em estabilidade. O Server Manager que abre automaticamente &eacute; o centro de controle do servidor &mdash; &eacute; por ele que vamos adicionar todos os pap&eacute;is nas pr&oacute;ximas aulas.
+        </div>
+
+        <div class="ex-actions">
+            <button class="btn-print" onclick="printPractical('prat-02', 'Aula 2 \u2014 Instala\u00e7\u00e3o Windows Server 2025')">&#x1F5A8;&#xFE0F; Imprimir roteiro</button>
+        </div>
+    </div>
+
+    <!-- MÚLTIPLA ESCOLHA -->
+    <div class="content-card exercise-card">
+        <h2>&#x2753; Verifique seu Conhecimento</h2>
+
+        <div class="mc-question" data-correct="b">
+            <p class="mc-q-text">Qual edi&ccedil;&atilde;o deve ser escolhida na instala&ccedil;&atilde;o para ter a interface gr&aacute;fica completa (GUI)?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>Windows Server 2025 Standard Evaluation</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>Windows Server 2025 Standard Evaluation (Desktop Experience)</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>Windows Server 2025 Datacenter Evaluation</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>Windows Server 2025 Core</span></div>
+            </div>
+            <div class="mc-explanation">✓ A opção com "(Desktop Experience)" inclui a interface gráfica completa. Sem esse sufixo, é instalado o Server Core (apenas linha de comando).</div>
+        </div>
+        <hr class="mc-sep">
+        <div class="mc-question" data-correct="c">
+            <p class="mc-q-text">Qual a finalidade das <strong>Guest Additions</strong> no VirtualBox?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>Aumentar a mem&oacute;ria RAM dispon&iacute;vel para a VM</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>Instalar antiv&iacute;rus na m&aacute;quina virtual</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>Melhorar integra&ccedil;&atilde;o entre VM e host: tela din&acirc;mica, clipboard e pastas compartilhadas</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>Ativar a licen&ccedil;a do Windows Server automaticamente</span></div>
+            </div>
+            <div class="mc-explanation">✓ Guest Additions instala drivers que melhoram a integração: resolução dinâmica, clipboard bidirecional, pastas compartilhadas e integração de mouse.</div>
+        </div>
+        <hr class="mc-sep">
+        <div class="mc-question" data-correct="d">
+            <p class="mc-q-text">Por quanto tempo a vers&atilde;o de avalia&ccedil;&atilde;o (Eval) do Windows Server 2025 pode ser usada gratuitamente?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>30 dias</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>60 dias</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>90 dias</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>180 dias</span></div>
+            </div>
+            <div class="mc-explanation">✓ A versão de avaliação do Microsoft Eval Center tem validade de 180 dias — tempo mais que suficiente para o laboratório do curso.</div>
+        </div>
+        <hr class="mc-sep">
+        <div class="mc-question" data-correct="a">
+            <p class="mc-q-text">Para qu&ecirc; serve um <strong>Snapshot</strong> no VirtualBox?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>Salvar o estado atual da VM para poder restaurar caso algo d&ecirc; errado</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>Fazer backup dos arquivos pessoais do usu&aacute;rio</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>Tirar uma foto da tela da m&aacute;quina virtual</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>Copiar a VM para outro computador</span></div>
+            </div>
+            <div class="mc-explanation">✓ Snapshot salva o estado completo da VM (disco + memória). Se algo der errado após uma configuração, basta restaurar o snapshot e voltar ao ponto seguro.</div>
+        </div>
+    </div>
+
+    <div class="nav-footer">
+        <a href="ws01-conceitos.html" class="nav-link">&#x2B05; Anterior: Conceitos</a>
+        <a href="ws03-configuracao-inicial.html" class="nav-link">Pr&oacute;xima: Configura&ccedil;&atilde;o Inicial &#x27A1;</a>
+    </div>
+
+</div>
+
+<script src="slide-mode.js"></script>
+<script src="exercise-drag.js"></script>
+<script src="exercise-print.js"></script>
+<script src="exercise-mc.js"></script>
+</body>
+</html>
