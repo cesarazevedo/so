@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 8 &mdash; File Server</title>
+    <link rel="stylesheet" href="slide-mode.css">
+    <link rel="stylesheet" href="exercise.css">
+    <link rel="stylesheet" href="lesson.css">
+</head>
+<body>
+
+<div class="top-bar">
+    <a href="index.html" class="back-btn">&#x2B05; Voltar ao Dashboard</a>
+    <span class="page-badge">4&ordm; Bimestre &mdash; Windows Server</span>
+    <button class="slide-toggle" id="slideToggleBtn">&#x1F4FA; Modo Slide</button>
+</div>
+
+<div class="content-wrapper">
+
+    <div class="lesson-hero">
+        <h1>&#x1F4C2; File Server</h1>
+        <p class="subtitle">Aula 8 &mdash; Configure o servidor de arquivos no Windows Server 2025: crie compartilhamentos SMB, entenda a diferen&ccedil;a entre permiss&otilde;es NTFS e de compartilhamento e gerencie cotas de disco</p>
+    </div>
+
+    <!-- CARD 1 — O que é um File Server -->
+    <div class="content-card">
+        <h2>&#x1F4C1; O que &eacute; um File Server</h2>
+        <p>Um <strong>servidor de arquivos (File Server)</strong> &eacute; um servidor dedicado ao armazenamento e compartilhamento centralizado de arquivos e pastas. Em vez de cada usu&aacute;rio guardar seus arquivos localmente, tudo fica no servidor &mdash; acess&iacute;vel de qualquer computador do dom&iacute;nio.</p>
+
+        <div class="highlight-box">
+            <p>&#x1F4A1; <strong>Analogia:</strong> o File Server &eacute; como um armário central em um escrit&oacute;rio. Em vez de cada funcion&aacute;rio ter seus documentos guardados na pr&oacute;pria gaveta (inacess&iacute;vel aos outros), tudo fica no armário central &mdash; com cada gaveta tendo uma chave diferente para cada departamento.</p>
+        </div>
+
+        <div class="cmd-grid">
+            <div class="cmd-card">
+                <span class="cmd">Centraliza&ccedil;&atilde;o</span>
+                <strong>Um local &uacute;nico</strong>
+                <span>Arquivos acess&iacute;veis de qualquer PC do dom&iacute;nio</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">Backup</span>
+                <strong>Mais f&aacute;cil</strong>
+                <span>Basta fazer backup de uma pasta no servidor</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">Seguran&ccedil;a</span>
+                <strong>Controle de acesso</strong>
+                <span>Permiss&otilde;es por usu&aacute;rio ou grupo do AD</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">Cotas</span>
+                <strong>Limite de espa&ccedil;o</strong>
+                <span>Define quanto cada usu&aacute;rio pode usar no servidor</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">Auditoria</span>
+                <strong>Rastreabilidade</strong>
+                <span>Registra quem acessou ou modificou arquivos</span>
+            </div>
+            <div class="cmd-card">
+                <span class="cmd">SMB</span>
+                <strong>Protocolo</strong>
+                <span>Server Message Block &mdash; protocolo nativo do Windows</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARD 2 — Instalar o papel File Server -->
+    <div class="content-card">
+        <h2>&#x1F4E6; Instalando o Papel File Server</h2>
+        <p>O papel <strong>File and Storage Services</strong> j&aacute; vem parcialmente instalado no Windows Server. Para recursos avan&ccedil;ados como cotas e triagem de arquivos, instale o <strong>File Server Resource Manager (FSRM)</strong>.</p>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Instalar File Server e FSRM pelo Server Manager</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#a3e635">1.</span> Server Manager &rarr; <strong>Gerenciar &rarr; Adicionar Fun&ccedil;&otilde;es e Recursos</strong><br>
+                <span style="color:#a3e635">2.</span> Fun&ccedil;&otilde;es de servidor &rarr; expanda <strong>Servi&ccedil;os de Arquivo e Armazenamento</strong><br>
+                <span style="color:#a3e635">3.</span> Expanda <strong>Servi&ccedil;os de Arquivo e iSCSI</strong><br>
+                <span style="color:#a3e635">4.</span> Marque:<br>
+                &nbsp;&nbsp;&nbsp;&#x2611; <strong>Servidor de Arquivos</strong><br>
+                &nbsp;&nbsp;&nbsp;&#x2611; <strong>Gerenciador de Recursos de Servidor de Arquivos (FSRM)</strong><br>
+                <span style="color:#a3e635">5.</span> Instalar (n&atilde;o requer reinicializa&ccedil;&atilde;o)
+            </div>
+        </div>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Instalar pelo PowerShell</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#94a3b8"># Instalar File Server e FSRM</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Install-WindowsFeature -Name FS-FileServer, FS-Resource-Manager -IncludeManagementTools</code><br><br>
+                <span style="color:#94a3b8"># Verificar</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Get-WindowsFeature FS-FileServer, FS-Resource-Manager</code>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARD 3 — Permissões NTFS vs Compartilhamento -->
+    <div class="content-card">
+        <h2>&#x1F512; Permiss&otilde;es NTFS vs Permiss&otilde;es de Compartilhamento</h2>
+        <p>Este &eacute; o conceito mais importante do File Server. Existem <strong>dois n&iacute;veis independentes</strong> de permiss&atilde;o, e ambos precisam estar configurados corretamente para o acesso funcionar.</p>
+
+        <div class="compare-grid">
+            <div class="compare-box blue">
+                <h4>&#x1F4C1; Permiss&otilde;es NTFS</h4>
+                <ul>
+                    <li>Definidas na <strong>pasta ou arquivo</strong> no disco</li>
+                    <li>Aplicam-se ao acesso <strong>local e remoto</strong></li>
+                    <li>Granulares: Leitura, Escrita, Execu&ccedil;&atilde;o, Controle Total...</li>
+                    <li>Herdadas por subpastas e arquivos</li>
+                    <li>Acumulativas por grupo</li>
+                    <li><strong>Restri&ccedil;&atilde;o NTFS prevalece sobre compartilhamento</strong></li>
+                </ul>
+            </div>
+            <div class="compare-box green">
+                <h4>&#x1F310; Permiss&otilde;es de Compartilhamento</h4>
+                <ul>
+                    <li>Definidas no <strong>compartilhamento SMB</strong></li>
+                    <li>Aplicam-se <strong>somente ao acesso remoto</strong> (pela rede)</li>
+                    <li>Simples: Leitura, Alterar, Controle Total</li>
+                    <li>N&atilde;o afetam acesso local</li>
+                    <li>Recomendado: deixar <strong>Controle Total para Everyone</strong></li>
+                    <li>e controlar via <strong>NTFS</strong></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="highlight-box">
+            <p>&#x26A0;&#xFE0F; <strong>Regra de ouro:</strong> o acesso efetivo &eacute; o <strong>mais restritivo</strong> entre as permiss&otilde;es NTFS e de compartilhamento. Se o compartilhamento permite Controle Total mas o NTFS permite apenas Leitura, o usu&aacute;rio s&oacute; poder&aacute; ler. Boas pr&aacute;ticas: <em>Compartilhamento = Controle Total</em> para todos; use NTFS para controle granular.</p>
+        </div>
+
+        <table class="info-table">
+            <thead>
+                <tr>
+                    <th>Permiss&atilde;o NTFS</th>
+                    <th>O que permite</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>Leitura</strong></td><td>Ver arquivos e subpastas, ler conte&uacute;do</td></tr>
+                <tr><td><strong>Leitura e Execu&ccedil;&atilde;o</strong></td><td>Leitura + executar programas</td></tr>
+                <tr><td><strong>Listar conte&uacute;do</strong></td><td>Ver nomes de arquivos e pastas</td></tr>
+                <tr><td><strong>Gravar</strong></td><td>Criar arquivos e subpastas, escrever em arquivos</td></tr>
+                <tr><td><strong>Modificar</strong></td><td>Leitura + Gravar + Excluir arquivos</td></tr>
+                <tr><td><strong>Controle Total</strong></td><td>Tudo, incluindo alterar permiss&otilde;es e propriet&aacute;rio</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- CARD 4 — Criar compartilhamento -->
+    <div class="content-card">
+        <h2>&#x1F4E4; Criando Compartilhamentos SMB</h2>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Preparar a estrutura de pastas</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#94a3b8"># Criar pastas no servidor para cada departamento</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>New-Item -ItemType Directory -Path "C:\Compartilhamentos\TI"</code><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>New-Item -ItemType Directory -Path "C:\Compartilhamentos\Administracao"</code><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>New-Item -ItemType Directory -Path "C:\Compartilhamentos\Alunos"</code><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>New-Item -ItemType Directory -Path "C:\Compartilhamentos\Publico"</code>
+            </div>
+        </div>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Criar compartilhamento pelo Server Manager</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#a3e635">1.</span> Server Manager &rarr; <strong>Servi&ccedil;os de Arquivo e Armazenamento &rarr; Compartilhamentos</strong><br>
+                <span style="color:#a3e635">2.</span> Clique em <strong>Tarefas &rarr; Novo Compartilhamento...</strong><br>
+                <span style="color:#a3e635">3.</span> Perfil: <strong>Compartilhamento SMB &mdash; R&aacute;pido</strong><br>
+                <span style="color:#a3e635">4.</span> Caminho local: <strong>C:\Compartilhamentos\TI</strong><br>
+                <span style="color:#a3e635">5.</span> Nome do compartilhamento: <strong>TI</strong> <span style="color:#94a3b8">(ser&aacute; acessado como \\SRV-ESCOLA\TI)</span><br>
+                <span style="color:#a3e635">6.</span> Permiss&otilde;es: deixe padr&atilde;o por ora &mdash; ajustaremos via NTFS<br>
+                <span style="color:#a3e635">7.</span> Clique em <strong>Criar</strong>
+            </div>
+        </div>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Criar compartilhamento pelo PowerShell</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#94a3b8"># Criar compartilhamento SMB</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>New-SmbShare -Name "TI" -Path "C:\Compartilhamentos\TI" -Description "Pasta do departamento de TI" -FullAccess "Everyone"</code><br><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>New-SmbShare -Name "Administracao" -Path "C:\Compartilhamentos\Administracao" -FullAccess "Everyone"</code><br><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>New-SmbShare -Name "Publico" -Path "C:\Compartilhamentos\Publico" -FullAccess "Everyone"</code><br><br>
+                <span style="color:#94a3b8"># Listar compartilhamentos ativos</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Get-SmbShare</code>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARD 5 — Configurar permissões NTFS -->
+    <div class="content-card">
+        <h2>&#x1F510; Configurando Permiss&otilde;es NTFS</h2>
+        <p>Agora que os compartilhamentos est&atilde;o criados com <em>Controle Total para Everyone</em> no n&iacute;vel de compartilhamento, vamos definir o acesso real <strong>via NTFS</strong>, vinculando aos grupos do Active Directory.</p>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Configurar NTFS pela GUI</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#a3e635">1.</span> No Explorador de Arquivos, clique com bot&atilde;o direito na pasta <strong>TI</strong><br>
+                <span style="color:#a3e635">2.</span> Propriedades &rarr; aba <strong>Seguran&ccedil;a</strong><br>
+                <span style="color:#a3e635">3.</span> Clique em <strong>Editar...</strong><br>
+                <span style="color:#a3e635">4.</span> Remova o grupo <strong>Users</strong> se quiser restringir<br>
+                <span style="color:#a3e635">5.</span> Clique em <strong>Adicionar...</strong> &rarr; digite <strong>GRP-TI</strong> &rarr; Verificar Nomes &rarr; OK<br>
+                <span style="color:#a3e635">6.</span> Marque a permiss&atilde;o desejada: <strong>Modificar</strong><br>
+                <span style="color:#a3e635">7.</span> Clique em <strong>OK &rarr; Aplicar</strong>
+            </div>
+        </div>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Configurar NTFS pelo PowerShell</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#94a3b8"># Dar permiss&atilde;o de Modificar ao GRP-TI na pasta TI</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>$acl = Get-Acl "C:\Compartilhamentos\TI"</code><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>$rule = New-Object System.Security.AccessControl.FileSystemAccessRule("ESCOLA\GRP-TI", "Modify", "ContainerInherit,ObjectInherit", "None", "Allow")</code><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>$acl.SetAccessRule($rule)</code><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Set-Acl "C:\Compartilhamentos\TI" $acl</code><br><br>
+                <span style="color:#94a3b8"># Ver permiss&otilde;es NTFS atuais</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>(Get-Acl "C:\Compartilhamentos\TI").Access | Select-Object IdentityReference, FileSystemRights, AccessControlType</code>
+            </div>
+        </div>
+
+        <div class="tip-box">
+            <p>&#x2705; <strong>Dica de seguran&ccedil;a:</strong> remova o grupo <strong>Users</strong> das permiss&otilde;es NTFS de pastas departamentais e adicione apenas os grupos espec&iacute;ficos do AD. Mantenha a heran&ccedil;a desabilitada em pastas sens&iacute;veis para ter controle total sobre quem acessa.</p>
+        </div>
+    </div>
+
+    <!-- CARD 6 — Acessar compartilhamentos -->
+    <div class="content-card">
+        <h2>&#x1F4BB; Acessando os Compartilhamentos</h2>
+        <p>Usu&aacute;rios do dom&iacute;nio acessam os compartilhamentos pelo caminho UNC (Universal Naming Convention): <code>\\servidor\compartilhamento</code>.</p>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Formas de acessar compartilhamentos no cliente</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#94a3b8"># Pelo Executar (Win + R)</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>\\SRV-ESCOLA\TI</code><br><br>
+                <span style="color:#94a3b8"># Pelo Explorador de Arquivos: digitar na barra de endere&ccedil;o</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>\\192.168.1.10\TI</code><br><br>
+                <span style="color:#94a3b8"># Mapear unidade de rede pelo PowerShell (drive Z:)</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>New-PSDrive -Name "Z" -PSProvider FileSystem -Root "\\SRV-ESCOLA\TI" -Persist</code><br><br>
+                <span style="color:#94a3b8"># Mapear via CMD (persistente)</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>net use Z: \\SRV-ESCOLA\TI /persistent:yes</code><br><br>
+                <span style="color:#94a3b8"># Ver conex&otilde;es ativas no servidor</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Get-SmbSession</code><br>
+                <span style="color:#94a3b8"># Ver arquivos abertos remotamente</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Get-SmbOpenFile</code>
+            </div>
+        </div>
+
+        <div class="tip-box">
+            <p>&#x2705; <strong>Mapeamento via GPO:</strong> em produ&ccedil;&atilde;o, unidades de rede s&atilde;o mapeadas automaticamente por GPO quando o usu&aacute;rio faz login. O drive <code>Z:</code> aparece j&aacute; conectado sem que o usu&aacute;rio precise fazer nada. Veremos isso na pr&oacute;xima aula (GPO).</p>
+        </div>
+    </div>
+
+    <!-- CARD 7 — Cotas de disco -->
+    <div class="content-card">
+        <h2>&#x1F4CA; Cotas de Disco com FSRM</h2>
+        <p>O <strong>FSRM (File Server Resource Manager)</strong> permite definir <strong>cotas</strong> &mdash; limites de espa&ccedil;o em disco por pasta ou usu&aacute;rio &mdash; e <strong>triagem de arquivos</strong> para bloquear tipos proibidos (ex: .mp3, .exe).</p>
+
+        <div class="compare-grid">
+            <div class="compare-box blue">
+                <h4>&#x1F4CC; Cotas</h4>
+                <ul>
+                    <li><strong>Dura:</strong> bloqueia quando o limite &eacute; atingido</li>
+                    <li><strong>Suave:</strong> notifica mas n&atilde;o bloqueia</li>
+                    <li>Configur&aacute;vel por pasta</li>
+                    <li>Envia alertas por e-mail ao atingir %</li>
+                </ul>
+            </div>
+            <div class="compare-box green">
+                <h4>&#x1F6AB; Triagem de Arquivos</h4>
+                <ul>
+                    <li>Bloqueia extens&otilde;es proibidas</li>
+                    <li>Ex: bloquear .mp3, .avi, .exe em pastas de dados</li>
+                    <li>Modos: ativo (bloqueia) ou passivo (s&oacute; alerta)</li>
+                    <li>Grupos de arquivos predefinidos</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Criar cota pelo FSRM (GUI)</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#a3e635">1.</span> Server Manager &rarr; Ferramentas &rarr; <strong>Gerenciador de Recursos de Servidor de Arquivos</strong><br>
+                <span style="color:#a3e635">2.</span> Expanda <strong>Gerenciamento de Cotas &rarr; Cotas</strong><br>
+                <span style="color:#a3e635">3.</span> Bot&atilde;o direito &rarr; <strong>Criar Cota...</strong><br>
+                <span style="color:#a3e635">4.</span> Caminho: <strong>C:\Compartilhamentos\Alunos</strong><br>
+                <span style="color:#a3e635">5.</span> Limite: <strong>1 GB</strong> | Tipo: <strong>Dura</strong> (bloqueia)<br>
+                <span style="color:#a3e635">6.</span> Clique em <strong>Criar</strong>
+            </div>
+        </div>
+
+        <div class="terminal-block">
+            <div class="terminal-header">Criar cota pelo PowerShell</div>
+            <div style="padding:1rem;line-height:2">
+                <span style="color:#94a3b8"># Criar cota dura de 1 GB para a pasta Alunos</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>New-FsrmQuota -Path "C:\Compartilhamentos\Alunos" -Size 1GB -SoftLimit $false</code><br><br>
+                <span style="color:#94a3b8"># Listar cotas configuradas</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Get-FsrmQuota</code><br><br>
+                <span style="color:#94a3b8"># Ver uso atual de uma cota</span><br>
+                <span style="color:#a3e635">&#x25B6;</span> <code>Get-FsrmQuota -Path "C:\Compartilhamentos\Alunos" | Select-Object Path, Size, Usage</code>
+            </div>
+        </div>
+    </div>
+
+    <!-- ATIVIDADE PRÁTICA -->
+    <div class="content-card exercise-card" id="prat-08">
+        <h2>&#x1F4DD; Atividade Pr&aacute;tica</h2>
+        <p class="prat-intro">Configurar o servidor de arquivos com compartilhamentos departamentais, permiss&otilde;es NTFS por grupo e cota para a pasta de alunos.</p>
+
+        <div class="prat-steps">
+            <div class="prat-step">
+                <div class="step-num">1</div>
+                <div class="step-body">
+                    <div class="step-label">Instalar e criar pastas</div>
+                    <div class="step-desc">Instale os pap&eacute;is <strong>File Server</strong> e <strong>FSRM</strong>. Crie a estrutura de pastas em <code>C:\Compartilhamentos\</code> com as subpastas <strong>TI</strong>, <strong>Administracao</strong>, <strong>Alunos</strong> e <strong>Publico</strong>.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">2</div>
+                <div class="step-body">
+                    <div class="step-label">Criar compartilhamentos SMB</div>
+                    <div class="step-desc">Compartilhe as 4 pastas via PowerShell ou Server Manager com <strong>FullAccess para Everyone</strong> no n&iacute;vel de compartilhamento. Verifique com <code>Get-SmbShare</code>.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">3</div>
+                <div class="step-body">
+                    <div class="step-label">Configurar permiss&otilde;es NTFS</div>
+                    <div class="step-desc">Via GUI (aba Seguran&ccedil;a): d&ecirc; permiss&atilde;o <strong>Modificar</strong> ao <strong>GRP-TI</strong> na pasta TI, ao <strong>GRP-Administracao</strong> na pasta Administracao, e ao <strong>GRP-Alunos</strong> na pasta Alunos. A pasta Publico deve permitir <strong>Modificar para Todos (Authenticated Users)</strong>.</div>
+                </div>
+            </div>
+            <div class="prat-step">
+                <div class="step-num">4</div>
+                <div class="step-body">
+                    <div class="step-label">Cota e testes</div>
+                    <div class="step-desc">Crie uma cota <strong>dura de 500 MB</strong> na pasta Alunos. Tente acessar os compartilhamentos pelo caminho UNC <code>\\SRV-ESCOLA\TI</code> com usu&aacute;rios de diferentes grupos e confirme que as permiss&otilde;es est&atilde;o funcionando. Tire screenshots dos testes.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="prat-observe">
+            <strong>&#x1F4CC; Para refletir:</strong> a combina&ccedil;&atilde;o de grupos do AD com permiss&otilde;es NTFS &eacute; o modelo de seguran&ccedil;a de arquivos mais usado em empresas. Quando um funcion&aacute;rio muda de departamento, basta mov&ecirc;-lo de grupo no AD &mdash; as permiss&otilde;es nas pastas s&atilde;o ajustadas automaticamente, sem tocar nas configura&ccedil;&otilde;es de nenhuma pasta.
+        </div>
+
+        <div class="ex-actions">
+            <button class="btn-print" onclick="printPractical('prat-08', 'Aula 8 \u2014 File Server')">&#x1F5A8;&#xFE0F; Imprimir roteiro</button>
+        </div>
+    </div>
+
+    <!-- MÚLTIPLA ESCOLHA -->
+    <div class="content-card exercise-card">
+        <h2>&#x2753; Verifique seu Conhecimento</h2>
+
+        <div class="mc-question" data-correct="c">
+            <p class="mc-q-text">Um usu&aacute;rio tem permiss&atilde;o <strong>Controle Total</strong> no compartilhamento SMB, mas apenas <strong>Leitura</strong> nas permiss&otilde;es NTFS da pasta. Qual ser&aacute; o acesso efetivo ao acessar pelo caminho de rede?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>Controle Total &mdash; o compartilhamento prevalece sobre NTFS</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>Sem acesso &mdash; as permiss&otilde;es se cancelam</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>Apenas Leitura &mdash; o mais restritivo entre os dois n&iacute;veis prevalece</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>Modificar &mdash; a m&eacute;dia das permiss&otilde;es</span></div>
+            </div>
+            <div class="mc-explanation">✓ O acesso efetivo pela rede é sempre o mais restritivo entre as permissões de compartilhamento e as permissões NTFS. Controle Total (compartilhamento) + Leitura (NTFS) = Leitura.</div>
+        </div>
+        <hr class="mc-sep">
+        <div class="mc-question" data-correct="a">
+            <p class="mc-q-text">Qual comando PowerShell cria um novo compartilhamento SMB dando acesso total a todos?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span><code>New-SmbShare -Name "TI" -Path "C:\TI" -FullAccess "Everyone"</code></span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span><code>Add-SmbShare -ShareName "TI" -LocalPath "C:\TI" -Access "Full"</code></span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span><code>Create-Share -Name "TI" -Path "C:\TI" -Permission "Everyone:Full"</code></span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span><code>Set-SmbShare -Name "TI" -Path "C:\TI" -FullAccess "Everyone"</code></span></div>
+            </div>
+            <div class="mc-explanation">✓ New-SmbShare cria um novo compartilhamento SMB. O parâmetro -FullAccess define quem tem Controle Total no nível de compartilhamento. Set-SmbShare modifica compartilhamentos existentes.</div>
+        </div>
+        <hr class="mc-sep">
+        <div class="mc-question" data-correct="d">
+            <p class="mc-q-text">Qual &eacute; a sintaxe correta do caminho UNC para acessar o compartilhamento <strong>TI</strong> no servidor <strong>SRV-ESCOLA</strong>?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span><code>http://SRV-ESCOLA/TI</code></span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span><code>smb://SRV-ESCOLA/TI</code></span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span><code>/SRV-ESCOLA/TI</code></span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span><code>\\SRV-ESCOLA\TI</code></span></div>
+            </div>
+            <div class="mc-explanation">✓ O caminho UNC (Universal Naming Convention) usa duas barras invertidas antes do servidor e uma barra invertida antes do compartilhamento: \\servidor\compartilhamento.</div>
+        </div>
+        <hr class="mc-sep">
+        <div class="mc-question" data-correct="b">
+            <p class="mc-q-text">Qual a vantagem de controlar o acesso a pastas compartilhadas por <strong>grupos do AD</strong> em vez de por <strong>usu&aacute;rios individuais</strong>?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>Grupos t&ecirc;m permiss&otilde;es mais fortes que usu&aacute;rios individuais no NTFS</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>Ao mudar um usu&aacute;rio de grupo no AD, o acesso &agrave;s pastas &eacute; ajustado automaticamente sem alterar permiss&otilde;es NTFS</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>Grupos n&atilde;o podem ser removidos acidentalmente como usu&aacute;rios</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>Grupos reduzem o uso de espa&ccedil;o em disco no servidor</span></div>
+            </div>
+            <div class="mc-explanation">✓ Gerenciar permissões por grupos é muito mais escalável: mover um usuário entre grupos no AD ajusta automaticamente o acesso a todas as pastas — sem precisar modificar as ACLs NTFS de cada pasta individualmente.</div>
+        </div>
+    </div>
+
+    <div class="nav-footer">
+        <a href="ws07-dns-server.html" class="nav-link">&#x2B05; Anterior: DNS Server</a>
+        <a href="ws09-group-policy.html" class="nav-link">Pr&oacute;xima: Group Policy &#x27A1;</a>
+    </div>
+
+</div>
+
+<script src="slide-mode.js"></script>
+<script src="exercise-drag.js"></script>
+<script src="exercise-print.js"></script>
+<script src="exercise-mc.js"></script>
+</body>
+</html>
