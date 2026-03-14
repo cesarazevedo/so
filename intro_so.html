@@ -142,17 +142,17 @@
 
         <h3>Distros para iniciantes e desktop</h3>
         <div class="distro-grid">
-            <div class="distro-item">
+            <div class="distro-item di-ubuntu">
                 <div class="d-icon">🟠</div>
                 <strong>Ubuntu</strong>
                 <span>Mais popular. Fácil instalação. Ideal para começar.</span>
             </div>
-            <div class="distro-item">
+            <div class="distro-item di-mint">
                 <div class="d-icon">🌿</div>
                 <strong>Linux Mint</strong>
                 <span>Visual parecido com Windows. Ótimo para migrar.</span>
             </div>
-            <div class="distro-item">
+            <div class="distro-item di-zorin">
                 <div class="d-icon">🔵</div>
                 <strong>Zorin OS</strong>
                 <span>Design moderno. Pensa em ex-usuários Windows/Mac.</span>
@@ -161,17 +161,17 @@
 
         <h3>Distros para servidores e empresas</h3>
         <div class="distro-grid">
-            <div class="distro-item">
+            <div class="distro-item di-redhat">
                 <div class="d-icon">🎩</div>
                 <strong>Red Hat / RHEL</strong>
                 <span>Padrão corporativo. Usado em bancos e governos.</span>
             </div>
-            <div class="distro-item">
+            <div class="distro-item di-debian">
                 <div class="d-icon">🌀</div>
                 <strong>Debian</strong>
                 <span>Super estável. Base do Ubuntu. Servidores web.</span>
             </div>
-            <div class="distro-item">
+            <div class="distro-item di-rocky">
                 <div class="d-icon">🏔️</div>
                 <strong>Rocky / AlmaLinux</strong>
                 <span>Substituto gratuito do RHEL. Hospedagem de sites.</span>
@@ -208,14 +208,32 @@
         </div>
 
         <h3>Vantagens do Linux em servidores</h3>
-        <ul>
-            <li><strong>Gratuito:</strong> sem custos de licença por servidor ou por núcleo de CPU</li>
-            <li><strong>Estável:</strong> servidores Linux rodam por anos sem precisar reiniciar</li>
-            <li><strong>Seguro:</strong> arquitetura de permissões robusta, menos alvo de malwares</li>
-            <li><strong>Personalizável:</strong> instale apenas o que precisa, do kernel aos aplicativos</li>
-            <li><strong>Terminal poderoso:</strong> automação, scripts, administração remota via SSH</li>
-            <li><strong>Comunidade enorme:</strong> suporte, documentação e atualizações constantes</li>
-        </ul>
+        <div class="vantagens-grid">
+            <div class="vant-item">
+                <span class="vi-icon">💰</span>
+                <div><strong>Gratuito</strong><span>Sem custos de licença por servidor ou por núcleo de CPU</span></div>
+            </div>
+            <div class="vant-item">
+                <span class="vi-icon">🏗️</span>
+                <div><strong>Estável</strong><span>Servidores Linux rodam por anos sem precisar reiniciar</span></div>
+            </div>
+            <div class="vant-item">
+                <span class="vi-icon">🔒</span>
+                <div><strong>Seguro</strong><span>Arquitetura de permissões robusta, menos alvo de malwares</span></div>
+            </div>
+            <div class="vant-item">
+                <span class="vi-icon">🎛️</span>
+                <div><strong>Personalizável</strong><span>Instale apenas o que precisa, do kernel aos aplicativos</span></div>
+            </div>
+            <div class="vant-item">
+                <span class="vi-icon">⌨️</span>
+                <div><strong>Terminal poderoso</strong><span>Automação, scripts, administração remota via SSH</span></div>
+            </div>
+            <div class="vant-item">
+                <span class="vi-icon">🌐</span>
+                <div><strong>Comunidade enorme</strong><span>Suporte, documentação e atualizações constantes</span></div>
+            </div>
+        </div>
 
         <div class="tip-box">
             <p>💡 Google, Amazon AWS, Netflix, Facebook e praticamente todas as grandes empresas de tecnologia rodam seus serviços em Linux. Dominar Linux é uma habilidade essencial no mercado de TI.</p>
@@ -228,12 +246,28 @@
         <p>No Linux para servidores, a <strong>linha de comando (CLI — Command Line Interface)</strong> é a principal forma de interação. Embora existam interfaces gráficas (GNOME, KDE, XFCE), servidores quase sempre rodam sem interface gráfica para economizar recursos.</p>
 
         <h3>Por que aprender a linha de comando?</h3>
-        <ul>
-            <li>Servidores remotos acessados via SSH não têm interface gráfica</li>
-            <li>Automação com scripts Shell — tarefas repetitivas viram um único comando</li>
-            <li>Mais rápido e eficiente do que clicar em menus</li>
-            <li>Disponível em qualquer distribuição Linux, sem variação</li>
-        </ul>
+        <div class="razoes-grid">
+            <div class="razao-item">
+                <span class="ri-icon">🖥️</span>
+                <strong>Servidores via SSH</strong>
+                <span>Servidores remotos não têm interface gráfica — só o terminal</span>
+            </div>
+            <div class="razao-item">
+                <span class="ri-icon">⚙️</span>
+                <strong>Automação com Shell</strong>
+                <span>Tarefas repetitivas viram um único script executável</span>
+            </div>
+            <div class="razao-item">
+                <span class="ri-icon">⚡</span>
+                <strong>Velocidade</strong>
+                <span>Mais rápido e eficiente do que navegar em menus gráficos</span>
+            </div>
+            <div class="razao-item">
+                <span class="ri-icon">🔄</span>
+                <strong>Universal</strong>
+                <span>Disponível em qualquer distribuição Linux sem variação</span>
+            </div>
+        </div>
 
         <h3>Primeiros comandos que você deve conhecer</h3>
         <div class="terminal">
@@ -279,21 +313,58 @@
         <p>O Linux não é apenas um sistema operacional — é um ecossistema global de software livre, colaboração e inovação. Entender esse ecossistema ajuda o profissional de TI a se posicionar no mercado.</p>
 
         <h3>Quem usa Linux?</h3>
-        <ul>
-            <li><strong>Google, Amazon, Facebook, Netflix</strong> — toda a infraestrutura roda em Linux</li>
-            <li><strong>NASA e SpaceX</strong> — computadores de missões espaciais</li>
-            <li><strong>Bolsas de valores</strong> — sistemas de alta performance e baixa latência</li>
-            <li><strong>Android</strong> — o sistema do seu celular é baseado no kernel Linux</li>
-            <li><strong>Smart TVs, roteadores, geladeiras inteligentes</strong> — dispositivos IoT</li>
-        </ul>
+        <div class="uso-grid">
+            <div class="uso-item">
+                <span class="ui-icon">🔍</span>
+                <strong>Google</strong>
+                <p>Toda a infraestrutura e serviços em nuvem</p>
+            </div>
+            <div class="uso-item">
+                <span class="ui-icon">📦</span>
+                <strong>Amazon AWS</strong>
+                <p>Maior plataforma de nuvem do mundo</p>
+            </div>
+            <div class="uso-item">
+                <span class="ui-icon">🎬</span>
+                <strong>Netflix</strong>
+                <p>Streaming para 200+ milhões de usuários</p>
+            </div>
+            <div class="uso-item">
+                <span class="ui-icon">🚀</span>
+                <strong>NASA / SpaceX</strong>
+                <p>Computadores de missões espaciais</p>
+            </div>
+            <div class="uso-item">
+                <span class="ui-icon">📱</span>
+                <strong>Android</strong>
+                <p>Kernel Linux em 3 bilhões de celulares</p>
+            </div>
+            <div class="uso-item">
+                <span class="ui-icon">🏦</span>
+                <strong>Bolsas de Valores</strong>
+                <p>Alta performance e baixa latência</p>
+            </div>
+        </div>
 
         <h3>Como buscar ajuda</h3>
-        <ul>
-            <li><strong>man comando</strong> — manual do comando diretamente no terminal</li>
-            <li><strong>Ask Ubuntu, Stack Overflow</strong> — fóruns de perguntas e respostas</li>
-            <li><strong>Viva o Linux</strong> — maior comunidade brasileira de Linux</li>
-            <li><strong>Reddit r/linux, r/linuxbrasil</strong> — discussões e dicas</li>
-        </ul>
+        <div class="ajuda-grid">
+            <div class="ajuda-item">
+                <span class="ai-icon">📖</span>
+                <div><strong>man comando</strong><span>Manual completo direto no terminal — ex: <code>man ls</code></span></div>
+            </div>
+            <div class="ajuda-item">
+                <span class="ai-icon">💬</span>
+                <div><strong>Ask Ubuntu / Stack Overflow</strong><span>Fóruns internacionais de perguntas e respostas</span></div>
+            </div>
+            <div class="ajuda-item">
+                <span class="ai-icon">🇧🇷</span>
+                <div><strong>Viva o Linux</strong><span>Maior comunidade brasileira de Linux</span></div>
+            </div>
+            <div class="ajuda-item">
+                <span class="ai-icon">🗨️</span>
+                <div><strong>Reddit r/linuxbrasil</strong><span>Discussões, dicas e novidades em português</span></div>
+            </div>
+        </div>
 
         <div class="terminal">
             <div class="terminal-bar">

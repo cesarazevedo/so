@@ -360,6 +360,125 @@ li { margin-bottom: 8px; }
 .compare-box.red   h4 { color: #7f1d1d; }
 .compare-box.blue  h4 { color: #1e3a8a; }
 
+/* ── DISTROS ── */
+.distro-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin: 14px 0 20px;
+}
+.distro-item {
+    background: white;
+    border-radius: 14px;
+    padding: 18px 14px;
+    text-align: center;
+    border-top: 3px solid var(--primary);
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    transition: transform .2s, box-shadow .2s;
+}
+.distro-item:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(102,126,234,.18); }
+.d-icon { font-size: 2em; margin-bottom: 8px; display: block; }
+.distro-item strong { display: block; font-size: .93em; margin-bottom: 6px; color: var(--text-dark); }
+.distro-item span { font-size: .82em; color: #64748b; line-height: 1.4; }
+.distro-item.di-ubuntu { border-top-color: #f97316; }
+.distro-item.di-mint   { border-top-color: #16a34a; }
+.distro-item.di-zorin  { border-top-color: #3b82f6; }
+.distro-item.di-redhat { border-top-color: #ef4444; }
+.distro-item.di-debian { border-top-color: #6366f1; }
+.distro-item.di-rocky  { border-top-color: #0d9488; }
+
+/* ── STAT GRID ── */
+.stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin: 20px 0;
+}
+.stat-item {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 14px;
+    padding: 22px 10px;
+    text-align: center;
+    color: white;
+    box-shadow: 0 4px 14px rgba(102,126,234,.3);
+}
+.s-num   { font-size: 2.1em; font-weight: 900; line-height: 1; margin-bottom: 6px; }
+.s-label { font-size: .74em; opacity: .92; line-height: 1.4; }
+
+/* ── VANTAGENS (grid 2 colunas) ── */
+.vantagens-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 14px 0;
+}
+.vant-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: #f8f7ff;
+    border-radius: 12px;
+    padding: 14px 16px;
+}
+.vi-icon { font-size: 1.4em; flex-shrink: 0; margin-top: 2px; }
+.vant-item strong { display: block; font-size: .9em; margin-bottom: 3px; }
+.vant-item span   { font-size: .82em; color: #64748b; line-height: 1.4; }
+
+/* ── RAZÕES CLI ── */
+.razoes-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 14px 0;
+}
+.razao-item {
+    background: #f0f9ff;
+    border-left: 3px solid #0ea5e9;
+    border-radius: 0 12px 12px 0;
+    padding: 14px 16px;
+}
+.ri-icon { font-size: 1.4em; display: block; margin-bottom: 6px; }
+.razao-item strong { display: block; font-size: .9em; margin-bottom: 3px; color: #0c4a6e; }
+.razao-item span   { font-size: .82em; color: #475569; line-height: 1.4; }
+
+/* ── QUEM USA LINUX ── */
+.uso-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px;
+    margin: 14px 0;
+}
+.uso-item {
+    background: #f8f7ff;
+    border-radius: 12px;
+    padding: 14px 10px;
+    text-align: center;
+    border-bottom: 3px solid var(--primary);
+}
+.ui-icon { font-size: 1.8em; display: block; margin-bottom: 6px; }
+.uso-item strong { display: block; font-size: .85em; color: var(--text-dark); margin-bottom: 4px; }
+.uso-item p { font-size: .78em; color: #64748b; margin: 0; line-height: 1.4; }
+
+/* ── COMO BUSCAR AJUDA ── */
+.ajuda-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 14px 0;
+}
+.ajuda-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: #f0fdf4;
+    border-radius: 12px;
+    padding: 14px 16px;
+    border-left: 3px solid #16a34a;
+}
+.ai-icon { font-size: 1.5em; flex-shrink: 0; }
+.ajuda-item strong { display: block; font-size: .88em; color: #14532d; margin-bottom: 3px; font-family: 'Consolas', monospace; }
+.ajuda-item span   { font-size: .82em; color: #475569; line-height: 1.4; }
+
 /* ── 4 LIBERDADES GRID ── */
 .liberdades-grid {
     display: grid;
@@ -505,4 +624,9 @@ li { margin-bottom: 8px; }
     .compare-grid { grid-template-columns: 1fr; }
     .dora-grid { grid-template-columns: 1fr 1fr; }
     .liberdades-grid { grid-template-columns: 1fr; }
+    .distro-grid     { grid-template-columns: 1fr 1fr; }
+    .stat-grid       { grid-template-columns: repeat(2, 1fr); }
+    .vantagens-grid  { grid-template-columns: 1fr; }
+    .razoes-grid     { grid-template-columns: 1fr; }
+    .ajuda-grid      { grid-template-columns: 1fr; }
 }
