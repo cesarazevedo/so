@@ -360,6 +360,56 @@ li { margin-bottom: 8px; }
 .compare-box.red   h4 { color: #7f1d1d; }
 .compare-box.blue  h4 { color: #1e3a8a; }
 
+/* ── 4 LIBERDADES GRID ── */
+.liberdades-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin: 16px 0;
+}
+.lib-card {
+    border-radius: 14px;
+    padding: 18px 20px;
+    position: relative;
+    overflow: hidden;
+}
+/* Número fantasma de fundo */
+.lib-card::before {
+    content: attr(data-num);
+    position: absolute;
+    right: 14px;
+    bottom: 4px;
+    font-size: 4em;
+    font-weight: 900;
+    opacity: .07;
+    line-height: 1;
+    pointer-events: none;
+}
+.lib-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    font-size: .82em;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 10px;
+    flex-shrink: 0;
+}
+.lib-card strong { display: block; font-size: .95em; margin-bottom: 5px; }
+.lib-card p { font-size: .88em; color: #475569; margin: 0; line-height: 1.5; }
+
+.lib-card.l0 { background: #eff6ff; border-top: 3px solid #3b82f6; }
+.lib-card.l0 .lib-num { background: #3b82f6; }
+.lib-card.l1 { background: #fdf4ff; border-top: 3px solid #a855f7; }
+.lib-card.l1 .lib-num { background: #a855f7; }
+.lib-card.l2 { background: #f0fdf4; border-top: 3px solid #16a34a; }
+.lib-card.l2 .lib-num { background: #16a34a; }
+.lib-card.l3 { background: #fff7ed; border-top: 3px solid #f97316; }
+.lib-card.l3 .lib-num { background: #f97316; }
+
 /* ── TIMELINE ── */
 .timeline {
     position: relative;
@@ -454,4 +504,5 @@ li { margin-bottom: 8px; }
     .hero-title { font-size: 1.5em; }
     .compare-grid { grid-template-columns: 1fr; }
     .dora-grid { grid-template-columns: 1fr 1fr; }
+    .liberdades-grid { grid-template-columns: 1fr; }
 }
