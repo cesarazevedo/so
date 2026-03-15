@@ -19,10 +19,11 @@
             margin: 16px 0;
             box-shadow: 0 4px 20px rgba(0,0,0,.3);
         }
+        .dir-tree div     { display: flex; align-items: baseline; gap: 0; }
         .dir-tree .root   { color: #fc8181; font-weight: 700; }
-        .dir-tree .branch { color: #4a5568; }
-        .dir-tree .name   { color: #63b3ed; }
-        .dir-tree .note   { color: #4a5568; font-style: italic; font-size: .85em; }
+        .dir-tree .branch { color: #4a5568; white-space: pre; }
+        .dir-tree .name   { color: #63b3ed; min-width: 70px; }
+        .dir-tree .note   { color: #4a5568; font-style: italic; font-size: .85em; margin-left: 8px; }
 
         /* ── GRID DE DIRETÓRIOS (substituindo a tabela) ── */
         .dir-grid {
@@ -249,22 +250,22 @@
         <p>Veja a estrutura completa que você encontra ao executar <code>ls /</code> em qualquer sistema Linux:</p>
 
         <div class="dir-tree">
-<span class="root">/</span>
-<span class="branch">├── </span><span class="name">bin  </span>   <span class="note">← Comandos essenciais para todos os usuários</span>
-<span class="branch">├── </span><span class="name">boot </span>   <span class="note">← Arquivos de inicialização do sistema</span>
-<span class="branch">├── </span><span class="name">dev  </span>   <span class="note">← Dispositivos de hardware</span>
-<span class="branch">├── </span><span class="name">etc  </span>   <span class="note">← Configurações do sistema</span>
-<span class="branch">├── </span><span class="name">home </span>   <span class="note">← Diretórios pessoais dos usuários</span>
-<span class="branch">├── </span><span class="name">lib  </span>   <span class="note">← Bibliotecas compartilhadas</span>
-<span class="branch">├── </span><span class="name">media</span>   <span class="note">← Mídias removíveis (pendrive, CD)</span>
-<span class="branch">├── </span><span class="name">mnt  </span>   <span class="note">← Montagens temporárias manuais</span>
-<span class="branch">├── </span><span class="name">opt  </span>   <span class="note">← Programas opcionais de terceiros</span>
-<span class="branch">├── </span><span class="name">proc </span>   <span class="note">← Sistema virtual: processos e kernel</span>
-<span class="branch">├── </span><span class="name">root </span>   <span class="note">← Home do superusuário (root)</span>
-<span class="branch">├── </span><span class="name">sbin </span>   <span class="note">← Comandos de administração (root)</span>
-<span class="branch">├── </span><span class="name">tmp  </span>   <span class="note">← Arquivos temporários (apagados no boot)</span>
-<span class="branch">├── </span><span class="name">usr  </span>   <span class="note">← Programas instalados pelo usuário</span>
-<span class="branch">└── </span><span class="name">var  </span>   <span class="note">← Dados variáveis: logs, spool, sites</span>
+            <div><span class="root">/</span></div>
+            <div><span class="branch">├── </span><span class="name">bin  </span><span class="note">← Comandos essenciais para todos os usuários</span></div>
+            <div><span class="branch">├── </span><span class="name">boot </span><span class="note">← Arquivos de inicialização do sistema</span></div>
+            <div><span class="branch">├── </span><span class="name">dev  </span><span class="note">← Dispositivos de hardware</span></div>
+            <div><span class="branch">├── </span><span class="name">etc  </span><span class="note">← Configurações do sistema</span></div>
+            <div><span class="branch">├── </span><span class="name">home </span><span class="note">← Diretórios pessoais dos usuários</span></div>
+            <div><span class="branch">├── </span><span class="name">lib  </span><span class="note">← Bibliotecas compartilhadas</span></div>
+            <div><span class="branch">├── </span><span class="name">media</span><span class="note">← Mídias removíveis (pendrive, CD)</span></div>
+            <div><span class="branch">├── </span><span class="name">mnt  </span><span class="note">← Montagens temporárias manuais</span></div>
+            <div><span class="branch">├── </span><span class="name">opt  </span><span class="note">← Programas opcionais de terceiros</span></div>
+            <div><span class="branch">├── </span><span class="name">proc </span><span class="note">← Sistema virtual: processos e kernel</span></div>
+            <div><span class="branch">├── </span><span class="name">root </span><span class="note">← Home do superusuário (root)</span></div>
+            <div><span class="branch">├── </span><span class="name">sbin </span><span class="note">← Comandos de administração (root)</span></div>
+            <div><span class="branch">├── </span><span class="name">tmp  </span><span class="note">← Arquivos temporários (apagados no boot)</span></div>
+            <div><span class="branch">├── </span><span class="name">usr  </span><span class="note">← Programas instalados pelo usuário</span></div>
+            <div><span class="branch">└── </span><span class="name">var  </span><span class="note">← Dados variáveis: logs, spool, sites</span></div>
         </div>
 
         <h3>⭐ Regra de Ouro — Os 3 mais importantes do dia a dia</h3>
