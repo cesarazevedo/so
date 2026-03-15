@@ -7,6 +7,221 @@
     <link rel="stylesheet" href="slide-mode.css">
     <link rel="stylesheet" href="exercise.css">
     <link rel="stylesheet" href="lesson.css">
+    <style>
+
+        /* ── TIPOS DE USUÁRIO ── */
+        .user-types-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin: 20px 0;
+        }
+        .user-type-card {
+            border-radius: 14px;
+            padding: 22px 18px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .user-type-card::before {
+            content: attr(data-uid);
+            position: absolute;
+            right: 10px; bottom: 4px;
+            font-size: 3em;
+            font-weight: 900;
+            opacity: .07;
+            line-height: 1;
+            font-family: 'Consolas', monospace;
+        }
+        .user-type-card.ut-root   { background: #fff1f2; border-top: 3px solid #ef4444; }
+        .user-type-card.ut-comum  { background: #f0fdf4; border-top: 3px solid #16a34a; }
+        .user-type-card.ut-system { background: #eff6ff; border-top: 3px solid #3b82f6; }
+        .ut-icon  { font-size: 2em; margin-bottom: 8px; display: block; }
+        .ut-title { font-size: .95em; font-weight: 700; display: block; margin-bottom: 6px; }
+        .user-type-card.ut-root   .ut-title { color: #b91c1c; }
+        .user-type-card.ut-comum  .ut-title { color: #065f46; }
+        .user-type-card.ut-system .ut-title { color: #1e40af; }
+        .ut-uid   { font-family: 'Consolas', monospace; font-size: .78em; font-weight: 600;
+                    display: inline-block; padding: 2px 10px; border-radius: 999px; margin-bottom: 8px; }
+        .user-type-card.ut-root   .ut-uid { background: #fee2e2; color: #b91c1c; }
+        .user-type-card.ut-comum  .ut-uid { background: #dcfce7; color: #065f46; }
+        .user-type-card.ut-system .ut-uid { background: #dbeafe; color: #1e40af; }
+        .ut-desc  { font-size: .8em; color: #475569; line-height: 1.5; }
+
+        /* ── COMPARAÇÃO useradd vs adduser ── */
+        .tool-compare {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin: 16px 0;
+        }
+        .tool-box {
+            border-radius: 12px;
+            padding: 18px;
+        }
+        .tool-box.tb-script { background: #eff6ff; border-top: 3px solid #3b82f6; }
+        .tool-box.tb-manual { background: #f0fdf4; border-top: 3px solid #16a34a; }
+        .tool-box h4 { font-size: .9em; margin-bottom: 10px; font-family: 'Consolas', monospace; }
+        .tool-box.tb-script h4 { color: #1e40af; }
+        .tool-box.tb-manual h4 { color: #065f46; }
+        .tool-item {
+            display: flex; align-items: flex-start; gap: 8px;
+            font-size: .82em; color: #475569; padding: 4px 0;
+            border-bottom: 1px solid rgba(0,0,0,.05);
+        }
+        .tool-item:last-child { border-bottom: none; }
+        .ti-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+        .tb-script .ti-dot { background: #3b82f6; }
+        .tb-manual .ti-dot { background: #16a34a; }
+
+        /* ── FLAGS GRID (useradd) ── */
+        .flag-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin: 14px 0;
+        }
+        .flag-card {
+            background: #0f172a;
+            border-radius: 10px;
+            padding: 14px 12px;
+            border-top: 2px solid var(--primary);
+        }
+        .fc-flag { font-family: 'Consolas', monospace; font-size: .9em; color: #f6e05e; font-weight: 700; display: block; margin-bottom: 5px; }
+        .fc-desc { font-size: .76em; color: #94a3b8; line-height: 1.4; }
+
+        /* ── PASSWD VISUAL (campos) ── */
+        .passwd-breakdown {
+            background: #1a202c;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 16px 0;
+            overflow-x: auto;
+        }
+        .pb-row {
+            display: flex;
+            align-items: stretch;
+            gap: 3px;
+            font-family: 'Consolas', monospace;
+            font-size: .82em;
+            margin-bottom: 14px;
+        }
+        .pb-field {
+            border-radius: 6px;
+            padding: 8px 10px;
+            text-align: center;
+            font-weight: 700;
+            color: white;
+            white-space: nowrap;
+        }
+        .pb-sep { color: #4a5568; display: flex; align-items: center; padding: 0 1px; font-size: 1.1em; }
+        .pb-f1 { background: #16a34a; }
+        .pb-f2 { background: #6b7280; }
+        .pb-f3 { background: #2563eb; }
+        .pb-f4 { background: #7c3aed; }
+        .pb-f5 { background: #d97706; }
+        .pb-f6 { background: #dc2626; }
+        .pb-f7 { background: #0d9488; }
+
+        .pb-legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 8px;
+            margin-top: 4px;
+        }
+        .pb-leg-item {
+            display: flex; align-items: center; gap: 8px; font-size: .78em; color: #a0aec0;
+        }
+        .pb-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+
+        /* ── SUDO VS SU ── */
+        .sudo-compare {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 14px;
+            align-items: center;
+            margin: 16px 0;
+        }
+        .sudo-box {
+            border-radius: 14px;
+            padding: 20px;
+            text-align: center;
+        }
+        .sudo-box.sb-green { background: #f0fdf4; border-top: 3px solid #16a34a; }
+        .sudo-box.sb-red   { background: #fff1f2; border-top: 3px solid #ef4444; }
+        .sudo-box h4 { font-family: 'Consolas', monospace; font-size: 1em; font-weight: 700; margin-bottom: 8px; }
+        .sudo-box.sb-green h4 { color: #065f46; }
+        .sudo-box.sb-red   h4 { color: #b91c1c; }
+        .sudo-box p  { font-size: .82em; color: #475569; line-height: 1.5; }
+        .sudo-vs { font-size: 1.4em; color: #94a3b8; font-weight: 700; text-align: center; }
+
+        /* ── GRUPOS IMPORTANTES ── */
+        .grupos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 10px;
+            margin: 14px 0;
+        }
+        .grupo-card {
+            border-radius: 10px;
+            padding: 14px 16px;
+            background: #f8f7ff;
+            border-left: 3px solid var(--primary);
+        }
+        .gc-name { font-family: 'Consolas', monospace; font-size: .88em; font-weight: 700; color: var(--primary); display: block; margin-bottom: 4px; }
+        .gc-desc { font-size: .78em; color: #475569; line-height: 1.4; }
+        .grupo-card.g-red    { border-left-color: #ef4444; background: #fff1f2; }
+        .grupo-card.g-red    .gc-name { color: #b91c1c; }
+        .grupo-card.g-green  { border-left-color: #16a34a; background: #f0fdf4; }
+        .grupo-card.g-green  .gc-name { color: #065f46; }
+        .grupo-card.g-blue   { border-left-color: #3b82f6; background: #eff6ff; }
+        .grupo-card.g-blue   .gc-name { color: #1e40af; }
+        .grupo-card.g-orange { border-left-color: #f97316; background: #fff7ed; }
+        .grupo-card.g-orange .gc-name { color: #c2410c; }
+
+        /* ── PASSWD FLAGS ── */
+        .passwd-flags {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 10px;
+            margin: 14px 0;
+        }
+        .pf-card {
+            background: #f8f7ff;
+            border-radius: 10px;
+            padding: 12px 14px;
+            border-top: 2px solid var(--primary);
+            text-align: center;
+        }
+        .pf-flag { font-family: 'Consolas', monospace; font-size: .95em; font-weight: 700; color: var(--primary); display: block; margin-bottom: 5px; }
+        .pf-desc { font-size: .76em; color: #475569; line-height: 1.4; }
+
+        /* ── CMD MONITOR ── */
+        .monitor-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin: 14px 0;
+        }
+        .monitor-card {
+            background: #f8f7ff;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            border-top: 3px solid var(--primary);
+            transition: transform .2s, box-shadow .2s;
+        }
+        .monitor-card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(102,126,234,.15); }
+        .mc-cmd  { font-family: 'Consolas', monospace; font-size: 1em; color: var(--primary); font-weight: 700; display: block; margin-bottom: 6px; }
+        .mc-desc { font-size: .78em; color: #475569; line-height: 1.4; }
+
+        @media (max-width: 768px) {
+            .user-types-grid { grid-template-columns: 1fr; }
+            .tool-compare    { grid-template-columns: 1fr; }
+            .sudo-compare    { grid-template-columns: 1fr; }
+            .sudo-vs         { display: none; }
+        }
+    </style>
 </head>
 <body>
 
@@ -23,34 +238,34 @@
         <p class="subtitle">Aula 1.4 — Crie, modifique e organize contas de usuário. Configure grupos e use sudo com segurança</p>
     </div>
 
-    <!-- CARD 1 — Conceito de usuários e grupos -->
+    <!-- CARD 1 — Usuários e Grupos -->
     <div class="content-card">
         <h2>🏢 Usuários e Grupos no Linux</h2>
-        <p>O Linux é um sistema multiusuário por natureza. Cada pessoa ou serviço que acessa o sistema possui uma conta com permissões específicas. Pense em uma empresa: cada funcionário tem seu crachá (login), sua mesa (pasta home) e acesso apenas às salas autorizadas (permissões).</p>
+        <p>O Linux é um sistema <strong>multiusuário por natureza</strong>. Cada pessoa ou serviço que acessa o sistema possui uma conta com permissões específicas. Pense em uma empresa: cada funcionário tem seu crachá (login), sua mesa (pasta home) e acesso apenas às salas autorizadas (permissões).</p>
 
-        <div class="user-types">
-            <div class="user-type-box" style="background:#fee2e2;">
-                <div class="u-icon">👑</div>
-                <strong style="color:#e53e3e;">Root (UID 0)</strong>
-                <span>O superusuário. Pode tudo no sistema. Equivale à chave mestra do prédio.</span>
-                <span style="margin-top:6px;font-weight:700;color:#e53e3e;">⚠️ Use com extremo cuidado!</span>
+        <div class="user-types-grid">
+            <div class="user-type-card ut-root" data-uid="0">
+                <span class="ut-icon">👑</span>
+                <span class="ut-title">Root</span>
+                <span class="ut-uid">UID = 0</span>
+                <span class="ut-desc">O superusuário. Pode <strong>tudo</strong> no sistema. Equivale à chave mestra do prédio. Use com extremo cuidado!</span>
             </div>
-            <div class="user-type-box" style="background:#d1fae5;">
-                <div class="u-icon">👨‍💻</div>
-                <strong style="color:#38a169;">Usuários Comuns</strong>
-                <span>Pessoas reais. Cada uma tem sua pasta home e permissões limitadas.</span>
-                <span style="margin-top:6px;font-weight:600;color:#38a169;">UID: 1000 em diante</span>
+            <div class="user-type-card ut-comum" data-uid="1000+">
+                <span class="ut-icon">👨‍💻</span>
+                <span class="ut-title">Usuários Comuns</span>
+                <span class="ut-uid">UID ≥ 1000</span>
+                <span class="ut-desc">Pessoas reais. Cada uma tem sua pasta home e permissões limitadas ao que lhe foi concedido.</span>
             </div>
-            <div class="user-type-box" style="background:#dbeafe;">
-                <div class="u-icon">⚙️</div>
-                <strong style="color:#3182ce;">Usuários de Sistema</strong>
-                <span>Contas para serviços (apache, mysql...). Não são pessoas, são programas!</span>
-                <span style="margin-top:6px;font-weight:600;color:#3182ce;">UID: 1 a 999</span>
+            <div class="user-type-card ut-system" data-uid="1-999">
+                <span class="ut-icon">⚙️</span>
+                <span class="ut-title">Usuários de Sistema</span>
+                <span class="ut-uid">UID 1 – 999</span>
+                <span class="ut-desc">Contas para serviços (apache, mysql…). Não são pessoas — são <strong>programas</strong> rodando!</span>
             </div>
         </div>
 
         <h3>Por que grupos existem?</h3>
-        <p>Grupos permitem gerenciar permissões em massa. Em vez de dar acesso a uma pasta para cada usuário individualmente, você cria um grupo "equipe-dev", adiciona os membros e define permissões uma única vez. Todo usuário tem um <strong>grupo primário</strong> (criado com o usuário) e pode pertencer a múltiplos <strong>grupos secundários</strong>.</p>
+        <p>Grupos permitem gerenciar permissões em massa. Em vez de dar acesso a uma pasta para cada usuário individualmente, você cria um grupo <code>equipe-dev</code>, adiciona os membros e define permissões uma única vez. Todo usuário tem um <strong>grupo primário</strong> (criado com o usuário) e pode pertencer a múltiplos <strong>grupos secundários</strong>.</p>
 
         <div class="terminal">
             <div class="terminal-bar">
@@ -72,29 +287,50 @@
         </div>
     </div>
 
-    <!-- CARD 2 — useradd / userdel / usermod -->
+    <!-- CARD 2 — Criando Usuários -->
     <div class="content-card">
         <h2>➕ Criando e Gerenciando Usuários</h2>
-        <p>O Linux oferece dois conjuntos de ferramentas para criar usuários: <code>useradd</code> (baixo nível, ideal para scripts) e <code>adduser</code> (interativo, mais amigável em Debian/Ubuntu). Ambos produzem o mesmo resultado, mas com experiências diferentes.</p>
+        <p>O Linux oferece dois conjuntos de ferramentas: <code>useradd</code> (baixo nível, ideal para scripts) e <code>adduser</code> (interativo, mais amigável em Debian/Ubuntu). Mesmo resultado — experiências diferentes.</p>
 
-        <div class="two-col">
-            <div class="col-box">
+        <div class="tool-compare">
+            <div class="tool-box tb-script">
                 <h4>useradd — para scripts</h4>
-                <ul>
-                    <li>Não é interativo</li>
-                    <li>Precisa de opções explícitas</li>
-                    <li>Disponível em todas as distros</li>
-                    <li>Ideal para automação</li>
-                </ul>
+                <div class="tool-item"><span class="ti-dot"></span>Não é interativo</div>
+                <div class="tool-item"><span class="ti-dot"></span>Precisa de opções explícitas</div>
+                <div class="tool-item"><span class="ti-dot"></span>Disponível em todas as distros</div>
+                <div class="tool-item"><span class="ti-dot"></span>Ideal para automação</div>
             </div>
-            <div class="col-box">
+            <div class="tool-box tb-manual">
                 <h4>adduser — para uso manual</h4>
-                <ul>
-                    <li>Interativo e amigável</li>
-                    <li>Configura tudo automaticamente</li>
-                    <li>Disponível no Debian/Ubuntu</li>
-                    <li>Ideal para o dia a dia</li>
-                </ul>
+                <div class="tool-item"><span class="ti-dot"></span>Interativo e amigável</div>
+                <div class="tool-item"><span class="ti-dot"></span>Configura tudo automaticamente</div>
+                <div class="tool-item"><span class="ti-dot"></span>Disponível no Debian/Ubuntu</div>
+                <div class="tool-item"><span class="ti-dot"></span>Ideal para o dia a dia</div>
+            </div>
+        </div>
+
+        <h3>Principais opções do useradd</h3>
+
+        <div class="flag-cards">
+            <div class="flag-card">
+                <span class="fc-flag">-m</span>
+                <span class="fc-desc">Cria a pasta home — sem isso, ela não é criada!</span>
+            </div>
+            <div class="flag-card">
+                <span class="fc-flag">-s /bin/bash</span>
+                <span class="fc-desc">Define o shell padrão do usuário</span>
+            </div>
+            <div class="flag-card">
+                <span class="fc-flag">-c "Nome"</span>
+                <span class="fc-desc">Comentário com o nome real do usuário</span>
+            </div>
+            <div class="flag-card">
+                <span class="fc-flag">-g grupo</span>
+                <span class="fc-desc">Define o grupo primário na criação</span>
+            </div>
+            <div class="flag-card">
+                <span class="fc-flag">-G g1,g2</span>
+                <span class="fc-desc">Define grupos secundários na criação</span>
             </div>
         </div>
 
@@ -121,65 +357,62 @@
             </div>
         </div>
 
-        <h3>Principais opções do useradd</h3>
-        <ul>
-            <li><code>-m</code> — cria a pasta home do usuário (sem isso, não cria!)</li>
-            <li><code>-s /bin/bash</code> — define o shell padrão do usuário</li>
-            <li><code>-c "Nome Completo"</code> — comentário com o nome real</li>
-            <li><code>-g grupo</code> — define o grupo primário</li>
-            <li><code>-G grupo1,grupo2</code> — define grupos secundários na criação</li>
-        </ul>
-
         <div class="alert-box">
-            <p>⚠️ <strong>Atenção!</strong> <code>useradd joao</code> sem a opção <code>-m</code> NÃO cria a pasta home. O usuário existirá no sistema, mas sem seu diretório pessoal. Sempre use <code>-m</code> ao criar usuários comuns, ou prefira <code>adduser</code>.</p>
+            <p>⚠️ <strong>Atenção!</strong> <code>useradd joao</code> sem a opção <code>-m</code> <strong>NÃO cria a pasta home</strong>. O usuário existirá no sistema, mas sem seu diretório pessoal. Sempre use <code>-m</code> ao criar usuários comuns, ou prefira <code>adduser</code>.</p>
         </div>
     </div>
 
     <!-- CARD 3 — /etc/passwd e /etc/shadow -->
     <div class="content-card">
         <h2>📄 Os Arquivos /etc/passwd e /etc/shadow</h2>
-        <p>Todos os usuários do sistema ficam registrados em <code>/etc/passwd</code>. Este arquivo é legível por todos, pois muitos programas precisam consultar informações de usuários. Por isso, as <strong>senhas</strong> ficam separadas em <code>/etc/shadow</code>, acessível apenas pelo root.</p>
+        <p>Todos os usuários ficam registrados em <code>/etc/passwd</code> — legível por todos, pois programas precisam consultar dados de usuários. As <strong>senhas</strong> ficam em <code>/etc/shadow</code>, acessível apenas pelo root.</p>
 
-        <h3>Estrutura do /etc/passwd</h3>
-        <p>Cada linha representa um usuário, com sete campos separados por <code>:</code>:</p>
+        <h3>Estrutura do /etc/passwd — 7 campos separados por ":"</h3>
 
-        <div class="passwd-visual">
-            <span class="pf pf-user">usuario</span>
-            <span class="pf-sep">:</span>
-            <span class="pf pf-pass">x</span>
-            <span class="pf-sep">:</span>
-            <span class="pf pf-uid">1000</span>
-            <span class="pf-sep">:</span>
-            <span class="pf pf-gid">1000</span>
-            <span class="pf-sep">:</span>
-            <span class="pf pf-info">Usuário da Silva</span>
-            <span class="pf-sep">:</span>
-            <span class="pf pf-home">/home/usuario</span>
-            <span class="pf-sep">:</span>
-            <span class="pf pf-shell">/bin/bash</span>
+        <div class="passwd-breakdown">
+            <div class="pb-row">
+                <span class="pb-field pb-f1">usuario</span>
+                <span class="pb-sep">:</span>
+                <span class="pb-field pb-f2">x</span>
+                <span class="pb-sep">:</span>
+                <span class="pb-field pb-f3">1000</span>
+                <span class="pb-sep">:</span>
+                <span class="pb-field pb-f4">1000</span>
+                <span class="pb-sep">:</span>
+                <span class="pb-field pb-f5">Usuário da Silva</span>
+                <span class="pb-sep">:</span>
+                <span class="pb-field pb-f6">/home/usuario</span>
+                <span class="pb-sep">:</span>
+                <span class="pb-field pb-f7">/bin/bash</span>
+            </div>
+            <div class="pb-legend">
+                <div class="pb-leg-item"><span class="pb-dot" style="background:#16a34a;"></span>Login — nome do usuário</div>
+                <div class="pb-leg-item"><span class="pb-dot" style="background:#6b7280;"></span>x — senha em /etc/shadow</div>
+                <div class="pb-leg-item"><span class="pb-dot" style="background:#2563eb;"></span>UID — identificador único</div>
+                <div class="pb-leg-item"><span class="pb-dot" style="background:#7c3aed;"></span>GID — grupo primário</div>
+                <div class="pb-leg-item"><span class="pb-dot" style="background:#d97706;"></span>Info — nome completo</div>
+                <div class="pb-leg-item"><span class="pb-dot" style="background:#dc2626;"></span>Home — diretório pessoal</div>
+                <div class="pb-leg-item"><span class="pb-dot" style="background:#0d9488;"></span>Shell — shell padrão</div>
+            </div>
         </div>
 
-        <div class="two-col" style="margin-top:12px;">
-            <div class="col-box">
-                <h4>Campos do /etc/passwd</h4>
-                <ul>
-                    <li><span style="background:#38a169;color:white;padding:1px 6px;border-radius:3px;font-size:.82em;">Login</span> — nome de usuário</li>
-                    <li><span style="background:#718096;color:white;padding:1px 6px;border-radius:3px;font-size:.82em;">x</span> — senha está em /etc/shadow</li>
-                    <li><span style="background:#3182ce;color:white;padding:1px 6px;border-radius:3px;font-size:.82em;">UID</span> — identificador numérico único</li>
-                    <li><span style="background:#805ad5;color:white;padding:1px 6px;border-radius:3px;font-size:.82em;">GID</span> — grupo primário</li>
-                    <li><span style="background:#d69e2e;color:white;padding:1px 6px;border-radius:3px;font-size:.82em;">Info</span> — nome completo ou comentário</li>
-                    <li><span style="background:#e53e3e;color:white;padding:1px 6px;border-radius:3px;font-size:.82em;">Home</span> — diretório pessoal</li>
-                    <li><span style="background:#38b2ac;color:white;padding:1px 6px;border-radius:3px;font-size:.82em;">Shell</span> — shell padrão do usuário</li>
+        <div class="compare-grid">
+            <div class="compare-box blue">
+                <h4>📂 /etc/passwd</h4>
+                <ul style="font-size:.85em;padding-left:16px;">
+                    <li>Legível por qualquer usuário</li>
+                    <li>Contém informações básicas da conta</li>
+                    <li>O campo de senha mostra apenas <code>x</code></li>
+                    <li>Consultado por muitos programas do sistema</li>
                 </ul>
             </div>
-            <div class="col-box">
-                <h4>/etc/shadow — segurança de senhas</h4>
-                <ul>
-                    <li>Apenas root pode ler este arquivo</li>
-                    <li>A senha é armazenada como <strong>hash</strong> — impossível de reverter</li>
-                    <li><code>$6$</code> no hash indica SHA-512 (muito seguro)</li>
+            <div class="compare-box red">
+                <h4>🔒 /etc/shadow</h4>
+                <ul style="font-size:.85em;padding-left:16px;">
+                    <li>Apenas root pode ler</li>
+                    <li>Senha armazenada como <strong>hash</strong> — irreversível</li>
+                    <li><code>$6$</code> no hash = SHA-512 (muito seguro)</li>
                     <li>Contém políticas de expiração de senha</li>
-                    <li>Tentar ler sem permissão retorna: <em>Permissão negada</em></li>
                 </ul>
             </div>
         </div>
@@ -228,50 +461,59 @@
 <span class="t-root">root@servidor:~#</span> <span class="t-cmd">getent</span> <span class="t-arg">group desenvolvedores</span>
 <span class="t-out">desenvolvedores:x:1002:maria,joao</span>
 
-<span class="t-comment"># Remover grupo (só funciona se não for grupo primário de ninguém)</span>
+<span class="t-comment"># Remover grupo (só se não for grupo primário de ninguém)</span>
 <span class="t-root">root@servidor:~#</span> <span class="t-cmd">groupdel</span> <span class="t-arg">desenvolvedores</span>
             </div>
         </div>
 
         <h3>Grupos importantes do sistema</h3>
-        <div class="two-col">
-            <div class="col-box">
-                <h4>Grupos de privilégio</h4>
-                <ul>
-                    <li><code>sudo</code> — membros podem usar sudo (Debian/Ubuntu)</li>
-                    <li><code>wheel</code> — equivalente a sudo no CentOS/RHEL</li>
-                    <li><code>adm</code> — pode ler logs do sistema em /var/log</li>
-                </ul>
+
+        <div class="grupos-grid">
+            <div class="grupo-card g-red">
+                <span class="gc-name">sudo</span>
+                <span class="gc-desc">Membros podem usar sudo — acesso administrativo (Debian/Ubuntu)</span>
             </div>
-            <div class="col-box">
-                <h4>Grupos de serviço</h4>
-                <ul>
-                    <li><code>www-data</code> — servidor web Apache/Nginx</li>
-                    <li><code>docker</code> — uso de containers Docker</li>
-                    <li><code>dialout</code> — acesso a portas seriais</li>
-                </ul>
+            <div class="grupo-card g-red">
+                <span class="gc-name">wheel</span>
+                <span class="gc-desc">Equivalente a sudo no CentOS/RHEL/Fedora</span>
+            </div>
+            <div class="grupo-card g-blue">
+                <span class="gc-name">adm</span>
+                <span class="gc-desc">Pode ler logs do sistema em /var/log</span>
+            </div>
+            <div class="grupo-card g-green">
+                <span class="gc-name">www-data</span>
+                <span class="gc-desc">Servidor web Apache/Nginx — dono dos arquivos do site</span>
+            </div>
+            <div class="grupo-card g-orange">
+                <span class="gc-name">docker</span>
+                <span class="gc-desc">Permite usar containers Docker sem sudo</span>
+            </div>
+            <div class="grupo-card g-blue">
+                <span class="gc-name">dialout</span>
+                <span class="gc-desc">Acesso a portas seriais e USB</span>
             </div>
         </div>
 
         <div class="alert-box">
-            <p>⚠️ <strong>Diferença crítica:</strong> <code>usermod -G grupo usuario</code> <strong>substitui</strong> todos os grupos secundários existentes! Use sempre <code>usermod -aG grupo usuario</code> (com o <code>-a</code> de append) para apenas adicionar sem remover os grupos atuais.</p>
+            <p>⚠️ <strong>Diferença crítica:</strong> <code>usermod -G grupo usuario</code> <strong>substitui</strong> todos os grupos secundários existentes! Use sempre <code>usermod -aG grupo usuario</code> (com o <code>-a</code> de <em>append</em>) para apenas adicionar sem remover os grupos atuais.</p>
         </div>
     </div>
 
-    <!-- CARD 5 — sudo e /etc/sudoers -->
+    <!-- CARD 5 — sudo -->
     <div class="content-card">
         <h2>🦸 sudo e o Arquivo /etc/sudoers</h2>
-        <p><strong>sudo</strong> significa <em>Super User DO</em>. Permite que um usuário comum execute comandos específicos com privilégios de root, sem precisar logar como root. É mais seguro porque registra tudo em log e exige autenticação do próprio usuário.</p>
+        <p><strong>sudo</strong> significa <em>Super User DO</em>. Permite que um usuário comum execute comandos com privilégios de root, sem precisar logar como root. É mais seguro porque registra tudo em log e exige autenticação do próprio usuário.</p>
 
-        <div class="sudo-row">
-            <div class="sudo-box" style="background:#d1fae5;">
-                <h4 style="color:#38a169;">sudo comando</h4>
-                <p style="font-size:.88em;">Executa <strong>um</strong> comando como root e volta. Usa <em>sua</em> senha. Registra no log.</p>
+        <div class="sudo-compare">
+            <div class="sudo-box sb-green">
+                <h4>sudo comando</h4>
+                <p>Executa <strong>um</strong> comando como root e volta imediatamente. Usa <em>sua</em> senha. Registra no log do sistema.</p>
             </div>
-            <div class="sudo-arrow">⟷</div>
-            <div class="sudo-box" style="background:#fee2e2;">
-                <h4 style="color:#e53e3e;">su — (troca de usuário)</h4>
-                <p style="font-size:.88em;">Abre um shell como root até você digitar <code>exit</code>. Usa a senha do <em>root</em>.</p>
+            <div class="sudo-vs">⟷</div>
+            <div class="sudo-box sb-red">
+                <h4>su — (troca de usuário)</h4>
+                <p>Abre um shell completo como root até digitar <code>exit</code>. Usa a <em>senha do root</em>. Sem registro granular.</p>
             </div>
         </div>
 
@@ -296,22 +538,42 @@
 <span class="t-out">User usuario may run the following commands on servidor:</span>
 <span class="t-out">    (ALL : ALL) ALL</span>
 
-<span class="t-comment"># /etc/sudoers — arquivo de configuração (sempre edite com visudo!)</span>
+<span class="t-comment"># /etc/sudoers — SEMPRE edite com visudo!</span>
 <span class="t-root">root@servidor:~#</span> <span class="t-cmd">visudo</span>
             </div>
         </div>
 
         <div class="tip-box">
-            <p><strong>Regra de ouro:</strong> Sempre edite o arquivo <code>/etc/sudoers</code> com o comando <code>visudo</code>, nunca diretamente com um editor de texto. O <code>visudo</code> valida a sintaxe antes de salvar — um erro no sudoers pode bloquear completamente o acesso administrativo ao sistema.</p>
+            <p>💡 <strong>Regra de ouro:</strong> Sempre edite o <code>/etc/sudoers</code> com <code>visudo</code>, nunca diretamente com um editor de texto. O <code>visudo</code> valida a sintaxe antes de salvar — um erro no sudoers pode <strong>bloquear completamente o acesso administrativo</strong> ao sistema.</p>
         </div>
     </div>
 
-    <!-- CARD 6 — passwd / Verificação -->
+    <!-- CARD 6 — Senhas e Verificação -->
     <div class="content-card">
         <h2>🔑 Senhas e Verificação de Usuários</h2>
-        <p>Gerenciar senhas e verificar o estado dos usuários são tarefas rotineiras de um administrador. O comando <code>passwd</code> cuida de senhas, enquanto <code>id</code>, <code>who</code>, <code>w</code> e <code>last</code> fornecem informações sobre quem está no sistema.</p>
+        <p>Gerenciar senhas e verificar o estado dos usuários são tarefas rotineiras. O <code>passwd</code> cuida de senhas, enquanto <code>id</code>, <code>who</code>, <code>w</code> e <code>last</code> informam quem está no sistema.</p>
 
-        <h3>Gerenciamento de senhas com passwd</h3>
+        <h3>Flags do passwd</h3>
+
+        <div class="passwd-flags">
+            <div class="pf-card">
+                <span class="pf-flag">passwd user</span>
+                <span class="pf-desc">Define ou altera senha de um usuário (root)</span>
+            </div>
+            <div class="pf-card">
+                <span class="pf-flag">passwd -e</span>
+                <span class="pf-desc">Expira a senha — força troca no próximo login</span>
+            </div>
+            <div class="pf-card">
+                <span class="pf-flag">passwd -l</span>
+                <span class="pf-desc">Bloqueia a conta do usuário</span>
+            </div>
+            <div class="pf-card">
+                <span class="pf-flag">passwd -u</span>
+                <span class="pf-desc">Desbloqueia a conta do usuário</span>
+            </div>
+        </div>
+
         <div class="terminal">
             <div class="terminal-bar">
                 <div class="term-dot red"></div>
@@ -323,14 +585,13 @@
 <span class="t-comment"># Mudar minha própria senha</span>
 <span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">passwd</span>
 <span class="t-out">Mudando senha para usuario.</span>
-<span class="t-out">Senha atual: </span>
-<span class="t-out">Nova senha: </span>
+<span class="t-out">Senha atual: ••••   Nova senha: ••••••••</span>
 <span class="t-out">passwd: senha atualizada com sucesso</span>
 
-<span class="t-comment"># Root define senha de qualquer usuário</span>
+<span class="t-comment"># Root define senha de qualquer usuário sem pedir a senha atual</span>
 <span class="t-root">root@servidor:~#</span> <span class="t-cmd">passwd</span> <span class="t-arg">joao</span>
 
-<span class="t-comment"># Forçar troca de senha no próximo login</span>
+<span class="t-comment"># Forçar troca no próximo login (boa prática ao criar contas)</span>
 <span class="t-root">root@servidor:~#</span> <span class="t-cmd">passwd</span> <span class="t-flag">-e</span> <span class="t-arg">joao</span>
 
 <span class="t-comment"># Bloquear / desbloquear conta</span>
@@ -339,23 +600,24 @@
             </div>
         </div>
 
-        <h3>Verificando usuários no sistema</h3>
-        <div class="cmd-grid">
-            <div class="cmd-box">
-                <code>id joao</code>
-                <span>Mostra UID, GID e todos os grupos do usuário</span>
+        <h3>Monitorando usuários no sistema</h3>
+
+        <div class="monitor-grid">
+            <div class="monitor-card">
+                <span class="mc-cmd">id joao</span>
+                <span class="mc-desc">UID, GID e todos os grupos do usuário</span>
             </div>
-            <div class="cmd-box">
-                <code>who</code>
-                <span>Lista os usuários atualmente logados</span>
+            <div class="monitor-card">
+                <span class="mc-cmd">who</span>
+                <span class="mc-desc">Lista os usuários atualmente logados</span>
             </div>
-            <div class="cmd-box">
-                <code>w</code>
-                <span>Logados + o que estão fazendo agora</span>
+            <div class="monitor-card">
+                <span class="mc-cmd">w</span>
+                <span class="mc-desc">Logados + o que estão fazendo agora</span>
             </div>
-            <div class="cmd-box">
-                <code>last</code>
-                <span>Histórico de logins e logouts do sistema</span>
+            <div class="monitor-card">
+                <span class="mc-cmd">last -5</span>
+                <span class="mc-desc">Histórico dos últimos logins e logouts</span>
             </div>
         </div>
 
@@ -384,7 +646,6 @@
         <h2>✏️ Modificando e Removendo Usuários</h2>
         <p>Com o tempo, contas precisam ser ajustadas: mudar de grupo, alterar o shell, bloquear temporariamente ou remover definitivamente. O <code>usermod</code> e <code>userdel</code> cobrem todas essas necessidades.</p>
 
-        <h3>usermod — modificando contas existentes</h3>
         <div class="terminal">
             <div class="terminal-bar">
                 <div class="term-dot red"></div>
@@ -399,11 +660,9 @@
 <span class="t-comment"># Mudar o shell padrão</span>
 <span class="t-root">root@servidor:~#</span> <span class="t-cmd">usermod</span> <span class="t-flag">-s</span> <span class="t-arg">/bin/zsh</span> <span class="t-arg">joao</span>
 
-<span class="t-comment"># Bloquear conta temporariamente</span>
-<span class="t-root">root@servidor:~#</span> <span class="t-cmd">usermod</span> <span class="t-flag">-L</span> <span class="t-arg">joao</span>
-
-<span class="t-comment"># Desbloquear conta</span>
-<span class="t-root">root@servidor:~#</span> <span class="t-cmd">usermod</span> <span class="t-flag">-U</span> <span class="t-arg">joao</span>
+<span class="t-comment"># Bloquear / desbloquear conta</span>
+<span class="t-root">root@servidor:~#</span> <span class="t-cmd">usermod</span> <span class="t-flag">-L</span> <span class="t-arg">joao</span>          <span class="t-comment"># Bloqueia</span>
+<span class="t-root">root@servidor:~#</span> <span class="t-cmd">usermod</span> <span class="t-flag">-U</span> <span class="t-arg">joao</span>          <span class="t-comment"># Desbloqueia</span>
 
 <span class="t-comment"># Remover usuário mantendo a pasta home (para backup)</span>
 <span class="t-root">root@servidor:~#</span> <span class="t-cmd">userdel</span> <span class="t-arg">joao</span>
@@ -413,25 +672,25 @@
             </div>
         </div>
 
-        <div class="two-col">
-            <div class="col-box">
-                <h4>Opções do usermod</h4>
-                <ul>
+        <div class="compare-grid">
+            <div class="compare-box blue">
+                <h4>⚙️ Opções do usermod</h4>
+                <ul style="font-size:.84em;padding-left:16px;">
                     <li><code>-aG grupo</code> — adiciona ao grupo</li>
                     <li><code>-s shell</code> — muda o shell</li>
-                    <li><code>-d /novo/home -m</code> — muda e move o home</li>
+                    <li><code>-d /novo -m</code> — muda e move o home</li>
                     <li><code>-l novo_nome</code> — renomeia o login</li>
-                    <li><code>-L</code> / <code>-U</code> — bloqueia / desbloqueia</li>
+                    <li><code>-L / -U</code> — bloqueia / desbloqueia</li>
                     <li><code>-e 2025-12-31</code> — define expiração</li>
                 </ul>
             </div>
-            <div class="col-box">
-                <h4>Opções do userdel</h4>
-                <ul>
+            <div class="compare-box red">
+                <h4>🗑️ Opções do userdel</h4>
+                <ul style="font-size:.84em;padding-left:16px;">
                     <li>sem flags — remove conta, <strong>mantém</strong> /home</li>
                     <li><code>-r</code> — remove conta <strong>e</strong> a pasta home</li>
                     <li><code>-f</code> — força remoção mesmo logado</li>
-                    <li><code>deluser --remove-home joao</code> — versão interativa (Debian)</li>
+                    <li><code>deluser --remove-home</code> — versão interativa Debian</li>
                 </ul>
             </div>
         </div>
@@ -514,48 +773,48 @@
                 <div class="step-num">1</div>
                 <div class="step-body">
                     <div class="step-label">Criar o usuário aluno</div>
-                    <div class="step-desc">Crie um novo usuário com pasta home usando: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">sudo useradd -m -s /bin/bash -c "Aluno de SO2" aluno</code>. Confirme a criação consultando o arquivo de usuários: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">grep "aluno" /etc/passwd</code>. Verifique se a pasta home foi criada: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">ls -la /home/aluno</code>.</div>
+                    <div class="step-desc">Crie um novo usuário com pasta home: <code>sudo useradd -m -s /bin/bash -c "Aluno de SO2" aluno</code>. Confirme com <code>grep "aluno" /etc/passwd</code> e verifique se o home foi criado: <code>ls -la /home/aluno</code>.</div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">2</div>
                 <div class="step-body">
                     <div class="step-label">Definir a senha do usuário</div>
-                    <div class="step-desc">Defina uma senha para o novo usuário: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">sudo passwd aluno</code>. Digite uma senha segura quando solicitado. Em seguida, force a troca de senha no primeiro login: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">sudo passwd -e aluno</code>. Isso é uma boa prática ao criar contas para terceiros.</div>
+                    <div class="step-desc">Defina uma senha: <code>sudo passwd aluno</code>. Em seguida, force a troca no primeiro login (boa prática): <code>sudo passwd -e aluno</code>.</div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">3</div>
                 <div class="step-body">
                     <div class="step-label">Criar o grupo turma e adicionar o usuário</div>
-                    <div class="step-desc">Crie um grupo chamado turma: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">sudo groupadd turma</code>. Adicione o usuário aluno ao grupo (use -aG para não remover grupos existentes!): <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">sudo usermod -aG turma aluno</code>. Verifique se o grupo foi criado: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">getent group turma</code>.</div>
+                    <div class="step-desc">Crie o grupo: <code>sudo groupadd turma</code>. Adicione o usuário: <code>sudo usermod -aG turma aluno</code>. Confirme: <code>getent group turma</code>.</div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">4</div>
                 <div class="step-body">
                     <div class="step-label">Adicionar ao grupo sudo e testar privilégios</div>
-                    <div class="step-desc">Adicione o usuário aluno ao grupo sudo: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">sudo usermod -aG sudo aluno</code>. Troque para o usuário aluno: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">su - aluno</code>. Teste um comando administrativo: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">sudo ls /root</code>. Se pedir senha e executar, o sudo está funcionando. Volte ao usuário original com <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">exit</code>.</div>
+                    <div class="step-desc">Adicione ao sudo: <code>sudo usermod -aG sudo aluno</code>. Troque para o usuário: <code>su - aluno</code>. Teste: <code>sudo ls /root</code>. Se executar, o sudo está funcionando. Volte com <code>exit</code>.</div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">5</div>
                 <div class="step-body">
                     <div class="step-label">Verificar com id e groups</div>
-                    <div class="step-desc">Verifique todos os grupos do usuário aluno: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">id aluno</code>. A saída deve mostrar UID, GID e os grupos: usuario, turma e sudo. Confirme também com <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">groups aluno</code>. Veja quem está logado no sistema agora com <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">who</code> e <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">w</code>.</div>
+                    <div class="step-desc">Verifique todos os grupos: <code>id aluno</code>. Deve mostrar UID, GID e grupos: aluno, turma e sudo. Confirme com <code>groups aluno</code>, <code>who</code> e <code>w</code>.</div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">6</div>
                 <div class="step-body">
                     <div class="step-label">Limpar: remover o usuário de teste</div>
-                    <div class="step-desc">Para finalizar, remova o usuário aluno e sua pasta home: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">sudo userdel -r aluno</code>. Confirme que o usuário foi removido: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">id aluno</code> (deve retornar erro). Verifique que a pasta foi removida: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">ls /home/</code>. Tire screenshot mostrando o resultado final de cada etapa.</div>
+                    <div class="step-desc">Remova o usuário e a pasta home: <code>sudo userdel -r aluno</code>. Confirme a remoção com <code>id aluno</code> (deve dar erro) e <code>ls /home/</code>. Tire screenshot mostrando o resultado.</div>
                 </div>
             </div>
         </div>
 
         <div class="prat-observe">
-            <strong>📌 Para refletir:</strong> O gerenciamento de usuários é a base da segurança em Linux. Cada conta deve ter exatamente os privilégios necessários para sua função — nem mais, nem menos. Este princípio se chama <em>mínimo privilégio</em> e é fundamental em qualquer ambiente de produção. Um servidor comprometido por uma conta com excesso de permissões pode comprometer toda a infraestrutura.
+            <strong>📌 Para refletir:</strong> O gerenciamento de usuários é a base da segurança em Linux. Cada conta deve ter exatamente os privilégios necessários para sua função — nem mais, nem menos. Este princípio se chama <em>mínimo privilégio</em> e é fundamental em qualquer ambiente de produção.
         </div>
 
         <div class="ex-actions">
