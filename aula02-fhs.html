@@ -7,6 +7,132 @@
     <link rel="stylesheet" href="slide-mode.css">
     <link rel="stylesheet" href="exercise.css">
     <link rel="stylesheet" href="lesson.css">
+    <style>
+        /* ── ÁRVORE DE DIRETÓRIOS ── */
+        .dir-tree {
+            background: #1a202c;
+            border-radius: 12px;
+            padding: 24px 28px;
+            font-family: 'Consolas', monospace;
+            font-size: .9em;
+            line-height: 2;
+            margin: 16px 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,.3);
+        }
+        .dir-tree .root   { color: #fc8181; font-weight: 700; }
+        .dir-tree .branch { color: #4a5568; }
+        .dir-tree .name   { color: #63b3ed; }
+        .dir-tree .note   { color: #4a5568; font-style: italic; font-size: .85em; }
+
+        /* ── GRID DE DIRETÓRIOS (substituindo a tabela) ── */
+        .dir-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+            margin: 16px 0;
+        }
+        .dir-card {
+            background: #f8f7ff;
+            border-radius: 12px;
+            padding: 16px 18px;
+            border-top: 3px solid var(--primary);
+            transition: transform .2s, box-shadow .2s;
+        }
+        .dir-card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(102,126,234,.15); }
+        .dc-dir   { font-family: 'Consolas', monospace; font-size: 1em; font-weight: 700; color: var(--primary); margin-bottom: 4px; }
+        .dc-label { font-size: .82em; font-weight: 600; color: #2d3748; margin-bottom: 4px; }
+        .dc-desc  { font-size: .78em; color: #64748b; line-height: 1.5; }
+
+        /* Cores por categoria */
+        .dir-card.dc-essencial { border-top-color: #3b82f6; }
+        .dir-card.dc-essencial .dc-dir { color: #3b82f6; }
+        .dir-card.dc-config    { border-top-color: #f59e0b; }
+        .dir-card.dc-config    .dc-dir { color: #b45309; }
+        .dir-card.dc-usuario   { border-top-color: #10b981; }
+        .dir-card.dc-usuario   .dc-dir { color: #065f46; }
+        .dir-card.dc-variavel  { border-top-color: #8b5cf6; }
+        .dir-card.dc-variavel  .dc-dir { color: #6d28d9; }
+        .dir-card.dc-virtual   { border-top-color: #ef4444; }
+        .dir-card.dc-virtual   .dc-dir { color: #b91c1c; }
+        .dir-card.dc-boot      { border-top-color: #f97316; }
+        .dir-card.dc-boot      .dc-dir { color: #c2410c; }
+
+        /* ── REGRA DOS 3 ── */
+        .regra3-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin: 20px 0;
+        }
+        .regra3-card {
+            border-radius: 14px;
+            padding: 22px 16px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .regra3-card::before {
+            content: attr(data-dir);
+            position: absolute;
+            right: 10px; bottom: 4px;
+            font-family: 'Consolas', monospace;
+            font-size: 2.2em;
+            font-weight: 900;
+            opacity: .06;
+            line-height: 1;
+        }
+        .regra3-card.r3-green { background: #f0fdf4; border-top: 3px solid #16a34a; }
+        .regra3-card.r3-amber { background: #fffbeb; border-top: 3px solid #f59e0b; }
+        .regra3-card.r3-purple{ background: #fdf4ff; border-top: 3px solid #a855f7; }
+        .r3-icon  { font-size: 2em; margin-bottom: 8px; display: block; }
+        .r3-dir   { font-family: 'Consolas', monospace; font-size: 1.1em; font-weight: 700; margin-bottom: 6px; }
+        .regra3-card.r3-green  .r3-dir  { color: #065f46; }
+        .regra3-card.r3-amber  .r3-dir  { color: #92400e; }
+        .regra3-card.r3-purple .r3-dir  { color: #6b21a8; }
+        .r3-desc  { font-size: .82em; color: #475569; line-height: 1.5; }
+
+        /* ── COMPARAÇÃO LINUX VS WINDOWS ── */
+        .vs-grid {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 16px;
+            align-items: center;
+            margin: 20px 0;
+        }
+        .vs-box {
+            border-radius: 14px;
+            padding: 20px;
+        }
+        .vs-box.win  { background: #eff6ff; border-top: 3px solid #3b82f6; }
+        .vs-box.linux{ background: #f0fdf4; border-top: 3px solid #16a34a; }
+        .vs-box h4   { font-size: .9em; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+        .vs-box.win   h4 { color: #1e40af; }
+        .vs-box.linux h4 { color: #065f46; }
+        .vs-item { font-family: 'Consolas', monospace; font-size: .83em; background: white; border-radius: 6px; padding: 6px 10px; margin-bottom: 6px; color: #334155; }
+        .vs-sep { font-size: 1.6em; color: #94a3b8; text-align: center; font-weight: 700; }
+
+        /* ── FILOSOFIA "TUDO É ARQUIVO" ── */
+        .dev-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 10px;
+            margin: 14px 0;
+        }
+        .dev-item {
+            background: #1a202c;
+            border-radius: 10px;
+            padding: 14px;
+            text-align: center;
+        }
+        .dev-file { font-family: 'Consolas', monospace; font-size: .88em; color: #63b3ed; font-weight: 700; margin-bottom: 4px; }
+        .dev-desc { font-size: .76em; color: #718096; line-height: 1.4; }
+
+        @media (max-width: 768px) {
+            .regra3-grid { grid-template-columns: 1fr; }
+            .vs-grid     { grid-template-columns: 1fr; }
+            .vs-sep      { display: none; }
+        }
+    </style>
 </head>
 <body>
 
@@ -26,19 +152,32 @@
     <!-- CARD 1 — O que é FHS -->
     <div class="content-card">
         <h2>📋 O que é o FHS?</h2>
-        <p>O <strong>FHS — Filesystem Hierarchy Standard</strong> (Padrão de Hierarquia do Sistema de Arquivos) é a especificação que define onde cada tipo de arquivo deve estar localizado no Linux. Todas as distribuições Linux seguem esse padrão, garantindo que um administrador treinado em Ubuntu saiba navegar também em um Debian, CentOS ou Red Hat.</p>
+        <p>O <strong>FHS — Filesystem Hierarchy Standard</strong> (Padrão de Hierarquia do Sistema de Arquivos) é a especificação que define onde cada tipo de arquivo deve estar localizado no Linux. Todas as distribuições seguem esse padrão, garantindo que um administrador treinado em Ubuntu saiba navegar também no Debian, CentOS ou Red Hat.</p>
 
         <div class="highlight-box">
             <p>🏢 <strong>Analogia — Prédio Comercial:</strong> Imagine um prédio bem organizado. O térreo é a recepção (raiz <code>/</code>). O primeiro andar tem os escritórios individuais (<code>/home</code>). O subsolo guarda as máquinas e equipamentos (<code>/dev</code>). O arquivo de documentos fica em um andar separado (<code>/var</code>). Cada coisa tem seu lugar, e todos sabem onde procurar.</p>
         </div>
 
         <h3>Por que o FHS é importante?</h3>
-        <ul>
-            <li>Garante consistência entre distribuições diferentes</li>
-            <li>Facilita a manutenção e diagnóstico de problemas</li>
-            <li>Permite automação e scripts portáveis</li>
-            <li>Profissionais de TI sabem onde encontrar configurações, logs e binários sem precisar decorar cada distro</li>
-        </ul>
+
+        <div class="vantagens-grid">
+            <div class="vant-item">
+                <span class="vi-icon">🔄</span>
+                <div><strong>Consistência entre distros</strong><span>Um sysadmin navega em qualquer distro Linux sem surpresas</span></div>
+            </div>
+            <div class="vant-item">
+                <span class="vi-icon">🔧</span>
+                <div><strong>Manutenção mais fácil</strong><span>Diagnóstico de problemas fica muito mais rápido e previsível</span></div>
+            </div>
+            <div class="vant-item">
+                <span class="vi-icon">⚙️</span>
+                <div><strong>Scripts portáveis</strong><span>Automações funcionam em qualquer sistema que siga o FHS</span></div>
+            </div>
+            <div class="vant-item">
+                <span class="vi-icon">🧭</span>
+                <div><strong>Localização óbvia</strong><span>Configurações, logs e binários sempre nos mesmos lugares</span></div>
+            </div>
+        </div>
 
         <div class="terminal">
             <div class="terminal-bar">
@@ -55,13 +194,28 @@
         </div>
     </div>
 
-    <!-- CARD 2 — Windows vs Linux: estrutura de arquivos -->
+    <!-- CARD 2 — Linux vs Windows -->
     <div class="content-card">
         <h2>🔄 Linux vs Windows: Uma Única Árvore</h2>
-        <p>Uma das primeiras diferenças que surpreende quem migra do Windows para o Linux é a estrutura do sistema de arquivos. No Windows, cada disco recebe uma letra (<code>C:\</code>, <code>D:\</code>, <code>E:\</code>). No Linux, existe <strong>uma única árvore</strong> que começa na raiz <code>/</code> e tudo é ramificado a partir daí.</p>
+        <p>Uma das primeiras diferenças que surpreende quem migra do Windows é a estrutura do sistema de arquivos. No Windows, cada disco recebe uma <strong>letra</strong>. No Linux, existe <strong>uma única árvore</strong> que começa na raiz <code>/</code> e tudo é ramificado a partir daí.</p>
 
-        <h3>A raiz / (barra)</h3>
-        <p>A raiz (<code>/</code>) é o ponto de partida de toda a hierarquia. Não existe nada "acima" dela. Todo caminho absoluto no Linux começa com <code>/</code>. Mesmo pendrives e HDs externos, quando conectados, são "montados" dentro dessa árvore — geralmente em <code>/media</code> ou <code>/mnt</code>.</p>
+        <div class="vs-grid">
+            <div class="vs-box win">
+                <h4>🪟 Windows</h4>
+                <div class="vs-item">C:\Windows\System32</div>
+                <div class="vs-item">C:\Users\João\Downloads</div>
+                <div class="vs-item">D:\Dados</div>
+                <div class="vs-item">E:\Backup</div>
+            </div>
+            <div class="vs-sep">⟷</div>
+            <div class="vs-box linux">
+                <h4>🐧 Linux</h4>
+                <div class="vs-item">/usr/lib</div>
+                <div class="vs-item">/home/joao/Downloads</div>
+                <div class="vs-item">/media/dados</div>
+                <div class="vs-item">/mnt/backup</div>
+            </div>
+        </div>
 
         <div class="terminal">
             <div class="terminal-bar">
@@ -89,134 +243,145 @@
         </div>
     </div>
 
-    <!-- CARD 3 — Árvore completa e os principais diretórios -->
+    <!-- CARD 3 — Árvore completa -->
     <div class="content-card">
         <h2>🌳 A Árvore de Diretórios do Linux</h2>
         <p>Veja a estrutura completa que você encontra ao executar <code>ls /</code> em qualquer sistema Linux:</p>
 
-        <div class="terminal">
-            <div class="terminal-bar">
-                <div class="term-dot red"></div>
-                <div class="term-dot yellow"></div>
-                <div class="term-dot green"></div>
-                <span class="term-title">bash — árvore da raiz</span>
-            </div>
-            <div class="terminal-body">
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">tree</span> <span class="t-flag">-L 1</span> <span class="t-path">/</span>
-<span class="t-out">/</span>
-<span class="t-out">├── bin    <span class="t-comment">← Comandos essenciais para todos os usuários</span></span>
-<span class="t-out">├── boot   <span class="t-comment">← Arquivos de inicialização do sistema</span></span>
-<span class="t-out">├── dev    <span class="t-comment">← Dispositivos de hardware</span></span>
-<span class="t-out">├── etc    <span class="t-comment">← Configurações do sistema</span></span>
-<span class="t-out">├── home   <span class="t-comment">← Diretórios pessoais dos usuários</span></span>
-<span class="t-out">├── lib    <span class="t-comment">← Bibliotecas compartilhadas</span></span>
-<span class="t-out">├── media  <span class="t-comment">← Mídias removíveis (pendrive, CD)</span></span>
-<span class="t-out">├── mnt    <span class="t-comment">← Montagens temporárias manuais</span></span>
-<span class="t-out">├── opt    <span class="t-comment">← Programas opcionais de terceiros</span></span>
-<span class="t-out">├── proc   <span class="t-comment">← Sistema virtual: processos e kernel</span></span>
-<span class="t-out">├── root   <span class="t-comment">← Home do superusuário (root)</span></span>
-<span class="t-out">├── sbin   <span class="t-comment">← Comandos de administração (root)</span></span>
-<span class="t-out">├── tmp    <span class="t-comment">← Arquivos temporários (apagados no boot)</span></span>
-<span class="t-out">├── usr    <span class="t-comment">← Programas instalados pelo usuário</span></span>
-<span class="t-out">└── var    <span class="t-comment">← Dados variáveis: logs, spool, sites</span></span>
-            </div>
+        <div class="dir-tree">
+<span class="root">/</span>
+<span class="branch">├── </span><span class="name">bin  </span>   <span class="note">← Comandos essenciais para todos os usuários</span>
+<span class="branch">├── </span><span class="name">boot </span>   <span class="note">← Arquivos de inicialização do sistema</span>
+<span class="branch">├── </span><span class="name">dev  </span>   <span class="note">← Dispositivos de hardware</span>
+<span class="branch">├── </span><span class="name">etc  </span>   <span class="note">← Configurações do sistema</span>
+<span class="branch">├── </span><span class="name">home </span>   <span class="note">← Diretórios pessoais dos usuários</span>
+<span class="branch">├── </span><span class="name">lib  </span>   <span class="note">← Bibliotecas compartilhadas</span>
+<span class="branch">├── </span><span class="name">media</span>   <span class="note">← Mídias removíveis (pendrive, CD)</span>
+<span class="branch">├── </span><span class="name">mnt  </span>   <span class="note">← Montagens temporárias manuais</span>
+<span class="branch">├── </span><span class="name">opt  </span>   <span class="note">← Programas opcionais de terceiros</span>
+<span class="branch">├── </span><span class="name">proc </span>   <span class="note">← Sistema virtual: processos e kernel</span>
+<span class="branch">├── </span><span class="name">root </span>   <span class="note">← Home do superusuário (root)</span>
+<span class="branch">├── </span><span class="name">sbin </span>   <span class="note">← Comandos de administração (root)</span>
+<span class="branch">├── </span><span class="name">tmp  </span>   <span class="note">← Arquivos temporários (apagados no boot)</span>
+<span class="branch">├── </span><span class="name">usr  </span>   <span class="note">← Programas instalados pelo usuário</span>
+<span class="branch">└── </span><span class="name">var  </span>   <span class="note">← Dados variáveis: logs, spool, sites</span>
         </div>
 
-        <div class="tip-box">
-            <p>💡 <strong>Regra de ouro para memorizar:</strong> Seus arquivos ficam em <code>/home</code>. Configurações do sistema ficam em <code>/etc</code>. Logs e dados que mudam ficam em <code>/var</code>. Aprenda esses três e você já domina 80% do uso cotidiano.</p>
+        <h3>⭐ Regra de Ouro — Os 3 mais importantes do dia a dia</h3>
+        <p>Aprenda esses três e você já domina <strong>80% do uso cotidiano</strong>:</p>
+
+        <div class="regra3-grid">
+            <div class="regra3-card r3-green" data-dir="/home">
+                <span class="r3-icon">🏠</span>
+                <div class="r3-dir">/home</div>
+                <div class="r3-desc">Seus arquivos pessoais: documentos, downloads, área de trabalho</div>
+            </div>
+            <div class="regra3-card r3-amber" data-dir="/etc">
+                <span class="r3-icon">⚙️</span>
+                <div class="r3-dir">/etc</div>
+                <div class="r3-desc">Todas as configurações do sistema e dos serviços instalados</div>
+            </div>
+            <div class="regra3-card r3-purple" data-dir="/var">
+                <span class="r3-icon">📊</span>
+                <div class="r3-dir">/var</div>
+                <div class="r3-desc">Logs, cache e dados que mudam constantemente durante o uso</div>
+            </div>
         </div>
     </div>
 
-    <!-- CARD 4 — Diretórios essenciais: tabela -->
+    <!-- CARD 4 — Guia visual dos diretórios -->
     <div class="content-card">
-        <h2>📊 Guia dos Diretórios Essenciais</h2>
-        <p>Conheça em detalhe cada diretório e seu propósito no sistema:</p>
+        <h2>📊 Guia Visual dos Diretórios</h2>
+        <p>Conheça cada diretório, organizado por categoria:</p>
 
-        <table class="dir-table">
-            <tr>
-                <th>Diretório</th>
-                <th>Nome / Função</th>
-                <th>Exemplos de conteúdo</th>
-            </tr>
-            <tr>
-                <td>/</td>
-                <td>Raiz — ponto de partida de tudo</td>
-                <td>Todos os demais diretórios</td>
-            </tr>
-            <tr>
-                <td>/bin</td>
-                <td>Binários essenciais para todos os usuários</td>
-                <td><code>ls</code>, <code>cp</code>, <code>mv</code>, <code>bash</code>, <code>cat</code></td>
-            </tr>
-            <tr>
-                <td>/sbin</td>
-                <td>Binários de administração do sistema (root)</td>
-                <td><code>fdisk</code>, <code>mkfs</code>, <code>iptables</code>, <code>reboot</code></td>
-            </tr>
-            <tr>
-                <td>/etc</td>
-                <td>Configurações do sistema e serviços</td>
-                <td><code>passwd</code>, <code>hosts</code>, <code>fstab</code>, <code>ssh/</code></td>
-            </tr>
-            <tr>
-                <td>/home</td>
-                <td>Diretórios pessoais dos usuários</td>
-                <td><code>/home/joao</code>, <code>/home/maria</code></td>
-            </tr>
-            <tr>
-                <td>/root</td>
-                <td>Diretório pessoal do superusuário root</td>
-                <td>Arquivos e configurações do root</td>
-            </tr>
-            <tr>
-                <td>/var</td>
-                <td>Dados variáveis que mudam durante uso</td>
-                <td><code>log/</code>, <code>www/</code>, <code>mail/</code>, <code>cache/</code></td>
-            </tr>
-            <tr>
-                <td>/tmp</td>
-                <td>Arquivos temporários (apagados no boot)</td>
-                <td>Arquivos de sessão, temporários de apps</td>
-            </tr>
-            <tr>
-                <td>/dev</td>
-                <td>Dispositivos de hardware representados como arquivos</td>
-                <td><code>sda</code>, <code>null</code>, <code>tty</code>, <code>zero</code></td>
-            </tr>
-            <tr>
-                <td>/proc</td>
-                <td>Sistema virtual: informações de processos e kernel</td>
-                <td><code>cpuinfo</code>, <code>meminfo</code>, <code>version</code></td>
-            </tr>
-            <tr>
-                <td>/usr</td>
-                <td>Programas e recursos do usuário (instalados)</td>
-                <td><code>/usr/bin</code>, <code>/usr/lib</code>, <code>/usr/share</code></td>
-            </tr>
-            <tr>
-                <td>/opt</td>
-                <td>Programas opcionais de terceiros</td>
-                <td>Google Chrome, Zoom, softwares proprietários</td>
-            </tr>
-            <tr>
-                <td>/boot</td>
-                <td>Arquivos de inicialização do sistema</td>
-                <td>Kernel Linux, GRUB, initrd</td>
-            </tr>
-            <tr>
-                <td>/media</td>
-                <td>Ponto de montagem automático de mídias removíveis</td>
-                <td>Pendrive, DVD, HD externo</td>
-            </tr>
-            <tr>
-                <td>/mnt</td>
-                <td>Ponto de montagem temporário manual</td>
-                <td>Usado pelo administrador para montar discos</td>
-            </tr>
-        </table>
+        <h3>🔵 Comandos e Binários</h3>
+        <div class="dir-grid">
+            <div class="dir-card dc-essencial">
+                <div class="dc-dir">/bin</div>
+                <div class="dc-label">Binários essenciais</div>
+                <div class="dc-desc"><code>ls</code>, <code>cp</code>, <code>mv</code>, <code>bash</code>, <code>cat</code> — disponíveis para todos</div>
+            </div>
+            <div class="dir-card dc-essencial">
+                <div class="dc-dir">/sbin</div>
+                <div class="dc-label">Binários de administração</div>
+                <div class="dc-desc"><code>fdisk</code>, <code>mkfs</code>, <code>iptables</code>, <code>reboot</code> — requerem root</div>
+            </div>
+            <div class="dir-card dc-essencial">
+                <div class="dc-dir">/usr</div>
+                <div class="dc-label">Programas do usuário</div>
+                <div class="dc-desc">Contém <code>/usr/bin</code>, <code>/usr/lib</code>, <code>/usr/share</code> — instalados via apt</div>
+            </div>
+        </div>
+
+        <h3>🟡 Configuração e Usuários</h3>
+        <div class="dir-grid">
+            <div class="dir-card dc-config">
+                <div class="dc-dir">/etc</div>
+                <div class="dc-label">Configurações do sistema</div>
+                <div class="dc-desc"><code>passwd</code>, <code>hosts</code>, <code>fstab</code>, <code>ssh/</code> — cofre do sysadmin</div>
+            </div>
+            <div class="dir-card dc-usuario">
+                <div class="dc-dir">/home</div>
+                <div class="dc-label">Diretórios dos usuários</div>
+                <div class="dc-desc"><code>/home/joao</code>, <code>/home/maria</code> — cada um tem o seu</div>
+            </div>
+            <div class="dir-card dc-usuario">
+                <div class="dc-dir">/root</div>
+                <div class="dc-label">Home do superusuário</div>
+                <div class="dc-desc">Diretório pessoal exclusivo do usuário root</div>
+            </div>
+        </div>
+
+        <h3>🟣 Dados e Temporários</h3>
+        <div class="dir-grid">
+            <div class="dir-card dc-variavel">
+                <div class="dc-dir">/var</div>
+                <div class="dc-label">Dados variáveis</div>
+                <div class="dc-desc"><code>log/</code>, <code>www/</code>, <code>mail/</code>, <code>cache/</code> — cresce durante o uso</div>
+            </div>
+            <div class="dir-card dc-variavel">
+                <div class="dc-dir">/tmp</div>
+                <div class="dc-label">Arquivos temporários</div>
+                <div class="dc-desc">Apagado a cada reinicialização — nunca guarde dados importantes aqui</div>
+            </div>
+        </div>
+
+        <h3>🔴 Sistema e Hardware</h3>
+        <div class="dir-grid">
+            <div class="dir-card dc-virtual">
+                <div class="dc-dir">/dev</div>
+                <div class="dc-label">Dispositivos</div>
+                <div class="dc-desc"><code>sda</code>, <code>null</code>, <code>tty</code> — hardware representado como arquivo</div>
+            </div>
+            <div class="dir-card dc-virtual">
+                <div class="dc-dir">/proc</div>
+                <div class="dc-label">Sistema virtual do kernel</div>
+                <div class="dc-desc"><code>cpuinfo</code>, <code>meminfo</code> — gerado dinamicamente, não existe no disco</div>
+            </div>
+            <div class="dir-card dc-boot">
+                <div class="dc-dir">/boot</div>
+                <div class="dc-label">Inicialização</div>
+                <div class="dc-desc">Kernel Linux, GRUB, initrd — o que carrega antes de tudo</div>
+            </div>
+            <div class="dir-card dc-essencial">
+                <div class="dc-dir">/media</div>
+                <div class="dc-label">Mídias removíveis</div>
+                <div class="dc-desc">Pendrive, DVD, HD externo — montados automaticamente</div>
+            </div>
+            <div class="dir-card dc-essencial">
+                <div class="dc-dir">/mnt</div>
+                <div class="dc-label">Montagem manual</div>
+                <div class="dc-desc">Usado pelo administrador para montar discos manualmente</div>
+            </div>
+            <div class="dir-card dc-essencial">
+                <div class="dc-dir">/opt</div>
+                <div class="dc-label">Softwares opcionais</div>
+                <div class="dc-desc">Google Chrome, Zoom, softwares proprietários de terceiros</div>
+            </div>
+        </div>
     </div>
 
-    <!-- CARD 5 — /etc e /home em detalhe -->
+    <!-- CARD 5 — /etc e /home -->
     <div class="content-card">
         <h2>⚙️ /etc e 🏠 /home em Detalhe</h2>
 
@@ -245,7 +410,7 @@
         </div>
 
         <div class="alert-box">
-            <p>⚠️ <strong>Cuidado em /etc:</strong> Um erro de edição em arquivos como <code>/etc/fstab</code> ou <code>/etc/sudoers</code> pode impedir o sistema de iniciar ou bloquear o acesso de administrador. Sempre faça backup antes de editar.</p>
+            <p>⚠️ <strong>Cuidado em /etc:</strong> Um erro de edição em arquivos como <code>/etc/fstab</code> ou <code>/etc/sudoers</code> pode impedir o sistema de iniciar ou bloquear o acesso de administrador. <strong>Sempre faça backup antes de editar.</strong></p>
         </div>
 
         <h3>/home — A casa de cada usuário</h3>
@@ -279,7 +444,30 @@
         <h2>📊 /var e 🗑️ /tmp</h2>
 
         <h3>/var — Dados que mudam constantemente</h3>
-        <p>O diretório <code>/var</code> (de <em>variable</em>) contém dados que crescem e mudam durante o funcionamento do sistema. Logs de sistema, arquivos de spool de impressão, cache, bancos de dados de aplicações e os arquivos dos sites hospedados ficam todos aqui.</p>
+        <p>O diretório <code>/var</code> (de <em>variable</em>) contém dados que crescem e mudam durante o funcionamento do sistema. Logs, spool de impressão, cache, bancos de dados e arquivos de sites ficam aqui.</p>
+
+        <div class="razoes-grid">
+            <div class="razao-item">
+                <span class="ri-icon">📝</span>
+                <strong>/var/log</strong>
+                <span>Logs do sistema, serviços (syslog, auth.log, apache2/)</span>
+            </div>
+            <div class="razao-item">
+                <span class="ri-icon">🌐</span>
+                <strong>/var/www</strong>
+                <span>Arquivos dos sites hospedados no servidor web</span>
+            </div>
+            <div class="razao-item">
+                <span class="ri-icon">📦</span>
+                <strong>/var/cache</strong>
+                <span>Cache de pacotes, repositórios e aplicações</span>
+            </div>
+            <div class="razao-item">
+                <span class="ri-icon">📬</span>
+                <strong>/var/mail</strong>
+                <span>Fila de e-mails do sistema (spool de mensagens)</span>
+            </div>
+        </div>
 
         <div class="terminal">
             <div class="terminal-bar">
@@ -304,11 +492,11 @@
         </div>
 
         <div class="tip-box">
-            <p>💡 <strong>Dica profissional:</strong> Quando algo dá errado em um servidor, os logs em <code>/var/log/syslog</code>, <code>/var/log/auth.log</code> e nos subdiretórios dos serviços são o primeiro lugar para investigar. Aprender a ler logs é uma habilidade fundamental em administração de sistemas.</p>
+            <p>💡 <strong>Dica profissional:</strong> Quando algo dá errado em um servidor, os logs em <code>/var/log/syslog</code>, <code>/var/log/auth.log</code> e nos subdiretórios dos serviços são o <strong>primeiro lugar para investigar</strong>. Aprender a ler logs é uma habilidade fundamental em administração de sistemas.</p>
         </div>
 
         <h3>/tmp — Temporário e efêmero</h3>
-        <p>O diretório <code>/tmp</code> é um espaço de trabalho temporário. Qualquer usuário pode criar arquivos aqui, mas o conteúdo é <strong>apagado automaticamente a cada reinicialização</strong>. Nunca guarde arquivos importantes em <code>/tmp</code>.</p>
+        <p>O diretório <code>/tmp</code> é um espaço de trabalho temporário. Qualquer usuário pode criar arquivos aqui, mas o conteúdo é <strong>apagado automaticamente a cada reinicialização</strong>.</p>
 
         <div class="alert-box">
             <p>⚠️ <strong>Nunca use /tmp para dados permanentes!</strong> Scripts de instalação, arquivos de download temporário e dados de sessão ficam aqui por conveniência — mas desaparecem no próximo boot.</p>
@@ -321,6 +509,33 @@
 
         <h3>/dev — "Tudo é arquivo"</h3>
         <p>Uma das filosofias fundamentais do Unix/Linux é que <strong>"tudo é arquivo"</strong>. No diretório <code>/dev</code>, cada dispositivo de hardware é representado como um arquivo especial. Discos, partições, terminais, a "lixeira infinita" (<code>/dev/null</code>) — tudo aparece aqui.</p>
+
+        <div class="dev-grid">
+            <div class="dev-item">
+                <div class="dev-file">/dev/sda</div>
+                <div class="dev-desc">Primeiro disco rígido ou SSD do sistema</div>
+            </div>
+            <div class="dev-item">
+                <div class="dev-file">/dev/sda1</div>
+                <div class="dev-desc">Primeira partição do disco sda</div>
+            </div>
+            <div class="dev-item">
+                <div class="dev-file">/dev/null</div>
+                <div class="dev-desc">Lixeira infinita — descarta qualquer saída</div>
+            </div>
+            <div class="dev-item">
+                <div class="dev-file">/dev/tty</div>
+                <div class="dev-desc">Terminal atual do usuário logado</div>
+            </div>
+            <div class="dev-item">
+                <div class="dev-file">/dev/zero</div>
+                <div class="dev-desc">Gera bytes nulos — usado para criar arquivos</div>
+            </div>
+            <div class="dev-item">
+                <div class="dev-file">/dev/random</div>
+                <div class="dev-desc">Gerador de números aleatórios do kernel</div>
+            </div>
+        </div>
 
         <div class="terminal">
             <div class="terminal-bar">
@@ -336,16 +551,12 @@
 
 <span class="t-comment"># /dev/null descarta qualquer saída enviada a ele</span>
 <span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-la</span> <span class="t-path">/nonexistent</span> <span class="t-arg">2>/dev/null</span>
-<span class="t-comment"># Nenhuma mensagem de erro aparece</span>
-
-<span class="t-comment"># Listar terminais disponíveis</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-path">/dev/tty*</span> <span class="t-flag">| head -5</span>
-<span class="t-out">/dev/tty  /dev/tty0  /dev/tty1  /dev/tty2  /dev/tty3</span>
+<span class="t-comment"># Nenhuma mensagem de erro aparece — foi "engolida" pelo /dev/null</span>
             </div>
         </div>
 
         <h3>/proc — O sistema nervoso do kernel</h3>
-        <p>O diretório <code>/proc</code> é um <strong>sistema de arquivos virtual</strong> — os arquivos não existem no disco; são gerados dinamicamente pelo kernel quando você os lê. Fornecem informações em tempo real sobre processos em execução, hardware e estado do sistema.</p>
+        <p>O diretório <code>/proc</code> é um <strong>sistema de arquivos virtual</strong> — os arquivos não existem no disco; são gerados dinamicamente pelo kernel quando você os lê. Fornecem informações em tempo real sobre processos, hardware e estado do sistema.</p>
 
         <div class="terminal">
             <div class="terminal-bar">
@@ -377,30 +588,30 @@
         <h2>⚡ /bin, /sbin, /usr, /boot e /opt</h2>
 
         <h3>/bin e /sbin — Onde vivem os comandos</h3>
-        <p>Os comandos que você digita no terminal são arquivos executáveis armazenados em <code>/bin</code> (para todos os usuários) e <code>/sbin</code> (somente para o superusuário root, comandos de administração). Em distribuições modernas, ambos são links simbólicos para <code>/usr/bin</code> e <code>/usr/sbin</code>.</p>
+        <p>Os comandos que você digita no terminal são arquivos executáveis em <code>/bin</code> (todos os usuários) e <code>/sbin</code> (somente root). Em distribuições modernas, ambos são links simbólicos para <code>/usr/bin</code> e <code>/usr/sbin</code>.</p>
 
         <div class="dir-grid">
-            <div class="dir-card">
+            <div class="dir-card dc-essencial">
                 <div class="dc-dir">/bin</div>
                 <div class="dc-label">Comandos essenciais</div>
                 <div class="dc-desc">ls, cp, mv, rm, cat, bash, echo — disponíveis para todos os usuários</div>
             </div>
-            <div class="dir-card">
+            <div class="dir-card dc-essencial">
                 <div class="dc-dir">/sbin</div>
                 <div class="dc-label">Comandos de administração</div>
                 <div class="dc-desc">fdisk, mkfs, iptables, reboot, shutdown — geralmente requerem root</div>
             </div>
-            <div class="dir-card">
+            <div class="dir-card dc-essencial">
                 <div class="dc-dir">/usr</div>
                 <div class="dc-label">Programas do usuário</div>
                 <div class="dc-desc">Programas instalados via apt/dnf ficam em /usr/bin e /usr/lib</div>
             </div>
-            <div class="dir-card">
+            <div class="dir-card dc-boot">
                 <div class="dc-dir">/boot</div>
                 <div class="dc-label">Inicialização do sistema</div>
                 <div class="dc-desc">Kernel Linux (vmlinuz), initrd e configuração do GRUB</div>
             </div>
-            <div class="dir-card">
+            <div class="dir-card dc-essencial">
                 <div class="dc-dir">/opt</div>
                 <div class="dc-label">Softwares opcionais</div>
                 <div class="dc-desc">Google Chrome, Zoom, softwares que não vêm nos repositórios padrão</div>
@@ -511,41 +722,41 @@
                 <div class="step-num">1</div>
                 <div class="step-body">
                     <div class="step-label">Navegar pelos diretórios principais</div>
-                    <div class="step-desc">Use o comando <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">ls /</code> para listar a raiz. Em seguida, execute <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">ls -la /home</code>, <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">ls /usr</code> e <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">ls /boot</code>. Use <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">cd /etc && ls | head -20</code> para entrar no /etc e listar os primeiros 20 arquivos. Execute <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">cd ~</code> para voltar ao home. Anote o que você encontrou em cada diretório.</div>
+                    <div class="step-desc">Use <code>ls /</code> para listar a raiz. Em seguida execute <code>ls -la /home</code>, <code>ls /usr</code> e <code>ls /boot</code>. Use <code>cd /etc && ls | head -20</code> para entrar no /etc. Execute <code>cd ~</code> para voltar ao home. Anote o que você encontrou em cada diretório.</div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">2</div>
                 <div class="step-body">
                     <div class="step-label">Listar e ler arquivos de configuração em /etc</div>
-                    <div class="step-desc">Execute <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">cat /etc/hostname</code> para ver o nome da máquina, <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">cat /etc/hosts</code> para ver o DNS local, e <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">cat /etc/os-release</code> para ver informações da distro. Observe como as configurações são simples arquivos de texto que podem ser editados com qualquer editor.</div>
+                    <div class="step-desc">Execute <code>cat /etc/hostname</code>, <code>cat /etc/hosts</code> e <code>cat /etc/os-release</code>. Observe como as configurações são simples arquivos de texto editáveis com qualquer editor.</div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">3</div>
                 <div class="step-body">
                     <div class="step-label">Visualizar logs em /var/log</div>
-                    <div class="step-desc">Execute <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">ls /var/log</code> para listar os logs disponíveis. Em seguida, veja as últimas linhas do log do sistema: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">tail -20 /var/log/syslog</code>. Se existir, leia também <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">tail -10 /var/log/auth.log</code> para ver tentativas de autenticação. Identifique o formato de data e horário nos logs.</div>
+                    <div class="step-desc">Execute <code>ls /var/log</code> para listar os logs. Veja as últimas linhas: <code>tail -20 /var/log/syslog</code>. Se existir, leia também <code>tail -10 /var/log/auth.log</code>. Identifique o formato de data e horário nos logs.</div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">4</div>
                 <div class="step-body">
                     <div class="step-label">Identificar dispositivos em /dev</div>
-                    <div class="step-desc">Execute <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">ls /dev/sd*</code> para listar os discos e partições. Execute <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">ls /dev/tty*</code> para listar os terminais. Teste o <code>/dev/null</code>: execute <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">ls /pastaqueNaoExiste 2>/dev/null</code> e observe que nenhuma mensagem de erro aparece — foi "descartada" no /dev/null.</div>
+                    <div class="step-desc">Execute <code>ls /dev/sd*</code> para listar discos. Execute <code>ls /dev/tty*</code> para listar terminais. Teste: <code>ls /pastaqueNaoExiste 2>/dev/null</code> — observe que nenhum erro aparece.</div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">5</div>
                 <div class="step-body">
                     <div class="step-label">Criar uma estrutura de diretórios de projeto</div>
-                    <div class="step-desc">Dentro do seu home, crie uma estrutura organizada para um projeto: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">mkdir -p ~/projeto/{scripts,logs,configs,docs}</code>. Verifique com <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">tree ~/projeto</code> (ou <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">ls -la ~/projeto</code>). Crie um arquivo README: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">echo "Meu projeto Linux" > ~/projeto/docs/README.txt</code>. Tire um screenshot da estrutura criada.</div>
+                    <div class="step-desc">Crie uma estrutura: <code>mkdir -p ~/projeto/{scripts,logs,configs,docs}</code>. Verifique com <code>tree ~/projeto</code> (ou <code>ls -la ~/projeto</code>). Crie um README: <code>echo "Meu projeto Linux" > ~/projeto/docs/README.txt</code>. Tire um screenshot.</div>
                 </div>
             </div>
         </div>
 
         <div class="prat-observe">
-            <strong>📌 Para refletir:</strong> O FHS não é apenas uma convenção burocrática — é o que permite que profissionais de TI do mundo todo possam administrar qualquer servidor Linux sem precisar "decifrar" onde as coisas ficam. Quando você souber que logs estão sempre em /var/log e configurações em /etc, você terá um mapa mental que funciona em qualquer distribuição.
+            <strong>📌 Para refletir:</strong> O FHS não é apenas uma convenção burocrática — é o que permite que profissionais de TI do mundo todo possam administrar qualquer servidor Linux sem precisar "decifrar" onde as coisas ficam. Quando você souber que logs estão sempre em <code>/var/log</code> e configurações em <code>/etc</code>, você terá um mapa mental que funciona em qualquer distribuição.
         </div>
 
         <div class="ex-actions">
