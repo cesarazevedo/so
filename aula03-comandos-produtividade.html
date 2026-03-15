@@ -7,6 +7,208 @@
     <link rel="stylesheet" href="slide-mode.css">
     <link rel="stylesheet" href="exercise.css">
     <link rel="stylesheet" href="lesson.css">
+    <style>
+
+        /* ── GRID DE COMANDOS EXPANDIDO ── */
+        .cmd-grid-lg {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 12px;
+            margin: 16px 0;
+        }
+        .cmd-card-lg {
+            background: #f8f7ff;
+            border-radius: 12px;
+            padding: 18px 16px;
+            text-align: center;
+            border-top: 3px solid var(--primary);
+            transition: transform .2s, box-shadow .2s;
+        }
+        .cmd-card-lg:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(102,126,234,.15); }
+        .cmd-card-lg .cmd-name {
+            font-family: 'Consolas', monospace;
+            font-size: 1.1em;
+            color: var(--primary);
+            font-weight: 700;
+            display: block;
+            margin-bottom: 8px;
+        }
+        .cmd-card-lg .cmd-desc { font-size: .8em; color: #475569; line-height: 1.5; }
+
+        /* ── ATALHOS DE TECLADO ── */
+        .kbd-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 14px 0;
+        }
+        .kbd-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #1a202c;
+            border-radius: 10px;
+            padding: 12px 16px;
+        }
+        .kbd {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            flex-shrink: 0;
+        }
+        .kbd span {
+            background: #2d3748;
+            border: 1px solid #4a5568;
+            border-bottom: 3px solid #1a202c;
+            border-radius: 5px;
+            padding: 3px 8px;
+            font-family: 'Consolas', monospace;
+            font-size: .78em;
+            color: #e2e8f0;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .kbd-plus { color: #4a5568; font-size: .8em; }
+        .kbd-desc { font-size: .8em; color: #a0aec0; line-height: 1.4; }
+
+        /* ── DIAGRAMA DE PIPE ── */
+        .pipe-diagram {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            margin: 20px 0;
+            overflow-x: auto;
+            padding: 4px 0;
+        }
+        .pipe-node {
+            background: linear-gradient(135deg, var(--primary), #764ba2);
+            color: white;
+            border-radius: 10px;
+            padding: 14px 20px;
+            text-align: center;
+            min-width: 110px;
+            flex-shrink: 0;
+        }
+        .pipe-node .pn-cmd  { font-family: 'Consolas', monospace; font-size: .9em; font-weight: 700; display: block; }
+        .pipe-node .pn-desc { font-size: .72em; opacity: .85; margin-top: 4px; display: block; }
+        .pipe-arrow {
+            color: #94a3b8;
+            font-size: 1.4em;
+            padding: 0 8px;
+            flex-shrink: 0;
+        }
+        .pipe-node.pn-green  { background: linear-gradient(135deg, #059669, #0d9488); }
+        .pipe-node.pn-orange { background: linear-gradient(135deg, #d97706, #b45309); }
+
+        /* ── REDIRECIONAMENTOS VISUAL ── */
+        .redir-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 16px 0;
+        }
+        .redir-card {
+            border-radius: 10px;
+            padding: 14px 16px;
+            background: #f8f7ff;
+        }
+        .redir-op {
+            font-family: 'Consolas', monospace;
+            font-size: 1.3em;
+            font-weight: 900;
+            display: block;
+            margin-bottom: 6px;
+        }
+        .redir-card.rc-over  { border-left: 4px solid #ef4444; }
+        .redir-card.rc-over  .redir-op  { color: #ef4444; }
+        .redir-card.rc-append{ border-left: 4px solid #10b981; }
+        .redir-card.rc-append .redir-op { color: #10b981; }
+        .redir-card.rc-input { border-left: 4px solid #3b82f6; }
+        .redir-card.rc-input .redir-op  { color: #3b82f6; }
+        .redir-card.rc-err   { border-left: 4px solid #f59e0b; }
+        .redir-card.rc-err   .redir-op  { color: #f59e0b; }
+        .redir-name  { font-size: .82em; font-weight: 600; color: #1e293b; margin-bottom: 4px; }
+        .redir-desc  { font-size: .78em; color: #64748b; line-height: 1.4; }
+
+        /* ── COMPARAÇÃO LS / CD ── */
+        .flag-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin: 14px 0;
+        }
+        .flag-box {
+            background: #f8f7ff;
+            border-radius: 12px;
+            padding: 16px 18px;
+            border-top: 3px solid var(--primary);
+        }
+        .flag-box h4 { font-size: .88em; color: var(--primary); margin-bottom: 10px; }
+        .flag-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 6px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .flag-item:last-child { border-bottom: none; }
+        .fi-cmd { font-family: 'Consolas', monospace; font-size: .82em; color: #6d28d9; min-width: 100px; font-weight: 600; }
+        .fi-desc { font-size: .8em; color: #475569; line-height: 1.4; }
+
+        /* ── GREP FLAGS ── */
+        .grep-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
+            margin: 14px 0;
+        }
+        .grep-card {
+            background: #0f172a;
+            border-radius: 10px;
+            padding: 14px 12px;
+            text-align: center;
+            border-top: 2px solid #6366f1;
+        }
+        .gc-flag { font-family: 'Consolas', monospace; font-size: 1em; color: #f6e05e; font-weight: 700; display: block; margin-bottom: 5px; }
+        .gc-desc { font-size: .75em; color: #94a3b8; line-height: 1.4; }
+
+        /* ── CASOS REAIS ── */
+        .case-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 16px 0;
+        }
+        .case-item {
+            background: #0f172a;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .case-header {
+            background: #1e293b;
+            padding: 8px 16px;
+            font-size: .8em;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .case-header .case-icon { font-size: 1em; }
+        .case-body {
+            padding: 12px 16px;
+            font-family: 'Consolas', monospace;
+            font-size: .87em;
+            color: #a0aec0;
+            line-height: 1.8;
+        }
+
+        @media (max-width: 768px) {
+            .kbd-grid  { grid-template-columns: 1fr; }
+            .flag-grid { grid-template-columns: 1fr; }
+            .pipe-diagram { flex-direction: column; gap: 4px; }
+            .pipe-arrow { transform: rotate(90deg); }
+        }
+    </style>
 </head>
 <body>
 
@@ -28,22 +230,22 @@
         <h2>🧭 Navegação no Sistema de Arquivos</h2>
         <p>No Linux, tudo começa pelo terminal. Os três comandos de navegação mais usados são <code>pwd</code>, <code>ls</code> e <code>cd</code>. Dominá-los é o primeiro passo para trabalhar com eficiência.</p>
 
-        <div class="cmd-grid">
-            <div class="cmd-box">
-                <code>pwd</code>
-                <span>Mostra a pasta atual (Print Working Directory)</span>
+        <div class="cmd-grid-lg">
+            <div class="cmd-card-lg">
+                <span class="cmd-name">pwd</span>
+                <span class="cmd-desc">Mostra o diretório atual<br><em>Print Working Directory</em></span>
             </div>
-            <div class="cmd-box">
-                <code>ls</code>
-                <span>Lista arquivos e pastas do diretório</span>
+            <div class="cmd-card-lg">
+                <span class="cmd-name">ls</span>
+                <span class="cmd-desc">Lista arquivos e pastas do diretório atual</span>
             </div>
-            <div class="cmd-box">
-                <code>cd</code>
-                <span>Navega entre diretórios (Change Directory)</span>
+            <div class="cmd-card-lg">
+                <span class="cmd-name">cd</span>
+                <span class="cmd-desc">Navega entre diretórios<br><em>Change Directory</em></span>
             </div>
-            <div class="cmd-box">
-                <code>find</code>
-                <span>Busca arquivos e pastas no sistema</span>
+            <div class="cmd-card-lg">
+                <span class="cmd-name">find</span>
+                <span class="cmd-desc">Busca arquivos e pastas no sistema</span>
             </div>
         </div>
 
@@ -68,31 +270,27 @@
             </div>
         </div>
 
-        <h3>Variações úteis do ls</h3>
-        <div class="two-col">
-            <div class="col-box">
-                <h4>Opções de listagem</h4>
-                <ul>
-                    <li><code>ls -l</code> — lista detalhada com permissões, dono e tamanho</li>
-                    <li><code>ls -a</code> — mostra arquivos ocultos (que começam com .)</li>
-                    <li><code>ls -la</code> — detalhado + ocultos (combinação mais usada)</li>
-                    <li><code>ls -lh</code> — tamanhos em formato legível (KB, MB, GB)</li>
-                </ul>
+        <div class="flag-grid">
+            <div class="flag-box">
+                <h4>⚙️ Opções do ls</h4>
+                <div class="flag-item"><span class="fi-cmd">ls -l</span><span class="fi-desc">Lista detalhada com permissões, dono e tamanho</span></div>
+                <div class="flag-item"><span class="fi-cmd">ls -a</span><span class="fi-desc">Mostra arquivos ocultos (que começam com .)</span></div>
+                <div class="flag-item"><span class="fi-cmd">ls -la</span><span class="fi-desc">Detalhado + ocultos (combinação mais usada)</span></div>
+                <div class="flag-item"><span class="fi-cmd">ls -lh</span><span class="fi-desc">Tamanhos legíveis (KB, MB, GB)</span></div>
+                <div class="flag-item"><span class="fi-cmd">ls -lS</span><span class="fi-desc">Ordena por tamanho (maior primeiro)</span></div>
             </div>
-            <div class="col-box">
-                <h4>Atalhos do cd</h4>
-                <ul>
-                    <li><code>cd ~</code> ou <code>cd</code> — vai para a pasta home</li>
-                    <li><code>cd ..</code> — sobe um nível (pasta pai)</li>
-                    <li><code>cd -</code> — volta para a pasta anterior</li>
-                    <li><code>cd /</code> — vai para a raiz do sistema</li>
-                    <li><code>cd ../Downloads</code> — sobe e entra em outra pasta</li>
-                </ul>
+            <div class="flag-box">
+                <h4>🗺️ Atalhos do cd</h4>
+                <div class="flag-item"><span class="fi-cmd">cd ~</span><span class="fi-desc">Vai para a pasta home do usuário</span></div>
+                <div class="flag-item"><span class="fi-cmd">cd ..</span><span class="fi-desc">Sobe um nível (pasta pai)</span></div>
+                <div class="flag-item"><span class="fi-cmd">cd -</span><span class="fi-desc">Volta para a pasta anterior</span></div>
+                <div class="flag-item"><span class="fi-cmd">cd /</span><span class="fi-desc">Vai para a raiz do sistema</span></div>
+                <div class="flag-item"><span class="fi-cmd">cd ../pasta</span><span class="fi-desc">Sobe e entra em outra pasta</span></div>
             </div>
         </div>
 
         <div class="tip-box">
-            <p><strong>Caminhos absolutos vs relativos:</strong> Caminhos que começam com <code>/</code> são absolutos (funcionam de qualquer lugar). Caminhos sem <code>/</code> são relativos à pasta atual. Exemplo: <code>/home/usuario/Documentos</code> (absoluto) vs <code>Documentos/projetos</code> (relativo).</p>
+            <p>💡 <strong>Caminhos absolutos vs relativos:</strong> Caminhos que começam com <code>/</code> são absolutos (funcionam de qualquer lugar). Sem <code>/</code> são relativos à pasta atual. Exemplo: <code>/home/usuario/Documentos</code> (absoluto) vs <code>Documentos/projetos</code> (relativo).</p>
         </div>
     </div>
 
@@ -101,22 +299,26 @@
         <h2>📁 Manipulação de Arquivos e Pastas</h2>
         <p>Criar, copiar, mover e remover arquivos são operações diárias de um administrador. Os comandos abaixo cobrem praticamente todos os casos de manipulação de arquivos no terminal Linux.</p>
 
-        <div class="two-col">
-            <div class="col-box">
-                <h4>Criar arquivos e pastas</h4>
-                <ul>
-                    <li><code>mkdir pasta</code> — cria um diretório</li>
-                    <li><code>mkdir -p a/b/c</code> — cria pastas aninhadas de uma vez</li>
-                    <li><code>touch arquivo.txt</code> — cria arquivo vazio ou atualiza data</li>
-                </ul>
+        <div class="cmd-grid-lg">
+            <div class="cmd-card-lg" style="border-top-color:#10b981;">
+                <span class="cmd-name" style="color:#059669;">mkdir</span>
+                <span class="cmd-desc">Cria diretórios<br><code>-p</code> cria toda a estrutura</span>
             </div>
-            <div class="col-box">
-                <h4>Copiar e mover</h4>
-                <ul>
-                    <li><code>cp origem destino</code> — copia arquivo</li>
-                    <li><code>cp -r pasta/ copia/</code> — copia diretório recursivamente</li>
-                    <li><code>mv origem destino</code> — move ou renomeia</li>
-                </ul>
+            <div class="cmd-card-lg" style="border-top-color:#10b981;">
+                <span class="cmd-name" style="color:#059669;">touch</span>
+                <span class="cmd-desc">Cria arquivo vazio ou atualiza a data de modificação</span>
+            </div>
+            <div class="cmd-card-lg" style="border-top-color:#3b82f6;">
+                <span class="cmd-name" style="color:#2563eb;">cp</span>
+                <span class="cmd-desc">Copia arquivo ou pasta<br><code>-r</code> para pastas</span>
+            </div>
+            <div class="cmd-card-lg" style="border-top-color:#8b5cf6;">
+                <span class="cmd-name" style="color:#7c3aed;">mv</span>
+                <span class="cmd-desc">Move ou renomeia arquivo ou pasta</span>
+            </div>
+            <div class="cmd-card-lg" style="border-top-color:#ef4444;">
+                <span class="cmd-name" style="color:#dc2626;">rm</span>
+                <span class="cmd-desc">Remove arquivos<br><strong>Sem lixeira!</strong></span>
             </div>
         </div>
 
@@ -128,40 +330,41 @@
                 <span class="term-title">bash — manipulação de arquivos</span>
             </div>
             <div class="terminal-body">
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">mkdir</span> <span class="t-flag">-p</span> <span class="t-arg">projetos/site/css</span>  <span class="t-comment"># Cria estrutura inteira</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">touch</span> <span class="t-arg">notas.txt</span>               <span class="t-comment"># Cria arquivo vazio</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">cp</span> <span class="t-arg">notas.txt</span> <span class="t-arg">backup.txt</span>       <span class="t-comment"># Copia arquivo</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">mv</span> <span class="t-arg">backup.txt</span> <span class="t-path">/tmp/</span>           <span class="t-comment"># Move para /tmp</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">cp</span> <span class="t-flag">-r</span> <span class="t-arg">projetos/</span> <span class="t-arg">backup_projetos/</span>  <span class="t-comment"># Copia pasta inteira</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">mkdir</span> <span class="t-flag">-p</span> <span class="t-arg">projetos/site/css</span>        <span class="t-comment"># Cria estrutura inteira de uma vez</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">touch</span> <span class="t-arg">notas.txt</span>                   <span class="t-comment"># Cria arquivo vazio</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">cp</span> <span class="t-arg">notas.txt</span> <span class="t-arg">backup.txt</span>           <span class="t-comment"># Copia arquivo</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">mv</span> <span class="t-arg">backup.txt</span> <span class="t-path">/tmp/</span>               <span class="t-comment"># Move para /tmp</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">cp</span> <span class="t-flag">-r</span> <span class="t-arg">projetos/</span> <span class="t-arg">backup_projetos/</span>    <span class="t-comment"># Copia pasta inteira</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">rm</span> <span class="t-flag">-i</span> <span class="t-arg">notas.txt</span>                  <span class="t-comment"># Remove com confirmação (-i é mais seguro)</span>
             </div>
         </div>
 
         <div class="alert-box">
-            <p>⚠️ <strong>rm não tem lixeira!</strong> O comando <code>rm arquivo.txt</code> remove permanentemente. Use <code>rm -i arquivo</code> para pedir confirmação antes de apagar. Para remover pastas com conteúdo, use <code>rm -r pasta/</code> — mas com muito cuidado!</p>
+            <p>⚠️ <strong>rm não tem lixeira!</strong> O comando <code>rm arquivo.txt</code> remove permanentemente — sem volta. Use <code>rm -i arquivo</code> para pedir confirmação. Para pastas com conteúdo use <code>rm -r pasta/</code> — com muito cuidado! Nunca execute <code>rm -rf /</code>.</p>
         </div>
     </div>
 
     <!-- CARD 3 — Visualização de Conteúdo -->
     <div class="content-card">
         <h2>👀 Visualizando Conteúdo de Arquivos</h2>
-        <p>Antes de editar ou processar um arquivo, é fundamental saber como visualizá-lo. O Linux oferece várias ferramentas, cada uma indicada para diferentes situações — de ver um arquivo pequeno inteiro até monitorar logs em tempo real.</p>
+        <p>Antes de editar ou processar um arquivo, é fundamental saber como visualizá-lo. Cada ferramenta tem seu caso de uso ideal:</p>
 
-        <div class="cmd-grid">
-            <div class="cmd-box">
-                <code>cat</code>
-                <span>Exibe o arquivo inteiro de uma vez</span>
+        <div class="cmd-grid-lg">
+            <div class="cmd-card-lg">
+                <span class="cmd-name">cat</span>
+                <span class="cmd-desc">Exibe o arquivo inteiro de uma vez — ideal para arquivos pequenos</span>
             </div>
-            <div class="cmd-box">
-                <code>less</code>
-                <span>Visualiza página por página (q para sair)</span>
+            <div class="cmd-card-lg">
+                <span class="cmd-name">less</span>
+                <span class="cmd-desc">Visualiza página por página — use <kbd>q</kbd> para sair, <kbd>/</kbd> para buscar</span>
             </div>
-            <div class="cmd-box">
-                <code>head</code>
-                <span>Mostra as primeiras N linhas (padrão: 10)</span>
+            <div class="cmd-card-lg">
+                <span class="cmd-name">head</span>
+                <span class="cmd-desc">Mostra as <strong>primeiras</strong> N linhas (padrão: 10)</span>
             </div>
-            <div class="cmd-box">
-                <code>tail</code>
-                <span>Mostra as últimas N linhas do arquivo</span>
+            <div class="cmd-card-lg" style="border-top-color:#10b981;">
+                <span class="cmd-name" style="color:#059669;">tail -f</span>
+                <span class="cmd-desc">Monitora arquivo em <strong>tempo real</strong> — essencial para logs</span>
             </div>
         </div>
 
@@ -179,21 +382,50 @@
 
 <span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">head</span> <span class="t-flag">-5</span> <span class="t-path">/var/log/syslog</span>     <span class="t-comment"># Primeiras 5 linhas</span>
 <span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">tail</span> <span class="t-flag">-5</span> <span class="t-path">/var/log/syslog</span>     <span class="t-comment"># Últimas 5 linhas</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">tail</span> <span class="t-flag">-f</span> <span class="t-path">/var/log/syslog</span>     <span class="t-comment"># Monitora em tempo real!</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">tail</span> <span class="t-flag">-f</span> <span class="t-path">/var/log/syslog</span>     <span class="t-comment"># Monitora em tempo real! (Ctrl+C para sair)</span>
             </div>
         </div>
 
         <div class="highlight-box">
-            <p><strong>tail -f</strong> é uma das ferramentas mais valiosas para administradores: monitora um arquivo de log em tempo real, exibindo novas linhas assim que são escritas. Pressione <span class="kbd-sm">Ctrl+C</span> para sair.</p>
+            <p>🌟 <strong>tail -f</strong> é uma das ferramentas mais valiosas para administradores: monitora um arquivo de log em tempo real, exibindo novas linhas conforme são escritas. Indispensável ao diagnosticar falhas em servidores. Pressione <strong>Ctrl+C</strong> para sair.</p>
         </div>
     </div>
 
-    <!-- CARD 4 — Busca com grep e find -->
+    <!-- CARD 4 — grep e find -->
     <div class="content-card">
-        <h2>🔍 Busca: grep, find e locate</h2>
-        <p>Encontrar arquivos e conteúdo específico é uma habilidade essencial. O <code>grep</code> busca texto dentro de arquivos, enquanto <code>find</code> localiza arquivos pelo nome, tipo, tamanho ou data de modificação.</p>
+        <h2>🔍 Busca: grep e find</h2>
+        <p>Encontrar arquivos e conteúdo específico é uma habilidade essencial. O <code>grep</code> busca texto dentro de arquivos, enquanto <code>find</code> localiza arquivos pelo nome, tipo, tamanho ou data.</p>
 
         <h3>grep — busca padrões dentro de arquivos</h3>
+        <p>As flags do grep são simples mas poderosas — memorize as principais:</p>
+
+        <div class="grep-grid">
+            <div class="grep-card">
+                <span class="gc-flag">-r</span>
+                <span class="gc-desc">Busca recursiva em subdiretórios</span>
+            </div>
+            <div class="grep-card">
+                <span class="gc-flag">-i</span>
+                <span class="gc-desc">Ignora maiúsculas e minúsculas</span>
+            </div>
+            <div class="grep-card">
+                <span class="gc-flag">-n</span>
+                <span class="gc-desc">Mostra o número da linha encontrada</span>
+            </div>
+            <div class="grep-card">
+                <span class="gc-flag">-v</span>
+                <span class="gc-desc">Inverte — mostra linhas que NÃO contêm</span>
+            </div>
+            <div class="grep-card">
+                <span class="gc-flag">-c</span>
+                <span class="gc-desc">Conta quantas linhas correspondem</span>
+            </div>
+            <div class="grep-card">
+                <span class="gc-flag">-l</span>
+                <span class="gc-desc">Lista só o nome dos arquivos com resultado</span>
+            </div>
+        </div>
+
         <div class="terminal">
             <div class="terminal-bar">
                 <div class="term-dot red"></div>
@@ -202,15 +434,16 @@
                 <span class="term-title">bash — grep</span>
             </div>
             <div class="terminal-body">
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">grep</span> <span class="t-string">"erro"</span> <span class="t-arg">sistema.log</span>        <span class="t-comment"># Busca "erro" no arquivo</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">grep</span> <span class="t-flag">-r</span> <span class="t-string">"usuario"</span> <span class="t-path">/etc/</span>         <span class="t-comment"># Busca recursivamente em /etc</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">grep</span> <span class="t-flag">-i</span> <span class="t-string">"ERRO"</span> <span class="t-arg">sistema.log</span>       <span class="t-comment"># Ignora maiúsculas/minúsculas</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">grep</span> <span class="t-flag">-n</span> <span class="t-string">"falha"</span> <span class="t-arg">sistema.log</span>      <span class="t-comment"># Mostra número da linha</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">grep</span> <span class="t-flag">-v</span> <span class="t-string">"INFO"</span> <span class="t-arg">sistema.log</span>       <span class="t-comment"># Mostra linhas que NÃO contêm</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">grep</span> <span class="t-string">"erro"</span> <span class="t-arg">sistema.log</span>          <span class="t-comment"># Busca "erro" no arquivo</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">grep</span> <span class="t-flag">-r</span> <span class="t-string">"usuario"</span> <span class="t-path">/etc/</span>           <span class="t-comment"># Busca recursivamente em /etc</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">grep</span> <span class="t-flag">-i</span> <span class="t-string">"ERRO"</span> <span class="t-arg">sistema.log</span>         <span class="t-comment"># Ignora maiúsculas/minúsculas</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">grep</span> <span class="t-flag">-n</span> <span class="t-string">"falha"</span> <span class="t-arg">sistema.log</span>        <span class="t-comment"># Mostra número da linha</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">grep</span> <span class="t-flag">-v</span> <span class="t-string">"INFO"</span> <span class="t-arg">sistema.log</span>         <span class="t-comment"># Linhas que NÃO contêm INFO</span>
             </div>
         </div>
 
         <h3>find — localiza arquivos no sistema</h3>
+
         <div class="terminal">
             <div class="terminal-bar">
                 <div class="term-dot red"></div>
@@ -219,30 +452,41 @@
                 <span class="term-title">bash — find</span>
             </div>
             <div class="terminal-body">
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">find</span> <span class="t-path">/home</span> <span class="t-flag">-name</span> <span class="t-string">"*.txt"</span>         <span class="t-comment"># Busca arquivos .txt</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">find</span> <span class="t-path">/var/log</span> <span class="t-flag">-mtime</span> <span class="t-arg">-7</span>          <span class="t-comment"># Modificados nos últimos 7 dias</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">find</span> <span class="t-path">/tmp</span> <span class="t-flag">-type</span> <span class="t-arg">f</span> <span class="t-flag">-size</span> <span class="t-arg">+1M</span>    <span class="t-comment"># Arquivos maiores que 1 MB</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">locate</span> <span class="t-arg">sshd.conf</span>                   <span class="t-comment"># Busca rápida via banco de dados</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">find</span> <span class="t-path">/home</span> <span class="t-flag">-name</span> <span class="t-string">"*.txt"</span>           <span class="t-comment"># Busca arquivos .txt</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">find</span> <span class="t-path">/var/log</span> <span class="t-flag">-mtime</span> <span class="t-arg">-7</span>            <span class="t-comment"># Modificados nos últimos 7 dias</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">find</span> <span class="t-path">/tmp</span> <span class="t-flag">-type</span> <span class="t-arg">f</span> <span class="t-flag">-size</span> <span class="t-arg">+1M</span>      <span class="t-comment"># Arquivos maiores que 1 MB</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">find</span> <span class="t-path">/etc</span> <span class="t-flag">-name</span> <span class="t-string">"*.conf"</span> <span class="t-flag">-type</span> <span class="t-arg">f</span>  <span class="t-comment"># Arquivos .conf em /etc</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">locate</span> <span class="t-arg">sshd.conf</span>                     <span class="t-comment"># Busca rápida via banco de dados</span>
             </div>
         </div>
 
         <div class="tip-box">
-            <p><strong>locate vs find:</strong> <code>locate</code> é muito mais rápido pois usa um banco de dados pré-indexado, mas pode estar desatualizado. <code>find</code> varre o disco em tempo real e suporta filtros avançados. Para atualizar o banco do <code>locate</code>, execute <code>sudo updatedb</code>.</p>
+            <p>💡 <strong>locate vs find:</strong> <code>locate</code> é muito mais rápido pois usa um banco de dados pré-indexado, mas pode estar desatualizado. <code>find</code> varre o disco em tempo real com filtros avançados. Para atualizar o banco do <code>locate</code>, execute <code>sudo updatedb</code>.</p>
         </div>
     </div>
 
     <!-- CARD 5 — Pipes e Redirecionamentos -->
     <div class="content-card">
         <h2>🔗 Pipes e Redirecionamentos</h2>
-        <p>Uma das maiores potências do Linux é a filosofia de compor comandos simples para resolver tarefas complexas. O <strong>pipe</strong> (<code>|</code>) encadeia a saída de um comando como entrada do próximo. O <strong>redirecionamento</strong> salva ou descarta saídas.</p>
+        <p>Uma das maiores potências do Linux é compor comandos simples para resolver tarefas complexas. O <strong>pipe</strong> (<code>|</code>) encadeia a saída de um comando como entrada do próximo.</p>
 
-        <h3>Pipe — encadeando comandos</h3>
-        <div class="pipe-row">
-            <div class="pipe-box">comando1</div>
-            <div class="pipe-arrow">|</div>
-            <div class="pipe-box">comando2</div>
-            <div class="pipe-arrow">|</div>
-            <div class="pipe-box">comando3</div>
+        <h3>Pipe — a saída de um vira a entrada do próximo</h3>
+
+        <div class="pipe-diagram">
+            <div class="pipe-node">
+                <span class="pn-cmd">cat /var/log/syslog</span>
+                <span class="pn-desc">lê o arquivo</span>
+            </div>
+            <div class="pipe-arrow">→</div>
+            <div class="pipe-node pn-green">
+                <span class="pn-cmd">grep "error"</span>
+                <span class="pn-desc">filtra as linhas</span>
+            </div>
+            <div class="pipe-arrow">→</div>
+            <div class="pipe-node pn-orange">
+                <span class="pn-cmd">tail -20</span>
+                <span class="pn-desc">últimas 20</span>
+            </div>
         </div>
 
         <div class="terminal">
@@ -253,32 +497,35 @@
                 <span class="term-title">bash — pipes</span>
             </div>
             <div class="terminal-body">
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-la</span> <span class="t-arg">|</span> <span class="t-cmd">grep</span> <span class="t-string">".txt"</span>            <span class="t-comment"># Lista e filtra .txt</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-arg">|</span> <span class="t-cmd">wc -l</span>                         <span class="t-comment"># Conta quantos arquivos há</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ps aux</span> <span class="t-arg">|</span> <span class="t-cmd">grep</span> <span class="t-arg">nginx</span>              <span class="t-comment"># Localiza processo nginx</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">cat</span> <span class="t-path">/var/log/syslog</span> <span class="t-arg">|</span> <span class="t-cmd">grep</span> <span class="t-string">"erro"</span> <span class="t-arg">|</span> <span class="t-cmd">tail</span> <span class="t-flag">-20</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-la</span> <span class="t-arg">|</span> <span class="t-cmd">grep</span> <span class="t-string">".txt"</span>              <span class="t-comment"># Lista e filtra .txt</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-arg">|</span> <span class="t-cmd">wc -l</span>                           <span class="t-comment"># Conta quantos arquivos há</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ps aux</span> <span class="t-arg">|</span> <span class="t-cmd">grep</span> <span class="t-arg">nginx</span>                <span class="t-comment"># Localiza processo nginx</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">cat</span> <span class="t-path">/var/log/syslog</span> <span class="t-arg">|</span> <span class="t-cmd">grep</span> <span class="t-string">"error"</span> <span class="t-arg">|</span> <span class="t-cmd">tail</span> <span class="t-flag">-20</span>
             </div>
         </div>
 
         <h3>Redirecionamentos — salvando e descartando saídas</h3>
-        <div class="two-col">
-            <div class="col-box">
-                <h4>Operadores de saída</h4>
-                <ul>
-                    <li><code>&gt;</code> — redireciona saída, <strong>sobrescrevendo</strong> o arquivo</li>
-                    <li><code>&gt;&gt;</code> — redireciona saída, <strong>adicionando</strong> ao final</li>
-                    <li><code>&lt;</code> — usa um arquivo como entrada de um comando</li>
-                    <li><code>2&gt;</code> — redireciona mensagens de erro (stderr)</li>
-                </ul>
+
+        <div class="redir-grid">
+            <div class="redir-card rc-over">
+                <span class="redir-op">&gt;</span>
+                <div class="redir-name">Sobrescreve</div>
+                <div class="redir-desc">Redireciona saída para arquivo — apaga o conteúdo anterior</div>
             </div>
-            <div class="col-box">
-                <h4>Exemplos práticos</h4>
-                <ul>
-                    <li><code>ls -la &gt; lista.txt</code> — salva listagem em arquivo</li>
-                    <li><code>date &gt;&gt; log.txt</code> — acrescenta data ao log</li>
-                    <li><code>comando 2&gt; erros.txt</code> — salva só os erros</li>
-                    <li><code>comando &gt;&gt; /dev/null 2&gt;&amp;1</code> — descarta tudo</li>
-                </ul>
+            <div class="redir-card rc-append">
+                <span class="redir-op">&gt;&gt;</span>
+                <div class="redir-name">Adiciona ao final</div>
+                <div class="redir-desc">Redireciona saída — acrescenta sem apagar o que já existe</div>
+            </div>
+            <div class="redir-card rc-input">
+                <span class="redir-op">&lt;</span>
+                <div class="redir-name">Entrada de arquivo</div>
+                <div class="redir-desc">Usa um arquivo como entrada de um comando</div>
+            </div>
+            <div class="redir-card rc-err">
+                <span class="redir-op">2&gt;</span>
+                <div class="redir-name">Erros (stderr)</div>
+                <div class="redir-desc">Redireciona somente mensagens de erro para arquivo</div>
             </div>
         </div>
 
@@ -290,10 +537,11 @@
                 <span class="term-title">bash — redirecionamentos</span>
             </div>
             <div class="terminal-body">
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-la</span> <span class="t-arg">&gt;</span> <span class="t-string">arquivos.txt</span>        <span class="t-comment"># Salva listagem (sobrescreve)</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">echo</span> <span class="t-string">"$(date)"</span> <span class="t-arg">&gt;&gt;</span> <span class="t-string">log.txt</span>    <span class="t-comment"># Acrescenta ao log</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">cat</span> <span class="t-arg">arquivo</span> <span class="t-arg">|</span> <span class="t-cmd">grep</span> <span class="t-string">"erro"</span> <span class="t-arg">&gt;</span> <span class="t-string">erros.log</span>
-<span class="t-out">                             <span class="t-comment"># Filtra e salva só os erros</span></span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-la</span> <span class="t-arg">&gt;</span> <span class="t-string">arquivos.txt</span>            <span class="t-comment"># Salva listagem (sobrescreve)</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">echo</span> <span class="t-string">"$(date)"</span> <span class="t-arg">&gt;&gt;</span> <span class="t-string">log.txt</span>        <span class="t-comment"># Acrescenta data ao log</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">cat</span> <span class="t-arg">arquivo</span> <span class="t-arg">|</span> <span class="t-cmd">grep</span> <span class="t-string">"erro"</span> <span class="t-arg">&gt;</span> <span class="t-string">erros.log</span>  <span class="t-comment"># Filtra e salva só os erros</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">comando</span> <span class="t-arg">2&gt;</span> <span class="t-path">/dev/null</span>               <span class="t-comment"># Descarta mensagens de erro</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">comando</span> <span class="t-arg">&gt;&gt;</span> <span class="t-path">/dev/null</span> <span class="t-arg">2&gt;&amp;1</span>            <span class="t-comment"># Descarta tudo (saída + erros)</span>
             </div>
         </div>
     </div>
@@ -301,9 +549,10 @@
     <!-- CARD 6 — Atalhos e Produtividade -->
     <div class="content-card">
         <h2>⚡ Atalhos do Terminal e Produtividade</h2>
-        <p>Conhecer os atalhos de teclado do terminal pode multiplicar sua velocidade no dia a dia. O Bash oferece uma série de combinações que evitam redigitar comandos e navegam no histórico rapidamente.</p>
+        <p>Conhecer os atalhos de teclado do terminal pode <strong>multiplicar sua velocidade</strong> no dia a dia. O Bash oferece combinações que evitam redigitar comandos e navegam no histórico rapidamente.</p>
 
-        <h3>Tab — autocompletar</h3>
+        <h3>Tab — autocompletar (use sempre!)</h3>
+
         <div class="terminal">
             <div class="terminal-bar">
                 <div class="term-dot red"></div>
@@ -312,9 +561,9 @@
                 <span class="term-title">bash — Tab e histórico</span>
             </div>
             <div class="terminal-body">
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">cd Doc</span><span class="t-flag">[Tab]</span> → <span class="t-cmd">cd Documentos/</span>    <span class="t-comment"># Autocompleta</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">cat rel</span><span class="t-flag">[Tab]</span> → <span class="t-cmd">cat relatorio.txt</span>  <span class="t-comment"># Autocompleta arquivo</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">cd D</span><span class="t-flag">[Tab][Tab]</span>                          <span class="t-comment"># Mostra todas as opções</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">cd Doc</span><span class="t-flag">[Tab]</span> → <span class="t-cmd">cd Documentos/</span>      <span class="t-comment"># Autocompleta pasta</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">cat rel</span><span class="t-flag">[Tab]</span> → <span class="t-cmd">cat relatorio.txt</span>    <span class="t-comment"># Autocompleta arquivo</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">cd D</span><span class="t-flag">[Tab][Tab]</span>                            <span class="t-comment"># Mostra todas as opções com D</span>
 <span class="t-out">Desktop/  Documentos/  Downloads/</span>
 
 <span class="t-comment"># Histórico de comandos</span>
@@ -322,71 +571,83 @@
 <span class="t-out">  501  ls -la</span>
 <span class="t-out">  502  cd Documentos</span>
 <span class="t-out">  503  cat notas.txt</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">!502</span>                                   <span class="t-comment"># Re-executa comando 502</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">!!</span>                                     <span class="t-comment"># Re-executa o último comando</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">!502</span>                                     <span class="t-comment"># Re-executa comando 502</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">!!</span>                                       <span class="t-comment"># Re-executa o último comando</span>
             </div>
         </div>
 
         <h3>Atalhos essenciais de teclado</h3>
-        <div class="two-col">
-            <div class="col-box">
-                <h4>Controle de processo</h4>
-                <ul>
-                    <li><span class="kbd-sm">Ctrl+C</span> — cancela/interrompe o comando atual</li>
-                    <li><span class="kbd-sm">Ctrl+Z</span> — suspende o processo (para segundo plano)</li>
-                    <li><span class="kbd-sm">Ctrl+D</span> — encerra o terminal (EOF)</li>
-                    <li><span class="kbd-sm">Ctrl+L</span> — limpa a tela (equivale a <code>clear</code>)</li>
-                </ul>
+
+        <div class="kbd-grid">
+            <div class="kbd-item">
+                <div class="kbd"><span>Ctrl</span><span class="kbd-plus">+</span><span>C</span></div>
+                <span class="kbd-desc">Cancela/interrompe o comando atual — seu "botão de emergência"</span>
             </div>
-            <div class="col-box">
-                <h4>Edição de linha</h4>
-                <ul>
-                    <li><span class="kbd-sm">Ctrl+A</span> — vai para o início da linha</li>
-                    <li><span class="kbd-sm">Ctrl+E</span> — vai para o fim da linha</li>
-                    <li><span class="kbd-sm">Ctrl+U</span> — apaga da posição até o início</li>
-                    <li><span class="kbd-sm">Ctrl+K</span> — apaga da posição até o fim</li>
-                    <li><span class="kbd-sm">Ctrl+R</span> — busca reversa no histórico</li>
-                </ul>
+            <div class="kbd-item">
+                <div class="kbd"><span>Ctrl</span><span class="kbd-plus">+</span><span>Z</span></div>
+                <span class="kbd-desc">Suspende o processo e envia para segundo plano</span>
+            </div>
+            <div class="kbd-item">
+                <div class="kbd"><span>Ctrl</span><span class="kbd-plus">+</span><span>D</span></div>
+                <span class="kbd-desc">Encerra o terminal (EOF — End of File)</span>
+            </div>
+            <div class="kbd-item">
+                <div class="kbd"><span>Ctrl</span><span class="kbd-plus">+</span><span>L</span></div>
+                <span class="kbd-desc">Limpa a tela — equivale ao comando <code>clear</code></span>
+            </div>
+            <div class="kbd-item">
+                <div class="kbd"><span>Ctrl</span><span class="kbd-plus">+</span><span>A</span></div>
+                <span class="kbd-desc">Move o cursor para o início da linha</span>
+            </div>
+            <div class="kbd-item">
+                <div class="kbd"><span>Ctrl</span><span class="kbd-plus">+</span><span>E</span></div>
+                <span class="kbd-desc">Move o cursor para o fim da linha</span>
+            </div>
+            <div class="kbd-item">
+                <div class="kbd"><span>Ctrl</span><span class="kbd-plus">+</span><span>U</span></div>
+                <span class="kbd-desc">Apaga tudo da posição atual até o início</span>
+            </div>
+            <div class="kbd-item">
+                <div class="kbd"><span>Ctrl</span><span class="kbd-plus">+</span><span>R</span></div>
+                <span class="kbd-desc">Busca reversa no histórico — pesquisa enquanto digita</span>
             </div>
         </div>
 
         <div class="highlight-box">
-            <p><strong>Dica de ouro:</strong> <span class="kbd-sm">Ctrl+C</span> é o seu "botão de emergência". Algo travou ou está demorando demais? Pressione Ctrl+C para interromper imediatamente. O <span class="kbd-sm">Ctrl+R</span> é excelente para resgatar comandos longos que você usou antes.</p>
+            <p>🌟 <strong>Dica de ouro:</strong> <strong>Ctrl+R</strong> é excelente para resgatar comandos longos que você usou antes — basta digitar parte do comando e ele aparece. <strong>Ctrl+C</strong> é o botão de emergência: algo travou ou está demorando demais? Pressione-o imediatamente.</p>
         </div>
     </div>
 
-    <!-- CARD 7 — Combinando Tudo -->
+    <!-- CARD 7 — Casos Reais -->
     <div class="content-card">
         <h2>🚀 Combinando Comandos: Casos Reais</h2>
-        <p>O verdadeiro poder do terminal aparece quando você combina comandos. Um administrador experiente consegue resolver em uma única linha o que levaria minutos com ferramentas gráficas.</p>
+        <p>O verdadeiro poder do terminal aparece quando você combina comandos. Um administrador experiente resolve em <strong>uma única linha</strong> o que levaria minutos com ferramentas gráficas.</p>
 
-        <div class="terminal">
-            <div class="terminal-bar">
-                <div class="term-dot red"></div>
-                <div class="term-dot yellow"></div>
-                <div class="term-dot green"></div>
-                <span class="term-title">bash — combinações práticas</span>
+        <div class="case-grid">
+            <div class="case-item">
+                <div class="case-header"><span class="case-icon">🔍</span> Encontrar e contar arquivos .log maiores que 10MB</div>
+                <div class="case-body"><span class="t-prompt">$</span> <span class="t-cmd">find</span> <span class="t-path">/var/log</span> <span class="t-flag">-name</span> <span class="t-string">"*.log"</span> <span class="t-flag">-size</span> <span class="t-arg">+10M</span> <span class="t-arg">|</span> <span class="t-cmd">wc -l</span></div>
             </div>
-            <div class="terminal-body">
-<span class="t-comment"># Encontrar e contar arquivos .log maiores que 10MB</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">find</span> <span class="t-path">/var/log</span> <span class="t-flag">-name</span> <span class="t-string">"*.log"</span> <span class="t-flag">-size</span> <span class="t-arg">+10M</span> <span class="t-arg">|</span> <span class="t-cmd">wc -l</span>
-
-<span class="t-comment"># Mostrar as 10 últimas linhas de erro do syslog</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">grep</span> <span class="t-flag">-i</span> <span class="t-string">"error"</span> <span class="t-path">/var/log/syslog</span> <span class="t-arg">|</span> <span class="t-cmd">tail</span> <span class="t-flag">-10</span>
-
-<span class="t-comment"># Salvar lista de processos em arquivo de relatório</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ps aux</span> <span class="t-arg">|</span> <span class="t-cmd">grep</span> <span class="t-flag">-v</span> <span class="t-string">"grep"</span> <span class="t-arg">&gt;&gt;</span> <span class="t-string">processos.txt</span>
-
-<span class="t-comment"># Buscar arquivos de configuração que contêm "porta 22"</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">grep</span> <span class="t-flag">-r</span> <span class="t-string">"Port 22"</span> <span class="t-path">/etc/</span> <span class="t-arg">2&gt;</span> <span class="t-path">/dev/null</span>
-
-<span class="t-comment"># Listar os 5 maiores arquivos na pasta atual</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-lhS</span> <span class="t-arg">|</span> <span class="t-cmd">head</span> <span class="t-flag">-6</span>
+            <div class="case-item">
+                <div class="case-header"><span class="case-icon">⚠️</span> Ver as 10 últimas linhas de erro do syslog</div>
+                <div class="case-body"><span class="t-prompt">$</span> <span class="t-cmd">grep</span> <span class="t-flag">-i</span> <span class="t-string">"error"</span> <span class="t-path">/var/log/syslog</span> <span class="t-arg">|</span> <span class="t-cmd">tail</span> <span class="t-flag">-10</span></div>
+            </div>
+            <div class="case-item">
+                <div class="case-header"><span class="case-icon">💾</span> Salvar lista de processos em arquivo de relatório</div>
+                <div class="case-body"><span class="t-prompt">$</span> <span class="t-cmd">ps aux</span> <span class="t-arg">|</span> <span class="t-cmd">grep</span> <span class="t-flag">-v</span> <span class="t-string">"grep"</span> <span class="t-arg">&gt;&gt;</span> <span class="t-string">processos.txt</span></div>
+            </div>
+            <div class="case-item">
+                <div class="case-header"><span class="case-icon">🔒</span> Buscar arquivos de configuração que contêm "Port 22"</div>
+                <div class="case-body"><span class="t-prompt">$</span> <span class="t-cmd">grep</span> <span class="t-flag">-r</span> <span class="t-string">"Port 22"</span> <span class="t-path">/etc/</span> <span class="t-arg">2&gt;</span> <span class="t-path">/dev/null</span></div>
+            </div>
+            <div class="case-item">
+                <div class="case-header"><span class="case-icon">📦</span> Listar os 5 maiores arquivos na pasta atual</div>
+                <div class="case-body"><span class="t-prompt">$</span> <span class="t-cmd">ls</span> <span class="t-flag">-lhS</span> <span class="t-arg">|</span> <span class="t-cmd">head</span> <span class="t-flag">-6</span></div>
             </div>
         </div>
 
         <div class="tip-box">
-            <p><strong>Prática recomendada:</strong> Quando um comando complexo der certo, salve-o em um arquivo de "receitas" pessoal. Com o tempo, você terá uma biblioteca de one-liners que resolve problemas recorrentes em segundos.</p>
+            <p>💡 <strong>Prática recomendada:</strong> Quando um comando complexo der certo, salve-o em um arquivo de "receitas" pessoal (<code>~/.meus-comandos.txt</code>). Com o tempo, você terá uma biblioteca de <em>one-liners</em> que resolve problemas recorrentes em segundos.</p>
         </div>
     </div>
 
@@ -432,7 +693,7 @@
                             <div class="zone-feedback"></div>
                         </div>
                         <div class="drop-zone" data-zone="ex01-z5" data-accept="c5">
-                            <span class="zone-name"><code>cat arquivo | grep erro > log.txt</code></span>
+                            <span class="zone-name"><code>cat arq | grep erro > log.txt</code></span>
                             <div class="zone-slot"></div>
                             <div class="zone-feedback"></div>
                         </div>
@@ -467,42 +728,42 @@
                 <div class="step-num">1</div>
                 <div class="step-body">
                     <div class="step-label">Navegar pelos diretórios principais</div>
-                    <div class="step-desc">Abra o terminal e explore a estrutura: execute <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">pwd</code> para confirmar onde está, depois navegue com <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">cd /var/log</code> e liste os arquivos com <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">ls -lh</code>. Volte para a home com <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">cd ~</code>.</div>
+                    <div class="step-desc">Execute <code>pwd</code> para confirmar onde está, navegue com <code>cd /var/log</code> e liste com <code>ls -lh</code>. Volte para a home com <code>cd ~</code>.</div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">2</div>
                 <div class="step-body">
                     <div class="step-label">Criar uma estrutura de pastas de projeto</div>
-                    <div class="step-desc">Crie a estrutura de um projeto com um único comando: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">mkdir -p ~/lab-terminal/{scripts,logs,backup}</code>. Confirme a criação com <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">ls -la ~/lab-terminal/</code>. Crie três arquivos de texto dentro de <code>scripts/</code> usando <code>touch</code>.</div>
+                    <div class="step-desc">Crie em um único comando: <code>mkdir -p ~/lab-terminal/{scripts,logs,backup}</code>. Confirme com <code>ls -la ~/lab-terminal/</code>. Crie três arquivos com <code>touch</code> dentro de <code>scripts/</code>.</div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">3</div>
                 <div class="step-body">
                     <div class="step-label">Copiar e mover arquivos</div>
-                    <div class="step-desc">Copie um dos arquivos criados para a pasta <code>backup/</code>: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">cp ~/lab-terminal/scripts/arquivo1.txt ~/lab-terminal/backup/</code>. Mova outro para <code>logs/</code> e renomeie-o ao mesmo tempo: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">mv ~/lab-terminal/scripts/arquivo2.txt ~/lab-terminal/logs/registro.txt</code>.</div>
+                    <div class="step-desc">Copie um arquivo para <code>backup/</code>: <code>cp ~/lab-terminal/scripts/arquivo1.txt ~/lab-terminal/backup/</code>. Mova e renomeie outro: <code>mv ~/lab-terminal/scripts/arquivo2.txt ~/lab-terminal/logs/registro.txt</code>.</div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">4</div>
                 <div class="step-body">
                     <div class="step-label">Buscar arquivos com find e grep</div>
-                    <div class="step-desc">Use o find para localizar todos os arquivos .txt no seu diretório lab: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">find ~/lab-terminal -name "*.txt"</code>. Em seguida, adicione texto a um arquivo com <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">echo "teste de busca com grep" > ~/lab-terminal/scripts/notas.txt</code> e busque com <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">grep -r "grep" ~/lab-terminal/</code>.</div>
+                    <div class="step-desc">Localize todos os .txt: <code>find ~/lab-terminal -name "*.txt"</code>. Adicione texto: <code>echo "teste de busca com grep" > ~/lab-terminal/scripts/notas.txt</code> e busque com <code>grep -r "grep" ~/lab-terminal/</code>.</div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">5</div>
                 <div class="step-body">
                     <div class="step-label">Usar pipes para filtrar dados</div>
-                    <div class="step-desc">Combine comandos com pipe: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">ls -la ~/lab-terminal/ | grep "^d"</code> (mostra só pastas), <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">ps aux | grep bash</code> (mostra processos bash) e <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">ls | wc -l</code> (conta arquivos). Observe como a saída de um vira a entrada do próximo.</div>
+                    <div class="step-desc">Combine: <code>ls -la ~/lab-terminal/ | grep "^d"</code> (só pastas), <code>ps aux | grep bash</code> (processos bash) e <code>ls | wc -l</code> (conta arquivos).</div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">6</div>
                 <div class="step-body">
                     <div class="step-label">Redirecionar saída para arquivo de log</div>
-                    <div class="step-desc">Gere um relatório do sistema redirecionando saídas: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">echo "=== Relatório $(date) ===" > ~/lab-terminal/logs/relatorio.txt</code>, depois <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">ls -la ~/lab-terminal/ >> ~/lab-terminal/logs/relatorio.txt</code>. Visualize o resultado com <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">cat ~/lab-terminal/logs/relatorio.txt</code> e tire screenshot.</div>
+                    <div class="step-desc">Gere um relatório: <code>echo "=== Relatório $(date) ===" > ~/lab-terminal/logs/relatorio.txt</code>, depois <code>ls -la ~/lab-terminal/ >> ~/lab-terminal/logs/relatorio.txt</code>. Visualize com <code>cat ~/lab-terminal/logs/relatorio.txt</code>.</div>
                 </div>
             </div>
         </div>
