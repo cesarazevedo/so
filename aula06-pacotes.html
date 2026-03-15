@@ -3,91 +3,513 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aula 6 &mdash; Pacotes e Reposit&oacute;rios</title>
+    <title>Aula 1.6 &mdash; Pacotes e Reposit&oacute;rios</title>
     <link rel="stylesheet" href="slide-mode.css">
     <link rel="stylesheet" href="exercise.css">
     <link rel="stylesheet" href="lesson.css">
+    <style>
+        /* ── ANATOMIA DO PACOTE ── */
+        .pkg-anatomy {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 16px 0;
+        }
+        .pkg-part {
+            background: #f8f7ff;
+            border-radius: 12px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            border-left: 4px solid var(--primary);
+        }
+        .pkg-icon { font-size: 1.4em; flex-shrink: 0; }
+        .pkg-part strong { display: block; font-size: .85em; color: #1e293b; margin-bottom: 3px; }
+        .pkg-part span { font-size: .78em; color: #64748b; line-height: 1.4; }
+
+        /* ── FLUXO REPOSITÓRIO ── */
+        .repo-flow {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr auto 1fr;
+            gap: 0;
+            align-items: center;
+            margin: 20px 0;
+        }
+        .rf-box {
+            border-radius: 14px;
+            padding: 20px 14px;
+            text-align: center;
+        }
+        .rf-box.rf-repo   { background: #ede9fe; border-top: 4px solid #8b5cf6; }
+        .rf-box.rf-apt    { background: #dbeafe; border-top: 4px solid #3b82f6; }
+        .rf-box.rf-sys    { background: #dcfce7; border-top: 4px solid #16a34a; }
+        .rf-icon { font-size: 2em; margin-bottom: 6px; display: block; }
+        .rf-box strong { display: block; font-size: .9em; margin-bottom: 4px; }
+        .rf-box.rf-repo  strong { color: #5b21b6; }
+        .rf-box.rf-apt   strong { color: #1e40af; }
+        .rf-box.rf-sys   strong { color: #065f46; }
+        .rf-box span { font-size: .75em; color: #64748b; }
+        .rf-arrow {
+            font-size: 1.6em;
+            color: #94a3b8;
+            text-align: center;
+            padding: 0 6px;
+        }
+
+        /* ── TIPOS DE REPOSITÓRIO ── */
+        .repo-types {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 16px 0;
+        }
+        .repo-type {
+            border-radius: 12px;
+            padding: 16px 12px;
+            text-align: center;
+        }
+        .repo-type.rt-main       { background: #eff6ff; border-top: 4px solid #3b82f6; }
+        .repo-type.rt-universe   { background: #f0fdf4; border-top: 4px solid #10b981; }
+        .repo-type.rt-restricted { background: #fff7ed; border-top: 4px solid #f97316; }
+        .repo-type.rt-multiverse { background: #fdf4ff; border-top: 4px solid #a855f7; }
+        .repo-type-name {
+            font-weight: 700;
+            font-size: .9em;
+            font-family: 'Consolas', monospace;
+            margin-bottom: 6px;
+            display: block;
+        }
+        .rt-main       .repo-type-name { color: #1d4ed8; }
+        .rt-universe   .repo-type-name { color: #065f46; }
+        .rt-restricted .repo-type-name { color: #c2410c; }
+        .rt-multiverse .repo-type-name { color: #7e22ce; }
+        .repo-type span { font-size: .75em; color: #475569; line-height: 1.4; display: block; }
+
+        /* ── APT vs DPKG ── */
+        .tool-compare {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin: 16px 0;
+        }
+        .tool-box {
+            border-radius: 14px;
+            overflow: hidden;
+        }
+        .tool-box.tb-apt  { border: 2px solid #3b82f6; }
+        .tool-box.tb-dpkg { border: 2px solid #6366f1; }
+        .tool-header {
+            padding: 12px 18px;
+            font-weight: 700;
+            font-size: 1em;
+            font-family: 'Consolas', monospace;
+        }
+        .tb-apt  .tool-header { background: #3b82f6; color: white; }
+        .tb-dpkg .tool-header { background: #6366f1; color: white; }
+        .tool-body { padding: 14px 18px; background: #f8f7ff; }
+        .tool-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 0;
+            font-size: .84em;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .tool-row:last-child { border-bottom: none; }
+        .tool-yes { color: #16a34a; font-weight: 700; }
+        .tool-no  { color: #dc2626; font-weight: 700; }
+
+        /* ── UPDATE vs UPGRADE ── */
+        .update-compare {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin: 16px 0;
+        }
+        .uc-box {
+            border-radius: 14px;
+            padding: 18px 20px;
+        }
+        .uc-box.uc-update  { background: #eff6ff; border-top: 4px solid #3b82f6; }
+        .uc-box.uc-upgrade { background: #f0fdf4; border-top: 4px solid #10b981; }
+        .uc-cmd {
+            font-family: 'Consolas', monospace;
+            font-size: 1em;
+            font-weight: 700;
+            margin-bottom: 6px;
+            display: block;
+        }
+        .uc-update  .uc-cmd { color: #1d4ed8; }
+        .uc-upgrade .uc-cmd { color: #065f46; }
+        .uc-box strong { display: block; font-size: .88em; margin-bottom: 6px; }
+        .uc-box ul { font-size: .82em; color: #475569; padding-left: 16px; }
+        .uc-box li { margin-bottom: 4px; }
+
+        /* ── REMOÇÃO — NÍVEIS ── */
+        .remove-levels {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin: 16px 0;
+        }
+        .rl-item {
+            display: grid;
+            grid-template-columns: 140px 1fr;
+            gap: 0;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .rl-cmd {
+            padding: 14px 16px;
+            font-family: 'Consolas', monospace;
+            font-size: .9em;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .rl-item.rl-remove  .rl-cmd { background: #fbbf24; color: #78350f; }
+        .rl-item.rl-purge   .rl-cmd { background: #f87171; color: #7f1d1d; }
+        .rl-item.rl-auto    .rl-cmd { background: #94a3b8; color: #1e293b; }
+        .rl-desc {
+            padding: 10px 16px;
+            font-size: .85em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .rl-item.rl-remove .rl-desc { background: #fef9c3; color: #713f12; }
+        .rl-item.rl-purge  .rl-desc { background: #fee2e2; color: #7f1d1d; }
+        .rl-item.rl-auto   .rl-desc { background: #f1f5f9; color: #334155; }
+
+        /* ── DPKG FLAGS ── */
+        .dpkg-flags {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin: 14px 0;
+        }
+        .dpkg-flag {
+            background: #0f172a;
+            border-radius: 10px;
+            padding: 12px 14px;
+            border-left: 4px solid;
+        }
+        .dpkg-flag.df-i { border-color: #10b981; }
+        .dpkg-flag.df-r { border-color: #f59e0b; }
+        .dpkg-flag.df-P { border-color: #ef4444; }
+        .dpkg-flag.df-l { border-color: #3b82f6; }
+        .dpkg-flag.df-S { border-color: #a855f7; }
+        .dpkg-flag.df-f { border-color: #06b6d4; }
+        .dpkg-f-sym {
+            font-family: 'Consolas', monospace;
+            font-size: 1.1em;
+            font-weight: 700;
+            display: block;
+            margin-bottom: 3px;
+        }
+        .df-i .dpkg-f-sym { color: #34d399; }
+        .df-r .dpkg-f-sym { color: #fbbf24; }
+        .df-P .dpkg-f-sym { color: #f87171; }
+        .df-l .dpkg-f-sym { color: #60a5fa; }
+        .df-S .dpkg-f-sym { color: #c084fc; }
+        .df-f .dpkg-f-sym { color: #22d3ee; }
+        .dpkg-f-desc { font-size: .76em; color: #94a3b8; }
+
+        /* ── LIMPEZA PIPELINE ── */
+        .clean-pipeline {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 16px 0;
+        }
+        .clean-step {
+            border-radius: 12px;
+            padding: 16px 14px;
+            text-align: center;
+        }
+        .clean-step.cs-auto   { background: #f0fdf4; border-top: 3px solid #10b981; }
+        .clean-step.cs-clean  { background: #eff6ff; border-top: 3px solid #3b82f6; }
+        .clean-step.cs-acl    { background: #fdf4ff; border-top: 3px solid #a855f7; }
+        .clean-icon { font-size: 1.8em; display: block; margin-bottom: 6px; }
+        .clean-cmd  {
+            font-family: 'Consolas', monospace;
+            font-size: .82em;
+            font-weight: 700;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .cs-auto  .clean-cmd { color: #065f46; }
+        .cs-clean .clean-cmd { color: #1d4ed8; }
+        .cs-acl   .clean-cmd { color: #7e22ce; }
+        .clean-step span { font-size: .76em; color: #475569; }
+
+        /* ── APT COMMANDS GRID ── */
+        .apt-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 16px 0;
+        }
+        .apt-card {
+            border-radius: 12px;
+            padding: 14px 14px;
+            border-top: 3px solid;
+        }
+        .apt-card.ac-update   { background: #eff6ff; border-color: #3b82f6; }
+        .apt-card.ac-upgrade  { background: #f0fdf4; border-color: #10b981; }
+        .apt-card.ac-install  { background: #ecfdf5; border-color: #059669; }
+        .apt-card.ac-remove   { background: #fff7ed; border-color: #f97316; }
+        .apt-card.ac-purge    { background: #fff1f2; border-color: #f43f5e; }
+        .apt-card.ac-search   { background: #fdf4ff; border-color: #a855f7; }
+        .apt-card.ac-show     { background: #f0f9ff; border-color: #0ea5e9; }
+        .apt-card.ac-auto     { background: #f8fafc; border-color: #64748b; }
+        .apt-card.ac-clean    { background: #fefce8; border-color: #ca8a04; }
+        .apt-cmd-label {
+            font-family: 'Consolas', monospace;
+            font-size: .88em;
+            font-weight: 700;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .ac-update  .apt-cmd-label { color: #1d4ed8; }
+        .ac-upgrade .apt-cmd-label { color: #065f46; }
+        .ac-install .apt-cmd-label { color: #047857; }
+        .ac-remove  .apt-cmd-label { color: #c2410c; }
+        .ac-purge   .apt-cmd-label { color: #be123c; }
+        .ac-search  .apt-cmd-label { color: #7e22ce; }
+        .ac-show    .apt-cmd-label { color: #0369a1; }
+        .ac-auto    .apt-cmd-label { color: #334155; }
+        .ac-clean   .apt-cmd-label { color: #a16207; }
+        .apt-card .apt-strong { display: block; font-size: .8em; font-weight: 600; margin-bottom: 3px; }
+        .apt-card span.apt-desc { font-size: .75em; color: #64748b; line-height: 1.4; }
+
+        /* ── ATIVIDADE PRÁTICA ── */
+        .prat-meta {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .prat-tag {
+            background: #f1f5f9;
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: .78em;
+            color: #475569;
+            font-weight: 500;
+        }
+        .prat-steps { display: flex; flex-direction: column; gap: 12px; }
+        .prat-step {
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            background: #f8f7ff;
+            border-radius: 12px;
+            padding: 16px 18px;
+        }
+        .step-num {
+            background: var(--primary);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .82em;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .step-label { font-weight: 700; font-size: .9em; margin-bottom: 5px; color: var(--primary); }
+        .step-desc { font-size: .85em; color: #475569; line-height: 1.6; }
+        .step-desc code {
+            background: #1e293b;
+            color: #a78bfa;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-family: 'Consolas', monospace;
+            font-size: .88em;
+        }
+        .prat-observe {
+            background: #fafafa;
+            border-left: 4px solid var(--primary);
+            border-radius: 0 12px 12px 0;
+            padding: 16px 20px;
+            margin-top: 20px;
+            font-size: .88em;
+            color: #475569;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .pkg-anatomy   { grid-template-columns: 1fr 1fr; }
+            .repo-flow     { grid-template-columns: 1fr; }
+            .rf-arrow      { transform: rotate(90deg); }
+            .repo-types    { grid-template-columns: 1fr 1fr; }
+            .tool-compare  { grid-template-columns: 1fr; }
+            .update-compare{ grid-template-columns: 1fr; }
+            .rl-item       { grid-template-columns: 110px 1fr; }
+            .dpkg-flags    { grid-template-columns: 1fr 1fr; }
+            .clean-pipeline{ grid-template-columns: 1fr; }
+            .apt-grid      { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
 </head>
 <body>
 
 <div class="top-bar">
     <a href="index.html" class="back-btn">&#x2B05; Voltar ao Dashboard</a>
-    <span class="page-badge">M&oacute;dulo 1 &mdash; Fundamentos do Linux</span>
+    <span class="page-badge">1&ordm; Bimestre &mdash; Linux B&aacute;sico</span>
     <button class="slide-toggle" id="slideToggleBtn">&#x1F4FA; Modo Slide</button>
 </div>
 
 <div class="content-wrapper">
 
+    <!-- HERO -->
     <div class="lesson-hero">
-        <h1>&#x1F4E6; Pacotes e Reposit&oacute;rios</h1>
-        <p class="subtitle">Aula 6 &mdash; Instala&ccedil;&atilde;o, atualiza&ccedil;&atilde;o e remo&ccedil;&atilde;o de software no Linux com <code>apt</code> e <code>dpkg</code></p>
+        <span class="hero-badge">Aula 1.6</span>
+        <h1 class="hero-title">&#x1F4E6; Pacotes e Reposit&oacute;rios</h1>
+        <p class="hero-sub">Instala&ccedil;&atilde;o, atualiza&ccedil;&atilde;o e remo&ccedil;&atilde;o de software com <code>apt</code> e <code>dpkg</code> no Debian/Ubuntu.</p>
+        <div class="stat-grid" style="margin-top:28px;">
+            <div class="stat-item">
+                <div class="s-num">apt</div>
+                <div class="s-label">Gerenciador<br>de alto n&iacute;vel</div>
+            </div>
+            <div class="stat-item">
+                <div class="s-num">dpkg</div>
+                <div class="s-label">Baixo n&iacute;vel<br>arquivos .deb</div>
+            </div>
+            <div class="stat-item">
+                <div class="s-num">.deb</div>
+                <div class="s-label">Formato<br>do pacote</div>
+            </div>
+            <div class="stat-item">
+                <div class="s-num">PPA</div>
+                <div class="s-label">Reposit&oacute;rio<br>externo</div>
+            </div>
+        </div>
     </div>
 
     <!-- CARD 1 — O que são Pacotes? -->
     <div class="content-card">
         <h2>&#x1F4E6; O que s&atilde;o Pacotes?</h2>
-        <p>No Linux, um <strong>pacote</strong> &eacute; um arquivo compactado que cont&eacute;m tudo que um programa precisa para funcionar: os execut&aacute;veis, arquivos de configura&ccedil;&atilde;o, documenta&ccedil;&atilde;o e a lista de depend&ecirc;ncias (outros pacotes que ele precisa). No Debian e Ubuntu, esses arquivos t&ecirc;m extens&atilde;o <code>.deb</code>.</p>
+        <p>No Linux, um <strong>pacote</strong> &eacute; um arquivo compactado (<code>.deb</code> no Debian/Ubuntu) que cont&eacute;m tudo que um programa precisa para funcionar.</p>
 
         <div class="highlight-box">
             <p>&#x1F3EA; <strong>Analogia:</strong> pense num pacote como um aplicativo da Play Store ou App Store &mdash; mas instalado pelo terminal. Voc&ecirc; informa o nome, o sistema baixa, instala e configura tudo automaticamente.</p>
         </div>
 
         <h3>O que h&aacute; dentro de um pacote .deb</h3>
-        <ul>
-            <li>O programa compilado (bin&aacute;rios execut&aacute;veis)</li>
-            <li>Arquivos de configura&ccedil;&atilde;o padr&atilde;o</li>
-            <li>Documenta&ccedil;&atilde;o e p&aacute;ginas de manual (<code>man</code>)</li>
-            <li>Lista de depend&ecirc;ncias (outros pacotes necess&aacute;rios)</li>
-            <li>Scripts de p&oacute;s-instala&ccedil;&atilde;o (configuram o servi&ccedil;o automaticamente)</li>
-        </ul>
+        <div class="pkg-anatomy">
+            <div class="pkg-part">
+                <span class="pkg-icon">⚙️</span>
+                <div>
+                    <strong>Bin&aacute;rios</strong>
+                    <span>Programa compilado pronto para executar</span>
+                </div>
+            </div>
+            <div class="pkg-part">
+                <span class="pkg-icon">📄</span>
+                <div>
+                    <strong>Configura&ccedil;&otilde;es</strong>
+                    <span>Arquivos padr&atilde;o em <code>/etc</code></span>
+                </div>
+            </div>
+            <div class="pkg-part">
+                <span class="pkg-icon">📖</span>
+                <div>
+                    <strong>Documenta&ccedil;&atilde;o</strong>
+                    <span>P&aacute;ginas de manual (<code>man</code>)</span>
+                </div>
+            </div>
+            <div class="pkg-part">
+                <span class="pkg-icon">🔗</span>
+                <div>
+                    <strong>Depend&ecirc;ncias</strong>
+                    <span>Lista de outros pacotes necess&aacute;rios</span>
+                </div>
+            </div>
+            <div class="pkg-part">
+                <span class="pkg-icon">📜</span>
+                <div>
+                    <strong>Scripts</strong>
+                    <span>P&oacute;s-instala&ccedil;&atilde;o e configura&ccedil;&atilde;o</span>
+                </div>
+            </div>
+            <div class="pkg-part">
+                <span class="pkg-icon">🏷️</span>
+                <div>
+                    <strong>Metadados</strong>
+                    <span>Nome, vers&atilde;o, mantenedor, descri&ccedil;&atilde;o</span>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- CARD 2 — O que são Repositórios? -->
+    <!-- CARD 2 — Repositórios -->
     <div class="content-card">
         <h2>&#x1F3EA; O que s&atilde;o Reposit&oacute;rios?</h2>
-        <p>Um <strong>reposit&oacute;rio</strong> &eacute; um servidor na internet que armazena milhares de pacotes organizados e verificados. O gerenciador <code>apt</code> consulta esses servidores para baixar e instalar softwares.</p>
+        <p>Um <strong>reposit&oacute;rio</strong> &eacute; um servidor na internet que armazena milhares de pacotes organizados e verificados. O <code>apt</code> consulta esses servidores para baixar e instalar softwares.</p>
 
-        <div class="flow-steps">
-            <div class="flow-step" style="background:#ede9fe;">
-                <div class="f-icon">&#x1F310;</div>
+        <div class="repo-flow">
+            <div class="rf-box rf-repo">
+                <span class="rf-icon">🌐</span>
                 <strong>Reposit&oacute;rio</strong>
-                <code style="font-size:.75em;">(servidor)</code>
+                <span>Servidor com milhares de pacotes</span>
             </div>
-            <div class="flow-arrow">&#x27A1;</div>
-            <div class="flow-step" style="background:#dbeafe;">
-                <div class="f-icon">&#x1F4E5;</div>
+            <div class="rf-arrow">&#x27A1;</div>
+            <div class="rf-box rf-apt">
+                <span class="rf-icon">📥</span>
                 <strong>apt</strong>
-                <code style="font-size:.75em;">(gerenciador)</code>
+                <span>Baixa, verifica e resolve depend&ecirc;ncias</span>
             </div>
-            <div class="flow-arrow">&#x27A1;</div>
-            <div class="flow-step" style="background:#dcfce7;">
-                <div class="f-icon">&#x1F4BB;</div>
+            <div class="rf-arrow">&#x27A1;</div>
+            <div class="rf-box rf-sys">
+                <span class="rf-icon">💻</span>
                 <strong>Seu Sistema</strong>
-                <code style="font-size:.75em;">(instalado)</code>
+                <span>Programa instalado e pronto</span>
             </div>
         </div>
 
         <h3>Tipos de reposit&oacute;rios no Ubuntu</h3>
-        <ul>
-            <li><strong>main</strong> &mdash; Software oficial, mantido pela Canonical</li>
-            <li><strong>universe</strong> &mdash; Software da comunidade, sem suporte oficial</li>
-            <li><strong>restricted</strong> &mdash; Drivers propriet&aacute;rios (ex: NVIDIA)</li>
-            <li><strong>multiverse</strong> &mdash; Software n&atilde;o-livre ou com restri&ccedil;&otilde;es legais</li>
-        </ul>
+        <div class="repo-types">
+            <div class="repo-type rt-main">
+                <span class="repo-type-name">main</span>
+                <span>Software oficial mantido pela Canonical. Suporte garantido.</span>
+            </div>
+            <div class="repo-type rt-universe">
+                <span class="repo-type-name">universe</span>
+                <span>Software da comunidade. Sem suporte oficial, mas vasto.</span>
+            </div>
+            <div class="repo-type rt-restricted">
+                <span class="repo-type-name">restricted</span>
+                <span>Drivers propriet&aacute;rios (ex: NVIDIA, firmware Wi-Fi).</span>
+            </div>
+            <div class="repo-type rt-multiverse">
+                <span class="repo-type-name">multiverse</span>
+                <span>Software n&atilde;o-livre ou com restri&ccedil;&otilde;es legais.</span>
+            </div>
+        </div>
 
-        <h3>Arquivo de configura&ccedil;&atilde;o</h3>
-        <p>A lista de reposit&oacute;rios configurados no sistema fica em:</p>
         <div class="terminal">
             <div class="terminal-bar">
                 <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">bash</span>
+                <span class="term-title">arquivos de configuração de repositórios</span>
             </div>
             <div class="terminal-body">
 <span class="t-comment"># Arquivo principal de repositórios</span>
-<span class="t-arg">/etc/apt/sources.list</span>
+<span class="t-path">/etc/apt/sources.list</span>
 
 <span class="t-comment"># Repositórios adicionais (PPAs e terceiros)</span>
-<span class="t-arg">/etc/apt/sources.list.d/</span>
+<span class="t-path">/etc/apt/sources.list.d/</span>
+
+<span class="t-comment"># Ver o conteúdo</span>
+<span class="t-prompt">user@srv:~$</span> <span class="t-cmd">cat</span> <span class="t-path">/etc/apt/sources.list</span>
+<span class="t-out">deb http://br.archive.ubuntu.com/ubuntu jammy main restricted</span>
+<span class="t-out">deb http://br.archive.ubuntu.com/ubuntu jammy universe multiverse</span>
+<span class="t-out">deb http://security.ubuntu.com/ubuntu jammy-security main restricted</span>
             </div>
         </div>
     </div>
@@ -97,202 +519,260 @@
         <h2>&#x1F527; apt vs dpkg: qual usar?</h2>
         <p>Existem duas ferramentas principais para gerenciar pacotes no Debian/Ubuntu. Entender a diferen&ccedil;a &eacute; essencial para escolher a correta em cada situa&ccedil;&atilde;o.</p>
 
-        <table class="cmp-table">
-            <tr>
-                <th>Caracter&iacute;stica</th>
-                <th>apt</th>
-                <th>dpkg</th>
-            </tr>
-            <tr>
-                <td><strong>N&iacute;vel</strong></td>
-                <td>Alto n&iacute;vel (f&aacute;cil)</td>
-                <td>Baixo n&iacute;vel</td>
-            </tr>
-            <tr>
-                <td><strong>Depend&ecirc;ncias</strong></td>
-                <td>&#x2705; Resolve automaticamente</td>
-                <td>&#x274C; N&atilde;o resolve</td>
-            </tr>
-            <tr>
-                <td><strong>Download</strong></td>
-                <td>&#x2705; Baixa da internet</td>
-                <td>&#x274C; Precisa do arquivo .deb</td>
-            </tr>
-            <tr>
-                <td><strong>Uso t&iacute;pico</strong></td>
-                <td>Dia a dia</td>
-                <td>Instalar .deb baixado manualmente</td>
-            </tr>
-        </table>
+        <div class="tool-compare">
+            <div class="tool-box tb-apt">
+                <div class="tool-header">apt &mdash; Alto N&iacute;vel</div>
+                <div class="tool-body">
+                    <div class="tool-row"><span class="tool-yes">✅</span> Resolve depend&ecirc;ncias automaticamente</div>
+                    <div class="tool-row"><span class="tool-yes">✅</span> Baixa da internet (reposit&oacute;rios)</div>
+                    <div class="tool-row"><span class="tool-yes">✅</span> F&aacute;cil de usar no dia a dia</div>
+                    <div class="tool-row"><span class="tool-yes">✅</span> Atualiza pacotes instalados</div>
+                    <div class="tool-row"><span class="tool-no">❌</span> N&atilde;o instala .deb locais diretamente</div>
+                </div>
+            </div>
+            <div class="tool-box tb-dpkg">
+                <div class="tool-header">dpkg &mdash; Baixo N&iacute;vel</div>
+                <div class="tool-body">
+                    <div class="tool-row"><span class="tool-no">❌</span> N&atilde;o resolve depend&ecirc;ncias</div>
+                    <div class="tool-row"><span class="tool-no">❌</span> N&atilde;o baixa da internet</div>
+                    <div class="tool-row"><span class="tool-yes">✅</span> Instala arquivos .deb locais</div>
+                    <div class="tool-row"><span class="tool-yes">✅</span> Lista e inspeciona pacotes</div>
+                    <div class="tool-row"><span class="tool-yes">✅</span> Opera sem acesso &agrave; rede</div>
+                </div>
+            </div>
+        </div>
 
         <div class="tip-box">
-            <p>&#x1F4A1; <strong>Regra pr&aacute;tica:</strong> use <code>apt</code> para quase tudo. Use <code>dpkg</code> apenas quando voc&ecirc; tiver um arquivo <code>.deb</code> local que n&atilde;o est&aacute; nos reposit&oacute;rios (ex: Google Chrome, VS Code).</p>
+            <p>&#x1F4A1; <strong>Regra pr&aacute;tica:</strong> use <code>apt</code> para quase tudo. Use <code>dpkg -i</code> apenas quando tiver um arquivo <code>.deb</code> local que n&atilde;o est&aacute; nos reposit&oacute;rios (ex: Google Chrome, VS Code, Discord).</p>
         </div>
     </div>
 
-    <!-- CARD 4 — apt update e upgrade -->
+    <!-- CARD 4 — update e upgrade -->
     <div class="content-card">
         <h2>&#x1F504; Atualizando o Sistema</h2>
-        <p>Antes de instalar qualquer coisa, &eacute; boa pr&aacute;tica atualizar a lista de pacotes dispon&iacute;veis. S&atilde;o dois comandos distintos com fun&ccedil;&otilde;es diferentes.</p>
+        <p>S&atilde;o dois comandos distintos que muita gente confunde. &Eacute; essencial entender a diferen&ccedil;a:</p>
+
+        <div class="update-compare">
+            <div class="uc-box uc-update">
+                <span class="uc-cmd">apt update</span>
+                <strong>Atualiza o CAT&Aacute;LOGO</strong>
+                <ul>
+                    <li>Consulta os reposit&oacute;rios</li>
+                    <li>Baixa a lista de pacotes dispon&iacute;veis</li>
+                    <li><strong>N&atilde;o instala NADA</strong></li>
+                    <li>Deve ser o primeiro passo sempre</li>
+                </ul>
+            </div>
+            <div class="uc-box uc-upgrade">
+                <span class="uc-cmd">apt upgrade</span>
+                <strong>Atualiza os PACOTES</strong>
+                <ul>
+                    <li>Compara vers&otilde;es instaladas vs dispon&iacute;veis</li>
+                    <li><strong>Instala as novas vers&otilde;es</strong></li>
+                    <li>N&atilde;o remove pacotes antigos</li>
+                    <li>Deve vir sempre ap&oacute;s o update</li>
+                </ul>
+            </div>
+        </div>
 
         <div class="terminal">
             <div class="terminal-bar">
                 <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">bash</span>
+                <span class="term-title">update e upgrade</span>
             </div>
             <div class="terminal-body">
-<span class="t-comment"># 1. Atualiza a LISTA de pacotes disponíveis (não instala nada)</span>
-<span class="t-root">root@servidor:~#</span> <span class="t-cmd">apt</span> <span class="t-arg">update</span>
+<span class="t-comment"># 1. Atualiza a LISTA (não instala nada)</span>
+<span class="t-root">root@srv:~#</span> <span class="t-cmd">apt</span> <span class="t-arg">update</span>
 <span class="t-out">Atingido:1 http://br.archive.ubuntu.com/ubuntu jammy InRelease</span>
 <span class="t-out">Obtido:2 http://security.ubuntu.com jammy-security InRelease</span>
 <span class="t-out">Lendo lista de pacotes... Pronto</span>
 
 <span class="t-comment"># 2. Instala as atualizações dos pacotes já instalados</span>
-<span class="t-root">root@servidor:~#</span> <span class="t-cmd">apt</span> <span class="t-arg">upgrade</span>
-<span class="t-out">Os seguintes pacotes serão atualizados:</span>
-<span class="t-out">  base-files bash coreutils...</span>
+<span class="t-root">root@srv:~#</span> <span class="t-cmd">apt</span> <span class="t-arg">upgrade</span>
+<span class="t-out">Os seguintes pacotes serão atualizados: base-files bash coreutils...</span>
 <span class="t-out">Deseja continuar? [S/n]</span> <span class="t-ok">S</span>
 
-<span class="t-comment"># Combo recomendado: atualiza a lista e já faz o upgrade</span>
-<span class="t-root">root@servidor:~#</span> <span class="t-cmd">apt</span> <span class="t-arg">update</span> &amp;&amp; <span class="t-cmd">apt</span> <span class="t-flag">-y</span> <span class="t-arg">upgrade</span>
+<span class="t-comment"># Combo recomendado: update + upgrade automático</span>
+<span class="t-root">root@srv:~#</span> <span class="t-cmd">apt</span> <span class="t-arg">update</span> <span class="t-cmd">&&</span> <span class="t-cmd">apt</span> <span class="t-flag">-y</span> <span class="t-arg">upgrade</span>
             </div>
         </div>
 
         <div class="alert-box">
-            <p>&#x26A0;&#xFE0F; <strong>update &ne; upgrade:</strong> <code>apt update</code> apenas atualiza o <em>cat&aacute;logo</em> de pacotes dispon&iacute;veis &mdash; n&atilde;o instala nada. &Eacute; o <code>apt upgrade</code> que de fato instala as novas vers&otilde;es.</p>
+            <p>&#x26A0;&#xFE0F; <strong>update &ne; upgrade:</strong> <code>apt update</code> apenas atualiza o <em>cat&aacute;logo</em> &mdash; n&atilde;o instala nada. &Eacute; o <code>apt upgrade</code> que instala as novas vers&otilde;es. Sempre execute na ordem: update primeiro, upgrade depois.</p>
         </div>
     </div>
 
     <!-- CARD 5 — apt install -->
     <div class="content-card">
-        <h2>&#x1F4E5; Instalando Pacotes com apt install</h2>
+        <h2>&#x1F4E5; Instalando Pacotes</h2>
         <p>O comando <code>apt install</code> busca o pacote nos reposit&oacute;rios, resolve as depend&ecirc;ncias automaticamente e instala tudo de uma vez.</p>
 
         <div class="terminal">
             <div class="terminal-bar">
                 <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">bash</span>
+                <span class="term-title">apt install</span>
             </div>
             <div class="terminal-body">
 <span class="t-comment"># Instalar um único pacote</span>
-<span class="t-root">root@servidor:~#</span> <span class="t-cmd">apt</span> <span class="t-arg">install</span> <span class="t-pkg">htop</span>
+<span class="t-root">root@srv:~#</span> <span class="t-cmd">apt</span> <span class="t-arg">install</span> <span class="t-str">htop</span>
 <span class="t-out">Lendo listas de pacotes... Pronto</span>
 <span class="t-out">Os seguintes NOVOS pacotes serão instalados: htop</span>
 <span class="t-out">Deseja continuar? [S/n]</span> <span class="t-ok">S</span>
 
-<span class="t-comment"># Instalar vários pacotes de uma vez</span>
-<span class="t-root">root@servidor:~#</span> <span class="t-cmd">apt</span> <span class="t-arg">install</span> <span class="t-pkg">vim git curl wget</span>
+<span class="t-comment"># Instalar vários de uma vez</span>
+<span class="t-root">root@srv:~#</span> <span class="t-cmd">apt</span> <span class="t-arg">install</span> <span class="t-str">vim git curl wget</span>
 
-<span class="t-comment"># Instalar sem pedir confirmação (útil em scripts)</span>
-<span class="t-root">root@servidor:~#</span> <span class="t-cmd">apt</span> <span class="t-arg">install</span> <span class="t-flag">-y</span> <span class="t-pkg">nginx</span>
+<span class="t-comment"># -y: responde "sim" automaticamente (útil em scripts)</span>
+<span class="t-root">root@srv:~#</span> <span class="t-cmd">apt</span> <span class="t-arg">install</span> <span class="t-flag">-y</span> <span class="t-str">nginx</span>
+
+<span class="t-comment"># Reinstalar um pacote corrompido</span>
+<span class="t-root">root@srv:~#</span> <span class="t-cmd">apt</span> <span class="t-arg">install</span> <span class="t-flag">--reinstall</span> <span class="t-str">bash</span>
             </div>
         </div>
 
         <div class="tip-box">
-            <p>&#x1F4A1; <strong>A flag <code>-y</code></strong> responde &ldquo;sim&rdquo; automaticamente a todas as perguntas de confirma&ccedil;&atilde;o. &Eacute; muito &uacute;til em scripts de instala&ccedil;&atilde;o automatizada, mas use com aten&ccedil;&atilde;o: voc&ecirc; n&atilde;o vai revisar o que ser&aacute; instalado.</p>
+            <p>&#x1F4A1; A flag <strong><code>-y</code></strong> responde &ldquo;sim&rdquo; automaticamente a todas as confirma&ccedil;&otilde;es. Muito &uacute;til em scripts de provisionamento, mas use com aten&ccedil;&atilde;o em servidores de produ&ccedil;&atilde;o.</p>
         </div>
     </div>
 
-    <!-- CARD 6 — apt remove, purge, autoremove -->
+    <!-- CARD 6 — Removendo -->
     <div class="content-card">
         <h2>&#x1F5D1;&#xFE0F; Removendo Pacotes</h2>
-        <p>H&aacute; tr&ecirc;s comandos para remover software, cada um com um grau diferente de limpeza:</p>
+        <p>H&aacute; tr&ecirc;s n&iacute;veis de remo&ccedil;&atilde;o, cada um com um grau diferente de limpeza. Escolha conforme sua necessidade:</p>
 
-        <div class="terminal">
-            <div class="terminal-bar">
-                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">bash</span>
+        <div class="remove-levels">
+            <div class="rl-item rl-remove">
+                <div class="rl-cmd">apt remove</div>
+                <div class="rl-desc">&#x26A0;&#xFE0F; Remove o programa, mas <strong>mant&eacute;m as configura&ccedil;&otilde;es</strong> em /etc. &Uacute;til se for reinstalar depois.</div>
             </div>
-            <div class="terminal-body">
-<span class="t-comment"># remove: desinstala o programa, mas MANTÉM as configurações</span>
-<span class="t-root">root@servidor:~#</span> <span class="t-cmd">apt</span> <span class="t-arg">remove</span> <span class="t-pkg">htop</span>
-
-<span class="t-comment"># purge: remove o programa E os arquivos de configuração</span>
-<span class="t-root">root@servidor:~#</span> <span class="t-cmd">apt</span> <span class="t-arg">purge</span> <span class="t-pkg">htop</span>
-
-<span class="t-comment"># autoremove: remove dependências que não são mais usadas</span>
-<span class="t-root">root@servidor:~#</span> <span class="t-cmd">apt</span> <span class="t-arg">autoremove</span>
-<span class="t-out">Os seguintes pacotes serão REMOVIDOS:</span>
-<span class="t-out">  libx264-163 libx265-199...</span>
+            <div class="rl-item rl-purge">
+                <div class="rl-cmd">apt purge</div>
+                <div class="rl-desc">&#x1F9F9; Remove o programa <strong>E todos os arquivos de configura&ccedil;&atilde;o</strong>. Como se nunca tivesse instalado.</div>
+            </div>
+            <div class="rl-item rl-auto">
+                <div class="rl-cmd">apt autoremove</div>
+                <div class="rl-desc">&#x267B;&#xFE0F; Remove depend&ecirc;ncias que foram instaladas automaticamente e <strong>n&atilde;o s&atilde;o mais usadas</strong>.</div>
             </div>
         </div>
 
-        <h3>Quando usar cada um?</h3>
-        <ul>
-            <li><code>remove</code> &mdash; quando quiser reinstalar depois mantendo as configura&ccedil;&otilde;es atuais</li>
-            <li><code>purge</code> &mdash; quando quiser uma remo&ccedil;&atilde;o completa, como se nunca tivesse instalado</li>
-            <li><code>autoremove</code> &mdash; ap&oacute;s remover pacotes, para limpar depend&ecirc;ncias que ficaram &oacute;rf&atilde;s</li>
-        </ul>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">remove vs purge vs autoremove</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-comment"># Remove o programa, mantém configs</span>
+<span class="t-root">root@srv:~#</span> <span class="t-cmd">apt</span> <span class="t-arg">remove</span> <span class="t-str">nginx</span>
+
+<span class="t-comment"># Remove tudo: programa + configurações</span>
+<span class="t-root">root@srv:~#</span> <span class="t-cmd">apt</span> <span class="t-arg">purge</span> <span class="t-str">nginx</span>
+
+<span class="t-comment"># Limpa dependências que ficaram órfãs</span>
+<span class="t-root">root@srv:~#</span> <span class="t-cmd">apt</span> <span class="t-arg">autoremove</span>
+<span class="t-out">Os seguintes pacotes serão REMOVIDOS:</span>
+<span class="t-out">  libx264-163 libx265-199 libnginx-mod-http-gzip...</span>
+<span class="t-out">Deseja continuar? [S/n]</span> <span class="t-ok">S</span>
+            </div>
+        </div>
+
+        <div class="highlight-box">
+            <p>&#x1F4CC; <strong>Quando usar cada um:</strong><br>
+            <code>remove</code> &rarr; vai reinstalar em breve e quer manter as configs<br>
+            <code>purge</code> &rarr; remo&ccedil;&atilde;o completa, "limpa do sistema"<br>
+            <code>autoremove</code> &rarr; ap&oacute;s remover pacotes, para limpar dependências &oacute;rf&atilde;s</p>
+        </div>
     </div>
 
-    <!-- CARD 7 — apt search e show -->
+    <!-- CARD 7 — search e show -->
     <div class="content-card">
         <h2>&#x1F50D; Buscando e Consultando Pacotes</h2>
-        <p>Antes de instalar, &eacute; poss&iacute;vel pesquisar por nome ou descri&ccedil;&atilde;o e ver informa&ccedil;&otilde;es detalhadas de um pacote.</p>
+        <p>Antes de instalar, pesquise por nome ou descri&ccedil;&atilde;o e veja informa&ccedil;&otilde;es detalhadas de um pacote.</p>
 
         <div class="terminal">
             <div class="terminal-bar">
                 <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">bash</span>
+                <span class="term-title">apt search, show e list</span>
             </div>
             <div class="terminal-body">
-<span class="t-comment"># Buscar pacotes por nome ou descrição</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">apt</span> <span class="t-arg">search</span> <span class="t-pkg">editor</span>
-<span class="t-out">vim - Vi IMproved - enhanced vi editor</span>
-<span class="t-out">nano - small, friendly text editor</span>
-<span class="t-out">gedit - official text editor of GNOME</span>
+<span class="t-comment"># Buscar por nome ou descrição</span>
+<span class="t-prompt">user@srv:~$</span> <span class="t-cmd">apt</span> <span class="t-arg">search</span> <span class="t-str">editor</span>
+<span class="t-out">vim/jammy - Vi IMproved - enhanced vi editor</span>
+<span class="t-out">nano/jammy - small, friendly text editor</span>
+<span class="t-out">gedit/jammy - official text editor of GNOME</span>
 
-<span class="t-comment"># Ver detalhes de um pacote específico</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">apt</span> <span class="t-arg">show</span> <span class="t-pkg">htop</span>
+<span class="t-comment"># Detalhes completos de um pacote</span>
+<span class="t-prompt">user@srv:~$</span> <span class="t-cmd">apt</span> <span class="t-arg">show</span> <span class="t-str">htop</span>
 <span class="t-out">Package: htop</span>
 <span class="t-out">Version: 3.2.1-1</span>
 <span class="t-out">Description: interactive process viewer</span>
-<span class="t-out">Depends: libc6, libncursesw6...</span>
+<span class="t-out">Depends: libc6, libncursesw6, libnl-3-200</span>
 
-<span class="t-comment"># Listar pacotes instalados e atualizáveis</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">apt</span> <span class="t-arg">list</span> <span class="t-flag">--installed</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">apt</span> <span class="t-arg">list</span> <span class="t-flag">--upgradable</span>
+<span class="t-comment"># Listar pacotes instalados</span>
+<span class="t-prompt">user@srv:~$</span> <span class="t-cmd">apt</span> <span class="t-arg">list</span> <span class="t-flag">--installed</span>
+
+<span class="t-comment"># Ver o que pode ser atualizado</span>
+<span class="t-prompt">user@srv:~$</span> <span class="t-cmd">apt</span> <span class="t-arg">list</span> <span class="t-flag">--upgradable</span>
             </div>
         </div>
     </div>
 
     <!-- CARD 8 — dpkg -->
     <div class="content-card">
-        <h2>&#x1F4BE; dpkg: Instalando Arquivos .deb Locais</h2>
-        <p>Quando um programa n&atilde;o est&aacute; nos reposit&oacute;rios oficiais &mdash; como Google Chrome ou VS Code &mdash; voc&ecirc; baixa o arquivo <code>.deb</code> manualmente e usa o <code>dpkg</code> para instalar.</p>
+        <h2>&#x1F4BE; dpkg &mdash; Instalando Arquivos .deb Locais</h2>
+        <p>Quando um programa n&atilde;o est&aacute; nos reposit&oacute;rios &mdash; como Google Chrome, VS Code ou Discord &mdash; voc&ecirc; baixa o arquivo <code>.deb</code> manualmente e usa o <code>dpkg</code>.</p>
+
+        <h3>Principais flags do dpkg</h3>
+        <div class="dpkg-flags">
+            <div class="dpkg-flag df-i">
+                <span class="dpkg-f-sym">dpkg -i</span>
+                <span class="dpkg-f-desc">Install — instala um .deb local</span>
+            </div>
+            <div class="dpkg-flag df-r">
+                <span class="dpkg-f-sym">dpkg -r</span>
+                <span class="dpkg-f-desc">Remove — remove, mant&eacute;m configs</span>
+            </div>
+            <div class="dpkg-flag df-P">
+                <span class="dpkg-f-sym">dpkg -P</span>
+                <span class="dpkg-f-desc">Purge — remove tudo inclusive configs</span>
+            </div>
+            <div class="dpkg-flag df-l">
+                <span class="dpkg-f-sym">dpkg -l</span>
+                <span class="dpkg-f-desc">List — lista pacotes instalados</span>
+            </div>
+            <div class="dpkg-flag df-S">
+                <span class="dpkg-f-sym">dpkg -S</span>
+                <span class="dpkg-f-desc">Search — qual pacote criou este arquivo?</span>
+            </div>
+            <div class="dpkg-flag df-f">
+                <span class="dpkg-f-sym">apt install -f</span>
+                <span class="dpkg-f-desc">Fix-broken — corrige depend&ecirc;ncias</span>
+            </div>
+        </div>
 
         <div class="terminal">
             <div class="terminal-bar">
                 <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">bash</span>
+                <span class="term-title">fluxo completo: baixar e instalar .deb</span>
             </div>
             <div class="terminal-body">
-<span class="t-comment"># Instalar um arquivo .deb baixado</span>
-<span class="t-root">root@servidor:~#</span> <span class="t-cmd">dpkg</span> <span class="t-flag">-i</span> <span class="t-arg">google-chrome-stable.deb</span>
+<span class="t-comment"># 1. Baixar o .deb (exemplo: Google Chrome)</span>
+<span class="t-prompt">user@srv:~$</span> <span class="t-cmd">wget</span> <span class="t-str">https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb</span>
 
-<span class="t-comment"># Se der erro de dependências, corrija com:</span>
-<span class="t-root">root@servidor:~#</span> <span class="t-cmd">apt</span> <span class="t-arg">install</span> <span class="t-flag">-f</span>
+<span class="t-comment"># 2. Instalar com dpkg</span>
+<span class="t-root">root@srv:~#</span> <span class="t-cmd">dpkg</span> <span class="t-flag">-i</span> <span class="t-str">google-chrome-stable_current_amd64.deb</span>
+
+<span class="t-comment"># 3. Se der erro de dependências, corrija com apt</span>
+<span class="t-root">root@srv:~#</span> <span class="t-cmd">apt</span> <span class="t-arg">install</span> <span class="t-flag">-f</span>
 <span class="t-out">Corrigindo dependências... Pronto</span>
 
-<span class="t-comment"># Remover um pacote instalado via dpkg</span>
-<span class="t-root">root@servidor:~#</span> <span class="t-cmd">dpkg</span> <span class="t-flag">-r</span> <span class="t-arg">google-chrome-stable</span>
-
-<span class="t-comment"># Listar pacotes instalados e filtrar</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">dpkg</span> <span class="t-flag">-l</span> | grep <span class="t-arg">chrome</span>
+<span class="t-comment"># 4. Verificar instalação</span>
+<span class="t-prompt">user@srv:~$</span> <span class="t-cmd">dpkg</span> <span class="t-flag">-l</span> | <span class="t-cmd">grep</span> <span class="t-str">chrome</span>
+<span class="t-out">ii  google-chrome-stable  120.0.6099.71  amd64  The web browser from Google</span>
             </div>
         </div>
-
-        <h3>Principais flags do dpkg</h3>
-        <ul>
-            <li><code>-i</code> &mdash; <strong>i</strong>nstall (instalar um .deb)</li>
-            <li><code>-r</code> &mdash; <strong>r</strong>emove (remover, mant&eacute;m configs)</li>
-            <li><code>-P</code> &mdash; <strong>P</strong>urge (remove tudo, inclusive configs)</li>
-            <li><code>-l</code> &mdash; <strong>l</strong>ist (listar pacotes instalados)</li>
-            <li><code>-S</code> &mdash; <strong>S</strong>earch (descobrir a qual pacote um arquivo pertence)</li>
-        </ul>
     </div>
 
-    <!-- CARD 9 — Repositórios PPA -->
+    <!-- CARD 9 — PPAs -->
     <div class="content-card">
         <h2>&#x2795; Adicionando Reposit&oacute;rios Externos (PPA)</h2>
         <p>Quando um software n&atilde;o est&aacute; nos reposit&oacute;rios oficiais, &eacute; poss&iacute;vel adicionar um <strong>PPA</strong> (Personal Package Archive) &mdash; reposit&oacute;rio mantido por terceiros no Launchpad da Canonical.</p>
@@ -300,20 +780,20 @@
         <div class="terminal">
             <div class="terminal-bar">
                 <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">bash</span>
+                <span class="term-title">adicionando e removendo PPA</span>
             </div>
             <div class="terminal-body">
-<span class="t-comment"># Adicionar um PPA</span>
-<span class="t-root">root@servidor:~#</span> <span class="t-cmd">add-apt-repository</span> <span class="t-arg">ppa:nome/ppa</span>
+<span class="t-comment"># 1. Adicionar o PPA</span>
+<span class="t-root">root@srv:~#</span> <span class="t-cmd">add-apt-repository</span> <span class="t-arg">ppa:nome/ppa</span>
 
-<span class="t-comment"># SEMPRE atualize a lista após adicionar um PPA</span>
-<span class="t-root">root@servidor:~#</span> <span class="t-cmd">apt</span> <span class="t-arg">update</span>
+<span class="t-comment"># 2. SEMPRE atualize a lista após adicionar um PPA</span>
+<span class="t-root">root@srv:~#</span> <span class="t-cmd">apt</span> <span class="t-arg">update</span>
 
-<span class="t-comment"># Agora pode instalar o pacote do PPA</span>
-<span class="t-root">root@servidor:~#</span> <span class="t-cmd">apt</span> <span class="t-arg">install</span> <span class="t-pkg">nome-do-pacote</span>
+<span class="t-comment"># 3. Instalar o pacote do PPA</span>
+<span class="t-root">root@srv:~#</span> <span class="t-cmd">apt</span> <span class="t-arg">install</span> <span class="t-flag">-y</span> <span class="t-str">nome-do-pacote</span>
 
 <span class="t-comment"># Remover um PPA</span>
-<span class="t-root">root@servidor:~#</span> <span class="t-cmd">add-apt-repository</span> <span class="t-flag">--remove</span> <span class="t-arg">ppa:nome/ppa</span>
+<span class="t-root">root@srv:~#</span> <span class="t-cmd">add-apt-repository</span> <span class="t-flag">--remove</span> <span class="t-arg">ppa:nome/ppa</span>
             </div>
         </div>
 
@@ -325,87 +805,105 @@
     <!-- CARD 10 — Limpeza -->
     <div class="content-card">
         <h2>&#x1F9F9; Limpeza do Sistema</h2>
-        <p>Com o tempo, o sistema acumula pacotes de cache e depend&ecirc;ncias que n&atilde;o s&atilde;o mais necess&aacute;rias. Esses comandos liberam espa&ccedil;o em disco:</p>
+        <p>Com o tempo, o sistema acumula cache de pacotes e depend&ecirc;ncias &oacute;rf&atilde;s. Esses tr&ecirc;s comandos liberam espa&ccedil;o em disco:</p>
+
+        <div class="clean-pipeline">
+            <div class="clean-step cs-auto">
+                <span class="clean-icon">♻️</span>
+                <span class="clean-cmd">apt autoremove</span>
+                <span>Remove depend&ecirc;ncias &oacute;rf&atilde;s — pacotes instalados automaticamente que nenhum programa usa mais</span>
+            </div>
+            <div class="clean-step cs-acl">
+                <span class="clean-icon">🧹</span>
+                <span class="clean-cmd">apt autoclean</span>
+                <span>Remove do cache s&oacute; os <code>.deb</code> de vers&otilde;es antigas &mdash; mant&eacute;m os pacotes atuais</span>
+            </div>
+            <div class="clean-step cs-clean">
+                <span class="clean-icon">🗑️</span>
+                <span class="clean-cmd">apt clean</span>
+                <span>Apaga <strong>todos</strong> os arquivos <code>.deb</code> do cache local em <code>/var/cache/apt/archives/</code></span>
+            </div>
+        </div>
 
         <div class="terminal">
             <div class="terminal-bar">
                 <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">bash</span>
+                <span class="term-title">limpeza completa</span>
             </div>
             <div class="terminal-body">
-<span class="t-comment"># Remove dependências que não são mais usadas por nenhum pacote</span>
-<span class="t-root">root@servidor:~#</span> <span class="t-cmd">apt</span> <span class="t-arg">autoremove</span>
+<span class="t-comment"># Remove dependências órfãs</span>
+<span class="t-root">root@srv:~#</span> <span class="t-cmd">apt</span> <span class="t-arg">autoremove</span>
 
-<span class="t-comment"># Limpa TODOS os arquivos .deb do cache local</span>
-<span class="t-root">root@servidor:~#</span> <span class="t-cmd">apt</span> <span class="t-arg">clean</span>
+<span class="t-comment"># Limpa .deb de versões antigas do cache</span>
+<span class="t-root">root@srv:~#</span> <span class="t-cmd">apt</span> <span class="t-arg">autoclean</span>
 
-<span class="t-comment"># Limpa apenas .deb de versões antigas (mantém os atuais)</span>
-<span class="t-root">root@servidor:~#</span> <span class="t-cmd">apt</span> <span class="t-arg">autoclean</span>
-
-<span class="t-comment"># Combo recomendado de limpeza</span>
-<span class="t-root">root@servidor:~#</span> <span class="t-cmd">apt</span> <span class="t-arg">autoremove</span> &amp;&amp; <span class="t-cmd">apt</span> <span class="t-arg">autoclean</span>
+<span class="t-comment"># Combo recomendado de manutenção</span>
+<span class="t-root">root@srv:~#</span> <span class="t-cmd">apt</span> <span class="t-arg">autoremove</span> <span class="t-cmd">&&</span> <span class="t-cmd">apt</span> <span class="t-arg">autoclean</span>
+<span class="t-out">Os seguintes pacotes serão REMOVIDOS: libx264-163...</span>
+<span class="t-out">Após esta operação, 124 MB de espaço em disco serão liberados.</span>
             </div>
         </div>
 
         <div class="highlight-box">
-            <p>&#x1F4CC; Em servidores, &eacute; boa pr&aacute;tica executar o combo de limpeza ap&oacute;s grandes atualiza&ccedil;&otilde;es. Em ambientes com disco limitado, o cache de pacotes pode ocupar centenas de megabytes.</p>
+            <p>&#x1F4CC; Em servidores, execute o combo de limpeza ap&oacute;s grandes atualiza&ccedil;&otilde;es. Em ambientes com disco limitado, o cache de pacotes pode ocupar <strong>centenas de megabytes</strong>.</p>
         </div>
     </div>
 
     <!-- CARD 11 — Resumo -->
     <div class="content-card">
-        <h2>&#x1F4CB; Resumo: Comandos Essenciais</h2>
+        <h2>&#x1F4CB; Refer&ecirc;ncia R&aacute;pida: Comandos Essenciais</h2>
 
-        <div class="cmd-grid">
-            <div class="cmd-card">
-                <span class="cmd">apt update</span>
-                <strong>Atualiza Lista</strong>
-                <span>Baixa info dos repos. N&atilde;o instala nada.</span>
+        <div class="apt-grid">
+            <div class="apt-card ac-update">
+                <span class="apt-cmd-label">apt update</span>
+                <span class="apt-strong">Atualiza Cat&aacute;logo</span>
+                <span class="apt-desc">Baixa lista dos repos. N&atilde;o instala nada.</span>
             </div>
-            <div class="cmd-card">
-                <span class="cmd">apt upgrade</span>
-                <strong>Atualiza Pacotes</strong>
-                <span>Instala vers&otilde;es novas dos instalados.</span>
+            <div class="apt-card ac-upgrade">
+                <span class="apt-cmd-label">apt upgrade</span>
+                <span class="apt-strong">Atualiza Pacotes</span>
+                <span class="apt-desc">Instala vers&otilde;es novas dos j&aacute; instalados.</span>
             </div>
-            <div class="cmd-card">
-                <span class="cmd">apt install</span>
-                <strong>Instala</strong>
-                <span><code>apt install nome</code></span>
+            <div class="apt-card ac-install">
+                <span class="apt-cmd-label">apt install nome</span>
+                <span class="apt-strong">Instala</span>
+                <span class="apt-desc">Baixa, resolve depend&ecirc;ncias e instala.</span>
             </div>
-            <div class="cmd-card">
-                <span class="cmd">apt remove</span>
-                <strong>Remove</strong>
-                <span>Mant&eacute;m configura&ccedil;&otilde;es.</span>
+            <div class="apt-card ac-remove">
+                <span class="apt-cmd-label">apt remove nome</span>
+                <span class="apt-strong">Remove</span>
+                <span class="apt-desc">Desinstala, mant&eacute;m configura&ccedil;&otilde;es.</span>
             </div>
-            <div class="cmd-card">
-                <span class="cmd">apt purge</span>
-                <strong>Remove Tudo</strong>
-                <span>Inclui configura&ccedil;&otilde;es.</span>
+            <div class="apt-card ac-purge">
+                <span class="apt-cmd-label">apt purge nome</span>
+                <span class="apt-strong">Remove Tudo</span>
+                <span class="apt-desc">Programa + todas as configura&ccedil;&otilde;es.</span>
             </div>
-            <div class="cmd-card">
-                <span class="cmd">apt search</span>
-                <strong>Busca</strong>
-                <span>Encontra pacotes por nome.</span>
+            <div class="apt-card ac-search">
+                <span class="apt-cmd-label">apt search nome</span>
+                <span class="apt-strong">Busca</span>
+                <span class="apt-desc">Encontra pacotes por nome ou descri&ccedil;&atilde;o.</span>
             </div>
-            <div class="cmd-card">
-                <span class="cmd">apt show</span>
-                <strong>Detalhes</strong>
-                <span>Vers&atilde;o, depend&ecirc;ncias, descri&ccedil;&atilde;o.</span>
+            <div class="apt-card ac-show">
+                <span class="apt-cmd-label">apt show nome</span>
+                <span class="apt-strong">Detalhes</span>
+                <span class="apt-desc">Vers&atilde;o, depend&ecirc;ncias, descri&ccedil;&atilde;o.</span>
             </div>
-            <div class="cmd-card">
-                <span class="cmd">dpkg -i</span>
-                <strong>Instala .deb</strong>
-                <span>Arquivo local sem reposit&oacute;rio.</span>
+            <div class="apt-card ac-auto">
+                <span class="apt-cmd-label">dpkg -i arquivo.deb</span>
+                <span class="apt-strong">Instala .deb Local</span>
+                <span class="apt-desc">Arquivo baixado manualmente.</span>
             </div>
-            <div class="cmd-card">
-                <span class="cmd">apt autoremove</span>
-                <strong>Limpa &Oacute;rf&atilde;os</strong>
-                <span>Remove depend&ecirc;ncias inutilizadas.</span>
+            <div class="apt-card ac-clean">
+                <span class="apt-cmd-label">apt autoremove</span>
+                <span class="apt-strong">Limpa &Oacute;rf&atilde;os</span>
+                <span class="apt-desc">Remove depend&ecirc;ncias inutilizadas.</span>
             </div>
         </div>
 
         <div class="highlight-box">
-            <p>&#x23F0; <strong>Rotina recomendada de atualiza&ccedil;&atilde;o:</strong> <code>apt update &amp;&amp; apt upgrade -y &amp;&amp; apt autoremove</code></p>
+            <p>&#x23F0; <strong>Rotina recomendada de atualiza&ccedil;&atilde;o:</strong><br>
+            <code>apt update &amp;&amp; apt upgrade -y &amp;&amp; apt autoremove</code></p>
         </div>
     </div>
 
@@ -472,6 +970,46 @@
         <div class="ex-result" id="ex01-result"></div>
     </div>
 
+    <!-- MÚLTIPLA ESCOLHA -->
+    <div class="content-card exercise-card">
+        <h2>&#x2753; Verifique seu Conhecimento</h2>
+
+        <div class="mc-question" data-correct="b">
+            <p class="mc-q-text">Qual &eacute; a principal diferen&ccedil;a entre <code>apt update</code> e <code>apt upgrade</code>?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span><code>update</code> instala pacotes novos e <code>upgrade</code> atualiza os j&aacute; instalados</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span><code>update</code> atualiza o cat&aacute;logo (n&atilde;o instala nada) e <code>upgrade</code> instala as novas vers&otilde;es</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>S&atilde;o sin&ocirc;nimos e fazem a mesma coisa</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span><code>update</code> &eacute; para o kernel e <code>upgrade</code> para os demais pacotes</span></div>
+            </div>
+            <div class="mc-explanation">&#x2713; <code>apt update</code> apenas baixa a lista de pacotes dispon&iacute;veis nos reposit&oacute;rios &mdash; n&atilde;o instala nada. <code>apt upgrade</code> compara vers&otilde;es e instala as atualizadas. Sempre update antes de upgrade!</div>
+        </div>
+        <hr class="mc-sep">
+
+        <div class="mc-question" data-correct="c">
+            <p class="mc-q-text">Qual comando remove o programa <strong>e</strong> todos os seus arquivos de configura&ccedil;&atilde;o?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>apt remove</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>apt autoremove</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>apt purge</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>dpkg -r</span></div>
+            </div>
+            <div class="mc-explanation">&#x2713; <code>apt purge</code> remove o programa e seus arquivos de configura&ccedil;&atilde;o. <code>remove</code> mant&eacute;m as configs. <code>autoremove</code> limpa depend&ecirc;ncias &oacute;rf&atilde;s. <code>dpkg -r</code> tamb&eacute;m remove mas mant&eacute;m configs.</div>
+        </div>
+        <hr class="mc-sep">
+
+        <div class="mc-question" data-correct="a">
+            <p class="mc-q-text">Voc&ecirc; baixou o arquivo <code>vscode.deb</code>. Qual comando instala esse arquivo?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>dpkg -i vscode.deb</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>apt install vscode.deb</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>apt-get vscode.deb</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>install vscode.deb</span></div>
+            </div>
+            <div class="mc-explanation">&#x2713; <code>dpkg -i arquivo.deb</code> instala um arquivo .deb local. Se houver erro de depend&ecirc;ncias, corrija com <code>apt install -f</code>. Alternativa moderna: <code>apt install ./vscode.deb</code> (resolve depend&ecirc;ncias automaticamente).</div>
+        </div>
+    </div>
+
     <!-- ATIVIDADE PRÁTICA -->
     <div class="content-card practical-card" id="prat-01">
         <h2>&#x1F6E0;&#xFE0F; Atividade Pr&aacute;tica &mdash; Gerenciando Pacotes no Servidor</h2>
@@ -486,51 +1024,51 @@
                 <div class="step-num">1</div>
                 <div class="step-body">
                     <div class="step-label">Atualize o sistema</div>
-                    <div class="step-desc">Execute <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">apt update &amp;&amp; apt upgrade -y</code>. Observe os reposit&oacute;rios sendo consultados e os pacotes atualizados. Tire screenshot da sa&iacute;da.</div>
+                    <div class="step-desc">Execute <code>apt update &amp;&amp; apt upgrade -y</code>. Observe os reposit&oacute;rios sendo consultados e os pacotes atualizados. Tire screenshot da sa&iacute;da final mostrando os pacotes atualizados.</div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">2</div>
                 <div class="step-body">
                     <div class="step-label">Instale e teste o htop</div>
-                    <div class="step-desc">Execute <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">apt install -y htop</code>. Ap&oacute;s instalado, rode <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">htop</code> para visualizar os processos em tempo real. Pressione <strong>q</strong> para sair.</div>
+                    <div class="step-desc">Execute <code>apt install -y htop</code>. Ap&oacute;s instalado, rode <code>htop</code> para visualizar os processos em tempo real. Pressione <strong>q</strong> para sair.</div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">3</div>
                 <div class="step-body">
                     <div class="step-label">Pesquise e inspecione um pacote</div>
-                    <div class="step-desc">Busque editores de texto com <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">apt search editor | head -10</code>. Depois veja os detalhes do nano: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">apt show nano</code>. Identifique a vers&atilde;o e as depend&ecirc;ncias.</div>
+                    <div class="step-desc">Busque editores de texto com <code>apt search editor | head -10</code>. Depois veja os detalhes do nano: <code>apt show nano</code>. Identifique a vers&atilde;o e as depend&ecirc;ncias listadas.</div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">4</div>
                 <div class="step-body">
                     <div class="step-label">Remova com remove e depois com purge</div>
-                    <div class="step-desc">Remova o htop com <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">apt remove htop</code>. Em seguida use <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">dpkg -l | grep htop</code> para ver o status (deve aparecer como <code>rc</code>). Depois faça <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">apt purge htop</code> e verifique novamente.</div>
+                    <div class="step-desc">Remova o htop com <code>apt remove htop</code>. Use <code>dpkg -l | grep htop</code> para ver o status — deve aparecer como <code>rc</code> (removido, configs mantidas). Depois faça <code>apt purge htop</code> e verifique novamente.</div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">5</div>
                 <div class="step-body">
                     <div class="step-label">Fa&ccedil;a a limpeza do sistema</div>
-                    <div class="step-desc">Execute <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">apt autoremove &amp;&amp; apt autoclean</code>. Observe quantos pacotes e megabytes foram liberados. Tire screenshot mostrando o resultado.</div>
+                    <div class="step-desc">Execute <code>apt autoremove &amp;&amp; apt autoclean</code>. Observe quantos pacotes e megabytes foram liberados. Tire screenshot mostrando o resultado da limpeza.</div>
                 </div>
             </div>
         </div>
 
         <div class="prat-observe">
-            <strong>&#x1F4CC; Para refletir:</strong> O gerenciador de pacotes &eacute; uma das maiores vantagens do Linux em rela&ccedil;&atilde;o ao Windows. Com um &uacute;nico comando, voc&ecirc; instala, atualiza ou remove centenas de programas, com resolu&ccedil;&atilde;o autom&aacute;tica de depend&ecirc;ncias e sem precisar acessar sites de terceiros.
+            <strong>&#x1F4CC; Para refletir:</strong> O gerenciador de pacotes &eacute; uma das maiores vantagens do Linux em rela&ccedil;&atilde;o ao Windows. Com um &uacute;nico comando, voc&ecirc; instala, atualiza ou remove centenas de programas, com resolu&ccedil;&atilde;o autom&aacute;tica de depend&ecirc;ncias e sem acessar sites de terceiros.
         </div>
 
         <div class="ex-actions">
-            <button class="btn-print" onclick="printPractical('prat-01', 'Aula 6 \u2014 Pacotes e Reposit\u00f3rios')">&#x1F5A8;&#xFE0F; Imprimir roteiro</button>
+            <button class="btn-print" onclick="printPractical('prat-01', 'Aula 1.6 \u2014 Pacotes e Reposit\u00f3rios')">&#x1F5A8;&#xFE0F; Imprimir roteiro</button>
         </div>
     </div>
 
     <div class="nav-footer">
-        <a href="aula05-permissoes.html" class="nav-link">&#x2B05; Anterior: Permiss&otilde;es</a>
-        <a href="aula07-processos.html" class="nav-link">Pr&oacute;xima: Processos &#x27A1;</a>
+        <a href="aula05-permissoes.html" class="nav-link">&#x2B05; Permiss&otilde;es e ACL</a>
+        <a href="aula07-processos.html" class="nav-link">Processos e Servi&ccedil;os &#x27A1;</a>
     </div>
 
 </div>
@@ -538,5 +1076,6 @@
 <script src="slide-mode.js"></script>
 <script src="exercise-drag.js"></script>
 <script src="exercise-print.js"></script>
+<script src="exercise-mc.js"></script>
 </body>
 </html>
