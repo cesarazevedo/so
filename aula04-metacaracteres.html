@@ -3,10 +3,324 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aula 04 - Metacaracteres e Express&otilde;es Regulares</title>
+    <title>Aula 04 - Metacaracteres e Expressões Regulares</title>
     <link rel="stylesheet" href="slide-mode.css">
     <link rel="stylesheet" href="exercise.css">
     <link rel="stylesheet" href="lesson.css">
+    <style>
+        /* ── WILDCARD HERO GRID ── */
+        .wc-hero-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin: 24px 0;
+        }
+        .wc-hero-card {
+            border-radius: 14px;
+            padding: 22px 14px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: transform .2s;
+        }
+        .wc-hero-card:hover { transform: translateY(-3px); }
+        .wc-hero-card::after {
+            content: attr(data-sym);
+            position: absolute;
+            right: 8px;
+            bottom: -4px;
+            font-size: 4em;
+            font-weight: 900;
+            opacity: .07;
+            font-family: monospace;
+            line-height: 1;
+        }
+        .wc-hero-card.wc-q  { background: #eff6ff; border-top: 4px solid #3b82f6; }
+        .wc-hero-card.wc-s  { background: #fdf4ff; border-top: 4px solid #a855f7; }
+        .wc-hero-card.wc-br { background: #f0fdf4; border-top: 4px solid #10b981; }
+        .wc-hero-card.wc-ch { background: #fff7ed; border-top: 4px solid #f97316; }
+        .wc-sym {
+            font-family: 'Consolas', monospace;
+            font-size: 2em;
+            font-weight: 900;
+            display: block;
+            margin-bottom: 6px;
+        }
+        .wc-q  .wc-sym  { color: #3b82f6; }
+        .wc-s  .wc-sym  { color: #a855f7; }
+        .wc-br .wc-sym  { color: #10b981; }
+        .wc-ch .wc-sym  { color: #f97316; }
+        .wc-hero-card strong {
+            display: block;
+            font-size: .82em;
+            margin-bottom: 4px;
+        }
+        .wc-hero-card span { font-size: .76em; color: #64748b; }
+
+        /* ── WILDCARD DETAIL CARDS ── */
+        .wc-detail {
+            border-radius: 14px;
+            padding: 20px 24px;
+            margin: 16px 0;
+        }
+        .wc-detail.wc-q  { background: #eff6ff; border-left: 5px solid #3b82f6; }
+        .wc-detail.wc-s  { background: #fdf4ff; border-left: 5px solid #a855f7; }
+        .wc-detail.wc-br { background: #f0fdf4; border-left: 5px solid #10b981; }
+        .wc-detail.wc-ch { background: #fff7ed; border-left: 5px solid #f97316; }
+        .wc-detail-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .wc-badge {
+            font-family: 'Consolas', monospace;
+            font-size: 1.3em;
+            font-weight: 900;
+            padding: 2px 10px;
+            border-radius: 6px;
+            color: white;
+        }
+        .wc-q  .wc-badge { background: #3b82f6; }
+        .wc-s  .wc-badge { background: #a855f7; }
+        .wc-br .wc-badge { background: #10b981; }
+        .wc-ch .wc-badge { background: #f97316; }
+        .wc-detail p { font-size: .9em; margin: 0; color: #334155; }
+
+        /* ── MATCH GRID (sim / não) ── */
+        .match-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 16px 0;
+        }
+        .match-box {
+            border-radius: 12px;
+            padding: 14px 18px;
+        }
+        .match-box.sim { background: #f0fdf4; border-top: 3px solid #16a34a; }
+        .match-box.nao { background: #fff5f5; border-top: 3px solid #ef4444; }
+        .match-box h5 {
+            font-size: .82em;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .match-box.sim h5 { color: #065f46; }
+        .match-box.nao h5 { color: #7f1d1d; }
+        .match-tag {
+            display: inline-block;
+            font-family: 'Consolas', monospace;
+            font-size: .8em;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin: 2px 3px 2px 0;
+        }
+        .match-box.sim .match-tag { background: #dcfce7; color: #15803d; }
+        .match-box.nao .match-tag { background: #fee2e2; color: #dc2626; }
+
+        /* ── REGEX SECTION ── */
+        .regex-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 14px 0;
+        }
+        .regex-card {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 16px 18px;
+            border-top: 3px solid;
+        }
+        .regex-card.rc-anchor  { border-color: #ef4444; }
+        .regex-card.rc-class   { border-color: #3b82f6; }
+        .regex-card.rc-quant   { border-color: #10b981; }
+        .regex-card.rc-group   { border-color: #a855f7; }
+        .regex-card .rc-sym {
+            font-family: 'Consolas', monospace;
+            font-size: 1.2em;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .regex-card.rc-anchor  .rc-sym { color: #f87171; }
+        .regex-card.rc-class   .rc-sym { color: #60a5fa; }
+        .regex-card.rc-quant   .rc-sym { color: #34d399; }
+        .regex-card.rc-group   .rc-sym { color: #c084fc; }
+        .regex-card .rc-label  { font-size: .78em; color: #94a3b8; margin-bottom: 8px; }
+        .regex-card .rc-ex     { font-family: 'Consolas', monospace; font-size: .8em; color: #e2e8f0; line-height: 1.8; }
+
+        /* ── GREP FLAGS ── */
+        .grep-flags {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 16px 0;
+        }
+        .gf-card {
+            background: #0f172a;
+            border-radius: 12px;
+            padding: 14px 16px;
+            border-left: 4px solid;
+        }
+        .gf-card.gf-i { border-color: #06b6d4; }
+        .gf-card.gf-r { border-color: #f59e0b; }
+        .gf-card.gf-n { border-color: #a855f7; }
+        .gf-card.gf-c { border-color: #10b981; }
+        .gf-card.gf-v { border-color: #ef4444; }
+        .gf-card.gf-e { border-color: #f97316; }
+        .gf-flag {
+            font-family: 'Consolas', monospace;
+            font-size: 1em;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .gf-card.gf-i .gf-flag { color: #22d3ee; }
+        .gf-card.gf-r .gf-flag { color: #fbbf24; }
+        .gf-card.gf-n .gf-flag { color: #c084fc; }
+        .gf-card.gf-c .gf-flag { color: #34d399; }
+        .gf-card.gf-v .gf-flag { color: #f87171; }
+        .gf-card.gf-e .gf-flag { color: #fb923c; }
+        .gf-desc { font-size: .78em; color: #94a3b8; }
+
+        /* ── COMPARAÇÃO ? vs * ── */
+        .vs-compare {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 0;
+            margin: 16px 0;
+            align-items: center;
+        }
+        .vs-box {
+            border-radius: 12px;
+            padding: 18px;
+            text-align: center;
+        }
+        .vs-box.vs-left  { background: #eff6ff; border: 2px solid #3b82f6; border-radius: 12px 0 0 12px; }
+        .vs-box.vs-right { background: #fdf4ff; border: 2px solid #a855f7; border-radius: 0 12px 12px 0; }
+        .vs-mid {
+            background: #e2e8f0;
+            padding: 10px 6px;
+            font-weight: 900;
+            color: #64748b;
+            font-size: .85em;
+            text-align: center;
+        }
+        .vs-sym { font-family: 'Consolas', monospace; font-size: 1.8em; font-weight: 900; margin-bottom: 6px; }
+        .vs-box.vs-left  .vs-sym { color: #3b82f6; }
+        .vs-box.vs-right .vs-sym { color: #a855f7; }
+        .vs-box strong { display: block; font-size: .88em; margin-bottom: 4px; }
+        .vs-box span { font-size: .8em; color: #64748b; }
+
+        /* ── COLCHETES SYNTAX GRID ── */
+        .bracket-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin: 14px 0;
+        }
+        .bracket-item {
+            background: #f0fdf4;
+            border-radius: 10px;
+            padding: 12px 14px;
+            border-left: 3px solid #10b981;
+        }
+        .bracket-item code {
+            font-family: 'Consolas', monospace;
+            font-size: .9em;
+            font-weight: 700;
+            color: #059669;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .bracket-item span { font-size: .78em; color: #475569; }
+
+        /* ── CHAVES EXAMPLES ── */
+        .brace-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 14px 0;
+        }
+        .brace-item {
+            background: #fff7ed;
+            border-radius: 10px;
+            padding: 14px 16px;
+            border-left: 3px solid #f97316;
+        }
+        .brace-item code {
+            font-family: 'Consolas', monospace;
+            font-size: .85em;
+            font-weight: 700;
+            color: #ea580c;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .brace-item .brace-result { font-size: .78em; color: #475569; }
+
+        /* ── PERIGO / CUIDADO ── */
+        .danger-box {
+            background: #fff1f2;
+            border: 2px solid #f43f5e;
+            border-radius: 12px;
+            padding: 18px 22px;
+            margin: 16px 0;
+        }
+        .danger-box .danger-title {
+            font-weight: 700;
+            color: #be123c;
+            margin-bottom: 8px;
+            font-size: .95em;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .danger-box p { font-size: .88em; color: #881337; margin: 0; }
+
+        /* ── REFERÊNCIA RÁPIDA ── */
+        .ref-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 14px 0;
+        }
+        .ref-item {
+            border-radius: 12px;
+            padding: 14px 12px;
+            text-align: center;
+        }
+        .ref-item.ri-q  { background: #eff6ff; }
+        .ref-item.ri-s  { background: #fdf4ff; }
+        .ref-item.ri-br { background: #f0fdf4; }
+        .ref-item.ri-ch { background: #fff7ed; }
+        .ref-item .ri-sym {
+            font-family: 'Consolas', monospace;
+            font-size: 1.6em;
+            font-weight: 900;
+            display: block;
+            margin-bottom: 6px;
+        }
+        .ri-q  .ri-sym { color: #3b82f6; }
+        .ri-s  .ri-sym { color: #a855f7; }
+        .ri-br .ri-sym { color: #10b981; }
+        .ri-ch .ri-sym { color: #f97316; }
+        .ref-item strong { display: block; font-size: .8em; margin-bottom: 3px; }
+        .ref-item span { font-size: .73em; color: #64748b; font-family: 'Consolas', monospace; }
+
+        @media (max-width: 768px) {
+            .wc-hero-grid  { grid-template-columns: 1fr 1fr; }
+            .match-grid    { grid-template-columns: 1fr; }
+            .regex-grid    { grid-template-columns: 1fr; }
+            .grep-flags    { grid-template-columns: 1fr 1fr; }
+            .vs-compare    { grid-template-columns: 1fr; }
+            .vs-mid        { display: none; }
+            .vs-box.vs-left  { border-radius: 12px; margin-bottom: 8px; }
+            .vs-box.vs-right { border-radius: 12px; }
+            .bracket-grid  { grid-template-columns: 1fr 1fr; }
+            .brace-grid    { grid-template-columns: 1fr; }
+            .ref-grid      { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
 </head>
 <body>
 
@@ -18,108 +332,69 @@
 
 <div class="content-wrapper">
 
+    <!-- HERO -->
     <div class="lesson-hero">
-        <h1>🔍 Metacaracteres e Express&otilde;es Regulares</h1>
-        <p class="subtitle">Domine Padr&otilde;es de Busca no Linux &mdash; De buscas simples a filtros poderosos!</p>
+        <span class="hero-badge">Aula 1.4</span>
+        <h1 class="hero-title">🔍 Metacaracteres e Express&otilde;es Regulares</h1>
+        <p class="hero-sub">Domine padr&otilde;es de busca no Linux &mdash; de wildcards do shell a filtros poderosos com <code>grep</code>.</p>
+        <div class="wc-hero-grid" style="margin-top:28px;">
+            <div class="wc-hero-card wc-q" data-sym="?">
+                <span class="wc-sym">?</span>
+                <strong>Interroga&ccedil;&atilde;o</strong>
+                <span>1 caractere exato</span>
+            </div>
+            <div class="wc-hero-card wc-s" data-sym="*">
+                <span class="wc-sym">*</span>
+                <strong>Asterisco</strong>
+                <span>Zero ou mais chars</span>
+            </div>
+            <div class="wc-hero-card wc-br" data-sym="[]">
+                <span class="wc-sym">[ ]</span>
+                <strong>Colchetes</strong>
+                <span>Conjunto espec&iacute;fico</span>
+            </div>
+            <div class="wc-hero-card wc-ch" data-sym="{}">
+                <span class="wc-sym">{ }</span>
+                <strong>Chaves</strong>
+                <span>Expans&atilde;o m&uacute;ltipla</span>
+            </div>
+        </div>
     </div>
 
-    <!-- Card 1: O que vamos aprender -->
+    <!-- Card 1: Introdução -->
     <div class="content-card">
-        <h2>📚 O que Vamos Aprender</h2>
-        <p>Metacaracteres s&atilde;o s&iacute;mbolos especiais do shell que permitem criar padr&otilde;es de busca poderosos.</p>
+        <h2>📚 O que S&atilde;o Metacaracteres?</h2>
+        <p>Metacaracteres s&atilde;o <strong>s&iacute;mbolos especiais</strong> que o shell interpreta antes de executar o comando. Em vez de buscar o s&iacute;mbolo literalmente, o shell os usa como <strong>padr&otilde;es de busca</strong>.</p>
         <div class="terminal">
             <div class="terminal-bar">
                 <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">exemplo inicial</span>
+                <span class="term-title">sem e com metacaracteres</span>
             </div>
             <div class="terminal-body">
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">ls arquivo*.txt</span><br>
-                <span class="t-out">arquivo1.txt&nbsp;&nbsp;arquivo2.txt&nbsp;&nbsp;arquivoX.txt&nbsp;&nbsp;arquivo_backup.txt</span><br>
-                <span class="t-comment"># O poder dos metacaracteres!</span>
+<span class="t-comment"># Sem metacaracteres — só encontra o nome exato</span>
+<span class="t-prompt">user@linux:~$</span> <span class="t-cmd">ls arquivo1.txt</span>
+<span class="t-out">arquivo1.txt</span>
+
+<span class="t-comment"># Com metacaractere — encontra vários de uma vez!</span>
+<span class="t-prompt">user@linux:~$</span> <span class="t-cmd">ls arquivo*.txt</span>
+<span class="t-out">arquivo1.txt  arquivo2.txt  arquivoX.txt  arquivo_backup.txt</span>
+<span class="t-comment"># O shell expande o padrão antes de executar ls</span>
             </div>
         </div>
         <div class="highlight-box">
-            <p><strong>🔍 Metacaracteres do Shell (Wildcards)</strong></p>
-            <ul>
-                <li>S&iacute;mbolo <code>?</code> &mdash; substitui exatamente um caractere</li>
-                <li>S&iacute;mbolo <code>*</code> &mdash; substitui zero ou mais caracteres</li>
-                <li>Colchetes <code>[ ]</code> &mdash; escolhe de um conjunto espec&iacute;fico</li>
-                <li>Chaves <code>{ }</code> &mdash; expans&atilde;o em m&uacute;ltiplas op&ccedil;&otilde;es</li>
-            </ul>
-        </div>
-        <div class="tip-box">
-            <p>✅ <strong>Meta Final:</strong> Voc&ecirc; vai conseguir fazer buscas inteligentes e poderosas como um verdadeiro ninja do terminal! 🥷</p>
+            <p>💡 <strong>Como funciona:</strong> O shell v&ecirc; <code>arquivo*.txt</code>, expande para todos os arquivos que combinam, e s&oacute; ent&atilde;o passa a lista para o comando. O comando <strong>nunca v&ecirc;</strong> o metacaractere — j&aacute; recebe os nomes prontos.</p>
         </div>
     </div>
 
-    <!-- Card 2: Analogia -->
+    <!-- Card 2: ? -->
     <div class="content-card">
-        <h2>🕵️ Analogia: Metacaracteres s&atilde;o Lupas Especiais</h2>
-        <p>Imagine que voc&ecirc; &eacute; um <strong>detetive</strong> procurando pistas. Os metacaracteres s&atilde;o suas <strong>"lupas especiais"</strong> para encontrar padr&otilde;es!</p>
-        <table class="cmp-table">
-            <tr>
-                <th>S&iacute;mbolo</th>
-                <th>Apelido</th>
-                <th>Significado</th>
-            </tr>
-            <tr>
-                <td><code>?</code></td>
-                <td>Lupa do "Exatamente Um"</td>
-                <td>V&ecirc; <strong>1 coisa qualquer</strong>, mas s&oacute; 1</td>
-            </tr>
-            <tr>
-                <td><code>*</code></td>
-                <td>Lupa do "Tudo ou Nada"</td>
-                <td>V&ecirc; <strong>v&aacute;rias coisas ou nenhuma</strong></td>
-            </tr>
-            <tr>
-                <td><code>[ ]</code></td>
-                <td>Lupa Seletiva</td>
-                <td>V&ecirc; <strong>s&oacute; o que voc&ecirc; escolher</strong></td>
-            </tr>
-            <tr>
-                <td><code>{ }</code></td>
-                <td>Lupa Multiplicadora</td>
-                <td>Cria <strong>v&aacute;rias op&ccedil;&otilde;es de uma vez</strong></td>
-            </tr>
-        </table>
-        <div class="terminal">
-            <div class="terminal-bar">
-                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">exemplo</span>
+        <h2>❓ S&iacute;mbolo <code>?</code> &mdash; Exatamente Um Caractere</h2>
+        <div class="wc-detail wc-q">
+            <div class="wc-detail-title">
+                <span class="wc-badge">?</span>
+                <strong>Substitui <em>exatamente 1</em> caractere qualquer</strong>
             </div>
-            <div class="terminal-body">
-                <span class="t-prompt">detetive@linux:~$</span> <span class="t-cmd">ls pista?.txt</span><br>
-                <span class="t-out">pista1.txt&nbsp;&nbsp;pistaA.txt&nbsp;&nbsp;pistaX.txt</span><br>
-                <span class="t-comment"># Encontrou 3 pistas! Cada uma com exatamente 1 caractere ap&oacute;s "pista"</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- Card 3: Simbolo ? -->
-    <div class="content-card">
-        <h2>❓ S&iacute;mbolo ? &mdash; A Lupa do "Exatamente Um"</h2>
-        <p>O ponto de interroga&ccedil;&atilde;o representa <strong>exatamente UM &uacute;nico caractere</strong> qualquer.</p>
-        <table class="cmp-table">
-            <tr>
-                <th>Caracter&iacute;stica</th>
-                <th>Detalhe</th>
-            </tr>
-            <tr>
-                <td>Substitui</td>
-                <td><strong>Exatamente 1</strong> caractere</td>
-            </tr>
-            <tr>
-                <td>Pode ser</td>
-                <td>Letra, n&uacute;mero ou s&iacute;mbolo</td>
-            </tr>
-            <tr>
-                <td>N&atilde;o substitui</td>
-                <td>"Nada" &mdash; precisa de exatamente 1</td>
-            </tr>
-        </table>
-        <div class="highlight-box">
-            <p>💡 <strong>Analogia:</strong> &Eacute; como um <strong>coringa de baralho</strong>, mas que vale apenas <strong>uma carta</strong>! Ou uma <strong>vaga de estacionamento</strong>: cabe qualquer carro, mas s&oacute; UM.</p>
+            <p>Pode ser letra, n&uacute;mero ou s&iacute;mbolo — mas <strong>obrigatoriamente um</strong>. N&atilde;o substitui "nada".</p>
         </div>
         <div class="terminal">
             <div class="terminal-bar">
@@ -127,40 +402,48 @@
                 <span class="term-title">exemplos com ?</span>
             </div>
             <div class="terminal-body">
-                <span class="t-comment"># Um ? = exatamente 1 caractere</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">ls test?.log</span><br>
-                <span class="t-out">test1.log&nbsp;&nbsp;test2.log&nbsp;&nbsp;testA.log</span><br><br>
-                <span class="t-comment"># Dois ?? = exatamente 2 caracteres</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">ls doc??.pdf</span><br>
-                <span class="t-out">doc01.pdf&nbsp;&nbsp;docAB.pdf&nbsp;&nbsp;docXY.pdf</span><br><br>
-                <span class="t-comment"># M&uacute;ltiplos ? em posi&ccedil;&otilde;es diferentes</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">ls backup_202?-0?.tar</span><br>
-                <span class="t-out">backup_2023-01.tar&nbsp;&nbsp;backup_2024-05.tar&nbsp;&nbsp;backup_2024-09.tar</span>
+<span class="t-comment"># 1 interrogação = exatamente 1 caractere</span>
+<span class="t-prompt">user@linux:~$</span> <span class="t-cmd">ls test<span class="t-kw">?</span>.log</span>
+<span class="t-out">test1.log  test2.log  testA.log  testX.log</span>
+
+<span class="t-comment"># Dois ?? = exatamente 2 caracteres</span>
+<span class="t-prompt">user@linux:~$</span> <span class="t-cmd">ls doc<span class="t-kw">??</span>.pdf</span>
+<span class="t-out">doc01.pdf  docAB.pdf  docXY.pdf</span>
+
+<span class="t-comment"># Uso real: backups com data formatada</span>
+<span class="t-prompt">user@linux:~$</span> <span class="t-cmd">ls backup_202<span class="t-kw">?</span>-0<span class="t-kw">?</span>.tar</span>
+<span class="t-out">backup_2023-01.tar  backup_2024-05.tar  backup_2024-09.tar</span>
             </div>
         </div>
-        <table class="cmp-table">
-            <tr>
-                <th>Padr&atilde;o</th>
-                <th>Encontra</th>
-                <th>N&atilde;o encontra</th>
-            </tr>
-            <tr>
-                <td><code>file?.txt</code></td>
-                <td>file1.txt, filea.txt, fileX.txt</td>
-                <td>file.txt (zero chars), file12.txt (2 chars)</td>
-            </tr>
-        </table>
+        <div class="match-grid">
+            <div class="match-box sim">
+                <h5>✅ <code>file?.txt</code> — combina</h5>
+                <span class="match-tag">file1.txt</span>
+                <span class="match-tag">filea.txt</span>
+                <span class="match-tag">fileX.txt</span>
+                <span class="match-tag">file_.txt</span>
+            </div>
+            <div class="match-box nao">
+                <h5>❌ <code>file?.txt</code> — NÃO combina</h5>
+                <span class="match-tag">file.txt</span>
+                <span class="match-tag">file12.txt</span>
+                <span class="match-tag">fileABC.txt</span>
+            </div>
+        </div>
         <div class="tip-box">
-            <p>✅ O <strong>?</strong> &eacute; perfeito quando voc&ecirc; sabe exatamente <em>quantos</em> caracteres podem variar!</p>
+            <p>✅ Use <strong>?</strong> quando voc&ecirc; sabe <em>exatamente quantos</em> caracteres podem variar. Para quantidades vari&aacute;veis, prefira <code>*</code>.</p>
         </div>
     </div>
 
-    <!-- Card 4: Simbolo * -->
+    <!-- Card 3: * -->
     <div class="content-card">
-        <h2>⭐ S&iacute;mbolo * &mdash; A Lupa do "Zero ou Mais"</h2>
-        <p>O asterisco representa <strong>zero ou mais caracteres</strong> &mdash; &eacute; o mais flex&iacute;vel dos metacaracteres.</p>
-        <div class="highlight-box">
-            <p>💡 <strong>Analogia:</strong> &Eacute; como um <strong>el&aacute;stico m&aacute;gico</strong>! Pode esticar para caber qualquer coisa, ou encolher para n&atilde;o ocupar nada.</p>
+        <h2>⭐ S&iacute;mbolo <code>*</code> &mdash; Zero ou Mais Caracteres</h2>
+        <div class="wc-detail wc-s">
+            <div class="wc-detail-title">
+                <span class="wc-badge">*</span>
+                <strong>Substitui <em>zero ou mais</em> caracteres — o mais flex&iacute;vel</strong>
+            </div>
+            <p>Pode combinar com nada, com um caractere ou com centenas. O curinga mais usado no dia a dia.</p>
         </div>
         <div class="terminal">
             <div class="terminal-bar">
@@ -168,79 +451,120 @@
                 <span class="term-title">exemplos com *</span>
             </div>
             <div class="terminal-body">
-                <span class="t-comment"># Tudo que come&ccedil;a com "backup"</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">ls backup*</span><br>
-                <span class="t-out">backup&nbsp;&nbsp;backup.tar&nbsp;&nbsp;backup_2024.zip&nbsp;&nbsp;backup_completo.tar.gz</span><br><br>
-                <span class="t-comment"># Arquivos .conf que come&ccedil;am com "d"</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">ls /etc/d*.conf</span><br>
-                <span class="t-out">dhcpd.conf&nbsp;&nbsp;debug.conf&nbsp;&nbsp;dns.conf</span><br><br>
-                <span class="t-comment"># Qualquer coisa que CONTENHA "log"</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">ls *log*</span><br>
-                <span class="t-out">mylog.txt&nbsp;&nbsp;syslog.conf&nbsp;&nbsp;catalog.db&nbsp;&nbsp;login.sh</span>
+<span class="t-comment"># Tudo que começa com "backup"</span>
+<span class="t-prompt">user@linux:~$</span> <span class="t-cmd">ls backup<span class="t-kw">*</span></span>
+<span class="t-out">backup  backup.tar  backup_2024.zip  backup_completo.tar.gz</span>
+
+<span class="t-comment"># Todos os .conf em /etc que começam com 'd'</span>
+<span class="t-prompt">user@linux:~$</span> <span class="t-cmd">ls /etc/d<span class="t-kw">*</span>.conf</span>
+<span class="t-out">dhcpd.conf  debug.conf  dns.conf</span>
+
+<span class="t-comment"># Qualquer arquivo que CONTENHA "log"</span>
+<span class="t-prompt">user@linux:~$</span> <span class="t-cmd">ls <span class="t-kw">*</span>log<span class="t-kw">*</span></span>
+<span class="t-out">mylog.txt  syslog.conf  catalog.db  login.sh</span>
             </div>
         </div>
-        <table class="cmp-table">
-            <tr>
-                <th>Padr&atilde;o</th>
-                <th>Encontra</th>
-                <th>Exemplo</th>
-            </tr>
-            <tr><td><code>*.txt</code></td><td>Termina com .txt</td><td>a.txt, documento.txt</td></tr>
-            <tr><td><code>file*</code></td><td>Come&ccedil;a com file</td><td>file, file1, file_backup</td></tr>
-            <tr><td><code>*log*</code></td><td>Cont&eacute;m "log"</td><td>mylog, syslog, catalog</td></tr>
-            <tr><td><code>a*z</code></td><td>Come&ccedil;a com a, termina com z</td><td>az, abcz, amazing</td></tr>
-        </table>
+        <div class="match-grid">
+            <div class="match-box sim">
+                <h5>✅ <code>file*.txt</code> — combina</h5>
+                <span class="match-tag">file.txt</span>
+                <span class="match-tag">file1.txt</span>
+                <span class="match-tag">file12.txt</span>
+                <span class="match-tag">fileABC.txt</span>
+                <span class="match-tag">file_backup.txt</span>
+            </div>
+            <div class="match-box nao">
+                <h5>❌ <code>file*.txt</code> — NÃO combina</h5>
+                <span class="match-tag">file.pdf</span>
+                <span class="match-tag">arquivofile.txt</span>
+            </div>
+        </div>
     </div>
 
-    <!-- Card 5: ? vs * -->
+    <!-- Card 4: ? vs * -->
     <div class="content-card">
-        <h2>⚖️ Compara&ccedil;&atilde;o: ? vs *</h2>
-        <table class="cmp-table">
-            <tr>
-                <th>? (Interroga&ccedil;&atilde;o)</th>
-                <th>* (Asterisco)</th>
-            </tr>
-            <tr>
-                <td>Exatamente <strong>1</strong> caractere</td>
-                <td><strong>Zero ou mais</strong> caracteres</td>
-            </tr>
-            <tr>
-                <td>Preciso: sabe quantos variam</td>
-                <td>Flex&iacute;vel: n&atilde;o importa quantos</td>
-            </tr>
-            <tr>
-                <td><code>file?.txt</code> &rarr; file1.txt</td>
-                <td><code>file*.txt</code> &rarr; file.txt, file1.txt, file12.txt...</td>
-            </tr>
-        </table>
+        <h2>⚖️ Quando Usar: <code>?</code> vs <code>*</code></h2>
+        <div class="vs-compare">
+            <div class="vs-box vs-left">
+                <div class="vs-sym">?</div>
+                <strong>Quantidade definida</strong>
+                <span>Sabe exatamente quantos<br>caracteres mudam</span>
+                <div class="terminal" style="margin-top:12px; text-align:left;">
+                    <div class="terminal-bar"><div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div></div>
+                    <div class="terminal-body" style="padding:12px 16px; font-size:.82em; line-height:1.8;">
+<span class="t-prompt">$</span> <span class="t-cmd">ls log??.txt</span>
+<span class="t-comment"># log01.txt a log99.txt</span>
+                    </div>
+                </div>
+            </div>
+            <div class="vs-mid">VS</div>
+            <div class="vs-box vs-right">
+                <div class="vs-sym">*</div>
+                <strong>Quantidade indefinida</strong>
+                <span>N&atilde;o importa quantos<br>caracteres mudam</span>
+                <div class="terminal" style="margin-top:12px; text-align:left;">
+                    <div class="terminal-bar"><div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div></div>
+                    <div class="terminal-body" style="padding:12px 16px; font-size:.82em; line-height:1.8;">
+<span class="t-prompt">$</span> <span class="t-cmd">ls *.txt</span>
+<span class="t-comment"># todos os .txt</span>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="terminal">
             <div class="terminal-bar">
                 <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">? vs * na pr&aacute;tica</span>
+                <span class="term-title">? vs * — diferença na prática</span>
             </div>
             <div class="terminal-body">
-                <span class="t-comment"># Temos: file.txt, file1.txt, file12.txt, fileABC.txt</span><br><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">ls file?.txt</span><br>
-                <span class="t-out">file1.txt</span><br>
-                <span class="t-comment"># S&oacute; 1 caractere!</span><br><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">ls file*.txt</span><br>
-                <span class="t-out">file.txt&nbsp;&nbsp;file1.txt&nbsp;&nbsp;file12.txt&nbsp;&nbsp;fileABC.txt</span><br>
-                <span class="t-comment"># Todos!</span>
+<span class="t-comment"># Arquivos disponíveis: file.txt  file1.txt  file12.txt  fileABC.txt</span>
+
+<span class="t-prompt">user@linux:~$</span> <span class="t-cmd">ls file<span class="t-kw">?</span>.txt</span>
+<span class="t-out">file1.txt</span>
+<span class="t-comment"># Só 1 caractere: pega apenas file1.txt</span>
+
+<span class="t-prompt">user@linux:~$</span> <span class="t-cmd">ls file<span class="t-kw">*</span>.txt</span>
+<span class="t-out">file.txt  file1.txt  file12.txt  fileABC.txt</span>
+<span class="t-comment"># Zero ou mais: pega todos!</span>
             </div>
-        </div>
-        <div class="highlight-box">
-            <p>💡 <strong>Quando usar cada um?</strong><br>
-            <strong>?</strong> &rarr; Quando voc&ecirc; sabe EXATAMENTE quantos caracteres variam (ex: log01.txt at&eacute; log99.txt)<br>
-            <strong>*</strong> &rarr; Quando voc&ecirc; N&Atilde;O sabe ou n&atilde;o importa quantos caracteres (ex: todos os .txt)</p>
         </div>
     </div>
 
-    <!-- Card 6: Colchetes -->
+    <!-- Card 5: Colchetes -->
     <div class="content-card">
-        <h2>📋 Colchetes [ ] &mdash; A Lupa Seletiva</h2>
-        <p>Os colchetes definem um <strong>conjunto espec&iacute;fico de caracteres</strong> &mdash; escolhe 1 da lista, voc&ecirc; decide quais s&atilde;o v&aacute;lidos.</p>
-        <div class="highlight-box">
-            <p>💡 <strong>Analogia:</strong> &Eacute; como um <strong>card&aacute;pio de restaurante</strong>! Voc&ecirc; pode escolher qualquer prato do menu, mas s&oacute; 1 de cada vez.</p>
+        <h2>📋 Colchetes <code>[ ]</code> &mdash; Conjunto Espec&iacute;fico</h2>
+        <div class="wc-detail wc-br">
+            <div class="wc-detail-title">
+                <span class="wc-badge">[ ]</span>
+                <strong>Escolhe <em>1 caractere</em> de um conjunto definido por voc&ecirc;</strong>
+            </div>
+            <p>Pode ser uma lista (<code>[abc]</code>), um intervalo (<code>[a-z]</code>) ou uma nega&ccedil;&atilde;o (<code>[^abc]</code>).</p>
+        </div>
+        <div class="bracket-grid">
+            <div class="bracket-item">
+                <code>[a-z]</code>
+                <span>Letras min&uacute;sculas</span>
+            </div>
+            <div class="bracket-item">
+                <code>[A-Z]</code>
+                <span>Letras mai&uacute;sculas</span>
+            </div>
+            <div class="bracket-item">
+                <code>[0-9]</code>
+                <span>D&iacute;gitos</span>
+            </div>
+            <div class="bracket-item">
+                <code>[a-zA-Z]</code>
+                <span>Qualquer letra</span>
+            </div>
+            <div class="bracket-item">
+                <code>[0-9a-f]</code>
+                <span>Hexadecimal</span>
+            </div>
+            <div class="bracket-item">
+                <code>[^0-9]</code>
+                <span>N&atilde;o-n&uacute;mero (nega&ccedil;&atilde;o)</span>
+            </div>
         </div>
         <div class="terminal">
             <div class="terminal-bar">
@@ -248,294 +572,419 @@
                 <span class="term-title">exemplos com [ ]</span>
             </div>
             <div class="terminal-body">
-                <span class="t-comment"># S&oacute; aceita 1, 2 ou 3</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">ls file[123].txt</span><br>
-                <span class="t-out">file1.txt&nbsp;&nbsp;file2.txt&nbsp;&nbsp;file3.txt</span><br><br>
-                <span class="t-comment"># Arquivos com n&uacute;meros de 1 a 5</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">ls arquivo[1-5].txt</span><br>
-                <span class="t-out">arquivo1.txt&nbsp;&nbsp;arquivo3.txt&nbsp;&nbsp;arquivo5.txt</span><br><br>
-                <span class="t-comment"># Arquivos que N&Atilde;O come&ccedil;am com 'a' ou 'b'</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">ls [^ab]*</span><br>
-                <span class="t-out">config.txt&nbsp;&nbsp;documento.pdf&nbsp;&nbsp;foto.jpg</span>
-            </div>
-        </div>
-        <table class="cmp-table">
-            <tr>
-                <th>Sintaxe</th>
-                <th>Significado</th>
-            </tr>
-            <tr><td><code>[a-z]</code></td><td>Letras min&uacute;sculas</td></tr>
-            <tr><td><code>[A-Z]</code></td><td>Letras mai&uacute;sculas</td></tr>
-            <tr><td><code>[0-9]</code></td><td>D&iacute;gitos</td></tr>
-            <tr><td><code>[a-zA-Z]</code></td><td>Qualquer letra</td></tr>
-            <tr><td><code>[0-9a-f]</code></td><td>Hexadecimal</td></tr>
-            <tr><td><code>[^a]</code></td><td>Qualquer coisa MENOS 'a'</td></tr>
-            <tr><td><code>[^0-9]</code></td><td>Qualquer coisa que n&atilde;o seja n&uacute;mero</td></tr>
-        </table>
-        <div class="terminal">
-            <div class="terminal-bar">
-                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">exemplos avan&ccedil;ados com [ ]</span>
-            </div>
-            <div class="terminal-body">
-                <span class="t-comment"># Logs numerados de 00 a 99</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">ls log[0-9][0-9].txt</span><br>
-                <span class="t-out">log01.txt&nbsp;&nbsp;log15.txt&nbsp;&nbsp;log42.txt&nbsp;&nbsp;log99.txt</span><br><br>
-                <span class="t-comment"># Arquivos com letras A, B ou C</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">ls test[A-C]*.log</span><br>
-                <span class="t-out">testA.log&nbsp;&nbsp;testB_debug.log&nbsp;&nbsp;testC_final.log</span>
+<span class="t-comment"># Só aceita 1, 2 ou 3 — lista explícita</span>
+<span class="t-prompt">user@linux:~$</span> <span class="t-cmd">ls file<span class="t-kw">[123]</span>.txt</span>
+<span class="t-out">file1.txt  file2.txt  file3.txt</span>
+
+<span class="t-comment"># Intervalo: números de 1 a 5</span>
+<span class="t-prompt">user@linux:~$</span> <span class="t-cmd">ls arquivo<span class="t-kw">[1-5]</span>.txt</span>
+<span class="t-out">arquivo1.txt  arquivo3.txt  arquivo5.txt</span>
+
+<span class="t-comment"># Logs numerados de 00 a 99</span>
+<span class="t-prompt">user@linux:~$</span> <span class="t-cmd">ls log<span class="t-kw">[0-9][0-9]</span>.txt</span>
+<span class="t-out">log01.txt  log15.txt  log42.txt  log99.txt</span>
+
+<span class="t-comment"># Negação: arquivos que NÃO começam com 'a' ou 'b'</span>
+<span class="t-prompt">user@linux:~$</span> <span class="t-cmd">ls <span class="t-kw">[^ab]</span>*</span>
+<span class="t-out">config.txt  documento.pdf  foto.jpg</span>
             </div>
         </div>
         <div class="tip-box">
-            <p>✅ <strong>Casos de uso:</strong> Logs numerados: <code>log[0-9][0-9].txt</code> &mdash; Vers&otilde;es: <code>v[1-3].*.zip</code> &mdash; Combine com <code>*</code>: <code>[a-z]*[0-9].txt</code></p>
+            <p>✅ <strong>Casos cl&aacute;ssicos:</strong> logs numerados <code>log[0-9][0-9].txt</code> &mdash; vers&otilde;es <code>v[1-3].*.zip</code> &mdash; combinar com asterisco <code>[a-z]*[0-9].txt</code></p>
         </div>
     </div>
 
-    <!-- Card 7: Chaves {} -->
+    <!-- Card 6: Chaves -->
     <div class="content-card">
-        <h2>🗂️ Chaves { } &mdash; A Lupa Multiplicadora</h2>
-        <p>As chaves criam <strong>m&uacute;ltiplas varia&ccedil;&otilde;es de uma s&oacute; vez</strong> &mdash; perfeito para criar v&aacute;rios arquivos ou expandir nomes.</p>
+        <h2>🗂️ Chaves <code>{ }</code> &mdash; Expans&atilde;o M&uacute;ltipla</h2>
+        <div class="wc-detail wc-ch">
+            <div class="wc-detail-title">
+                <span class="wc-badge">{ }</span>
+                <strong>Expande em <em>v&aacute;rias op&ccedil;&otilde;es</em> de uma s&oacute; vez</strong>
+            </div>
+            <p>N&atilde;o filtra arquivos existentes — <strong>gera os nomes</strong>. Perfeito para criar v&aacute;rios arquivos/pastas de uma vez.</p>
+        </div>
+        <div class="brace-grid">
+            <div class="brace-item">
+                <code>touch arquivo{1,2,3}.txt</code>
+                <span class="brace-result">→ arquivo1.txt, arquivo2.txt, arquivo3.txt</span>
+            </div>
+            <div class="brace-item">
+                <code>touch test{1..5}.txt</code>
+                <span class="brace-result">→ test1.txt, test2.txt ... test5.txt</span>
+            </div>
+            <div class="brace-item">
+                <code>mkdir -p projeto/{src,docs,tests}</code>
+                <span class="brace-result">→ 3 pastas criadas de uma vez</span>
+            </div>
+            <div class="brace-item">
+                <code>cp config.txt{,.backup}</code>
+                <span class="brace-result">→ config.txt.backup (backup rápido!)</span>
+            </div>
+        </div>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">chaves avançadas</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-comment"># Passo: de 2 em 2</span>
+<span class="t-prompt">user@linux:~$</span> <span class="t-cmd">echo {0..10..2}</span>
+<span class="t-out">0 2 4 6 8 10</span>
+
+<span class="t-comment"># Estrutura de projeto completa</span>
+<span class="t-prompt">user@linux:~$</span> <span class="t-cmd">mkdir -p empresa{1,2}/{vendas,ti,rh}</span>
+<span class="t-comment"># Cria: empresa1/vendas, empresa1/ti, empresa1/rh, empresa2/...</span>
+
+<span class="t-comment"># Listar .conf OU .allow em /etc</span>
+<span class="t-prompt">user@linux:~$</span> <span class="t-cmd">ls /etc/*{conf,allow}</span>
+<span class="t-out">httpd.conf  hosts.allow  syslog.conf  tcp.allow</span>
+
+<span class="t-comment"># Renomear extensão</span>
+<span class="t-prompt">user@linux:~$</span> <span class="t-cmd">mv foto{.jpg,.jpeg}</span>
+<span class="t-comment"># foto.jpg → foto.jpeg</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 7: [ ] vs { } -->
+    <div class="content-card">
+        <h2>⚖️ Diferen&ccedil;a Crucial: <code>[ ]</code> vs <code>{ }</code></h2>
+        <div class="compare-grid">
+            <div class="compare-box green">
+                <h4>📋 [ ] Colchetes — FILTRA</h4>
+                <ul style="font-size:.88em; padding-left:18px;">
+                    <li>Escolhe 1 caractere do conjunto</li>
+                    <li>S&oacute; mostra se o arquivo <strong>j&aacute; existir</strong></li>
+                    <li>Usa: buscar/filtrar arquivos</li>
+                </ul>
+            </div>
+            <div class="compare-box blue">
+                <h4>🗂️ { } Chaves — EXPANDE</h4>
+                <ul style="font-size:.88em; padding-left:18px;">
+                    <li>Gera v&aacute;rias palavras completas</li>
+                    <li>Mostra todos os nomes, existindo ou n&atilde;o</li>
+                    <li>Usa: criar/nomear arquivos e pastas</li>
+                </ul>
+            </div>
+        </div>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">[ ] vs { } na prática</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-comment"># [ ] = FILTRA — só mostra o que existe</span>
+<span class="t-prompt">user@linux:~$</span> <span class="t-cmd">ls file<span class="t-kw">[123]</span>.txt</span>
+<span class="t-out">file1.txt  file3.txt</span>
+<span class="t-comment"># file2.txt não existe → não aparece</span>
+
+<span class="t-comment"># { } = EXPANDE — gera todos os nomes</span>
+<span class="t-prompt">user@linux:~$</span> <span class="t-cmd">echo file<span class="t-kw">{1,2,3}</span>.txt</span>
+<span class="t-out">file1.txt file2.txt file3.txt</span>
+<span class="t-comment"># Mostra todos, existam ou não</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 8: grep e Regex -->
+    <div class="content-card">
+        <h2>🔎 grep &mdash; Filtro com Express&otilde;es Regulares</h2>
+        <p>Enquanto wildcards operam em <strong>nomes de arquivo</strong>, o <code>grep</code> filtra o <strong>conte&uacute;do</strong> de arquivos usando Express&otilde;es Regulares (regex).</p>
         <div class="highlight-box">
-            <p>💡 <strong>Analogia:</strong> &Eacute; como uma <strong>m&aacute;quina de c&oacute;pias</strong>! Voc&ecirc; d&aacute; um modelo e ela cria v&aacute;rias vers&otilde;es de uma vez.</p>
+            <p>💡 <strong>Sintaxe:</strong> <code>grep [opções] "padrão" arquivo</code><br>
+            O grep retorna as <strong>linhas</strong> que combinam com o padr&atilde;o.</p>
         </div>
         <div class="terminal">
             <div class="terminal-bar">
                 <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">exemplos b&aacute;sicos com { }</span>
+                <span class="term-title">grep básico</span>
             </div>
             <div class="terminal-body">
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">touch arquivo{1,2,3}.txt</span><br>
-                <span class="t-comment"># Cria: arquivo1.txt, arquivo2.txt, arquivo3.txt</span><br><br>
-                <span class="t-comment"># Criar arquivos de test1 at&eacute; test10</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">touch test{1..10}.txt</span><br>
-                <span class="t-comment"># Cria: test1.txt test2.txt ... test10.txt</span><br><br>
-                <span class="t-comment"># Letras de A at&eacute; E</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">touch versao_{A..E}.zip</span><br>
-                <span class="t-comment"># Cria: versao_A.zip versao_B.zip ... versao_E.zip</span><br><br>
-                <span class="t-comment"># N&uacute;meros com passo (2 em 2)</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">echo {0..10..2}</span><br>
-                <span class="t-out">0 2 4 6 8 10</span>
+<span class="t-comment"># Buscar "root" em /etc/passwd</span>
+<span class="t-prompt">user@linux:~$</span> <span class="t-cmd">grep <span class="t-str">"root"</span> /etc/passwd</span>
+<span class="t-out">root:x:0:0:root:/root:/bin/bash</span>
+
+<span class="t-comment"># Ignorar maiúsculas/minúsculas (-i)</span>
+<span class="t-prompt">user@linux:~$</span> <span class="t-cmd">grep <span class="t-flag">-i</span> <span class="t-str">"erro"</span> /var/log/syslog</span>
+<span class="t-out">Nov 12 erro: disk I/O</span>
+<span class="t-out">Nov 13 ERRO: network timeout</span>
+
+<span class="t-comment"># Contar ocorrências</span>
+<span class="t-prompt">user@linux:~$</span> <span class="t-cmd">grep <span class="t-flag">-c</span> <span class="t-str">"failed"</span> /var/log/auth.log</span>
+<span class="t-out">47</span>
             </div>
         </div>
-        <div class="terminal">
-            <div class="terminal-bar">
-                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">criando estrutura de pastas</span>
+
+        <h3>⚑ Flags mais usadas</h3>
+        <div class="grep-flags">
+            <div class="gf-card gf-i">
+                <div class="gf-flag">-i</div>
+                <div class="gf-desc">Case insensitive<br>(ignora mai&uacute;s./min&uacute;s.)</div>
             </div>
-            <div class="terminal-body">
-                <span class="t-comment"># Criar estrutura completa de projeto</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">mkdir -p projeto/{src,docs,tests}</span><br>
-                <span class="t-comment"># Cria: projeto/src, projeto/docs, projeto/tests</span><br><br>
-                <span class="t-comment"># M&uacute;ltiplos projetos com subpastas</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">mkdir -p empresa{1,2}/{vendas,ti,rh}</span><br>
-                <span class="t-comment"># Cria 6 pastas: empresa1/vendas, empresa1/ti...</span><br><br>
-                <span class="t-comment"># Backup r&aacute;pido com { }</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">cp config.txt{,.backup}</span><br>
-                <span class="t-comment"># config.txt &rarr; config.txt.backup</span><br><br>
-                <span class="t-comment"># Renomear extens&atilde;o</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">mv foto{.jpg,.jpeg}</span><br>
-                <span class="t-comment"># foto.jpg &rarr; foto.jpeg</span>
+            <div class="gf-card gf-r">
+                <div class="gf-flag">-r</div>
+                <div class="gf-desc">Recursivo em<br>subdiret&oacute;rios</div>
             </div>
-        </div>
-        <div class="terminal">
-            <div class="terminal-bar">
-                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">combinando com outros metacaracteres</span>
+            <div class="gf-card gf-n">
+                <div class="gf-flag">-n</div>
+                <div class="gf-desc">Mostra n&uacute;mero<br>da linha</div>
             </div>
-            <div class="terminal-body">
-                <span class="t-comment"># Listar arquivos .conf OU .allow em /etc</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">ls /etc/*{conf,allow}</span><br>
-                <span class="t-out">httpd.conf&nbsp;&nbsp;hosts.allow&nbsp;&nbsp;syslog.conf&nbsp;&nbsp;tcp.allow</span><br><br>
-                <span class="t-comment"># Arquivos que come&ccedil;am com cron OU byobu</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">ls {cron,byobu}*</span><br>
-                <span class="t-out">crontab&nbsp;&nbsp;cron.daily&nbsp;&nbsp;byobu.conf</span>
+            <div class="gf-card gf-c">
+                <div class="gf-flag">-c</div>
+                <div class="gf-desc">Conta ocorr&ecirc;ncias<br>(n&atilde;o mostra linhas)</div>
+            </div>
+            <div class="gf-card gf-v">
+                <div class="gf-flag">-v</div>
+                <div class="gf-desc">Inverte: mostra<br>o que <em>não</em> combina</div>
+            </div>
+            <div class="gf-card gf-e">
+                <div class="gf-flag">-E</div>
+                <div class="gf-desc">Regex estendida<br>(<code>+</code>, <code>?</code>, <code>|</code>)</div>
             </div>
         </div>
     </div>
 
-    <!-- Card 8: [ ] vs { } -->
+    <!-- Card 9: Regex -->
     <div class="content-card">
-        <h2>⚖️ Diferen&ccedil;a: [ ] vs { }</h2>
-        <table class="cmp-table">
-            <tr>
-                <th>[ ] Colchetes</th>
-                <th>{ } Chaves</th>
-            </tr>
-            <tr>
-                <td><strong>Filtra</strong> arquivos existentes</td>
-                <td><strong>Expande</strong> em m&uacute;ltiplos valores</td>
-            </tr>
-            <tr>
-                <td>Escolhe 1 caractere do conjunto</td>
-                <td>Gera v&aacute;rias palavras</td>
-            </tr>
-            <tr>
-                <td>S&oacute; mostra se o arquivo existir</td>
-                <td>Mostra todos, existindo ou n&atilde;o</td>
-            </tr>
-        </table>
+        <h2>🧩 Express&otilde;es Regulares (Regex)</h2>
+        <p>Regex &eacute; uma <strong>linguagem de padr&otilde;es</strong> muito mais poderosa que os wildcards do shell. Usada dentro do <code>grep</code>, <code>sed</code> e <code>awk</code>.</p>
+        <div class="regex-grid">
+            <div class="regex-card rc-anchor">
+                <div class="rc-sym">^ e $</div>
+                <div class="rc-label">&#x2693; &Acirc;ncoras de posi&ccedil;&atilde;o</div>
+                <div class="rc-ex"><span style="color:#f87171">^</span>root → linha começa com root
+admin<span style="color:#f87171">$</span> → linha termina com admin
+<span style="color:#f87171">^$</span>     → linha vazia</div>
+            </div>
+            <div class="regex-card rc-class">
+                <div class="rc-sym">[ ] e .</div>
+                <div class="rc-label">&#x1F4CB; Classes de caractere</div>
+                <div class="rc-ex"><span style="color:#60a5fa">[0-9]</span>   → qualquer dígito
+<span style="color:#60a5fa">[a-zA-Z]</span> → qualquer letra
+<span style="color:#60a5fa">.</span>       → qualquer caractere</div>
+            </div>
+            <div class="regex-card rc-quant">
+                <div class="rc-sym">* + ? {}</div>
+                <div class="rc-label">&#x1F522; Quantificadores</div>
+                <div class="rc-ex">a<span style="color:#34d399">*</span>  → zero ou mais 'a'
+a<span style="color:#34d399">+</span>  → um ou mais 'a'
+a<span style="color:#34d399">?</span>  → zero ou um 'a'
+a<span style="color:#34d399">{3}</span> → exatamente 3 'a'</div>
+            </div>
+            <div class="regex-card rc-group">
+                <div class="rc-sym">| e ( )</div>
+                <div class="rc-label">&#x1F500; Alternativas e grupos</div>
+                <div class="rc-ex">cat<span style="color:#c084fc">|</span>dog → cat OU dog
+<span style="color:#c084fc">(ha)+</span>  → ha, haha, hahaha...
+<span style="color:#c084fc">[^abc]</span> → NÃO é a, b ou c</div>
+            </div>
+        </div>
         <div class="terminal">
             <div class="terminal-bar">
                 <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">[ ] vs { } na pr&aacute;tica</span>
+                <span class="term-title">grep com regex</span>
             </div>
             <div class="terminal-body">
-                <span class="t-comment"># [ ] = FILTRA (s&oacute; mostra se existir)</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">ls file[123].txt</span><br>
-                <span class="t-out">file1.txt&nbsp;&nbsp;file3.txt</span><br>
-                <span class="t-comment"># file2.txt n&atilde;o existe, n&atilde;o aparece</span><br><br>
-                <span class="t-comment"># { } = EXPANDE (gera os nomes)</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">echo file{1,2,3}.txt</span><br>
-                <span class="t-out">file1.txt file2.txt file3.txt</span><br>
-                <span class="t-comment"># Mostra todos, existindo ou n&atilde;o</span>
+<span class="t-comment"># Linhas que COMEÇAM com "root"</span>
+<span class="t-prompt">user@linux:~$</span> <span class="t-cmd">grep <span class="t-str">"^root"</span> /etc/passwd</span>
+<span class="t-out">root:x:0:0:root:/root:/bin/bash</span>
+
+<span class="t-comment"># Linhas que TERMINAM com "/bash"</span>
+<span class="t-prompt">user@linux:~$</span> <span class="t-cmd">grep <span class="t-str">"/bash$"</span> /etc/passwd</span>
+<span class="t-out">root:x:0:0:root:/root:/bin/bash</span>
+<span class="t-out">cesar:x:1000:1000::/home/cesar:/bin/bash</span>
+
+<span class="t-comment"># Buscar "error" OU "fail" (grep -E = regex estendida)</span>
+<span class="t-prompt">user@linux:~$</span> <span class="t-cmd">grep <span class="t-flag">-E</span> <span class="t-str">"error|fail"</span> /var/log/syslog</span>
+<span class="t-out">Nov 12 10:23 error: connection refused</span>
+<span class="t-out">Nov 12 11:45 fail: authentication failed</span>
+
+<span class="t-comment"># Mostrar número da linha + recursivo em /etc</span>
+<span class="t-prompt">user@linux:~$</span> <span class="t-cmd">grep <span class="t-flag">-rn</span> <span class="t-str">"PermitRootLogin"</span> /etc/ssh/</span>
+<span class="t-out">/etc/ssh/sshd_config:38:PermitRootLogin yes</span>
             </div>
         </div>
-        <div class="tip-box">
-            <p>✅ <strong>Resumindo:</strong><br>
-            <strong>[ ]</strong> &rarr; Use para <strong>buscar/filtrar</strong> arquivos que j&aacute; existem<br>
-            <strong>{ }</strong> &rarr; Use para <strong>criar/expandir</strong> nomes (touch, mkdir, cp)</p>
-        </div>
     </div>
 
-    <!-- Card 9: Tabela de Referencia -->
+    <!-- Card 10: Wildcards vs Regex -->
     <div class="content-card">
-        <h2>📋 Tabela de Refer&ecirc;ncia R&aacute;pida</h2>
-        <table class="cmp-table">
-            <tr>
-                <th>Metacaractere</th>
-                <th>Significado</th>
-                <th>Exemplo</th>
-                <th>Resultado</th>
-            </tr>
-            <tr>
-                <td><code>?</code></td>
-                <td>Exatamente 1 caractere</td>
-                <td>file?.txt</td>
-                <td>file1.txt, filea.txt</td>
-            </tr>
-            <tr>
-                <td><code>*</code></td>
-                <td>Zero ou mais caracteres</td>
-                <td>*.log</td>
-                <td>system.log, error.log, a.log</td>
-            </tr>
-            <tr>
-                <td><code>[abc]</code></td>
-                <td>Um de: a, b ou c</td>
-                <td>test[123].txt</td>
-                <td>test1.txt, test2.txt, test3.txt</td>
-            </tr>
-            <tr>
-                <td><code>[a-z]</code></td>
-                <td>Intervalo: a at&eacute; z</td>
-                <td>file[a-c].txt</td>
-                <td>filea.txt, fileb.txt, filec.txt</td>
-            </tr>
-            <tr>
-                <td><code>[^a]</code></td>
-                <td>Qualquer EXCETO a</td>
-                <td>[^f]*</td>
-                <td>Tudo que n&atilde;o come&ccedil;a com f</td>
-            </tr>
-            <tr>
-                <td><code>{a,b}</code></td>
-                <td>Expande: a e b</td>
-                <td>{doc,img}.zip</td>
-                <td>doc.zip, img.zip</td>
-            </tr>
-            <tr>
-                <td><code>{1..5}</code></td>
-                <td>Intervalo: 1 at&eacute; 5</td>
-                <td>file{1..5}.txt</td>
-                <td>file1.txt at&eacute; file5.txt</td>
-            </tr>
-        </table>
-        <div class="highlight-box">
-            <p>🎯 Guarde esta tabela! Ela ser&aacute; sua melhor amiga no terminal.</p>
+        <h2>🆚 Wildcards do Shell vs Regex</h2>
+        <div class="alert-box">
+            <p>⚠️ <strong>Aten&ccedil;&atilde;o!</strong> O <code>*</code> do shell e o <code>*</code> do regex s&atilde;o <strong>diferentes</strong>! No shell, <code>*</code> = zero ou mais caracteres. No regex, <code>*</code> = zero ou mais rep. do caractere anterior.</p>
+        </div>
+        <div class="cmp-table" style="overflow-x:auto;">
+            <table class="cmp-table">
+                <tr>
+                    <th>S&iacute;mbolo</th>
+                    <th>No Shell (Wildcard)</th>
+                    <th>No Regex (grep)</th>
+                </tr>
+                <tr>
+                    <td><code>*</code></td>
+                    <td>Zero ou mais <strong>caracteres</strong></td>
+                    <td>Zero ou mais <strong>do char anterior</strong></td>
+                </tr>
+                <tr>
+                    <td><code>?</code></td>
+                    <td>Exatamente <strong>1 caractere</strong></td>
+                    <td>Zero ou um <strong>do char anterior</strong></td>
+                </tr>
+                <tr>
+                    <td><code>.</code></td>
+                    <td><em>Literal</em> (ponto mesmo)</td>
+                    <td>Qualquer <strong>1 caractere</strong></td>
+                </tr>
+                <tr>
+                    <td><code>[abc]</code></td>
+                    <td>Um de: a, b ou c (igual)</td>
+                    <td>Um de: a, b ou c (igual)</td>
+                </tr>
+                <tr>
+                    <td><code>^</code></td>
+                    <td>N&atilde;o tem equivalente</td>
+                    <td>In&iacute;cio da linha</td>
+                </tr>
+            </table>
+        </div>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">mesmo símbolo, comportamento diferente</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-comment"># Shell: * = qualquer coisa nos nomes dos arquivos</span>
+<span class="t-prompt">user@linux:~$</span> <span class="t-cmd">ls <span class="t-kw">*</span>.txt</span>
+<span class="t-out">a.txt  documento.txt  relatorio_final.txt</span>
+
+<span class="t-comment"># Regex: .* = qualquer coisa no conteúdo da linha</span>
+<span class="t-prompt">user@linux:~$</span> <span class="t-cmd">grep <span class="t-str">"^root.*bash$"</span> /etc/passwd</span>
+<span class="t-out">root:x:0:0:root:/root:/bin/bash</span>
+<span class="t-comment"># ^root = começa com root | .* = qualquer coisa | bash$ = termina com bash</span>
+            </div>
         </div>
     </div>
 
-    <!-- Card 10: Erros Comuns -->
+    <!-- Card 11: Erros Comuns -->
     <div class="content-card">
         <h2>🚨 Erros Comuns e Como Evitar</h2>
-        <div class="alert-box">
-            <p>⚠️ <strong>Erro 1: Confundir ? com *</strong><br>
-            <code>file?.txt</code> N&Atilde;O encontra <code>file.txt</code><br>
-            <strong>Solu&ccedil;&atilde;o:</strong> Use <code>file*.txt</code> para incluir "zero caracteres"</p>
-        </div>
-        <div class="alert-box">
-            <p>⚠️ <strong>Erro 2: Intervalos invertidos</strong><br>
-            <code>[z-a]</code> est&aacute; ERRADO (ordem decrescente)<br>
-            <strong>Solu&ccedil;&atilde;o:</strong> Use <code>[a-z]</code> (ordem crescente)</p>
+        <div class="danger-box">
+            <div class="danger-title">🔥 PERIGOSO: rm com wildcard sem verificar</div>
+            <p>O <code>rm *.txt</code> deleta arquivos de forma <strong>irrevers&iacute;vel</strong> no Linux. Sempre use <code>ls</code> primeiro para ver o que ser&aacute; afetado!</p>
         </div>
         <div class="terminal">
             <div class="terminal-bar">
                 <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">erro 3: deletar sem verificar</span>
+                <span class="term-title">regra de ouro — ls antes do rm</span>
             </div>
             <div class="terminal-body">
-                <span class="t-comment"># ❌ PERIGOSO: Pode deletar arquivos importantes!</span><br>
-                <span class="t-cmd">rm *.txt</span><br><br>
-                <span class="t-comment"># ✅ SEGURO: Sempre verifique primeiro!</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">ls *.txt</span><br>
-                <span class="t-comment"># Veja o que vai ser afetado</span><br>
-                <span class="t-out">arquivo1.txt&nbsp;&nbsp;importante.txt&nbsp;&nbsp;teste.txt</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">rm *.txt</span><br>
-                <span class="t-comment"># Agora sim, delete</span>
+<span class="t-comment"># ❌ PERIGOSO: pode deletar arquivos importantes!</span>
+<span class="t-err">rm *.txt</span>
+
+<span class="t-comment"># ✅ SEGURO: veja o que vai ser afetado primeiro</span>
+<span class="t-prompt">user@linux:~$</span> <span class="t-cmd">ls *.txt</span>
+<span class="t-out">arquivo1.txt  importante.txt  teste.txt</span>
+<span class="t-comment"># Confirme que são os arquivos certos</span>
+<span class="t-prompt">user@linux:~$</span> <span class="t-cmd">rm *.txt</span>
+<span class="t-comment"># Agora sim!</span>
             </div>
         </div>
-        <div class="tip-box">
-            <p>🛡️ <strong>Regra de Ouro:</strong> Sempre teste com <code>ls</code> antes de usar <code>rm</code>, <code>mv</code> ou <code>cp</code>!</p>
+        <div class="alert-box">
+            <p>⚠️ <strong>Erro 1 &mdash; Confundir ? com *:</strong> <code>file?.txt</code> n&atilde;o encontra <code>file.txt</code> (zero caracteres). Use <code>file*.txt</code> para incluir zero chars.</p>
+        </div>
+        <div class="alert-box">
+            <p>⚠️ <strong>Erro 2 &mdash; Intervalo invertido:</strong> <code>[z-a]</code> est&aacute; errado (ordem decrescente). Use sempre <code>[a-z]</code> (ordem crescente).</p>
+        </div>
+        <div class="alert-box">
+            <p>⚠️ <strong>Erro 3 &mdash; Confundir <code>[ ]</code> com <code>{ }</code>:</strong> <code>[1,2,3]</code> n&atilde;o &eacute; lista de op&ccedil;&otilde;es, &eacute; conjunto de chars. Para lista de op&ccedil;&otilde;es use <code>{1,2,3}</code>.</p>
         </div>
     </div>
 
-    <!-- Card 11: Caso Pratico -->
+    <!-- Card 12: Caso Prático -->
     <div class="content-card">
-        <h2>🎯 Caso Pr&aacute;tico: Organizando um Servidor</h2>
-        <p>Voc&ecirc; &eacute; o administrador de um servidor com milhares de arquivos de log. Vamos organizar!</p>
+        <h2>🎯 Caso Pr&aacute;tico: Administrando um Servidor</h2>
+        <p>Voc&ecirc; &eacute; o administrador. Precisa organizar logs, criar estrutura de projeto e investigar acessos.</p>
         <div class="terminal">
             <div class="terminal-bar">
                 <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">organiza&ccedil;&atilde;o do servidor</span>
+                <span class="term-title">admin@servidor — situações reais</span>
             </div>
             <div class="terminal-body">
-                <span class="t-comment"># 1. Ver todos os logs de 2024</span><br>
-                <span class="t-prompt">admin@server:~$</span> <span class="t-cmd">ls log_2024*.txt</span><br>
-                <span class="t-out">log_2024-01.txt&nbsp;&nbsp;log_2024-02.txt&nbsp;&nbsp;log_2024-03.txt ...</span><br><br>
-                <span class="t-comment"># 2. Ver logs apenas dos meses 01 a 06</span><br>
-                <span class="t-prompt">admin@server:~$</span> <span class="t-cmd">ls log_2024-0[1-6].txt</span><br>
-                <span class="t-out">log_2024-01.txt&nbsp;&nbsp;log_2024-02.txt ... log_2024-06.txt</span><br><br>
-                <span class="t-comment"># 3. Criar backup de configura&ccedil;&otilde;es</span><br>
-                <span class="t-prompt">admin@server:~$</span> <span class="t-cmd">cp /etc/{apache2,nginx,mysql}/*.conf backup/</span><br>
-                <span class="t-comment"># Copia configs de apache2, nginx e mysql de uma vez!</span><br><br>
-                <span class="t-comment"># 4. Criar estrutura para novo projeto</span><br>
-                <span class="t-prompt">admin@server:~$</span> <span class="t-cmd">mkdir -p projeto_web/{html,css,js,img}/{dev,prod}</span><br>
-                <span class="t-comment"># Cria 8 pastas organizadas!</span>
+<span class="t-comment"># 1. Ver todos os logs de 2024</span>
+<span class="t-prompt">admin@srv:~$</span> <span class="t-cmd">ls log_2024<span class="t-kw">*</span>.txt</span>
+<span class="t-out">log_2024-01.txt  log_2024-02.txt  log_2024-03.txt ...</span>
+
+<span class="t-comment"># 2. Logs só do primeiro semestre (meses 01 a 06)</span>
+<span class="t-prompt">admin@srv:~$</span> <span class="t-cmd">ls log_2024-0<span class="t-kw">[1-6]</span>.txt</span>
+<span class="t-out">log_2024-01.txt  log_2024-02.txt ... log_2024-06.txt</span>
+
+<span class="t-comment"># 3. Criar estrutura de projeto em 1 comando</span>
+<span class="t-prompt">admin@srv:~$</span> <span class="t-cmd">mkdir -p projeto_web/<span class="t-kw">{html,css,js,img}</span>/<span class="t-kw">{dev,prod}</span></span>
+<span class="t-comment"># Cria 8 pastas organizadas de uma vez!</span>
+
+<span class="t-comment"># 4. Investigar tentativas de login falhas</span>
+<span class="t-prompt">admin@srv:~$</span> <span class="t-cmd">grep <span class="t-flag">-c</span> <span class="t-str">"Failed password"</span> /var/log/auth.log</span>
+<span class="t-out">247</span>
+
+<span class="t-comment"># 5. Ver de quais IPs vieram as tentativas</span>
+<span class="t-prompt">admin@srv:~$</span> <span class="t-cmd">grep <span class="t-str">"Failed password"</span> /var/log/auth.log | grep <span class="t-flag">-oE</span> <span class="t-str">"[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+"</span></span>
+<span class="t-out">192.168.1.100</span>
+<span class="t-out">10.0.0.55</span>
+<span class="t-out">203.0.113.42</span>
+
+<span class="t-comment"># 6. Backup das configs de apache, nginx e mysql</span>
+<span class="t-prompt">admin@srv:~$</span> <span class="t-cmd">cp /etc/<span class="t-kw">{apache2,nginx,mysql}</span>/<span class="t-kw">*</span>.conf /backup/</span>
+<span class="t-comment"># Copia configs dos 3 serviços de uma vez!</span>
             </div>
-        </div>
-        <div class="tip-box">
-            <p>✅ Com metacaracteres, tarefas que levariam horas s&atilde;o feitas em segundos!</p>
         </div>
     </div>
 
-    <!-- Card 12: Resumo Final -->
+    <!-- Card 13: Referência Rápida -->
     <div class="content-card">
-        <h2>🎓 Resumo: O que Aprendemos</h2>
-        <table class="cmp-table">
-            <tr>
-                <th>S&iacute;mbolo</th>
-                <th>Fun&ccedil;&atilde;o</th>
-                <th>Exemplo</th>
-            </tr>
-            <tr><td><code>?</code></td><td>Exatamente 1 caractere</td><td><code>file?.txt</code></td></tr>
-            <tr><td><code>*</code></td><td>Zero ou mais caracteres</td><td><code>*.log</code></td></tr>
-            <tr><td><code>[ ]</code></td><td>Conjunto espec&iacute;fico</td><td><code>[0-9].txt</code></td></tr>
-            <tr><td><code>{ }</code></td><td>Expans&atilde;o m&uacute;ltipla</td><td><code>{src,docs}</code></td></tr>
-            <tr><td><code>[^]</code></td><td>Nega&ccedil;&atilde;o (exceto)</td><td><code>[^abc]*</code></td></tr>
-            <tr><td><code>{1..10}</code></td><td>Intervalos autom&aacute;ticos</td><td><code>file{1..10}.txt</code></td></tr>
-        </table>
+        <h2>📋 Refer&ecirc;ncia R&aacute;pida</h2>
+        <div class="ref-grid">
+            <div class="ref-item ri-q">
+                <span class="ri-sym">?</span>
+                <strong>1 char exato</strong>
+                <span>file?.txt</span>
+            </div>
+            <div class="ref-item ri-s">
+                <span class="ri-sym">*</span>
+                <strong>0 ou + chars</strong>
+                <span>*.log</span>
+            </div>
+            <div class="ref-item ri-br">
+                <span class="ri-sym">[ ]</span>
+                <strong>Conjunto</strong>
+                <span>[0-9].txt</span>
+            </div>
+            <div class="ref-item ri-ch">
+                <span class="ri-sym">{ }</span>
+                <strong>Expans&atilde;o</strong>
+                <span>{src,docs}</span>
+            </div>
+        </div>
+        <div class="cmp-table" style="overflow-x:auto; margin-top:16px;">
+            <table class="cmp-table">
+                <tr>
+                    <th>Metacaractere</th>
+                    <th>Significado</th>
+                    <th>Exemplo</th>
+                    <th>Resultado</th>
+                </tr>
+                <tr><td><code>?</code></td><td>Exatamente 1 char</td><td><code>file?.txt</code></td><td>file1.txt, filea.txt</td></tr>
+                <tr><td><code>*</code></td><td>Zero ou + chars</td><td><code>*.log</code></td><td>system.log, error.log</td></tr>
+                <tr><td><code>[abc]</code></td><td>Um de: a, b ou c</td><td><code>test[123].txt</code></td><td>test1.txt, test2.txt, test3.txt</td></tr>
+                <tr><td><code>[a-z]</code></td><td>Intervalo: a at&eacute; z</td><td><code>file[a-c].txt</code></td><td>filea.txt, fileb.txt, filec.txt</td></tr>
+                <tr><td><code>[^a]</code></td><td>Qualquer, EXCETO a</td><td><code>[^f]*</code></td><td>N&atilde;o come&ccedil;a com f</td></tr>
+                <tr><td><code>{a,b}</code></td><td>Expande: a e b</td><td><code>{doc,img}.zip</code></td><td>doc.zip, img.zip</td></tr>
+                <tr><td><code>{1..5}</code></td><td>Intervalo autom&aacute;tico</td><td><code>file{1..5}.txt</code></td><td>file1.txt at&eacute; file5.txt</td></tr>
+                <tr><td><code>^</code> (regex)</td><td>In&iacute;cio da linha</td><td><code>grep "^root"</code></td><td>Linhas que come&ccedil;am com root</td></tr>
+                <tr><td><code>$</code> (regex)</td><td>Fim da linha</td><td><code>grep "bash$"</code></td><td>Linhas que terminam com bash</td></tr>
+            </table>
+        </div>
         <div class="tip-box">
-            <p>💡 <strong>Lembrete Final:</strong> Sempre teste com <code>ls</code> antes de usar <code>rm</code> com metacaracteres!</p>
+            <p>🛡️ <strong>Regra de Ouro:</strong> Sempre teste com <code>ls</code> ou <code>echo</code> antes de usar <code>rm</code>, <code>mv</code> ou <code>cp</code> com metacaracteres!</p>
         </div>
     </div>
 
@@ -551,7 +1000,7 @@
                 <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>Apenas d&iacute;gitos num&eacute;ricos</span></div>
                 <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>O in&iacute;cio de uma linha</span></div>
             </div>
-            <div class="mc-explanation">&#x2713; <code>*</code> &eacute; o wildcard mais usado: <code>ls *.txt</code> lista todos os .txt. Em regex, significa &ldquo;zero ou mais do caractere anterior&rdquo;.</div>
+            <div class="mc-explanation">&#x2713; <code>*</code> no shell = zero ou mais caracteres: <code>ls *.txt</code> lista todos os .txt. Cuidado: no regex, <code>*</code> significa zero ou mais <em>do caractere anterior</em>.</div>
         </div>
         <hr class="mc-sep">
 
@@ -563,7 +1012,7 @@
                 <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>?</span></div>
                 <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>.</span></div>
             </div>
-            <div class="mc-explanation">&#x2713; O <code>?</code> no shell substitui exatamente 1 caractere: <code>ls arquivo?.txt</code> encontra arquivo1.txt, arquivoA.txt, mas n&atilde;o arquivo10.txt.</div>
+            <div class="mc-explanation">&#x2713; O <code>?</code> no shell substitui exatamente 1 caractere: <code>ls arquivo?.txt</code> encontra arquivo1.txt, arquivoA.txt, mas n&atilde;o arquivo10.txt (2 chars).</div>
         </div>
         <hr class="mc-sep">
 
@@ -571,29 +1020,29 @@
             <p class="mc-q-text">O que faz o comando <code>ls [abc]*.txt</code>?</p>
             <div class="mc-options">
                 <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>Lista arquivos .txt que come&ccedil;am com a, b ou c</span></div>
-                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>Lista arquivos cujos nomes cont&ecirc;m [abc]</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>Lista arquivos cujos nomes cont&ecirc;m [abc] literalmente</span></div>
                 <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>Lista arquivos .txt que terminam com a, b ou c</span></div>
                 <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>Lista arquivos com extens&atilde;o abc.txt</span></div>
             </div>
-            <div class="mc-explanation">&#x2713; <code>[abc]</code> &eacute; uma classe de caracteres: combina um &uacute;nico caractere que seja a, b ou c. <code>[a-z]</code> combina qualquer letra min&uacute;scula.</div>
+            <div class="mc-explanation">&#x2713; <code>[abc]</code> combina um &uacute;nico caractere que seja a, b ou c. Combinado com <code>*</code> = tudo que come&ccedil;a com a, b ou c. Use <code>[a-z]</code> para intervalos.</div>
         </div>
         <hr class="mc-sep">
 
         <div class="mc-question" data-correct="d">
             <p class="mc-q-text">Qual comando usa express&atilde;o regular para buscar linhas que come&ccedil;am com &lsquo;root&rsquo; em /etc/passwd?</p>
             <div class="mc-options">
-                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>find /etc/passwd -name &ldquo;^root&rdquo;</span></div>
-                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>ls /etc/passwd | filter &ldquo;^root&rdquo;</span></div>
-                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>cat /etc/passwd | match &ldquo;^root&rdquo;</span></div>
-                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>grep &ldquo;^root&rdquo; /etc/passwd</span></div>
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>find /etc/passwd -name "^root"</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>ls /etc/passwd | filter "^root"</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>cat /etc/passwd | match "^root"</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>grep "^root" /etc/passwd</span></div>
             </div>
-            <div class="mc-explanation">&#x2713; O <code>grep</code> aceita regex: <code>^</code> ancora ao in&iacute;cio da linha. <code>grep -E</code> ou <code>egrep</code> para express&otilde;es estendidas como <code>+</code>, <code>?</code>, <code>|</code>.</div>
+            <div class="mc-explanation">&#x2713; O <code>grep</code> aceita regex: <code>^</code> ancora ao in&iacute;cio da linha. Use <code>grep -E</code> (ou <code>egrep</code>) para regex estendida com <code>+</code>, <code>?</code>, <code>|</code>.</div>
         </div>
     </div>
 
     <div class="nav-footer">
         <a href="aula03-comandos-produtividade.html" class="nav-link">&#x2B05; Comandos de Produtividade</a>
-        <a href="aula05-processos.html" class="nav-link">Processos &#x27A1;</a>
+        <a href="aula05-permissoes.html" class="nav-link">Permiss&otilde;es e ACL &#x27A1;</a>
     </div>
 
 </div>
