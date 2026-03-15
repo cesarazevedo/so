@@ -7,89 +7,507 @@
     <link rel="stylesheet" href="slide-mode.css">
     <link rel="stylesheet" href="exercise.css">
     <link rel="stylesheet" href="lesson.css">
+    <style>
+        /* ── BREAKDOWN DE PERMISSÕES ── */
+        .perm-breakdown {
+            display: flex;
+            gap: 0;
+            justify-content: center;
+            margin: 24px 0 10px;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0,0,0,.1);
+        }
+        .pb-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 16px 18px;
+            min-width: 52px;
+        }
+        .pb-block.pb-type  { background: #dbeafe; }
+        .pb-block.pb-user  { background: #d1fae5; }
+        .pb-block.pb-group { background: #fef3c7; }
+        .pb-block.pb-other { background: #fee2e2; }
+        .pb-char {
+            font-family: 'Consolas', monospace;
+            font-size: 1.6em;
+            font-weight: 900;
+            line-height: 1;
+        }
+        .pb-block.pb-type  .pb-char { color: #1e40af; }
+        .pb-block.pb-user  .pb-char { color: #065f46; }
+        .pb-block.pb-group .pb-char { color: #78350f; }
+        .pb-block.pb-other .pb-char { color: #7f1d1d; }
+        .pb-label {
+            font-size: .6em;
+            font-weight: 600;
+            margin-top: 6px;
+            text-transform: uppercase;
+            letter-spacing: .03em;
+            opacity: .75;
+        }
+        .perm-legend {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 10px 0 20px;
+            font-size: .82em;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .legend-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+
+        /* ── CATEGORIAS grid ── */
+        .cat-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+            margin: 16px 0;
+        }
+        .cat-card {
+            border-radius: 14px;
+            padding: 18px 16px;
+            text-align: center;
+        }
+        .cat-card.cc-u { background: #d1fae5; border-top: 4px solid #10b981; }
+        .cat-card.cc-g { background: #fef3c7; border-top: 4px solid #f59e0b; }
+        .cat-card.cc-o { background: #fee2e2; border-top: 4px solid #ef4444; }
+        .cat-icon { font-size: 1.8em; margin-bottom: 6px; display: block; }
+        .cat-card strong { display: block; font-size: .9em; margin-bottom: 4px; }
+        .cat-card.cc-u strong { color: #065f46; }
+        .cat-card.cc-g strong { color: #78350f; }
+        .cat-card.cc-o strong { color: #7f1d1d; }
+        .cat-card span { font-size: .78em; color: #475569; }
+
+        /* ── OCTAL GRID ── */
+        .octal-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 16px 0;
+        }
+        .octal-box {
+            background: #f8f7ff;
+            border-radius: 12px;
+            padding: 14px 10px;
+            text-align: center;
+            border-top: 3px solid var(--primary);
+        }
+        .octal-box h4 {
+            font-family: 'Consolas', monospace;
+            font-size: .9em;
+            color: #334155;
+            margin-bottom: 8px;
+        }
+        .octal-perms {
+            display: flex;
+            gap: 4px;
+            justify-content: center;
+            margin-bottom: 8px;
+        }
+        .octal-perm {
+            width: 26px;
+            height: 26px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Consolas', monospace;
+            font-size: .85em;
+            font-weight: 700;
+        }
+        .octal-perm.r   { background: #dbeafe; color: #1d4ed8; }
+        .octal-perm.w   { background: #d1fae5; color: #047857; }
+        .octal-perm.x   { background: #fef3c7; color: #b45309; }
+        .octal-perm.off { background: #f1f5f9; color: #94a3b8; }
+        .octal-value {
+            font-size: 1.8em;
+            font-weight: 900;
+            color: var(--primary);
+        }
+
+        /* ── RWX STAT MINI ── */
+        .rwx-mini {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .rwx-mini-item {
+            border-radius: 12px;
+            padding: 14px 10px;
+            text-align: center;
+        }
+        .rwx-mini-item.rmi-r  { background: #dbeafe; border-top: 3px solid #3b82f6; }
+        .rwx-mini-item.rmi-w  { background: #d1fae5; border-top: 3px solid #10b981; }
+        .rwx-mini-item.rmi-x  { background: #fef3c7; border-top: 3px solid #f59e0b; }
+        .rwx-mini-item.rmi-no { background: #f1f5f9; border-top: 3px solid #94a3b8; }
+        .rwx-sym {
+            font-family: 'Consolas', monospace;
+            font-size: 1.8em;
+            font-weight: 900;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .rmi-r .rwx-sym  { color: #1d4ed8; }
+        .rmi-w .rwx-sym  { color: #047857; }
+        .rmi-x .rwx-sym  { color: #b45309; }
+        .rmi-no .rwx-sym { color: #94a3b8; }
+        .rwx-mini-item .rwx-val { font-size: 1.3em; font-weight: 900; color: var(--primary); }
+        .rwx-mini-item .rwx-lbl { font-size: .72em; color: #475569; display: block; }
+
+        /* ── CHMOD SYMBOLIC ── */
+        .sym-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 14px 0;
+        }
+        .sym-item {
+            background: #0f172a;
+            border-radius: 10px;
+            padding: 12px 16px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .sym-cmd {
+            font-family: 'Consolas', monospace;
+            font-size: .85em;
+            color: #38ef7d;
+            flex-shrink: 0;
+        }
+        .sym-desc { font-size: .78em; color: #94a3b8; }
+
+        /* ── SPECIAL PERMISSIONS ── */
+        .special-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 14px;
+            margin: 16px 0;
+        }
+        .special-card {
+            border-radius: 14px;
+            padding: 20px 16px;
+            text-align: center;
+        }
+        .special-card.sc-suid  { background: #fff1f2; border-top: 4px solid #f43f5e; }
+        .special-card.sc-sgid  { background: #eff6ff; border-top: 4px solid #3b82f6; }
+        .special-card.sc-sticky{ background: #f0fdf4; border-top: 4px solid #10b981; }
+        .special-icon { font-size: 2em; margin-bottom: 8px; display: block; }
+        .special-name {
+            font-size: .95em;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .special-card.sc-suid   .special-name { color: #be123c; }
+        .special-card.sc-sgid   .special-name { color: #1e40af; }
+        .special-card.sc-sticky .special-name { color: #065f46; }
+        .special-octal {
+            font-family: 'Consolas', monospace;
+            font-size: .8em;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 6px;
+            display: inline-block;
+            margin-bottom: 8px;
+        }
+        .sc-suid   .special-octal { background: #ffe4e6; color: #be123c; }
+        .sc-sgid   .special-octal { background: #dbeafe; color: #1e40af; }
+        .sc-sticky .special-octal { background: #dcfce7; color: #065f46; }
+        .special-desc { font-size: .78em; color: #475569; line-height: 1.5; }
+
+        /* ── UMASK CALC ── */
+        .umask-calc {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr auto 1fr;
+            gap: 0;
+            align-items: center;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .umask-box {
+            border-radius: 12px;
+            padding: 16px 12px;
+        }
+        .umask-box.um-base   { background: #eff6ff; }
+        .umask-box.um-mask   { background: #fff1f2; }
+        .umask-box.um-result { background: #f0fdf4; }
+        .umask-title { font-size: .72em; font-weight: 600; margin-bottom: 6px; text-transform: uppercase; letter-spacing: .03em; }
+        .um-base   .umask-title { color: #1e40af; }
+        .um-mask   .umask-title { color: #be123c; }
+        .um-result .umask-title { color: #065f46; }
+        .umask-num {
+            font-family: 'Consolas', monospace;
+            font-size: 1.8em;
+            font-weight: 900;
+        }
+        .um-base   .umask-num { color: #3b82f6; }
+        .um-mask   .umask-num { color: #f43f5e; }
+        .um-result .umask-num { color: #10b981; }
+        .umask-sub { font-size: .75em; color: #64748b; margin-top: 4px; }
+        .umask-op {
+            font-size: 1.8em;
+            font-weight: 900;
+            color: #94a3b8;
+            padding: 0 6px;
+        }
+
+        /* ── SECURITY GRID ── */
+        .security-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 14px 0;
+        }
+        .sec-item {
+            background: #f8f7ff;
+            border-radius: 12px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        .sec-perm {
+            font-family: 'Consolas', monospace;
+            font-size: 1em;
+            font-weight: 900;
+            color: white;
+            background: var(--primary);
+            padding: 4px 10px;
+            border-radius: 8px;
+            flex-shrink: 0;
+        }
+        .sec-item strong { display: block; font-size: .88em; margin-bottom: 2px; }
+        .sec-item span { font-size: .78em; color: #64748b; }
+
+        /* ── ATIVIDADE PRÁTICA ── */
+        .prat-meta {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .prat-tag {
+            background: #f1f5f9;
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: .78em;
+            color: #475569;
+            font-weight: 500;
+        }
+        .prat-steps { display: flex; flex-direction: column; gap: 12px; }
+        .prat-step {
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            background: #f8f7ff;
+            border-radius: 12px;
+            padding: 16px 18px;
+        }
+        .step-num {
+            background: var(--primary);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .82em;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .step-label {
+            font-weight: 700;
+            font-size: .9em;
+            margin-bottom: 5px;
+            color: var(--primary);
+        }
+        .step-desc { font-size: .85em; color: #475569; line-height: 1.6; }
+        .step-desc code {
+            background: #1e293b;
+            color: #a78bfa;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-family: 'Consolas', monospace;
+            font-size: .88em;
+        }
+        .prat-observe {
+            background: #fafafa;
+            border-left: 4px solid var(--primary);
+            border-radius: 0 12px 12px 0;
+            padding: 16px 20px;
+            margin-top: 20px;
+            font-size: .88em;
+            color: #475569;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .perm-breakdown { flex-wrap: wrap; }
+            .pb-block { min-width: 40px; padding: 12px 10px; }
+            .cat-grid { grid-template-columns: 1fr; }
+            .octal-grid { grid-template-columns: repeat(2, 1fr); }
+            .rwx-mini { grid-template-columns: repeat(2, 1fr); }
+            .sym-grid { grid-template-columns: 1fr; }
+            .special-grid { grid-template-columns: 1fr; }
+            .umask-calc { grid-template-columns: 1fr; }
+            .umask-op { display: none; }
+            .security-grid { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
 <body>
 
 <div class="top-bar">
     <a href="index.html" class="back-btn">&#x2B05; Voltar ao Dashboard</a>
-    <span class="page-badge">Módulo 1 — Fundamentos Linux</span>
+    <span class="page-badge">1&ordm; Bimestre &mdash; Linux B&aacute;sico</span>
     <button class="slide-toggle" id="slideToggleBtn">&#x1F4FA; Modo Slide</button>
 </div>
 
 <div class="content-wrapper">
 
+    <!-- HERO -->
     <div class="lesson-hero">
-        <h1>&#x1F510; Permissões e Controle de Acesso</h1>
-        <p class="subtitle">Aula 1.5 — chmod, chown, chgrp e umask: quem pode fazer o quê no sistema Linux</p>
+        <span class="hero-badge">Aula 1.5</span>
+        <h1 class="hero-title">&#x1F510; Permiss&otilde;es e Controle de Acesso</h1>
+        <p class="hero-sub">chmod, chown, chgrp e umask &mdash; quem pode fazer o qu&ecirc; no sistema Linux.</p>
+        <div class="rwx-mini" style="margin-top:28px;">
+            <div class="rwx-mini-item rmi-r">
+                <span class="rwx-sym">r</span>
+                <span class="rwx-val">4</span>
+                <span class="rwx-lbl">read / leitura</span>
+            </div>
+            <div class="rwx-mini-item rmi-w">
+                <span class="rwx-sym">w</span>
+                <span class="rwx-val">2</span>
+                <span class="rwx-lbl">write / escrita</span>
+            </div>
+            <div class="rwx-mini-item rmi-x">
+                <span class="rwx-sym">x</span>
+                <span class="rwx-val">1</span>
+                <span class="rwx-lbl">execute / execução</span>
+            </div>
+            <div class="rwx-mini-item rmi-no">
+                <span class="rwx-sym">-</span>
+                <span class="rwx-val">0</span>
+                <span class="rwx-lbl">sem permissão</span>
+            </div>
+        </div>
     </div>
 
-    <!-- CARD 1 — Conceito de permissões -->
+    <!-- CARD 1 — Conceito -->
     <div class="content-card">
-        <h2>&#x1F4CB; Conceito de Permissões no Linux</h2>
-        <p>No Linux, <strong>todo arquivo e diretório possui um conjunto de permissões</strong> que define quem pode fazer o quê. Esse sistema é fundamental para a segurança do sistema operacional: sem ele, qualquer usuário poderia ler, modificar ou apagar arquivos de outros — inclusive arquivos do sistema.</p>
+        <h2>&#x1F4CB; Conceito de Permiss&otilde;es no Linux</h2>
+        <p>No Linux, <strong>todo arquivo e diret&oacute;rio possui um conjunto de permiss&otilde;es</strong> que define quem pode fazer o qu&ecirc;. Esse sistema &eacute; fundamental para a seguran&ccedil;a: sem ele, qualquer usu&aacute;rio poderia ler, modificar ou apagar arquivos de outros — inclusive arquivos do sistema.</p>
 
-        <p>As permissões são associadas a três categorias de usuário:</p>
-        <ul>
-            <li><strong>user (u)</strong> — o dono do arquivo</li>
-            <li><strong>group (g)</strong> — o grupo ao qual o arquivo pertence</li>
-            <li><strong>other (o)</strong> — todos os demais usuários do sistema</li>
-        </ul>
+        <p>As permiss&otilde;es se aplicam a tr&ecirc;s categorias de usu&aacute;rio:</p>
+        <div class="cat-grid">
+            <div class="cat-card cc-u">
+                <span class="cat-icon">👤</span>
+                <strong>user (u)</strong>
+                <span>O dono do arquivo — quem o criou ou para quem foi transferido</span>
+            </div>
+            <div class="cat-card cc-g">
+                <span class="cat-icon">👥</span>
+                <strong>group (g)</strong>
+                <span>O grupo ao qual o arquivo pertence — todos os membros do grupo</span>
+            </div>
+            <div class="cat-card cc-o">
+                <span class="cat-icon">🌐</span>
+                <strong>other (o)</strong>
+                <span>Todos os demais usu&aacute;rios do sistema que n&atilde;o s&atilde;o dono nem grupo</span>
+            </div>
+        </div>
 
-        <div class="perm-display">
-            <div class="perm-char perm-type">-</div>
-            <div class="perm-char perm-owner">r</div>
-            <div class="perm-char perm-owner">w</div>
-            <div class="perm-char perm-owner">x</div>
-            <div class="perm-char perm-group">r</div>
-            <div class="perm-char perm-group">-</div>
-            <div class="perm-char perm-group">x</div>
-            <div class="perm-char perm-others">r</div>
-            <div class="perm-char perm-others">-</div>
-            <div class="perm-char perm-others">-</div>
+        <h3>Lendo as permiss&otilde;es: <code>ls -l</code></h3>
+        <p>Cada linha do <code>ls -l</code> come&ccedil;a com 10 caracteres que descrevem tipo e permiss&otilde;es:</p>
+
+        <!-- Exemplo: -rwxr-x--- -->
+        <div class="perm-breakdown">
+            <div class="pb-block pb-type">
+                <span class="pb-char">-</span>
+                <span class="pb-label">tipo</span>
+            </div>
+            <div class="pb-block pb-user">
+                <span class="pb-char">r</span>
+                <span class="pb-label">u</span>
+            </div>
+            <div class="pb-block pb-user">
+                <span class="pb-char">w</span>
+                <span class="pb-label">u</span>
+            </div>
+            <div class="pb-block pb-user">
+                <span class="pb-char">x</span>
+                <span class="pb-label">u</span>
+            </div>
+            <div class="pb-block pb-group">
+                <span class="pb-char">r</span>
+                <span class="pb-label">g</span>
+            </div>
+            <div class="pb-block pb-group">
+                <span class="pb-char">-</span>
+                <span class="pb-label">g</span>
+            </div>
+            <div class="pb-block pb-group">
+                <span class="pb-char">x</span>
+                <span class="pb-label">g</span>
+            </div>
+            <div class="pb-block pb-other">
+                <span class="pb-char">r</span>
+                <span class="pb-label">o</span>
+            </div>
+            <div class="pb-block pb-other">
+                <span class="pb-char">-</span>
+                <span class="pb-label">o</span>
+            </div>
+            <div class="pb-block pb-other">
+                <span class="pb-char">-</span>
+                <span class="pb-label">o</span>
+            </div>
         </div>
         <div class="perm-legend">
-            <span><span class="legend-dot" style="background:#dbeafe;"></span>Tipo</span>
-            <span><span class="legend-dot" style="background:#d1fae5;"></span>Dono (user)</span>
-            <span><span class="legend-dot" style="background:#fef3c7;"></span>Grupo (group)</span>
-            <span><span class="legend-dot" style="background:#fee2e2;"></span>Outros (other)</span>
+            <div class="legend-item"><div class="legend-dot" style="background:#dbeafe;border:1px solid #93c5fd;"></div><span>Tipo (<code>-</code> arquivo &bull; <code>d</code> diret&oacute;rio &bull; <code>l</code> link)</span></div>
+            <div class="legend-item"><div class="legend-dot" style="background:#d1fae5;border:1px solid #6ee7b7;"></div><span>Dono (user)</span></div>
+            <div class="legend-item"><div class="legend-dot" style="background:#fef3c7;border:1px solid #fcd34d;"></div><span>Grupo (group)</span></div>
+            <div class="legend-item"><div class="legend-dot" style="background:#fee2e2;border:1px solid #fca5a5;"></div><span>Outros (other)</span></div>
         </div>
-
-        <p>O primeiro caractere indica o tipo: <code>-</code> para arquivo comum, <code>d</code> para diretório, <code>l</code> para link simbólico. Os nove caracteres seguintes são três trios de <code>rwx</code>: um para o dono, um para o grupo e um para os demais.</p>
 
         <div class="terminal">
             <div class="terminal-bar">
-                <div class="term-dot red"></div>
-                <div class="term-dot yellow"></div>
-                <div class="term-dot green"></div>
-                <span class="term-title">bash — ls -l</span>
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">ls -l — lendo permissões</span>
             </div>
             <div class="terminal-body">
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-l</span>
+<span class="t-prompt">user@srv:~$</span> <span class="t-cmd">ls -l</span>
 <span class="t-out">total 12</span>
-<span class="t-out">drwxr-xr-x 2 usuario devs 4096 jan 10 Documentos/</span>
-<span class="t-out">-rw-r--r-- 1 usuario devs 1024 jan 10 config.txt</span>
-<span class="t-out">-rwxr-x--- 1 usuario devs 2048 jan 10 deploy.sh</span>
+<span class="t-out"><span style="color:#86efac;">drwxr-xr-x</span> 2 user devs 4096 jan 10 <span style="color:#86efac;">Documentos/</span></span>
+<span class="t-out"><span style="color:#93c5fd;">-rw-r--r--</span> 1 user devs 1024 jan 10 <span style="color:#93c5fd;">config.txt</span></span>
+<span class="t-out"><span style="color:#fde68a;">-rwxr-x---</span> 1 user devs 2048 jan 10 <span style="color:#fde68a;">deploy.sh</span></span>
+<span class="t-comment"># d=diretório  rwx=dono  r-x=grupo  ---=outros</span>
             </div>
         </div>
 
         <div class="highlight-box">
-            <p>&#x1F512; <strong>Regra de ouro:</strong> o Linux verifica as permissões sempre nesta ordem — dono, grupo, outros. A primeira categoria que corresponde ao usuário é a que vale; as demais são ignoradas.</p>
+            <p>&#x1F512; <strong>Regra de ouro:</strong> o Linux verifica as permiss&otilde;es sempre nesta ordem — dono, grupo, outros. A <strong>primeira categoria</strong> que corresponde ao usu&aacute;rio &eacute; a que vale; as demais s&atilde;o ignoradas.</p>
         </div>
     </div>
 
-    <!-- CARD 2 — Notação simbólica e octal -->
+    <!-- CARD 2 — Notação octal -->
     <div class="content-card">
-        <h2>&#x1F522; Notação Simbólica e Octal</h2>
-        <p>As permissões podem ser representadas de duas formas: <strong>simbólica</strong> (letras <code>rwx</code>) e <strong>octal</strong> (números 0 a 7). Ambas descrevem o mesmo conjunto de permissões e você precisa conhecer as duas.</p>
-
-        <h3>Valores das permissões</h3>
-        <ul>
-            <li><strong>r</strong> (read / leitura) = <strong>4</strong></li>
-            <li><strong>w</strong> (write / escrita) = <strong>2</strong></li>
-            <li><strong>x</strong> (execute / execução) = <strong>1</strong></li>
-            <li><strong>-</strong> (sem permissão) = <strong>0</strong></li>
-        </ul>
-        <p>O valor octal de cada categoria é a <em>soma</em> dos valores das permissões concedidas.</p>
+        <h2>&#x1F522; Nota&ccedil;&atilde;o Octal</h2>
+        <p>Al&eacute;m da nota&ccedil;&atilde;o simb&oacute;lica (<code>rwx</code>), as permiss&otilde;es podem ser representadas em <strong>octal</strong> (n&uacute;meros 0 a 7). Cada categoria (u, g, o) recebe um d&iacute;gito que &eacute; a <em>soma</em> dos valores concedidos.</p>
 
         <div class="octal-grid">
             <div class="octal-box">
@@ -138,6 +556,24 @@
                 <div class="octal-value">3</div>
             </div>
             <div class="octal-box">
+                <h4>-w- = 2</h4>
+                <div class="octal-perms">
+                    <div class="octal-perm off">-</div>
+                    <div class="octal-perm w">w</div>
+                    <div class="octal-perm off">-</div>
+                </div>
+                <div class="octal-value">2</div>
+            </div>
+            <div class="octal-box">
+                <h4>--x = 1</h4>
+                <div class="octal-perms">
+                    <div class="octal-perm off">-</div>
+                    <div class="octal-perm off">-</div>
+                    <div class="octal-perm x">x</div>
+                </div>
+                <div class="octal-value">1</div>
+            </div>
+            <div class="octal-box">
                 <h4>--- = 0</h4>
                 <div class="octal-perms">
                     <div class="octal-perm off">-</div>
@@ -148,250 +584,379 @@
             </div>
         </div>
 
-        <h3>Exemplos de notação completa (três dígitos)</h3>
-        <ul>
-            <li><code>755</code> = <code>rwxr-xr-x</code> — dono: tudo; grupo e outros: ler e executar</li>
-            <li><code>644</code> = <code>rw-r--r--</code> — dono: ler e escrever; demais: só ler</li>
-            <li><code>700</code> = <code>rwx------</code> — dono: tudo; grupo e outros: nada</li>
-            <li><code>600</code> = <code>rw-------</code> — dono: ler e escrever; demais: nada</li>
-        </ul>
-
+        <h3>Permiss&otilde;es mais comuns (3 d&iacute;gitos)</h3>
+        <div class="security-grid">
+            <div class="sec-item">
+                <span class="sec-perm">755</span>
+                <div>
+                    <strong>rwxr-xr-x &mdash; script/programa</strong>
+                    <span>Dono: tudo &bull; Grupo e outros: ler + executar</span>
+                </div>
+            </div>
+            <div class="sec-item">
+                <span class="sec-perm">644</span>
+                <div>
+                    <strong>rw-r--r-- &mdash; arquivo de texto</strong>
+                    <span>Dono: ler + escrever &bull; Demais: s&oacute; ler</span>
+                </div>
+            </div>
+            <div class="sec-item">
+                <span class="sec-perm">700</span>
+                <div>
+                    <strong>rwx------ &mdash; script privado</strong>
+                    <span>Dono: tudo &bull; Grupo e outros: nada</span>
+                </div>
+            </div>
+            <div class="sec-item">
+                <span class="sec-perm">600</span>
+                <div>
+                    <strong>rw------- &mdash; chave SSH / senha</strong>
+                    <span>Dono: ler + escrever &bull; Demais: nada</span>
+                </div>
+            </div>
+        </div>
         <div class="tip-box">
-            <p>&#x1F4A1; <strong>Dica prática:</strong> <code>755</code> é o padrão para scripts e programas; <code>644</code> para arquivos de texto e configuração; <code>600</code> para chaves SSH e arquivos sensíveis.</p>
+            <p>&#x1F4A1; <strong>Dica pr&aacute;tica:</strong> <code>755</code> para scripts e programas &bull; <code>644</code> para arquivos de texto e configura&ccedil;&atilde;o &bull; <code>600</code> para chaves SSH e arquivos sens&iacute;veis.</p>
         </div>
     </div>
 
     <!-- CARD 3 — chmod -->
     <div class="content-card">
-        <h2>&#x1F527; chmod — Alterando Permissões</h2>
-        <p>O comando <code>chmod</code> (change mode) altera as permissões de arquivos e diretórios. Aceita tanto a notação octal quanto a simbólica.</p>
+        <h2>&#x1F527; chmod &mdash; Alterando Permiss&otilde;es</h2>
+        <p>O <code>chmod</code> (<em>change mode</em>) altera as permiss&otilde;es de arquivos e diret&oacute;rios. Aceita tanto a nota&ccedil;&atilde;o <strong>octal</strong> quanto a <strong>simb&oacute;lica</strong>.</p>
 
         <h3>Modo octal</h3>
         <div class="terminal">
             <div class="terminal-bar">
-                <div class="term-dot red"></div>
-                <div class="term-dot yellow"></div>
-                <div class="term-dot green"></div>
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
                 <span class="term-title">chmod — modo octal</span>
             </div>
             <div class="terminal-body">
-<span class="t-comment"># chmod [permissão_octal] [arquivo]</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">chmod</span> <span class="t-arg">755</span> <span class="t-path">script.sh</span>
-<span class="t-comment"># rwxr-xr-x — dono executa, demais só leem e executam</span>
+<span class="t-comment"># chmod [permissão] [arquivo]</span>
+<span class="t-prompt">user@srv:~$</span> <span class="t-cmd">chmod</span> <span class="t-arg">755</span> <span class="t-path">script.sh</span>
+<span class="t-comment"># rwxr-xr-x — dono executa, demais leem e executam</span>
 
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">chmod</span> <span class="t-arg">644</span> <span class="t-path">config.txt</span>
+<span class="t-prompt">user@srv:~$</span> <span class="t-cmd">chmod</span> <span class="t-arg">644</span> <span class="t-path">config.txt</span>
 <span class="t-comment"># rw-r--r-- — dono lê/escreve, demais só leem</span>
 
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">chmod</span> <span class="t-arg">600</span> <span class="t-path">~/.ssh/id_rsa</span>
-<span class="t-comment"># rw------- — somente o dono lê/escreve (chave privada SSH)</span>
+<span class="t-prompt">user@srv:~$</span> <span class="t-cmd">chmod</span> <span class="t-arg">600</span> <span class="t-path">~/.ssh/id_rsa</span>
+<span class="t-comment"># rw------- — somente o dono (chave privada SSH)</span>
 
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">chmod</span> <span class="t-flag">-R</span> <span class="t-arg">755</span> <span class="t-path">projeto/</span>
+<span class="t-prompt">user@srv:~$</span> <span class="t-cmd">chmod</span> <span class="t-flag">-R</span> <span class="t-arg">755</span> <span class="t-path">projeto/</span>
 <span class="t-comment"># -R aplica recursivamente em todo o diretório</span>
             </div>
         </div>
 
-        <h3>Modo simbólico</h3>
-        <p>A notação simbólica usa letras para identificar a categoria (<code>u</code>, <code>g</code>, <code>o</code>, <code>a</code>), o operador (<code>+</code>, <code>-</code>, <code>=</code>) e as permissões (<code>r</code>, <code>w</code>, <code>x</code>).</p>
-
-        <table class="sym-table">
-            <tr><th>Exemplo</th><th>Significado</th></tr>
-            <tr><td><code>chmod u+x script.sh</code></td><td>Adiciona execução para o dono</td></tr>
-            <tr><td><code>chmod g-w arquivo.txt</code></td><td>Remove escrita do grupo</td></tr>
-            <tr><td><code>chmod o=r arquivo.txt</code></td><td>Define outros: somente leitura</td></tr>
-            <tr><td><code>chmod a+x script.sh</code></td><td>Adiciona execução para todos</td></tr>
-            <tr><td><code>chmod ug+rw doc.pdf</code></td><td>Adiciona leitura e escrita para dono e grupo</td></tr>
-            <tr><td><code>chmod u-x,o-x bin</code></td><td>Remove execução do dono e de outros</td></tr>
-        </table>
+        <h3>Modo simb&oacute;lico</h3>
+        <p>A nota&ccedil;&atilde;o simb&oacute;lica usa: <strong>categoria</strong> (<code>u</code> <code>g</code> <code>o</code> <code>a</code>) + <strong>operador</strong> (<code>+</code> adiciona &bull; <code>-</code> remove &bull; <code>=</code> define) + <strong>permiss&atilde;o</strong> (<code>r</code> <code>w</code> <code>x</code>)</p>
+        <div class="sym-grid">
+            <div class="sym-item">
+                <span class="sym-cmd">chmod u+x script.sh</span>
+                <span class="sym-desc">Adiciona execu&ccedil;&atilde;o para o dono</span>
+            </div>
+            <div class="sym-item">
+                <span class="sym-cmd">chmod g-w arquivo.txt</span>
+                <span class="sym-desc">Remove escrita do grupo</span>
+            </div>
+            <div class="sym-item">
+                <span class="sym-cmd">chmod o=r arquivo.txt</span>
+                <span class="sym-desc">Define outros: s&oacute; leitura</span>
+            </div>
+            <div class="sym-item">
+                <span class="sym-cmd">chmod a+x script.sh</span>
+                <span class="sym-desc">Adiciona execu&ccedil;&atilde;o para todos</span>
+            </div>
+            <div class="sym-item">
+                <span class="sym-cmd">chmod ug+rw doc.pdf</span>
+                <span class="sym-desc">Leitura + escrita para dono e grupo</span>
+            </div>
+            <div class="sym-item">
+                <span class="sym-cmd">chmod u-x,o-x bin</span>
+                <span class="sym-desc">Remove execu&ccedil;&atilde;o do dono e outros</span>
+            </div>
+        </div>
 
         <div class="alert-box">
-            <p>&#x26A0;&#xFE0F; <strong>Nunca use <code>chmod 777</code> em produção!</strong> Isso concede todas as permissões a todos os usuários — uma brecha grave de segurança. Use sempre a permissão mínima necessária.</p>
+            <p>&#x26A0;&#xFE0F; <strong>Nunca use <code>chmod 777</code> em produ&ccedil;&atilde;o!</strong> Isso concede todas as permiss&otilde;es a todos os usu&aacute;rios &mdash; uma brecha grave de seguran&ccedil;a. Use sempre a permiss&atilde;o <em>m&iacute;nima necess&aacute;ria</em>.</p>
         </div>
     </div>
 
     <!-- CARD 4 — chown e chgrp -->
     <div class="content-card">
-        <h2>&#x1F464; chown e chgrp — Mudando Proprietário</h2>
-        <p>Além das permissões em si, cada arquivo possui um <strong>dono</strong> e um <strong>grupo</strong>. Os comandos <code>chown</code> e <code>chgrp</code> permitem alterar esses atributos. Apenas o root (ou um usuário com <code>sudo</code>) pode mudar o dono de um arquivo.</p>
+        <h2>&#x1F464; chown e chgrp &mdash; Mudando Propriet&aacute;rio</h2>
+        <p>Al&eacute;m das permiss&otilde;es, cada arquivo tem um <strong>dono</strong> e um <strong>grupo</strong>. Os comandos <code>chown</code> e <code>chgrp</code> permitem alterar esses atributos. Apenas o <strong>root</strong> (ou usu&aacute;rio com <code>sudo</code>) pode mudar o dono de um arquivo.</p>
 
-        <h3>chown — Change Owner</h3>
+        <div class="compare-grid">
+            <div class="compare-box green">
+                <h4>chown &mdash; Change Owner</h4>
+                <ul style="font-size:.88em; padding-left:18px;">
+                    <li>Muda o dono do arquivo</li>
+                    <li>Pode mudar dono e grupo juntos</li>
+                    <li>Sintaxe: <code>chown usuario:grupo arquivo</code></li>
+                    <li>Recursivo com <code>-R</code></li>
+                </ul>
+            </div>
+            <div class="compare-box blue">
+                <h4>chgrp &mdash; Change Group</h4>
+                <ul style="font-size:.88em; padding-left:18px;">
+                    <li>Muda apenas o grupo</li>
+                    <li>Usu&aacute;rio pode mudar o pr&oacute;prio grupo</li>
+                    <li>Sintaxe: <code>chgrp grupo arquivo</code></li>
+                    <li>Recursivo com <code>-R</code></li>
+                </ul>
+            </div>
+        </div>
+
         <div class="terminal">
             <div class="terminal-bar">
-                <div class="term-dot red"></div>
-                <div class="term-dot yellow"></div>
-                <div class="term-dot green"></div>
-                <span class="term-title">chown e chgrp</span>
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">chown e chgrp na prática</span>
             </div>
             <div class="terminal-body">
 <span class="t-comment"># Mudar somente o dono</span>
-<span class="t-root">root@servidor:~#</span> <span class="t-cmd">chown</span> <span class="t-arg">joao</span> <span class="t-path">arquivo.txt</span>
+<span class="t-root">root@srv:~#</span> <span class="t-cmd">chown</span> <span class="t-arg">joao</span> <span class="t-path">arquivo.txt</span>
 
-<span class="t-comment"># Mudar dono e grupo ao mesmo tempo</span>
-<span class="t-root">root@servidor:~#</span> <span class="t-cmd">chown</span> <span class="t-arg">joao:devs</span> <span class="t-path">projeto/</span>
+<span class="t-comment"># Mudar dono E grupo ao mesmo tempo (mais eficiente)</span>
+<span class="t-root">root@srv:~#</span> <span class="t-cmd">chown</span> <span class="t-arg">joao:devs</span> <span class="t-path">projeto/</span>
 
-<span class="t-comment"># Recursivo (toda a pasta)</span>
-<span class="t-root">root@servidor:~#</span> <span class="t-cmd">chown</span> <span class="t-flag">-R</span> <span class="t-arg">www-data:www-data</span> <span class="t-path">/var/www/html</span>
+<span class="t-comment"># Recursivo — toda a pasta do servidor web</span>
+<span class="t-root">root@srv:~#</span> <span class="t-cmd">chown</span> <span class="t-flag">-R</span> <span class="t-arg">www-data:www-data</span> <span class="t-path">/var/www/html</span>
 
 <span class="t-comment"># Mudar somente o grupo com chgrp</span>
-<span class="t-root">root@servidor:~#</span> <span class="t-cmd">chgrp</span> <span class="t-arg">vendas</span> <span class="t-path">relatorio.pdf</span>
+<span class="t-root">root@srv:~#</span> <span class="t-cmd">chgrp</span> <span class="t-arg">vendas</span> <span class="t-path">relatorio.pdf</span>
 
 <span class="t-comment"># Verificar o resultado</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-la</span> <span class="t-path">projeto/</span>
+<span class="t-prompt">user@srv:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-la</span> <span class="t-path">projeto/</span>
 <span class="t-out">drwxr-xr-x 3 joao devs 4096 jan 10 projeto/</span>
+<span class="t-comment">#              ↑    ↑</span>
+<span class="t-comment">#            dono  grupo</span>
             </div>
         </div>
 
         <div class="tip-box">
-            <p>&#x1F4A1; <strong>Atalho:</strong> <code>chown usuario:grupo</code> equivale a rodar <code>chown usuario</code> e <code>chgrp grupo</code> juntos — mais eficiente e menos propenso a erros.</p>
+            <p>&#x1F4A1; <strong>Atalho:</strong> <code>chown usuario:grupo arquivo</code> equivale a rodar <code>chown</code> + <code>chgrp</code> separados &mdash; mais eficiente e menos propenso a erros.</p>
         </div>
     </div>
 
     <!-- CARD 5 — Permissões especiais -->
     <div class="content-card">
-        <h2>&#x2605; Permissões Especiais: SUID, SGID e Sticky Bit</h2>
-        <p>Além do trio <code>rwx</code>, o Linux possui três permissões especiais que alteram o comportamento de execução ou acesso. São representadas por um quarto dígito octal (à esquerda dos três habituais) ou por letras especiais na notação simbólica.</p>
+        <h2>&#x2605; Permiss&otilde;es Especiais: SUID, SGID e Sticky Bit</h2>
+        <p>Al&eacute;m do trio <code>rwx</code>, o Linux possui tr&ecirc;s permiss&otilde;es especiais representadas por um <strong>4&ordm; d&iacute;gito</strong> &agrave; esquerda na nota&ccedil;&atilde;o octal, ou por letras especiais (<code>s</code>, <code>t</code>) na nota&ccedil;&atilde;o simb&oacute;lica.</p>
 
-        <h3>SUID — Set User ID (4xxx)</h3>
-        <p>Quando aplicado a um executável, faz o programa rodar com as permissões do <em>dono</em> do arquivo, não do usuário que o executa. Exemplo clássico: <code>/usr/bin/passwd</code> — qualquer usuário precisa alterar sua senha, mas o arquivo <code>/etc/shadow</code> só pode ser editado pelo root.</p>
-        <div class="terminal">
-            <div class="terminal-bar">
-                <div class="term-dot red"></div>
-                <div class="term-dot yellow"></div>
-                <div class="term-dot green"></div>
-                <span class="term-title">permissões especiais</span>
+        <div class="special-grid">
+            <div class="special-card sc-suid">
+                <span class="special-icon">🔴</span>
+                <div class="special-name">SUID</div>
+                <div class="special-octal">4xxx — u+s</div>
+                <p class="special-desc">Executa o arquivo com as permiss&otilde;es do <strong>dono</strong>, n&atilde;o de quem executa.<br>Exemplo: <code>/usr/bin/passwd</code> &mdash; qualquer usu&aacute;rio muda sua senha mas o bin&aacute;rio roda como root.</p>
             </div>
-            <div class="terminal-body">
-<span class="t-comment"># Aplicar SUID (s no lugar do x do dono)</span>
-<span class="t-root">root@servidor:~#</span> <span class="t-cmd">chmod</span> <span class="t-arg">u+s</span> <span class="t-path">/usr/bin/meu_prog</span>
-<span class="t-out">-rwsr-xr-x 1 root root 12345 jan 10 /usr/bin/meu_prog</span>
-
-<span class="t-comment"># Aplicar SGID em diretório (arquivos herdam o grupo)</span>
-<span class="t-root">root@servidor:~#</span> <span class="t-cmd">chmod</span> <span class="t-arg">g+s</span> <span class="t-path">/var/projeto</span>
-<span class="t-out">drwxrwsr-x 2 root devs 4096 jan 10 /var/projeto/</span>
-
-<span class="t-comment"># Sticky Bit em diretório (só o dono pode deletar seus arquivos)</span>
-<span class="t-root">root@servidor:~#</span> <span class="t-cmd">chmod</span> <span class="t-arg">+t</span> <span class="t-path">/tmp</span>
-<span class="t-out">drwxrwxrwt 20 root root 4096 jan 10 /tmp/</span>
-
-<span class="t-comment"># Notação octal: 4=SUID, 2=SGID, 1=Sticky</span>
-<span class="t-root">root@servidor:~#</span> <span class="t-cmd">chmod</span> <span class="t-arg">4755</span> <span class="t-path">/usr/bin/meu_prog</span>
-<span class="t-root">root@servidor:~#</span> <span class="t-cmd">chmod</span> <span class="t-arg">2775</span> <span class="t-path">/var/projeto</span>
-<span class="t-root">root@servidor:~#</span> <span class="t-cmd">chmod</span> <span class="t-arg">1777</span> <span class="t-path">/tmp</span>
+            <div class="special-card sc-sgid">
+                <span class="special-icon">🔵</span>
+                <div class="special-name">SGID</div>
+                <div class="special-octal">2xxx — g+s</div>
+                <p class="special-desc">Em diret&oacute;rios: novos arquivos <strong>herdam o grupo</strong> do diret&oacute;rio.<br>Ideal para pastas de projetos compartilhados onde todos precisam do mesmo grupo.</p>
+            </div>
+            <div class="special-card sc-sticky">
+                <span class="special-icon">🟢</span>
+                <div class="special-name">Sticky Bit</div>
+                <div class="special-octal">1xxx — +t</div>
+                <p class="special-desc">Em diret&oacute;rios: cada usu&aacute;rio s&oacute; pode <strong>deletar seus pr&oacute;prios arquivos</strong>.<br>Padr&atilde;o em <code>/tmp</code> &mdash; todos escrevem, ningu&eacute;m apaga o do outro.</p>
             </div>
         </div>
 
-        <ul>
-            <li><strong>SUID (4xxx):</strong> executável roda como o dono — útil para programas que precisam de privilégio elevado por um instante</li>
-            <li><strong>SGID (2xxx):</strong> em diretórios, novos arquivos herdam o grupo do diretório — ideal para pastas de projetos compartilhados</li>
-            <li><strong>Sticky Bit (1xxx):</strong> em diretórios, cada usuário só pode deletar seus próprios arquivos — padrão em <code>/tmp</code></li>
-        </ul>
+        <div class="terminal">
+            <div class="terminal-bar">
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">aplicando permissões especiais</span>
+            </div>
+            <div class="terminal-body">
+<span class="t-comment"># SUID — programa roda como root (s no lugar do x do dono)</span>
+<span class="t-root">root@srv:~#</span> <span class="t-cmd">chmod</span> <span class="t-arg">u+s</span> <span class="t-path">/usr/bin/meu_prog</span>
+<span class="t-out">-rw<span style="color:#f87171;">s</span>r-xr-x 1 root root 12345 /usr/bin/meu_prog</span>
+
+<span class="t-comment"># SGID — arquivos criados herdam o grupo do diretório</span>
+<span class="t-root">root@srv:~#</span> <span class="t-cmd">chmod</span> <span class="t-arg">g+s</span> <span class="t-path">/var/projeto</span>
+<span class="t-out">drwxrw<span style="color:#60a5fa;">s</span>r-x 2 root devs 4096 /var/projeto/</span>
+
+<span class="t-comment"># Sticky Bit — só o dono deleta seus arquivos (t no lugar do x)</span>
+<span class="t-root">root@srv:~#</span> <span class="t-cmd">chmod</span> <span class="t-arg">+t</span> <span class="t-path">/tmp</span>
+<span class="t-out">drwxrwxrw<span style="color:#34d399;">t</span> 20 root root 4096 /tmp/</span>
+
+<span class="t-comment"># Usando octal: 4=SUID | 2=SGID | 1=Sticky</span>
+<span class="t-root">root@srv:~#</span> <span class="t-cmd">chmod</span> <span class="t-arg">4755</span> <span class="t-path">/usr/bin/meu_prog</span>
+<span class="t-root">root@srv:~#</span> <span class="t-cmd">chmod</span> <span class="t-arg">2775</span> <span class="t-path">/var/projeto</span>
+<span class="t-root">root@srv:~#</span> <span class="t-cmd">chmod</span> <span class="t-arg">1777</span> <span class="t-path">/tmp</span>
+            </div>
+        </div>
 
         <div class="alert-box">
-            <p>&#x26A0;&#xFE0F; <strong>SUID em scripts Shell não tem efeito</strong> na maioria dos sistemas Linux modernos por razões de segurança. Funciona apenas em binários compilados.</p>
+            <p>&#x26A0;&#xFE0F; <strong>SUID em scripts Shell n&atilde;o tem efeito</strong> na maioria dos sistemas Linux modernos por raz&otilde;es de seguran&ccedil;a. Funciona apenas em bin&aacute;rios compilados.</p>
         </div>
     </div>
 
     <!-- CARD 6 — umask -->
     <div class="content-card">
-        <h2>&#x1F9F9; umask — Permissão Padrão para Novos Arquivos</h2>
-        <p>O <code>umask</code> (user file creation mask) define quais permissões são <strong>retiradas</strong> automaticamente ao criar novos arquivos e diretórios. Funciona como uma "máscara subtrativa": os bits ativados no umask são removidos das permissões padrão.</p>
+        <h2>&#x1F9F9; umask &mdash; Permiss&atilde;o Padr&atilde;o para Novos Arquivos</h2>
+        <p>O <code>umask</code> define quais permiss&otilde;es s&atilde;o <strong>retiradas automaticamente</strong> ao criar novos arquivos e diret&oacute;rios. Funciona como uma <em>m&aacute;scara subtrativa</em>.</p>
 
-        <p>As permissões máximas de partida são <code>666</code> para arquivos (sem execução por padrão) e <code>777</code> para diretórios. O umask é subtraído dessas permissões base.</p>
+        <h3>Como calcular: base &minus; umask = resultado</h3>
+        <div class="umask-calc">
+            <div class="umask-box um-base">
+                <div class="umask-title">Permiss&atilde;o Base</div>
+                <div class="umask-num">666</div>
+                <div class="umask-sub">arquivos</div>
+            </div>
+            <div class="umask-op">&minus;</div>
+            <div class="umask-box um-mask">
+                <div class="umask-title">umask padr&atilde;o</div>
+                <div class="umask-num">022</div>
+                <div class="umask-sub">remove grupo w e outros w</div>
+            </div>
+            <div class="umask-op">=</div>
+            <div class="umask-box um-result">
+                <div class="umask-title">Resultado</div>
+                <div class="umask-num">644</div>
+                <div class="umask-sub">rw-r--r--</div>
+            </div>
+        </div>
+        <div class="umask-calc" style="margin-top:10px;">
+            <div class="umask-box um-base">
+                <div class="umask-title">Permiss&atilde;o Base</div>
+                <div class="umask-num">777</div>
+                <div class="umask-sub">diret&oacute;rios</div>
+            </div>
+            <div class="umask-op">&minus;</div>
+            <div class="umask-box um-mask">
+                <div class="umask-title">umask padr&atilde;o</div>
+                <div class="umask-num">022</div>
+                <div class="umask-sub">remove grupo w e outros w</div>
+            </div>
+            <div class="umask-op">=</div>
+            <div class="umask-box um-result">
+                <div class="umask-title">Resultado</div>
+                <div class="umask-num">755</div>
+                <div class="umask-sub">rwxr-xr-x</div>
+            </div>
+        </div>
 
         <div class="terminal">
             <div class="terminal-bar">
-                <div class="term-dot red"></div>
-                <div class="term-dot yellow"></div>
-                <div class="term-dot green"></div>
-                <span class="term-title">umask</span>
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">umask — ver e definir</span>
             </div>
             <div class="terminal-body">
 <span class="t-comment"># Ver o umask atual</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">umask</span>
+<span class="t-prompt">user@srv:~$</span> <span class="t-cmd">umask</span>
 <span class="t-out">0022</span>
 
-<span class="t-comment"># umask 022: arquivos ficam com 644, diretórios com 755</span>
-<span class="t-comment"># 666 - 022 = 644  |  777 - 022 = 755</span>
+<span class="t-comment"># Definir umask mais restritivo (só o dono acessa)</span>
+<span class="t-prompt">user@srv:~$</span> <span class="t-cmd">umask</span> <span class="t-arg">077</span>
+<span class="t-comment"># 666 - 077 = 600 (arquivos)  |  777 - 077 = 700 (diretórios)</span>
 
-<span class="t-comment"># Definir umask mais restritivo (apenas dono acessa)</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">umask</span> <span class="t-arg">077</span>
-<span class="t-comment"># arquivos ficam com 600, diretórios com 700</span>
+<span class="t-comment"># Testar: criar arquivo com novo umask</span>
+<span class="t-prompt">user@srv:~$</span> <span class="t-cmd">touch</span> <span class="t-path">teste.txt</span> <span class="t-cmd">&&</span> <span class="t-cmd">ls</span> <span class="t-flag">-l</span> <span class="t-path">teste.txt</span>
+<span class="t-out">-rw------- 1 user user 0 jan 10 teste.txt</span>
+<span class="t-comment"># 600 — somente o dono lê/escreve</span>
 
-<span class="t-comment"># Testar criação de arquivo com novo umask</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">touch</span> <span class="t-path">teste.txt</span> <span class="t-cmd">&&</span> <span class="t-cmd">ls</span> <span class="t-flag">-l</span> <span class="t-path">teste.txt</span>
-<span class="t-out">-rw------- 1 usuario usuario 0 jan 10 teste.txt</span>
-
-<span class="t-comment"># Para tornar o umask permanente, adicione ao ~/.bashrc</span>
+<span class="t-comment"># Tornar permanente — adicionar ao ~/.bashrc</span>
 <span class="t-comment"># echo "umask 027" >> ~/.bashrc</span>
             </div>
         </div>
 
         <div class="highlight-box">
-            <p>&#x1F527; O umask padrão <strong>0022</strong> é equilibrado: permite que outros usuários leiam seus arquivos mas não os modifiquem. Para ambientes mais seguros (servidores), use <strong>0027</strong> (sem acesso para "outros") ou <strong>0077</strong> (somente o dono).</p>
+            <p>&#x1F527; O umask <strong>0022</strong> &eacute; o padr&atilde;o equilibrado. Para ambientes mais seguros use <strong>0027</strong> (sem acesso para "outros") ou <strong>0077</strong> (somente o dono). Quanto maior o umask, mais restrito o acesso.</p>
         </div>
     </div>
 
-    <!-- CARD 7 — Exemplos práticos de segurança -->
+    <!-- CARD 7 — Segurança prática -->
     <div class="content-card">
-        <h2>&#x1F6E1; Exemplos Práticos de Segurança</h2>
-        <p>Permissões corretas são a primeira linha de defesa de um sistema Linux. Veja como aplicar o conceito de <em>privilégio mínimo</em> em situações reais de administração de sistemas.</p>
+        <h2>&#x1F6E1; Permiss&otilde;es Seguras: Casos Reais</h2>
+        <p>Permiss&otilde;es corretas s&atilde;o a primeira linha de defesa. Veja como aplicar o conceito de <em>privil&eacute;gio m&iacute;nimo</em> em situa&ccedil;&otilde;es reais.</p>
+
+        <div class="security-grid">
+            <div class="sec-item">
+                <span class="sec-perm">640</span>
+                <div>
+                    <strong>Arquivo de configura&ccedil;&atilde;o</strong>
+                    <span>Dono l&ecirc;/escreve &bull; Grupo s&oacute; l&ecirc; &bull; Outros: nada</span>
+                </div>
+            </div>
+            <div class="sec-item">
+                <span class="sec-perm">600</span>
+                <div>
+                    <strong>Chave SSH / senha</strong>
+                    <span>Apenas o dono l&ecirc;/escreve &bull; Todos os outros: nada</span>
+                </div>
+            </div>
+            <div class="sec-item">
+                <span class="sec-perm">750</span>
+                <div>
+                    <strong>Script de deploy</strong>
+                    <span>Dono executa &bull; Grupo executa &bull; Outros: nada</span>
+                </div>
+            </div>
+            <div class="sec-item">
+                <span class="sec-perm">755</span>
+                <div>
+                    <strong>Diret&oacute;rio p&uacute;blico</strong>
+                    <span>Dono: tudo &bull; Grupo e outros: entrar e listar</span>
+                </div>
+            </div>
+        </div>
 
         <h3>Servidor web (Nginx / Apache)</h3>
         <div class="terminal">
             <div class="terminal-bar">
-                <div class="term-dot red"></div>
-                <div class="term-dot yellow"></div>
-                <div class="term-dot green"></div>
-                <span class="term-title">permissões — servidor web</span>
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">configuração segura de servidor web</span>
             </div>
             <div class="terminal-body">
 <span class="t-comment"># Diretório do site: dono e grupo www-data, 750</span>
-<span class="t-root">root@servidor:~#</span> <span class="t-cmd">chown</span> <span class="t-flag">-R</span> <span class="t-arg">www-data:www-data</span> <span class="t-path">/var/www/html</span>
-<span class="t-root">root@servidor:~#</span> <span class="t-cmd">chmod</span> <span class="t-flag">-R</span> <span class="t-arg">750</span> <span class="t-path">/var/www/html</span>
+<span class="t-root">root@srv:~#</span> <span class="t-cmd">chown</span> <span class="t-flag">-R</span> <span class="t-arg">www-data:www-data</span> <span class="t-path">/var/www/html</span>
+<span class="t-root">root@srv:~#</span> <span class="t-cmd">chmod</span> <span class="t-flag">-R</span> <span class="t-arg">750</span> <span class="t-path">/var/www/html</span>
 
-<span class="t-comment"># Arquivos de configuração: apenas root lê/escreve</span>
-<span class="t-root">root@servidor:~#</span> <span class="t-cmd">chmod</span> <span class="t-arg">600</span> <span class="t-path">/etc/nginx/nginx.conf</span>
+<span class="t-comment"># Arquivo de configuração: somente root lê/escreve</span>
+<span class="t-root">root@srv:~#</span> <span class="t-cmd">chmod</span> <span class="t-arg">600</span> <span class="t-path">/etc/nginx/nginx.conf</span>
 
-<span class="t-comment"># Scripts de deploy: apenas o dono executa</span>
-<span class="t-root">root@servidor:~#</span> <span class="t-cmd">chmod</span> <span class="t-arg">700</span> <span class="t-path">/opt/scripts/deploy.sh</span>
+<span class="t-comment"># Script de deploy: somente o dono executa</span>
+<span class="t-root">root@srv:~#</span> <span class="t-cmd">chmod</span> <span class="t-arg">700</span> <span class="t-path">/opt/scripts/deploy.sh</span>
 
-<span class="t-comment"># Arquivo de senhas: absolutamente privado</span>
-<span class="t-root">root@servidor:~#</span> <span class="t-cmd">chmod</span> <span class="t-arg">000</span> <span class="t-path">segredo.txt</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">cat</span> <span class="t-path">segredo.txt</span>
+<span class="t-comment"># Arquivo absolutamente bloqueado</span>
+<span class="t-root">root@srv:~#</span> <span class="t-cmd">chmod</span> <span class="t-arg">000</span> <span class="t-path">segredo.txt</span>
+<span class="t-prompt">user@srv:~$</span> <span class="t-cmd">cat</span> <span class="t-path">segredo.txt</span>
 <span class="t-err">cat: segredo.txt: Permissão negada</span>
             </div>
         </div>
 
-        <h3>Verificação de permissões suspeitas</h3>
+        <h3>Auditoria de permiss&otilde;es suspeitas</h3>
         <div class="terminal">
             <div class="terminal-bar">
-                <div class="term-dot red"></div>
-                <div class="term-dot yellow"></div>
-                <div class="term-dot green"></div>
-                <span class="term-title">auditoria de permissões</span>
+                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                <span class="term-title">auditoria — encontrando problemas</span>
             </div>
             <div class="terminal-body">
 <span class="t-comment"># Encontrar arquivos com SUID no sistema</span>
-<span class="t-root">root@servidor:~#</span> <span class="t-cmd">find</span> <span class="t-path">/</span> <span class="t-flag">-perm</span> <span class="t-arg">-4000</span> <span class="t-flag">-type</span> <span class="t-arg">f</span> <span class="t-arg">2>/dev/null</span>
+<span class="t-root">root@srv:~#</span> <span class="t-cmd">find</span> <span class="t-path">/</span> <span class="t-flag">-perm</span> <span class="t-arg">-4000</span> <span class="t-flag">-type</span> <span class="t-arg">f</span> <span class="t-arg">2>/dev/null</span>
 
 <span class="t-comment"># Encontrar arquivos com permissão 777 (perigoso!)</span>
-<span class="t-root">root@servidor:~#</span> <span class="t-cmd">find</span> <span class="t-path">/var/www</span> <span class="t-flag">-perm</span> <span class="t-arg">777</span>
+<span class="t-root">root@srv:~#</span> <span class="t-cmd">find</span> <span class="t-path">/var/www</span> <span class="t-flag">-perm</span> <span class="t-arg">777</span>
 
-<span class="t-comment"># Ver permissões detalhadas de um arquivo</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">stat</span> <span class="t-path">config.txt</span>
+<span class="t-comment"># Detalhes completos de um arquivo</span>
+<span class="t-prompt">user@srv:~$</span> <span class="t-cmd">stat</span> <span class="t-path">config.txt</span>
 <span class="t-out">  File: config.txt</span>
-<span class="t-out">  Access: (0644/-rw-r--r--)  Uid: ( 1000/usuario) Gid: (1000/usuario)</span>
+<span class="t-out">  Access: (0644/-rw-r--r--)  Uid: (1000/user)  Gid: (1000/user)</span>
             </div>
         </div>
 
         <div class="tip-box">
-            <p>&#x2705; <strong>Checklist de permissões seguras:</strong> arquivos de configuração devem ser <code>640</code> ou <code>600</code>; scripts executáveis <code>750</code> ou <code>700</code>; diretórios públicos <code>755</code>; nunca use <code>777</code> em produção.</p>
+            <p>&#x2705; <strong>Checklist de permiss&otilde;es seguras:</strong> configura&ccedil;&otilde;es → <code>640</code> ou <code>600</code> &bull; scripts → <code>750</code> ou <code>700</code> &bull; diret&oacute;rios p&uacute;blicos → <code>755</code> &bull; nunca use <code>777</code> em produ&ccedil;&atilde;o.</p>
         </div>
     </div>
 
-    <!-- EXERCÍCIO -->
+    <!-- EXERCÍCIO ARRASTE -->
     <div class="content-card exercise-card">
-        <h2>&#x1F3AF; Exercício — Arraste e Conecte</h2>
-        <p style="color:#475569;font-size:.9em;margin-bottom:4px;">Arraste cada comando para sua descrição correta.</p>
+        <h2>&#x1F3AF; Exerc&iacute;cio &mdash; Arraste e Conecte</h2>
+        <p style="color:#475569;font-size:.9em;margin-bottom:4px;">Arraste cada comando para sua descri&ccedil;&atilde;o correta.</p>
 
         <div class="ex-drag-root" data-ex="ex01">
             <div class="ex-drag">
@@ -407,35 +972,35 @@
                     </div>
                 </div>
                 <div>
-                    <div class="ex-col-title">Descrição</div>
+                    <div class="ex-col-title">Descri&ccedil;&atilde;o</div>
                     <div class="ex-zones" data-zones="ex01">
                         <div class="drop-zone" data-zone="ex01-z1" data-accept="c1">
-                            <span class="zone-name">Dá permissão de execução para todos</span>
+                            <span class="zone-name">D&aacute; permiss&atilde;o de execu&ccedil;&atilde;o para todos</span>
                             <div class="zone-slot"></div>
                             <div class="zone-feedback"></div>
                         </div>
                         <div class="drop-zone" data-zone="ex01-z2" data-accept="c2">
-                            <span class="zone-name">Adiciona execução apenas para o dono</span>
+                            <span class="zone-name">Adiciona execu&ccedil;&atilde;o apenas para o dono</span>
                             <div class="zone-slot"></div>
                             <div class="zone-feedback"></div>
                         </div>
                         <div class="drop-zone" data-zone="ex01-z3" data-accept="c3">
-                            <span class="zone-name">Muda dono e grupo do diretório</span>
+                            <span class="zone-name">Muda dono e grupo do diret&oacute;rio</span>
                             <div class="zone-slot"></div>
                             <div class="zone-feedback"></div>
                         </div>
                         <div class="drop-zone" data-zone="ex01-z4" data-accept="c4">
-                            <span class="zone-name">Leitura para todos, escrita só para dono</span>
+                            <span class="zone-name">Leitura para todos, escrita s&oacute; para dono</span>
                             <div class="zone-slot"></div>
                             <div class="zone-feedback"></div>
                         </div>
                         <div class="drop-zone" data-zone="ex01-z5" data-accept="c5">
-                            <span class="zone-name">Remove todas as permissões</span>
+                            <span class="zone-name">Remove todas as permiss&otilde;es</span>
                             <div class="zone-slot"></div>
                             <div class="zone-feedback"></div>
                         </div>
                         <div class="drop-zone" data-zone="ex01-z6" data-accept="c6">
-                            <span class="zone-name">Define permissão padrão para novos arquivos</span>
+                            <span class="zone-name">Define permiss&atilde;o padr&atilde;o para novos arquivos</span>
                             <div class="zone-slot"></div>
                             <div class="zone-feedback"></div>
                         </div>
@@ -451,72 +1016,124 @@
         <div class="ex-result" id="ex01-result"></div>
     </div>
 
+    <!-- MÚLTIPLA ESCOLHA -->
+    <div class="content-card exercise-card">
+        <h2>&#x2753; Verifique seu Conhecimento</h2>
+
+        <div class="mc-question" data-correct="b">
+            <p class="mc-q-text">Qual &eacute; a permiss&atilde;o octal equivalente a <code>rwxr-xr-x</code>?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>644</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>755</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>777</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>700</span></div>
+            </div>
+            <div class="mc-explanation">&#x2713; <code>rwx</code> = 4+2+1 = 7 (dono) &bull; <code>r-x</code> = 4+0+1 = 5 (grupo) &bull; <code>r-x</code> = 5 (outros) &rarr; <strong>755</strong>. Padr&atilde;o para scripts e programas execut&aacute;veis.</div>
+        </div>
+        <hr class="mc-sep">
+
+        <div class="mc-question" data-correct="c">
+            <p class="mc-q-text">O que faz o comando <code>chmod u+x script.sh</code>?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>Remove a permiss&atilde;o de execu&ccedil;&atilde;o do usu&aacute;rio</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>Adiciona execu&ccedil;&atilde;o para todos os usu&aacute;rios</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>Adiciona execu&ccedil;&atilde;o somente para o dono do arquivo</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>Define permiss&atilde;o total somente para o dono</span></div>
+            </div>
+            <div class="mc-explanation">&#x2713; <code>u</code> = user (dono) &bull; <code>+</code> = adiciona &bull; <code>x</code> = execu&ccedil;&atilde;o. Para todos os usu&aacute;rios seria <code>a+x</code> ou <code>ugo+x</code>.</div>
+        </div>
+        <hr class="mc-sep">
+
+        <div class="mc-question" data-correct="a">
+            <p class="mc-q-text">Com umask <code>022</code>, qual ser&aacute; a permiss&atilde;o de um arquivo rec&eacute;m-criado?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>644 (rw-r--r--)</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>755 (rwxr-xr-x)</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>777 (rwxrwxrwx)</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>600 (rw-------)</span></div>
+            </div>
+            <div class="mc-explanation">&#x2713; Arquivos partem de <code>666</code> (sem execu&ccedil;&atilde;o por padr&atilde;o). <code>666 - 022 = 644</code>. Diret&oacute;rios partem de <code>777</code>, ent&atilde;o <code>777 - 022 = 755</code>.</div>
+        </div>
+        <hr class="mc-sep">
+
+        <div class="mc-question" data-correct="d">
+            <p class="mc-q-text">O que acontece quando o <strong>Sticky Bit</strong> &eacute; aplicado em um diret&oacute;rio?</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>O diret&oacute;rio fica oculto para outros usu&aacute;rios</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>Novos arquivos herdam o grupo do diret&oacute;rio</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>O diret&oacute;rio fica somente leitura</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>Cada usu&aacute;rio s&oacute; pode deletar seus pr&oacute;prios arquivos</span></div>
+            </div>
+            <div class="mc-explanation">&#x2713; O Sticky Bit (<code>+t</code>, <code>1xxx</code>) &eacute; o padr&atilde;o do <code>/tmp</code>: todos escrevem livremente mas ningu&eacute;m apaga arquivos de outros. A letra <code>t</code> aparece no lugar do <code>x</code> de "outros".</div>
+        </div>
+    </div>
+
     <!-- ATIVIDADE PRÁTICA -->
     <div class="content-card practical-card" id="prat-01">
-        <h2>&#x1F6E0;&#xFE0F; Atividade Prática — Laboratório de Permissões</h2>
+        <h2>&#x1F6E0;&#xFE0F; Atividade Pr&aacute;tica &mdash; Laborat&oacute;rio de Permiss&otilde;es</h2>
         <div class="prat-meta">
             <span class="prat-tag">&#x23F1; ~30 min</span>
             <span class="prat-tag">&#x1F4BB; Ubuntu Server / Terminal</span>
-            <span class="prat-tag">&#x1F4F8; Tirar screenshot da saída</span>
+            <span class="prat-tag">&#x1F4F8; Tirar screenshot da sa&iacute;da</span>
         </div>
 
         <div class="prat-steps">
             <div class="prat-step">
                 <div class="step-num">1</div>
                 <div class="step-body">
-                    <div class="step-label">Criar estrutura de diretórios</div>
-                    <div class="step-desc">Crie a estrutura base para o laboratório: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">mkdir -p ~/lab-perm/{publico,privado,scripts}</code>. Em seguida crie arquivos de teste: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">touch ~/lab-perm/publico/doc.txt ~/lab-perm/privado/senha.txt ~/lab-perm/scripts/deploy.sh</code>. Verifique com <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">ls -lR ~/lab-perm/</code>.</div>
+                    <div class="step-label">Criar estrutura de diret&oacute;rios</div>
+                    <div class="step-desc">Crie a estrutura base: <code>mkdir -p ~/lab-perm/{publico,privado,scripts}</code>. Crie arquivos de teste: <code>touch ~/lab-perm/publico/doc.txt ~/lab-perm/privado/senha.txt ~/lab-perm/scripts/deploy.sh</code>. Verifique com <code>ls -lR ~/lab-perm/</code>.</div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">2</div>
                 <div class="step-body">
-                    <div class="step-label">Aplicar permissões adequadas</div>
-                    <div class="step-desc">Configure as permissões corretas para cada arquivo: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">chmod 644 ~/lab-perm/publico/doc.txt</code> (leitura pública), <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">chmod 600 ~/lab-perm/privado/senha.txt</code> (só o dono), <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">chmod 750 ~/lab-perm/scripts/deploy.sh</code> (script para dono e grupo).</div>
+                    <div class="step-label">Aplicar permiss&otilde;es adequadas</div>
+                    <div class="step-desc">Configure as permiss&otilde;es corretas: <code>chmod 644 ~/lab-perm/publico/doc.txt</code> (leitura p&uacute;blica), <code>chmod 600 ~/lab-perm/privado/senha.txt</code> (s&oacute; o dono), <code>chmod 750 ~/lab-perm/scripts/deploy.sh</code> (script para dono e grupo).</div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">3</div>
                 <div class="step-body">
-                    <div class="step-label">Testar acesso com diferentes usuários</div>
-                    <div class="step-desc">Tente acessar o arquivo privado como root e como usuário comum: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">sudo cat ~/lab-perm/privado/senha.txt</code> deve funcionar (root ignora permissões). Crie outro usuário de teste (<code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">sudo useradd -m testuser</code>) e tente acessar com <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">sudo -u testuser cat ~/lab-perm/privado/senha.txt</code> — deve retornar "Permissão negada".</div>
+                    <div class="step-label">Testar acesso com diferentes usu&aacute;rios</div>
+                    <div class="step-desc">Crie um usu&aacute;rio de teste: <code>sudo useradd -m testuser</code>. Tente acessar o arquivo privado: <code>sudo -u testuser cat ~/lab-perm/privado/senha.txt</code> &mdash; deve retornar "Permiss&atilde;o negada". Com <code>sudo cat</code> (root) deve funcionar pois root ignora permiss&otilde;es.</div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">4</div>
                 <div class="step-body">
-                    <div class="step-label">Usar chmod simbólico e octal</div>
-                    <div class="step-desc">Pratique as duas notações: adicione execução ao script com notação simbólica: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">chmod u+x ~/lab-perm/scripts/deploy.sh</code>. Depois use octal para ajustar um diretório completo: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">chmod -R 755 ~/lab-perm/publico/</code>. Verifique cada mudança com <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">ls -l</code>.</div>
+                    <div class="step-label">Usar chmod simb&oacute;lico e octal</div>
+                    <div class="step-desc">Adicione execu&ccedil;&atilde;o com nota&ccedil;&atilde;o simb&oacute;lica: <code>chmod u+x ~/lab-perm/scripts/deploy.sh</code>. Depois use octal para um diret&oacute;rio completo: <code>chmod -R 755 ~/lab-perm/publico/</code>. Verifique cada mudan&ccedil;a com <code>ls -l</code>.</div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">5</div>
                 <div class="step-body">
-                    <div class="step-label">Configurar umask</div>
-                    <div class="step-desc">Verifique o umask atual com <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">umask</code>. Mude para <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">umask 077</code> e crie um novo arquivo: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">touch ~/lab-perm/privado/novo.txt && ls -l ~/lab-perm/privado/novo.txt</code>. O arquivo deve ter permissão <code>600</code>. Restaure o umask padrão com <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">umask 022</code>.</div>
+                    <div class="step-label">Configurar e testar umask</div>
+                    <div class="step-desc">Veja o umask atual com <code>umask</code>. Mude para <code>umask 077</code> e crie um arquivo: <code>touch ~/lab-perm/privado/novo.txt && ls -l ~/lab-perm/privado/novo.txt</code>. Deve ter permiss&atilde;o <code>600</code>. Restaure com <code>umask 022</code>.</div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">6</div>
                 <div class="step-body">
-                    <div class="step-label">Verificar com ls -la e stat</div>
-                    <div class="step-desc">Faça uma auditoria final do laboratório: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">ls -laR ~/lab-perm/</code> para listar tudo com permissões. Use <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">stat ~/lab-perm/privado/senha.txt</code> para ver detalhes completos incluindo dono, grupo e permissões em octal. Tire um screenshot da saída completa.</div>
+                    <div class="step-label">Auditoria final com ls -la e stat</div>
+                    <div class="step-desc">Liste tudo com permiss&otilde;es: <code>ls -laR ~/lab-perm/</code>. Use <code>stat ~/lab-perm/privado/senha.txt</code> para ver detalhes completos (dono, grupo, permiss&otilde;es em octal). Tire um screenshot da sa&iacute;da.</div>
                 </div>
             </div>
         </div>
 
         <div class="prat-observe">
-            <strong>&#x1F4CC; Para refletir:</strong> Permissões não são apenas uma questão técnica — são a diferença entre um servidor seguro e um comprometido. Em ambientes de produção, cada arquivo precisa ter exatamente as permissões mínimas necessárias para funcionar. Um arquivo de configuração legível por todos pode vazar senhas de banco de dados; um script executável por todos pode ser explorado por atacantes.
+            <strong>&#x1F4CC; Para refletir:</strong> Permiss&otilde;es n&atilde;o s&atilde;o apenas uma quest&atilde;o t&eacute;cnica &mdash; s&atilde;o a diferen&ccedil;a entre um servidor seguro e um comprometido. Em ambientes de produ&ccedil;&atilde;o, cada arquivo precisa ter exatamente as permiss&otilde;es m&iacute;nimas necess&aacute;rias. Um arquivo de configura&ccedil;&atilde;o leg&iacute;vel por todos pode vazar senhas de banco de dados; um script execut&aacute;vel por todos pode ser explorado por atacantes.
         </div>
 
         <div class="ex-actions">
-            <button class="btn-print" onclick="printPractical('prat-01', 'Aula 1.5 \u2014 Permissões e ACL')">&#x1F5A8;&#xFE0F; Imprimir roteiro</button>
+            <button class="btn-print" onclick="printPractical('prat-01', 'Aula 1.5 \u2014 Permiss\u00f5es e ACL')">&#x1F5A8;&#xFE0F; Imprimir roteiro</button>
         </div>
     </div>
 
     <div class="nav-footer">
-        <a href="aula04-gerenciamento-usuarios.html" class="nav-link">&#x2190; Gerenciamento de Usuários</a>
-        <a href="aula06-pacotes.html" class="nav-link">Pacotes e Repositórios &#x2192;</a>
+        <a href="aula04-metacaracteres.html" class="nav-link">&#x2B05; Metacaracteres e Regex</a>
+        <a href="aula06-pacotes.html" class="nav-link">Pacotes e Reposit&oacute;rios &#x27A1;</a>
     </div>
 
 </div>
@@ -524,5 +1141,6 @@
 <script src="slide-mode.js"></script>
 <script src="exercise-drag.js"></script>
 <script src="exercise-print.js"></script>
+<script src="exercise-mc.js"></script>
 </body>
 </html>
