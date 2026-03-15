@@ -7,6 +7,480 @@
     <link rel="stylesheet" href="slide-mode.css">
     <link rel="stylesheet" href="exercise.css">
     <link rel="stylesheet" href="lesson.css">
+    <style>
+        /* ── Filesystem type cards ── */
+        .fs-type-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin: 20px 0;
+        }
+        .fs-type-card {
+            background: #0f172a;
+            border-radius: 12px;
+            padding: 18px 16px 14px;
+            border-top: 4px solid #334155;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .fs-type-card.fc-ext4  { border-top-color: #3b82f6; }
+        .fs-type-card.fc-xfs   { border-top-color: #f59e0b; }
+        .fs-type-card.fc-btrfs { border-top-color: #10b981; }
+        .fs-type-card.fc-ntfs  { border-top-color: #8b5cf6; }
+        .fs-type-card.fc-fat32 { border-top-color: #ef4444; }
+        .fs-type-card.fc-exfat { border-top-color: #ec4899; }
+
+        .fs-type-card .fs-icon { font-size: 1.6em; margin-bottom: 2px; }
+        .fs-type-card .fs-name {
+            font-family: 'Cascadia Code', 'Fira Code', monospace;
+            font-size: 1.05em;
+            font-weight: 700;
+            color: #f1f5f9;
+        }
+        .fs-type-card.fc-ext4  .fs-name { color: #60a5fa; }
+        .fs-type-card.fc-xfs   .fs-name { color: #fbbf24; }
+        .fs-type-card.fc-btrfs .fs-name { color: #34d399; }
+        .fs-type-card.fc-ntfs  .fs-name { color: #a78bfa; }
+        .fs-type-card.fc-fat32 .fs-name { color: #f87171; }
+        .fs-type-card.fc-exfat .fs-name { color: #f472b6; }
+
+        .fs-type-card .fs-tag {
+            display: inline-block;
+            font-size: .7em;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 20px;
+            background: #1e293b;
+            color: #94a3b8;
+            width: fit-content;
+            margin-bottom: 2px;
+        }
+        .fs-type-card .fs-desc {
+            font-size: .82em;
+            color: #94a3b8;
+            line-height: 1.5;
+        }
+        .fs-type-card .fs-max {
+            font-size: .75em;
+            color: #64748b;
+            margin-top: 4px;
+        }
+        .fs-type-card .fs-max span {
+            color: #cbd5e1;
+            font-weight: 600;
+        }
+
+        /* ── Mount flow ── */
+        .mount-flow {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .mf-step {
+            flex: 1;
+            min-width: 120px;
+            background: #0f172a;
+            border-radius: 12px;
+            padding: 16px 14px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .mf-step.mf-dev   { border: 2px solid #3b82f6; }
+        .mf-step.mf-cmd   { border: 2px solid #f59e0b; }
+        .mf-step.mf-mnt   { border: 2px solid #10b981; }
+        .mf-step .mf-icon { font-size: 1.8em; }
+        .mf-step .mf-label {
+            font-size: .75em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            color: #64748b;
+        }
+        .mf-step code {
+            font-family: 'Cascadia Code', monospace;
+            font-size: .85em;
+            background: #1e293b;
+            padding: 2px 8px;
+            border-radius: 6px;
+            color: #e2e8f0;
+        }
+        .mf-step.mf-dev code  { color: #60a5fa; }
+        .mf-step.mf-cmd code  { color: #fbbf24; }
+        .mf-step.mf-mnt code  { color: #34d399; }
+        .mf-arrow {
+            font-size: 1.6em;
+            color: #475569;
+            flex-shrink: 0;
+        }
+
+        /* ── Device naming visual ── */
+        .dev-naming {
+            background: #0f172a;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 16px 0;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .dn-disk {
+            flex: 1;
+            min-width: 160px;
+        }
+        .dn-disk-name {
+            font-family: 'Cascadia Code', monospace;
+            font-size: 1em;
+            font-weight: 700;
+            padding: 8px 14px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+        .dn-disk:nth-child(1) .dn-disk-name { background: #1e3a5f; color: #60a5fa; }
+        .dn-disk:nth-child(2) .dn-disk-name { background: #1e3a2f; color: #34d399; }
+        .dn-part {
+            margin-left: 20px;
+            border-left: 2px solid #334155;
+            padding-left: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 4px;
+        }
+        .dn-part-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .dn-part-item code {
+            font-family: 'Cascadia Code', monospace;
+            font-size: .82em;
+            background: #1e293b;
+            padding: 2px 8px;
+            border-radius: 5px;
+            color: #cbd5e1;
+        }
+        .dn-part-item span {
+            font-size: .78em;
+            color: #64748b;
+        }
+        .dn-disk-label {
+            font-size: .75em;
+            color: #64748b;
+            margin-left: 4px;
+        }
+
+        /* ── Mount options cards ── */
+        .mopt-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin: 16px 0;
+        }
+        .mopt-card {
+            background: #0f172a;
+            border-radius: 10px;
+            padding: 14px 12px;
+            text-align: center;
+            border-top: 3px solid #334155;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .mopt-card.mo-ro     { border-top-color: #ef4444; }
+        .mopt-card.mo-rw     { border-top-color: #10b981; }
+        .mopt-card.mo-noexec { border-top-color: #f59e0b; }
+        .mopt-card.mo-nosuid { border-top-color: #8b5cf6; }
+        .mopt-card.mo-nofail { border-top-color: #3b82f6; }
+
+        .mopt-card code {
+            font-family: 'Cascadia Code', monospace;
+            font-size: .9em;
+            font-weight: 700;
+        }
+        .mopt-card.mo-ro     code { color: #f87171; }
+        .mopt-card.mo-rw     code { color: #34d399; }
+        .mopt-card.mo-noexec code { color: #fbbf24; }
+        .mopt-card.mo-nosuid code { color: #a78bfa; }
+        .mopt-card.mo-nofail code { color: #60a5fa; }
+
+        .mopt-card .mo-desc {
+            font-size: .73em;
+            color: #64748b;
+            line-height: 1.4;
+        }
+
+        /* ── fstab columns ── */
+        .fstab-header {
+            background: #0f172a;
+            border-radius: 12px 12px 0 0;
+            padding: 12px 16px;
+            font-family: 'Cascadia Code', monospace;
+            font-size: .82em;
+            color: #64748b;
+            border-bottom: 1px solid #1e293b;
+        }
+        .fstab-cols-visual {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 0;
+            margin: 16px 0 0;
+        }
+        .fstab-col-card {
+            background: #0f172a;
+            padding: 14px 12px;
+            text-align: center;
+            border-right: 1px solid #1e293b;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .fstab-col-card:last-child { border-right: none; border-radius: 0 0 12px 0; }
+        .fstab-col-card:first-child { border-radius: 0 0 0 12px; }
+        .fstab-col-card .fcol-num {
+            font-size: .65em;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            padding: 2px 6px;
+            border-radius: 20px;
+            margin: 0 auto;
+        }
+        .fcc-1 .fcol-num { background: #2d1657; color: #c4b5fd; }
+        .fcc-2 .fcol-num { background: #1e3a5f; color: #93c5fd; }
+        .fcc-3 .fcol-num { background: #14532d; color: #86efac; }
+        .fcc-4 .fcol-num { background: #3f2a00; color: #fde68a; }
+        .fcc-5 .fcol-num { background: #450a0a; color: #fca5a5; }
+        .fcc-6 .fcol-num { background: #2d1657; color: #c4b5fd; }
+        .fstab-col-card .fcol-title {
+            font-size: .8em;
+            font-weight: 700;
+            color: #e2e8f0;
+        }
+        .fstab-col-card code {
+            font-family: 'Cascadia Code', monospace;
+            font-size: .72em;
+            background: #1e293b;
+            padding: 2px 5px;
+            border-radius: 4px;
+            color: #94a3b8;
+        }
+        .fstab-col-card .fcol-hint {
+            font-size: .68em;
+            color: #475569;
+            line-height: 1.3;
+            margin-top: 2px;
+        }
+        .fstab-example {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            background: #020617;
+            border-radius: 0 0 12px 12px;
+            padding: 10px 0;
+            gap: 0;
+        }
+        .fstab-val {
+            text-align: center;
+            font-family: 'Cascadia Code', monospace;
+            font-size: .78em;
+            padding: 4px 6px;
+            border-right: 1px solid #0f172a;
+        }
+        .fstab-val:last-child { border-right: none; }
+        .fcc-1 .fstab-val { color: #a78bfa; }
+        .fcc-2 .fstab-val { color: #60a5fa; }
+        .fcc-3 .fstab-val { color: #34d399; }
+        .fcc-4 .fstab-val { color: #fbbf24; }
+        .fcc-5 .fstab-val { color: #f87171; }
+        .fcc-6 .fstab-val { color: #c4b5fd; }
+        .fstab-block {
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 16px 0;
+        }
+
+        /* ── UUID vs /dev compare ── */
+        .uuid-compare {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 12px;
+            align-items: center;
+            margin: 16px 0;
+        }
+        .uuid-box {
+            background: #0f172a;
+            border-radius: 12px;
+            padding: 16px;
+            border-top: 4px solid #334155;
+        }
+        .uuid-box.ub-bad  { border-top-color: #ef4444; }
+        .uuid-box.ub-good { border-top-color: #10b981; }
+        .uuid-box .ub-label {
+            font-size: .7em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            margin-bottom: 8px;
+        }
+        .uuid-box.ub-bad  .ub-label { color: #f87171; }
+        .uuid-box.ub-good .ub-label { color: #34d399; }
+        .uuid-box .ub-title {
+            font-weight: 700;
+            color: #e2e8f0;
+            margin-bottom: 6px;
+        }
+        .uuid-box ul {
+            margin: 0;
+            padding-left: 18px;
+        }
+        .uuid-box ul li {
+            font-size: .82em;
+            color: #94a3b8;
+            margin-bottom: 4px;
+        }
+        .uuid-box.ub-bad ul li::marker  { color: #f87171; }
+        .uuid-box.ub-good ul li::marker { color: #34d399; }
+        .uuid-mid {
+            font-size: 1.6em;
+            color: #475569;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        /* ── mkfs cards ── */
+        .mkfs-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin: 16px 0;
+        }
+        .mkfs-card {
+            background: #0f172a;
+            border-radius: 10px;
+            padding: 16px 14px;
+            border-left: 4px solid #334155;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .mkfs-card.mk-ext4  { border-left-color: #3b82f6; }
+        .mkfs-card.mk-vfat  { border-left-color: #ef4444; }
+        .mkfs-card.mk-exfat { border-left-color: #ec4899; }
+        .mkfs-card.mk-ntfs  { border-left-color: #8b5cf6; }
+        .mkfs-card code {
+            font-family: 'Cascadia Code', monospace;
+            font-size: .82em;
+            font-weight: 700;
+        }
+        .mkfs-card.mk-ext4  code { color: #60a5fa; }
+        .mkfs-card.mk-vfat  code { color: #f87171; }
+        .mkfs-card.mk-exfat code { color: #f472b6; }
+        .mkfs-card.mk-ntfs  code { color: #a78bfa; }
+        .mkfs-card .mk-name {
+            font-weight: 700;
+            color: #e2e8f0;
+            font-size: .9em;
+        }
+        .mkfs-card .mk-use {
+            font-size: .75em;
+            color: #64748b;
+            line-height: 1.4;
+        }
+
+        /* ── danger box ── */
+        .danger-box {
+            background: #1c0a0a;
+            border: 1px solid #7f1d1d;
+            border-left: 4px solid #ef4444;
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin: 14px 0;
+            color: #fca5a5;
+            font-size: .9em;
+            line-height: 1.6;
+        }
+        .danger-box strong { color: #f87171; }
+        .danger-box code {
+            background: #2d1010;
+            padding: 1px 5px;
+            border-radius: 4px;
+            color: #fca5a5;
+        }
+
+        /* ── Library analogy ── */
+        .library-analogy {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin: 16px 0;
+        }
+        .lib-item {
+            background: #0f172a;
+            border-radius: 10px;
+            padding: 16px 12px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            border-top: 3px solid #334155;
+        }
+        .lib-item:nth-child(1) { border-top-color: #6366f1; }
+        .lib-item:nth-child(2) { border-top-color: #f59e0b; }
+        .lib-item:nth-child(3) { border-top-color: #10b981; }
+        .lib-item:nth-child(4) { border-top-color: #ec4899; }
+        .lib-item .li-icon  { font-size: 1.8em; }
+        .lib-item .li-what  { font-size: .7em; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: #64748b; }
+        .lib-item .li-linux { font-family: 'Cascadia Code', monospace; font-size: .82em; color: #94a3b8; background: #1e293b; padding: 2px 6px; border-radius: 5px; }
+        .lib-item .li-analogy { font-size: .78em; color: #64748b; }
+
+        /* ── fs features list ── */
+        .fs-features {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 14px 0;
+        }
+        .fsf-item {
+            background: #0f172a;
+            border-radius: 8px;
+            padding: 12px 14px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: .85em;
+        }
+        .fsf-item .fsf-icon { font-size: 1.2em; flex-shrink: 0; margin-top: 1px; }
+        .fsf-item .fsf-body { display: flex; flex-direction: column; gap: 2px; }
+        .fsf-item .fsf-title { font-weight: 700; color: #e2e8f0; }
+        .fsf-item .fsf-desc  { color: #64748b; font-size: .92em; }
+
+        /* ── Practical steps (reuse) ── */
+        .prat-steps { display:flex; flex-direction:column; gap:14px; margin:18px 0; }
+        .prat-step  { display:flex; align-items:flex-start; gap:14px; background:#f8fafc; border-radius:10px; padding:16px; }
+        .step-num   { width:32px; height:32px; border-radius:50%; background:#0f172a; color:#f8fafc; font-weight:700; font-size:.9em; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+        .step-body  { flex:1; }
+        .step-label { font-weight:700; color:#0f172a; margin-bottom:4px; }
+        .step-desc  { font-size:.85em; color:#475569; line-height:1.6; }
+        .prat-observe { background:#f0fdf4; border-left:4px solid #16a34a; border-radius:0 10px 10px 0; padding:14px 16px; margin-top:16px; font-size:.88em; color:#166534; line-height:1.6; }
+        .prat-observe strong { color:#15803d; }
+
+        @media(max-width:768px){
+            .fs-type-grid   { grid-template-columns: repeat(2,1fr); }
+            .mopt-grid      { grid-template-columns: repeat(2,1fr); }
+            .mkfs-grid      { grid-template-columns: repeat(2,1fr); }
+            .fstab-cols-visual,.fstab-example { grid-template-columns: repeat(3,1fr); }
+            .uuid-compare   { grid-template-columns: 1fr; }
+            .uuid-mid       { display: none; }
+            .library-analogy{ grid-template-columns: repeat(2,1fr); }
+            .fs-features    { grid-template-columns: 1fr; }
+            .mount-flow     { flex-direction: column; }
+        }
+    </style>
 </head>
 <body>
 
@@ -18,28 +492,95 @@
 
 <div class="content-wrapper">
 
+    <!-- HERO -->
     <div class="lesson-hero">
-        <h1>&#x1F4BE; Sistema de Arquivos e Montagem</h1>
-        <p class="subtitle">Aula 8 &mdash; Filesystems, <code>mount</code>, <code>umount</code>, <code>/etc/fstab</code> e gerenciamento de dispositivos de armazenamento no Linux</p>
+        <div class="hero-badge">Aula 8</div>
+        <h1 class="hero-title">&#x1F4BE; Sistema de Arquivos e Montagem</h1>
+        <p class="hero-sub">Filesystems, <code>mount</code>, <code>umount</code>, <code>/etc/fstab</code> e gerenciamento de dispositivos de armazenamento no Linux</p>
+        <div class="stat-grid">
+            <div class="stat-item">
+                <span class="stat-val">lsblk</span>
+                <span class="stat-label">Listar discos</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-val">mount</span>
+                <span class="stat-label">Montar devices</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-val">fstab</span>
+                <span class="stat-label">Boot autom&aacute;tico</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-val">UUID</span>
+                <span class="stat-label">ID permanente</span>
+            </div>
+        </div>
     </div>
 
     <!-- CARD 1 — O que é Sistema de Arquivos -->
     <div class="content-card">
         <h2>&#x1F5C2;&#xFE0F; O que &eacute; Sistema de Arquivos?</h2>
-        <p>O <strong>sistema de arquivos</strong> (filesystem) &eacute; a estrutura que define como os dados s&atilde;o organizados, armazenados e recuperados em um dispositivo de armazenamento. Cada parti&ccedil;&atilde;o ou disco precisa ter um filesystem para poder guardar arquivos.</p>
+        <p>O <strong>sistema de arquivos</strong> (filesystem) &eacute; a estrutura que define como os dados s&atilde;o organizados, armazenados e recuperados em um dispositivo. Cada parti&ccedil;&atilde;o ou disco precisa ter um filesystem para guardar arquivos.</p>
 
-        <div class="highlight-box">
-            <p>&#x1F4DA; <strong>Analogia: Biblioteca.</strong> O disco &eacute; o pr&eacute;dio. O filesystem &eacute; o sistema de classifica&ccedil;&atilde;o (Dewey, alfab&eacute;tico). As pastas s&atilde;o as estantes. Os arquivos s&atilde;o os livros. Sem um sistema de classifica&ccedil;&atilde;o, os livros seriam pil&otilde;es ileg&iacute;veis.</p>
+        <h3>&#x1F4DA; Analogia: Biblioteca</h3>
+        <div class="library-analogy">
+            <div class="lib-item">
+                <div class="li-icon">&#x1F3DB;&#xFE0F;</div>
+                <div class="li-what">No mundo real</div>
+                <div class="li-analogy">Pr&eacute;dio</div>
+                <div class="li-linux">Disco / SSD</div>
+            </div>
+            <div class="lib-item">
+                <div class="li-icon">&#x1F4D0;</div>
+                <div class="li-what">Classifica&ccedil;&atilde;o</div>
+                <div class="li-analogy">Sistema Dewey</div>
+                <div class="li-linux">Filesystem (ext4)</div>
+            </div>
+            <div class="lib-item">
+                <div class="li-icon">&#x1F5C4;&#xFE0F;</div>
+                <div class="li-what">Armazenamento</div>
+                <div class="li-analogy">Estantes</div>
+                <div class="li-linux">Pastas / diret&oacute;rios</div>
+            </div>
+            <div class="lib-item">
+                <div class="li-icon">&#x1F4D6;</div>
+                <div class="li-what">Conte&uacute;do</div>
+                <div class="li-analogy">Livros</div>
+                <div class="li-linux">Arquivos</div>
+            </div>
         </div>
 
         <h3>O que o filesystem define</h3>
-        <ul>
-            <li>Tamanho m&aacute;ximo de um arquivo individual</li>
-            <li>Tamanho m&aacute;ximo total da parti&ccedil;&atilde;o</li>
-            <li>Caracteres permitidos nos nomes de arquivos</li>
-            <li>Suporte a permiss&otilde;es e propriet&aacute;rios (<code>chown</code>, <code>chmod</code>)</li>
-            <li><strong>Journaling</strong>: registro de opera&ccedil;&otilde;es para recupera&ccedil;&atilde;o ap&oacute;s falhas</li>
-        </ul>
+        <div class="fs-features">
+            <div class="fsf-item">
+                <div class="fsf-icon">&#x1F4CF;</div>
+                <div class="fsf-body">
+                    <div class="fsf-title">Tamanho m&aacute;ximo de arquivo</div>
+                    <div class="fsf-desc">Limite por arquivo individual (ex: FAT32 = 4 GB, ext4 = 16 TB)</div>
+                </div>
+            </div>
+            <div class="fsf-item">
+                <div class="fsf-icon">&#x1F4DD;</div>
+                <div class="fsf-body">
+                    <div class="fsf-title">Nomes de arquivos</div>
+                    <div class="fsf-desc">Caracteres permitidos, comprimento m&aacute;ximo, case-sensitive ou n&atilde;o</div>
+                </div>
+            </div>
+            <div class="fsf-item">
+                <div class="fsf-icon">&#x1F512;</div>
+                <div class="fsf-body">
+                    <div class="fsf-title">Permiss&otilde;es e propriet&aacute;rios</div>
+                    <div class="fsf-desc">Suporte a <code>chmod</code>, <code>chown</code>, ACL (ext4, XFS, Btrfs)</div>
+                </div>
+            </div>
+            <div class="fsf-item">
+                <div class="fsf-icon">&#x1F4D3;</div>
+                <div class="fsf-body">
+                    <div class="fsf-title">Journaling</div>
+                    <div class="fsf-desc">Registro de opera&ccedil;&otilde;es para recupera&ccedil;&atilde;o ap&oacute;s quedas de energia</div>
+                </div>
+            </div>
+        </div>
 
         <div class="alert-box">
             <p>&#x26A0;&#xFE0F; <strong>Importante:</strong> cada parti&ccedil;&atilde;o pode ter um filesystem diferente. Um mesmo disco pode ter <code>/dev/sda1</code> em ext4 e <code>/dev/sda2</code> em NTFS ao mesmo tempo.</p>
@@ -51,36 +592,48 @@
         <h2>&#x1F4C1; Tipos de Sistema de Arquivos</h2>
         <p>Existem diversos filesystems, cada um adequado para um cen&aacute;rio espec&iacute;fico. Conhecer as diferen&ccedil;as ajuda a escolher o correto na hora de formatar.</p>
 
-        <div class="fs-grid">
-            <div class="fs-card">
-                <div class="icon">&#x1F427;</div>
-                <strong>ext4</strong>
-                <span>Padr&atilde;o Linux. Journaling, at&eacute; 16 TB por arquivo. Use para discos internos.</span>
+        <div class="fs-type-grid">
+            <div class="fs-type-card fc-ext4">
+                <div class="fs-icon">&#x1F427;</div>
+                <div class="fs-name">ext4</div>
+                <div class="fs-tag">Padr&atilde;o Linux</div>
+                <div class="fs-desc">O filesystem mais usado no Linux. Journaling confi&aacute;vel, amplamente testado, suporta permiss&otilde;es Unix completas.</div>
+                <div class="fs-max">M&aacute;x. arquivo: <span>16 TB</span></div>
             </div>
-            <div class="fs-card">
-                <div class="icon">&#x1F680;</div>
-                <strong>XFS</strong>
-                <span>Alta performance. &Oacute;timo para arquivos grandes e servidores de alta carga.</span>
+            <div class="fs-type-card fc-xfs">
+                <div class="fs-icon">&#x1F680;</div>
+                <div class="fs-name">XFS</div>
+                <div class="fs-tag">Alta Performance</div>
+                <div class="fs-desc">&Oacute;timo para arquivos grandes e servidores de alta carga. Padr&atilde;o no Red Hat/CentOS.</div>
+                <div class="fs-max">M&aacute;x. arquivo: <span>8 EB</span></div>
             </div>
-            <div class="fs-card">
-                <div class="icon">&#x1F195;</div>
-                <strong>Btrfs</strong>
-                <span>Moderno. Suporta snapshots, compress&atilde;o e subvolumes. Crescente adop&ccedil;&atilde;o.</span>
+            <div class="fs-type-card fc-btrfs">
+                <div class="fs-icon">&#x1F195;</div>
+                <div class="fs-name">Btrfs</div>
+                <div class="fs-tag">Moderno</div>
+                <div class="fs-desc">Suporta snapshots, compress&atilde;o nativa, subvolumes e verifica&ccedil;&atilde;o de integridade. Crescente ado&ccedil;&atilde;o.</div>
+                <div class="fs-max">M&aacute;x. arquivo: <span>16 EB</span></div>
             </div>
-            <div class="fs-card">
-                <div class="icon">&#x1FA9F;</div>
-                <strong>NTFS</strong>
-                <span>Padr&atilde;o Windows. Use para partilhar dados com sistemas Windows.</span>
+            <div class="fs-type-card fc-ntfs">
+                <div class="fs-icon">&#x1FA9F;</div>
+                <div class="fs-name">NTFS</div>
+                <div class="fs-tag">Windows</div>
+                <div class="fs-desc">Padr&atilde;o Windows. Leitura nativa no Linux, escrita via <code>ntfs-3g</code>. Use para compartilhar dados com Windows.</div>
+                <div class="fs-max">M&aacute;x. arquivo: <span>16 TB</span></div>
             </div>
-            <div class="fs-card">
-                <div class="icon">&#x1F4F1;</div>
-                <strong>FAT32</strong>
-                <span>Universal. Limite de 4 GB por arquivo. Pendrives simples e cart&otilde;es SD.</span>
+            <div class="fs-type-card fc-fat32">
+                <div class="fs-icon">&#x1F4F1;</div>
+                <div class="fs-name">FAT32</div>
+                <div class="fs-tag">Universal</div>
+                <div class="fs-desc">Compat&iacute;vel com qualquer SO. Limite de 4 GB por arquivo. Pendrives pequenos e cart&otilde;es SD simples.</div>
+                <div class="fs-max">M&aacute;x. arquivo: <span>4 GB</span></div>
             </div>
-            <div class="fs-card">
-                <div class="icon">&#x1F504;</div>
-                <strong>exFAT</strong>
-                <span>FAT melhorado. Sem limite pr&aacute;tico de tamanho. Pendrives e SSDs externos.</span>
+            <div class="fs-type-card fc-exfat">
+                <div class="fs-icon">&#x1F504;</div>
+                <div class="fs-name">exFAT</div>
+                <div class="fs-tag">FAT Melhorado</div>
+                <div class="fs-desc">FAT sem limite pr&aacute;tico de arquivo. Ideal para pendrives, SSDs externos e cart&otilde;es SD modernos.</div>
+                <div class="fs-max">M&aacute;x. arquivo: <span>16 EB</span></div>
             </div>
         </div>
 
@@ -89,57 +642,77 @@
                 <th>Filesystem</th>
                 <th>Uso recomendado</th>
                 <th>M&aacute;x. arquivo</th>
+                <th>Journaling</th>
+                <th>Permiss&otilde;es Unix</th>
             </tr>
-            <tr><td><strong>ext4</strong></td><td>Disco interno Linux</td><td>16 TB</td></tr>
-            <tr><td><strong>XFS</strong></td><td>Servidor, arquivos grandes</td><td>8 EB</td></tr>
-            <tr><td><strong>FAT32</strong></td><td>Pendrive pequeno, compat. total</td><td>4 GB</td></tr>
-            <tr><td><strong>exFAT</strong></td><td>Pendrive grande, dual-OS</td><td>16 EB</td></tr>
-            <tr><td><strong>NTFS</strong></td><td>Compartilhar com Windows</td><td>16 TB</td></tr>
+            <tr><td><strong>ext4</strong></td><td>Disco interno Linux</td><td>16 TB</td><td>&#x2705;</td><td>&#x2705;</td></tr>
+            <tr><td><strong>XFS</strong></td><td>Servidor, arquivos grandes</td><td>8 EB</td><td>&#x2705;</td><td>&#x2705;</td></tr>
+            <tr><td><strong>Btrfs</strong></td><td>Snapshots, compress&atilde;o</td><td>16 EB</td><td>&#x2705;</td><td>&#x2705;</td></tr>
+            <tr><td><strong>NTFS</strong></td><td>Compartilhar com Windows</td><td>16 TB</td><td>&#x2705;</td><td>&#x26A0;&#xFE0F; parcial</td></tr>
+            <tr><td><strong>FAT32</strong></td><td>Pendrive pequeno</td><td>4 GB</td><td>&#x274C;</td><td>&#x274C;</td></tr>
+            <tr><td><strong>exFAT</strong></td><td>Pendrive grande, dual-OS</td><td>16 EB</td><td>&#x274C;</td><td>&#x274C;</td></tr>
         </table>
     </div>
 
     <!-- CARD 3 — O que é Montagem -->
     <div class="content-card">
         <h2>&#x1F517; O que &eacute; Montagem?</h2>
-        <p>No Linux, todo dispositivo de armazenamento existe como um arquivo em <code>/dev/</code>. Para acessar os dados contidos nele, &eacute; preciso <strong>montar</strong> o dispositivo: associar o dispositivo a uma pasta (chamada de <strong>ponto de montagem</strong>) na &aacute;rvore de diret&oacute;rios.</p>
+        <p>No Linux, todo dispositivo de armazenamento existe como um arquivo em <code>/dev/</code>. Para acessar seus dados, &eacute; preciso <strong>montar</strong> o dispositivo: associá-lo a uma pasta da &aacute;rvore de diret&oacute;rios, chamada de <strong>ponto de montagem</strong>.</p>
 
-        <div class="flow-steps">
-            <div class="flow-step" style="background:#dbeafe;">
-                <div class="f-icon">&#x1F4BE;</div>
-                <strong>Dispositivo</strong>
+        <div class="mount-flow">
+            <div class="mf-step mf-dev">
+                <div class="mf-icon">&#x1F4BE;</div>
+                <div class="mf-label">Dispositivo</div>
                 <code>/dev/sdb1</code>
             </div>
-            <div class="flow-arrow">&#x27A1;</div>
-            <div class="flow-step" style="background:#fef3c7;">
-                <div class="f-icon">&#x1F527;</div>
-                <strong>mount</strong>
-                <code>(comando)</code>
+            <div class="mf-arrow">&#x27A1;</div>
+            <div class="mf-step mf-cmd">
+                <div class="mf-icon">&#x1F527;</div>
+                <div class="mf-label">Comando</div>
+                <code>mount</code>
             </div>
-            <div class="flow-arrow">&#x27A1;</div>
-            <div class="flow-step" style="background:#dcfce7;">
-                <div class="f-icon">&#x1F4C1;</div>
-                <strong>Ponto de montagem</strong>
+            <div class="mf-arrow">&#x27A1;</div>
+            <div class="mf-step mf-mnt">
+                <div class="mf-icon">&#x1F4C1;</div>
+                <div class="mf-label">Ponto de Montagem</div>
                 <code>/mnt/pendrive</code>
             </div>
         </div>
 
         <h3>Nomenclatura dos dispositivos</h3>
-        <ul>
-            <li><code>/dev/sda</code> &mdash; primeiro disco (SATA/SSD/USB)</li>
-            <li><code>/dev/sdb</code> &mdash; segundo disco (ex: pendrive)</li>
-            <li><code>/dev/sda1</code> &mdash; primeira parti&ccedil;&atilde;o do primeiro disco</li>
-            <li><code>/dev/sdb2</code> &mdash; segunda parti&ccedil;&atilde;o do segundo disco</li>
-        </ul>
-
-        <h3>Pontos de montagem comuns</h3>
-        <ul>
-            <li><code>/mnt/</code> &mdash; montagem manual e tempor&aacute;ria</li>
-            <li><code>/media/</code> &mdash; m&iacute;dias remov&iacute;veis (pen, HD externo)</li>
-            <li><code>/home</code> &mdash; pode ser uma parti&ccedil;&atilde;o separada</li>
-        </ul>
+        <div class="dev-naming">
+            <div class="dn-disk">
+                <div class="dn-disk-name">/dev/sda</div>
+                <div class="dn-disk-label">1&ordm; disco (SATA/SSD/USB)</div>
+                <div class="dn-part">
+                    <div class="dn-part-item">
+                        <code>/dev/sda1</code>
+                        <span>1&ordf; parti&ccedil;&atilde;o &mdash; geralmente <code>/</code></span>
+                    </div>
+                    <div class="dn-part-item">
+                        <code>/dev/sda2</code>
+                        <span>2&ordf; parti&ccedil;&atilde;o &mdash; geralmente swap</span>
+                    </div>
+                </div>
+            </div>
+            <div class="dn-disk">
+                <div class="dn-disk-name">/dev/sdb</div>
+                <div class="dn-disk-label">2&ordm; disco (ex: pendrive)</div>
+                <div class="dn-part">
+                    <div class="dn-part-item">
+                        <code>/dev/sdb1</code>
+                        <span>1&ordf; parti&ccedil;&atilde;o do pendrive</span>
+                    </div>
+                    <div class="dn-part-item">
+                        <code>/dev/sdb2</code>
+                        <span>2&ordf; parti&ccedil;&atilde;o (se existir)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <div class="tip-box">
-            <p>&#x1F4A1; A pasta usada como ponto de montagem deve <strong>existir antes</strong> de montar. Crie-a com <code>mkdir /mnt/pendrive</code> se necess&aacute;rio.</p>
+            <p>&#x1F4A1; A pasta usada como ponto de montagem deve <strong>existir antes</strong> de montar. Crie-a com <code>mkdir -p /mnt/pendrive</code>. Pontos comuns: <code>/mnt/</code> (manual), <code>/media/</code> (m&iacute;dias remov&iacute;veis), <code>/home</code> (parti&ccedil;&atilde;o separada).</p>
         </div>
     </div>
 
@@ -151,41 +724,64 @@
         <div class="terminal">
             <div class="terminal-bar">
                 <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">bash</span>
+                <span class="term-title">bash &mdash; fluxo completo de montagem</span>
             </div>
             <div class="terminal-body">
-<span class="t-comment"># Ver todos os dispositivos de bloco conectados</span>
+<span class="t-comment"># 1. Ver todos os dispositivos de bloco conectados</span>
 <span class="t-root">root@servidor:~#</span> <span class="t-cmd">lsblk</span>
 <span class="t-out">NAME   SIZE TYPE MOUNTPOINT</span>
 <span class="t-out">sda    500G disk</span>
 <span class="t-out">├─sda1 499G part /</span>
 <span class="t-out">└─sda2   1G part [SWAP]</span>
 <span class="t-hl">sdb     16G disk</span>
-<span class="t-hl">└─sdb1  16G part</span>              <span class="t-comment"># ← pendrive, sem ponto de montagem</span>
+<span class="t-hl">└─sdb1  16G part</span>                 <span class="t-comment"># ← pendrive sem ponto de montagem</span>
 
-<span class="t-comment"># Criar o ponto de montagem</span>
+<span class="t-comment"># 2. Criar o ponto de montagem</span>
 <span class="t-root">root@servidor:~#</span> <span class="t-cmd">mkdir</span> <span class="t-flag">-p</span> <span class="t-arg">/mnt/pendrive</span>
 
-<span class="t-comment"># Montar o dispositivo</span>
+<span class="t-comment"># 3. Montar o dispositivo</span>
 <span class="t-root">root@servidor:~#</span> <span class="t-cmd">mount</span> <span class="t-dev">/dev/sdb1</span> <span class="t-mnt">/mnt/pendrive</span>
 
-<span class="t-comment"># Acessar os arquivos</span>
+<span class="t-comment"># 4. Acessar os arquivos</span>
 <span class="t-root">root@servidor:~#</span> <span class="t-cmd">ls</span> <span class="t-arg">/mnt/pendrive</span>
 <span class="t-out">fotos/  documentos/  backup.zip</span>
 
-<span class="t-comment"># Verificar espaço em disco (todos os pontos)</span>
+<span class="t-comment"># 5. Verificar espaço em disco</span>
 <span class="t-root">root@servidor:~#</span> <span class="t-cmd">df</span> <span class="t-flag">-h</span>
 <span class="t-out">Filesystem      Size  Used Avail Use% Mounted on</span>
 <span class="t-out">/dev/sda1       500G  120G  380G  24% /</span>
-<span class="t-out">/dev/sdb1        16G    8G    8G  50% /mnt/pendrive</span>
+<span class="t-ok">/dev/sdb1        16G    8G    8G  50% /mnt/pendrive</span>
             </div>
         </div>
 
-        <h3>Op&ccedil;&otilde;es &uacute;teis do mount</h3>
+        <h3>Op&ccedil;&otilde;es do <code>mount -o</code></h3>
+        <div class="mopt-grid">
+            <div class="mopt-card mo-ro">
+                <code>ro</code>
+                <div class="mo-desc">Somente leitura. Nenhum arquivo pode ser modificado.</div>
+            </div>
+            <div class="mopt-card mo-rw">
+                <code>rw</code>
+                <div class="mo-desc">Leitura e escrita. Comportamento padr&atilde;o.</div>
+            </div>
+            <div class="mopt-card mo-noexec">
+                <code>noexec</code>
+                <div class="mo-desc">Impede execu&ccedil;&atilde;o de bin&aacute;rios do dispositivo.</div>
+            </div>
+            <div class="mopt-card mo-nosuid">
+                <code>nosuid</code>
+                <div class="mo-desc">Ignora o bit SUID/SGID. Aumenta seguran&ccedil;a.</div>
+            </div>
+            <div class="mopt-card mo-nofail">
+                <code>nofail</code>
+                <div class="mo-desc">N&atilde;o aborta o boot se o dispositivo n&atilde;o for encontrado.</div>
+            </div>
+        </div>
+
         <div class="terminal">
             <div class="terminal-bar">
                 <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">bash</span>
+                <span class="term-title">bash &mdash; exemplos de op&ccedil;&otilde;es</span>
             </div>
             <div class="terminal-body">
 <span class="t-comment"># Montar como somente leitura</span>
@@ -200,14 +796,6 @@
 <span class="t-out">/dev/sdb1 on /mnt/pendrive type vfat (rw)</span>
             </div>
         </div>
-
-        <ul>
-            <li><code>ro</code> &mdash; somente leitura (<em>read-only</em>)</li>
-            <li><code>rw</code> &mdash; leitura e escrita (padr&atilde;o)</li>
-            <li><code>noexec</code> &mdash; impede execu&ccedil;&atilde;o de bin&aacute;rios</li>
-            <li><code>nosuid</code> &mdash; ignora bit SUID (seguran&ccedil;a)</li>
-            <li><code>nofail</code> &mdash; n&atilde;o aborta o boot se o dispositivo n&atilde;o for encontrado</li>
-        </ul>
     </div>
 
     <!-- CARD 5 — umount -->
@@ -216,45 +804,46 @@
         <p>Antes de remover fisicamente qualquer dispositivo (pendrive, HD externo), &eacute; obrigat&oacute;rio desmontá-lo. Remover sem desmontar pode corromper dados.</p>
 
         <div class="danger-box">
-            <p>&#x1F6AB; <strong>Nunca</strong> remova um pendrive ou HD externo sem antes executar <code>umount</code>. Dados em buffer ainda n&atilde;o gravados ser&atilde;o perdidos e o filesystem pode ser corrompido.</p>
+            &#x1F6AB; <strong>Nunca</strong> remova um pendrive ou HD externo sem antes executar <code>umount</code>. Dados em buffer ainda n&atilde;o gravados ser&atilde;o perdidos e o filesystem pode ser corrompido permanentemente.
         </div>
 
         <div class="terminal">
             <div class="terminal-bar">
                 <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">bash</span>
+                <span class="term-title">bash &mdash; desmontar e resolver erros</span>
             </div>
             <div class="terminal-body">
 <span class="t-comment"># Desmontar pelo ponto de montagem</span>
 <span class="t-root">root@servidor:~#</span> <span class="t-cmd">umount</span> <span class="t-mnt">/mnt/pendrive</span>
 
-<span class="t-comment"># Ou pelo dispositivo</span>
+<span class="t-comment"># Ou pelo nome do dispositivo</span>
 <span class="t-root">root@servidor:~#</span> <span class="t-cmd">umount</span> <span class="t-dev">/dev/sdb1</span>
 
-<span class="t-comment"># Erro: dispositivo ocupado?</span>
+<span class="t-comment"># ── Erro: dispositivo ocupado ──</span>
 <span class="t-root">root@servidor:~#</span> <span class="t-cmd">umount</span> <span class="t-mnt">/mnt/pendrive</span>
 <span class="t-err">umount: /mnt/pendrive: target is busy</span>
 
 <span class="t-comment"># Descobrir qual processo está usando o dispositivo</span>
 <span class="t-root">root@servidor:~#</span> <span class="t-cmd">lsof</span> <span class="t-arg">/mnt/pendrive</span>
 <span class="t-out">COMMAND  PID  USER  NAME</span>
-<span class="t-out">bash    1234  joao  /mnt/pendrive</span>
+<span class="t-out">bash    1234  joao  /mnt/pendrive</span>     <span class="t-comment"># ← terminal ainda está nessa pasta</span>
 
 <span class="t-comment"># Solução: sair da pasta e tentar novamente</span>
 <span class="t-root">root@servidor:~#</span> <span class="t-cmd">cd</span> <span class="t-arg">~</span>
 <span class="t-root">root@servidor:~#</span> <span class="t-cmd">umount</span> <span class="t-mnt">/mnt/pendrive</span>
+<span class="t-ok">                                        # sucesso (sem mensagem de erro)</span>
             </div>
         </div>
 
         <div class="tip-box">
-            <p>&#x1F4A1; O erro <em>&ldquo;target is busy&rdquo;</em> acontece quando algum processo ou terminal est&aacute; com o diret&oacute;rio montado como diret&oacute;rio atual. Basta executar <code>cd ~</code> no terminal afetado e tentar desmontar novamente.</p>
+            <p>&#x1F4A1; O erro <em>&ldquo;target is busy&rdquo;</em> acontece quando algum terminal est&aacute; com o diret&oacute;rio montado como diret&oacute;rio atual. Basta executar <code>cd ~</code> no terminal afetado e tentar desmontar novamente.</p>
         </div>
     </div>
 
     <!-- CARD 6 — /etc/fstab -->
     <div class="content-card">
         <h2>&#x1F4CB; /etc/fstab &mdash; Montagem Autom&aacute;tica no Boot</h2>
-        <p>O arquivo <code>/etc/fstab</code> lista todos os dispositivos que devem ser montados automaticamente quando o sistema inicia. &Eacute; um dos arquivos mais importantes do Linux.</p>
+        <p>O arquivo <code>/etc/fstab</code> lista todos os dispositivos que devem ser montados automaticamente quando o sistema inicia. &Eacute; um dos arquivos mais importantes do Linux &mdash; um erro aqui pode impedir o boot.</p>
 
         <div class="terminal">
             <div class="terminal-bar">
@@ -263,54 +852,92 @@
             </div>
             <div class="terminal-body">
 <span class="t-comment"># &lt;dispositivo&gt;      &lt;ponto&gt;   &lt;tipo&gt;  &lt;opções&gt;   &lt;dump&gt; &lt;pass&gt;</span>
-<span class="t-dev">/dev/sda1</span>          <span class="t-mnt">/</span>         <span class="t-hl">ext4</span>    defaults   0      1
-<span class="t-dev">/dev/sda2</span>          <span class="t-mnt">none</span>      <span class="t-hl">swap</span>    sw         0      0
-<span class="t-dev">/dev/sdb1</span>          <span class="t-mnt">/dados</span>    <span class="t-hl">ext4</span>    defaults   0      2
+<span class="t-dev">/dev/sda1</span>           <span class="t-mnt">/</span>         <span class="t-hl">ext4</span>    defaults   0      1
+<span class="t-dev">/dev/sda2</span>           <span class="t-mnt">none</span>      <span class="t-hl">swap</span>    sw         0      0
+<span class="t-dev">/dev/sdb1</span>           <span class="t-mnt">/dados</span>    <span class="t-hl">ext4</span>    defaults   0      2
             </div>
         </div>
 
         <h3>Significado de cada coluna</h3>
-        <div class="fstab-cols">
-            <div class="fstab-col" style="background:#ede9fe;">
-                <strong style="color:#5b21b6;">1&ordf; &mdash; Dispositivo</strong>
-                <span><code>/dev/sda1</code> ou UUID</span>
-            </div>
-            <div class="fstab-col" style="background:#dbeafe;">
-                <strong style="color:#1d4ed8;">2&ordf; &mdash; Ponto</strong>
-                <span><code>/</code>, <code>/home</code>, <code>/dados</code></span>
-            </div>
-            <div class="fstab-col" style="background:#dcfce7;">
-                <strong style="color:#15803d;">3&ordf; &mdash; Tipo FS</strong>
-                <span><code>ext4</code>, <code>ntfs</code>, <code>vfat</code></span>
-            </div>
-            <div class="fstab-col" style="background:#fef9c3;">
-                <strong style="color:#a16207;">4&ordf; &mdash; Op&ccedil;&otilde;es</strong>
-                <span><code>defaults</code>, <code>ro</code>, <code>nofail</code></span>
-            </div>
-            <div class="fstab-col" style="background:#fee2e2;">
-                <strong style="color:#b91c1c;">5&ordf; &mdash; Dump</strong>
-                <span>Backup? 0=n&atilde;o</span>
-            </div>
-            <div class="fstab-col" style="background:#f3e8ff;">
-                <strong style="color:#7c3aed;">6&ordf; &mdash; Pass</strong>
-                <span>Ordem fsck: root=1, outros=2</span>
+        <div class="fstab-block">
+            <div class="fstab-cols-visual">
+                <div class="fstab-col-card fcc-1">
+                    <div class="fcol-num">col 1</div>
+                    <div class="fcol-title">Dispositivo</div>
+                    <code>/dev/sda1</code>
+                    <div class="fcol-hint">Ou UUID=... para maior seguran&ccedil;a</div>
+                </div>
+                <div class="fstab-col-card fcc-2">
+                    <div class="fcol-num">col 2</div>
+                    <div class="fcol-title">Ponto</div>
+                    <code>/home</code>
+                    <div class="fcol-hint">Pasta onde ser&aacute; montado. <code>none</code> para swap</div>
+                </div>
+                <div class="fstab-col-card fcc-3">
+                    <div class="fcol-num">col 3</div>
+                    <div class="fcol-title">Tipo FS</div>
+                    <code>ext4</code>
+                    <div class="fcol-hint">ext4, ntfs, vfat, swap, auto</div>
+                </div>
+                <div class="fstab-col-card fcc-4">
+                    <div class="fcol-num">col 4</div>
+                    <div class="fcol-title">Op&ccedil;&otilde;es</div>
+                    <code>defaults</code>
+                    <div class="fcol-hint">ro, rw, nofail, noexec, nosuid</div>
+                </div>
+                <div class="fstab-col-card fcc-5">
+                    <div class="fcol-num">col 5</div>
+                    <div class="fcol-title">Dump</div>
+                    <code>0</code>
+                    <div class="fcol-hint">Backup via dump? 0=n&atilde;o (quase sempre)</div>
+                </div>
+                <div class="fstab-col-card fcc-6">
+                    <div class="fcol-num">col 6</div>
+                    <div class="fcol-title">Pass</div>
+                    <code>1 / 2</code>
+                    <div class="fcol-hint">Ordem fsck: root=1, outros=2, 0=ignorar</div>
+                </div>
             </div>
         </div>
 
         <div class="alert-box">
-            <p>&#x26A0;&#xFE0F; <strong>Erros no fstab podem impedir o boot!</strong> Sempre fa&ccedil;a um backup antes de editar: <code>cp /etc/fstab /etc/fstab.bak</code>. Ap&oacute;s editar, teste com <code>mount -a</code> antes de reiniciar.</p>
+            <p>&#x26A0;&#xFE0F; <strong>Erros no fstab podem impedir o boot!</strong> Sempre fa&ccedil;a backup: <code>cp /etc/fstab /etc/fstab.bak</code>. Ap&oacute;s editar, valide com <code>mount -a</code> antes de reiniciar.</p>
         </div>
     </div>
 
     <!-- CARD 7 — UUID -->
     <div class="content-card">
         <h2>&#x1F511; UUID &mdash; Identificando Discos com Seguran&ccedil;a</h2>
-        <p>O nome de dispositivo <code>/dev/sda1</code> pode mudar entre boots (dependendo da ordem de detec&ccedil;&atilde;o do hardware). O <strong>UUID</strong> &eacute; um identificador &uacute;nico e permanente de cada parti&ccedil;&atilde;o &mdash; use-o no <code>fstab</code> para evitar problemas.</p>
+        <p>O nome <code>/dev/sda1</code> pode mudar entre boots dependendo da ordem de detec&ccedil;&atilde;o do hardware. O <strong>UUID</strong> &eacute; um identificador &uacute;nico e permanente &mdash; use-o no <code>fstab</code>.</p>
+
+        <div class="uuid-compare">
+            <div class="uuid-box ub-bad">
+                <div class="ub-label">&#x274C; Evite</div>
+                <div class="ub-title">/dev/sdX no fstab</div>
+                <ul>
+                    <li>Pode mudar entre boots</li>
+                    <li>Depende da ordem de detec&ccedil;&atilde;o</li>
+                    <li>Adicionar novos discos pode embaralhar</li>
+                    <li>Causa erros de boot difíceis de diagnosticar</li>
+                </ul>
+            </div>
+            <div class="uuid-mid">vs</div>
+            <div class="uuid-box ub-good">
+                <div class="ub-label">&#x2705; Prefira</div>
+                <div class="ub-title">UUID=... no fstab</div>
+                <ul>
+                    <li>Permanente e &uacute;nico por parti&ccedil;&atilde;o</li>
+                    <li>N&atilde;o muda com a ordem dos discos</li>
+                    <li>Recomendado pela pr&aacute;tica do mercado</li>
+                    <li>Obtido com <code>blkid</code></li>
+                </ul>
+            </div>
+        </div>
 
         <div class="terminal">
             <div class="terminal-bar">
                 <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">bash</span>
+                <span class="term-title">bash &mdash; UUID com blkid e fstab</span>
             </div>
             <div class="terminal-body">
 <span class="t-comment"># Descobrir o UUID de todos os dispositivos</span>
@@ -324,33 +951,62 @@ UUID=1A2B-3C4D                             /mnt/usb vfat  defaults,nofail 0 0
 
 <span class="t-comment"># Testar se o fstab está correto sem reiniciar</span>
 <span class="t-root">root@servidor:~#</span> <span class="t-cmd">mount</span> <span class="t-flag">-a</span>
+<span class="t-ok">                     # sem erros = fstab válido</span>
             </div>
         </div>
 
         <div class="tip-box">
-            <p>&#x1F4A1; Use a op&ccedil;&atilde;o <code>nofail</code> no fstab para dispositivos remov&iacute;veis (pendrives, HDs externos). Assim, se o dispositivo n&atilde;o estiver conectado, o sistema inicializa normalmente em vez de travar no boot.</p>
+            <p>&#x1F4A1; Use <code>nofail</code> no fstab para dispositivos remov&iacute;veis. Assim, se o pendrive n&atilde;o estiver conectado, o sistema inicializa normalmente em vez de travar no boot.</p>
         </div>
     </div>
 
-    <!-- CARD 8 — Formatação -->
+    <!-- CARD 8 — Formatação com mkfs -->
     <div class="content-card">
-        <h2>&#x1F527; Formatando Dispositivos com <code>mkfs</code></h2>
+        <h2>&#x1F527; Formatando com <code>mkfs</code></h2>
         <p>Para preparar um novo disco ou mudar o filesystem de uma parti&ccedil;&atilde;o, usa-se a fam&iacute;lia de comandos <code>mkfs</code> (<em>make filesystem</em>).</p>
 
         <div class="danger-box">
-            <p>&#x1F6A8; <strong>CUIDADO:</strong> formatar apaga <strong>todos</strong> os dados da parti&ccedil;&atilde;o permanentemente e sem confirma&ccedil;&atilde;o. Certifique-se de estar no dispositivo correto antes de executar.</p>
+            &#x1F6A8; <strong>CUIDADO:</strong> formatar apaga <strong>todos</strong> os dados da parti&ccedil;&atilde;o permanentemente e sem confirma&ccedil;&atilde;o. Certifique-se do dispositivo correto com <code>lsblk</code> antes de executar.
+        </div>
+
+        <div class="mkfs-grid">
+            <div class="mkfs-card mk-ext4">
+                <code>mkfs.ext4</code>
+                <div class="mk-name">ext4</div>
+                <div class="mk-use">Disco interno Linux. Padr&atilde;o para servidores e desktops.</div>
+            </div>
+            <div class="mkfs-card mk-vfat">
+                <code>mkfs.vfat -F 32</code>
+                <div class="mk-name">FAT32</div>
+                <div class="mk-use">Pendrives pequenos. M&aacute;xima compatibilidade com qualquer dispositivo.</div>
+            </div>
+            <div class="mkfs-card mk-exfat">
+                <code>mkfs.exfat</code>
+                <div class="mk-name">exFAT</div>
+                <div class="mk-use">Pendrives grandes e SSDs externos. Sem limite pr&aacute;tico de arquivo.</div>
+            </div>
+            <div class="mkfs-card mk-ntfs">
+                <code>mkfs.ntfs</code>
+                <div class="mk-name">NTFS</div>
+                <div class="mk-use">Compartilhar dados com sistemas Windows. Requer <code>ntfs-3g</code>.</div>
+            </div>
         </div>
 
         <div class="terminal">
             <div class="terminal-bar">
                 <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">bash</span>
+                <span class="term-title">bash &mdash; mkfs na pr&aacute;tica</span>
             </div>
             <div class="terminal-body">
+<span class="t-comment"># Confirmar o dispositivo antes de formatar!</span>
+<span class="t-root">root@servidor:~#</span> <span class="t-cmd">lsblk</span>
+<span class="t-out">sdb     16G disk</span>
+<span class="t-out">└─sdb1  16G part</span>
+
 <span class="t-comment"># Formatar como ext4 (padrão Linux)</span>
 <span class="t-root">root@servidor:~#</span> <span class="t-cmd">mkfs.ext4</span> <span class="t-dev">/dev/sdb1</span>
 
-<span class="t-comment"># Formatar como FAT32 (pendrives pequenos, compatível)</span>
+<span class="t-comment"># Formatar como FAT32 (pendrives pequenos, compatível com tudo)</span>
 <span class="t-root">root@servidor:~#</span> <span class="t-cmd">mkfs.vfat</span> <span class="t-flag">-F 32</span> <span class="t-dev">/dev/sdb1</span>
 
 <span class="t-comment"># Formatar como exFAT (pendrives grandes)</span>
@@ -370,42 +1026,42 @@ UUID=1A2B-3C4D                             /mnt/usb vfat  defaults,nofail 0 0
             <div class="cmd-card">
                 <span class="cmd">lsblk</span>
                 <strong>Listar Discos</strong>
-                <span>Mostra dispositivos e parti&ccedil;&otilde;es.</span>
+                <span>Mostra dispositivos, parti&ccedil;&otilde;es e pontos de montagem.</span>
             </div>
             <div class="cmd-card">
                 <span class="cmd">mount</span>
                 <strong>Montar</strong>
-                <span>Conecta dispositivo a uma pasta.</span>
+                <span>Conecta dispositivo a uma pasta da &aacute;rvore.</span>
             </div>
             <div class="cmd-card">
                 <span class="cmd">umount</span>
                 <strong>Desmontar</strong>
-                <span>Desconecta antes de remover.</span>
+                <span>Desconecta com seguran&ccedil;a antes de remover.</span>
             </div>
             <div class="cmd-card">
                 <span class="cmd">df -h</span>
                 <strong>Espa&ccedil;o em Disco</strong>
-                <span>Uso por ponto de montagem.</span>
+                <span>Uso e disponibilidade por ponto de montagem.</span>
             </div>
             <div class="cmd-card">
                 <span class="cmd">blkid</span>
-                <strong>Identificar UUID</strong>
-                <span>UUID e tipo de cada parti&ccedil;&atilde;o.</span>
+                <strong>UUID e Tipo</strong>
+                <span>UUID e filesystem de cada parti&ccedil;&atilde;o.</span>
             </div>
             <div class="cmd-card">
                 <span class="cmd">mkfs.ext4</span>
                 <strong>Formatar</strong>
-                <span>mkfs.vfat, mkfs.ntfs, etc.</span>
+                <span>mkfs.vfat, mkfs.exfat, mkfs.ntfs, etc.</span>
             </div>
             <div class="cmd-card">
                 <span class="cmd">lsof</span>
-                <strong>Listar Processos</strong>
-                <span>Quem usa o dispositivo.</span>
+                <strong>Processo usando disco</strong>
+                <span>Quem est&aacute; usando o dispositivo (umount busy).</span>
             </div>
             <div class="cmd-card">
                 <span class="cmd">mount -a</span>
                 <strong>Testar fstab</strong>
-                <span>Aplica fstab sem reiniciar.</span>
+                <span>Aplica o /etc/fstab sem precisar reiniciar.</span>
             </div>
         </div>
 
@@ -492,14 +1148,14 @@ UUID=1A2B-3C4D                             /mnt/usb vfat  defaults,nofail 0 0
                 <div class="step-num">1</div>
                 <div class="step-body">
                     <div class="step-label">Inspecione os discos do sistema</div>
-                    <div class="step-desc">Execute <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">lsblk</code> e depois <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">df -h</code>. Identifique: quantos discos existem, quais parti&ccedil;&otilde;es est&atilde;o montadas e qual o espa&ccedil;o dispon&iacute;vel em cada uma. Tire screenshot.</div>
+                    <div class="step-desc">Execute <code>lsblk</code> e depois <code>df -h</code>. Identifique: quantos discos existem, quais parti&ccedil;&otilde;es est&atilde;o montadas e qual o espa&ccedil;o dispon&iacute;vel em cada uma. Tire screenshot.</div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">2</div>
                 <div class="step-body">
                     <div class="step-label">Leia o /etc/fstab e entenda cada linha</div>
-                    <div class="step-desc">Execute <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">cat /etc/fstab</code>. Para cada linha ativa (sem <code>#</code>), identifique: o dispositivo ou UUID, o ponto de montagem, o tipo de filesystem e as op&ccedil;&otilde;es. Execute tamb&eacute;m <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">blkid</code> para confirmar os UUIDs.</div>
+                    <div class="step-desc">Execute <code>cat /etc/fstab</code>. Para cada linha ativa (sem <code>#</code>), identifique: o dispositivo ou UUID, o ponto de montagem, o tipo de filesystem e as op&ccedil;&otilde;es. Execute tamb&eacute;m <code>blkid</code> para confirmar os UUIDs.</div>
                 </div>
             </div>
             <div class="prat-step">
@@ -507,7 +1163,7 @@ UUID=1A2B-3C4D                             /mnt/usb vfat  defaults,nofail 0 0
                 <div class="step-body">
                     <div class="step-label">Adicione um disco virtual (loop device)</div>
                     <div class="step-desc">Crie um arquivo de 50 MB e o use como disco virtual:<br>
-                    <code style="background:#f1f5f9;padding:2px 5px;border-radius:3px;font-family:monospace;display:block;margin-top:6px;">dd if=/dev/zero of=/tmp/disco.img bs=1M count=50<br>mkfs.ext4 /tmp/disco.img<br>mkdir -p /mnt/teste<br>mount -o loop /tmp/disco.img /mnt/teste<br>df -h /mnt/teste</code>
+                    <code style="display:block;background:#f1f5f9;padding:8px 12px;border-radius:6px;margin-top:8px;font-family:monospace;font-size:.85em;">dd if=/dev/zero of=/tmp/disco.img bs=1M count=50<br>mkfs.ext4 /tmp/disco.img<br>mkdir -p /mnt/teste<br>mount -o loop /tmp/disco.img /mnt/teste<br>df -h /mnt/teste</code>
                     Confirme que o disco virtual foi montado corretamente.</div>
                 </div>
             </div>
@@ -515,14 +1171,14 @@ UUID=1A2B-3C4D                             /mnt/usb vfat  defaults,nofail 0 0
                 <div class="step-num">4</div>
                 <div class="step-body">
                     <div class="step-label">Crie arquivos e desmonte</div>
-                    <div class="step-desc">Dentro do disco montado, crie alguns arquivos: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">echo "teste" &gt; /mnt/teste/arquivo.txt && ls /mnt/teste</code>. Depois desmonte: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">umount /mnt/teste</code>. Verifique que o conte&uacute;do n&atilde;o est&aacute; mais acess&iacute;vel em <code>/mnt/teste</code>.</div>
+                    <div class="step-desc">Dentro do disco montado, crie alguns arquivos: <code>echo "teste" &gt; /mnt/teste/arquivo.txt &amp;&amp; ls /mnt/teste</code>. Depois desmonte: <code>umount /mnt/teste</code>. Verifique que o conte&uacute;do n&atilde;o est&aacute; mais acess&iacute;vel em <code>/mnt/teste</code>.</div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">5</div>
                 <div class="step-body">
                     <div class="step-label">Remonte e verifique persist&ecirc;ncia</div>
-                    <div class="step-desc">Monte novamente o mesmo arquivo: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">mount -o loop /tmp/disco.img /mnt/teste && ls /mnt/teste</code>. Confirme que o arquivo criado no passo anterior ainda existe. Isso demonstra que o filesystem persiste no arquivo <code>.img</code>. Tire screenshot e desmonte ao finalizar.</div>
+                    <div class="step-desc">Monte novamente o mesmo arquivo: <code>mount -o loop /tmp/disco.img /mnt/teste &amp;&amp; ls /mnt/teste</code>. Confirme que o arquivo criado no passo anterior ainda existe. Isso demonstra que o filesystem persiste no arquivo <code>.img</code>. Tire screenshot e desmonte ao finalizar.</div>
                 </div>
             </div>
         </div>
