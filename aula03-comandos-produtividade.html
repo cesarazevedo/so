@@ -724,42 +724,110 @@
                 <div class="step-num">1</div>
                 <div class="step-body">
                     <div class="step-label">Navegar pelos diretórios principais</div>
-                    <div class="step-desc">Execute <code>pwd</code> para confirmar onde está, navegue com <code>cd /var/log</code> e liste com <code>ls -lh</code>. Volte para a home com <code>cd</code>.</div>
+                    <div class="step-desc">Confirme onde está, navegue até <code>/var/log</code>, liste os arquivos e volte para a home com <code>cd</code> sem argumentos:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — passo 1</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">pwd</span>
+<span class="t-out">/home/usuario</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">cd</span> <span class="t-path">/var/log</span>
+<span class="t-prompt">usuario@servidor:/var/log$</span> <span class="t-cmd">ls</span> <span class="t-flag">-lh</span>
+<span class="t-prompt">usuario@servidor:/var/log$</span> <span class="t-cmd">cd</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-comment"># de volta à home!</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">2</div>
                 <div class="step-body">
                     <div class="step-label">Criar uma estrutura de pastas de projeto</div>
-                    <div class="step-desc">Crie em um único comando: <code>mkdir -p ~/lab-terminal/{scripts,logs,backup}</code>. Confirme com <code>ls -la ~/lab-terminal/</code>. Crie três arquivos com <code>touch</code> dentro de <code>scripts/</code>.</div>
+                    <div class="step-desc">Crie toda a estrutura em um único comando com <code>mkdir -p</code>, confirme e crie três arquivos com <code>touch</code> dentro de <code>scripts/</code>:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — passo 2</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">mkdir</span> <span class="t-flag">-p</span> <span class="t-arg">~/lab-terminal/{scripts,logs,backup}</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-la</span> <span class="t-path">~/lab-terminal/</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">touch</span> <span class="t-arg">~/lab-terminal/scripts/arquivo1.txt ~/lab-terminal/scripts/arquivo2.txt ~/lab-terminal/scripts/arquivo3.txt</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">3</div>
                 <div class="step-body">
                     <div class="step-label">Copiar e mover arquivos</div>
-                    <div class="step-desc">Copie um arquivo para <code>backup/</code>: <code>cp ~/lab-terminal/scripts/arquivo1.txt ~/lab-terminal/backup/</code>. Mova e renomeie outro: <code>mv ~/lab-terminal/scripts/arquivo2.txt ~/lab-terminal/logs/registro.txt</code>.</div>
+                    <div class="step-desc">Copie um arquivo para <code>backup/</code> e mova (renomeando) outro para <code>logs/</code>:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — passo 3</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">cp</span> <span class="t-arg">~/lab-terminal/scripts/arquivo1.txt</span> <span class="t-path">~/lab-terminal/backup/</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">mv</span> <span class="t-arg">~/lab-terminal/scripts/arquivo2.txt</span> <span class="t-arg">~/lab-terminal/logs/registro.txt</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">4</div>
                 <div class="step-body">
                     <div class="step-label">Buscar arquivos com find e grep</div>
-                    <div class="step-desc">Localize todos os .txt: <code>find ~/lab-terminal -name "*.txt"</code>. Adicione texto: <code>echo "teste de busca com grep" > ~/lab-terminal/scripts/notas.txt</code> e busque com <code>grep -r "grep" ~/lab-terminal/</code>.</div>
+                    <div class="step-desc">Localize todos os <code>.txt</code>, adicione conteúdo a um arquivo e faça uma busca recursiva com <code>grep</code>:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — passo 4</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">find</span> <span class="t-path">~/lab-terminal</span> <span class="t-flag">-name</span> <span class="t-string">"*.txt"</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">echo</span> <span class="t-string">"teste de busca com grep"</span> <span class="t-arg">&gt;</span> <span class="t-path">~/lab-terminal/scripts/notas.txt</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">grep</span> <span class="t-flag">-r</span> <span class="t-string">"grep"</span> <span class="t-path">~/lab-terminal/</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">5</div>
                 <div class="step-body">
                     <div class="step-label">Usar pipes para filtrar dados</div>
-                    <div class="step-desc">Combine: <code>ls -la ~/lab-terminal/ | grep "^d"</code> (só pastas), <code>ps aux | grep bash</code> (processos bash) e <code>ls | wc -l</code> (conta arquivos).</div>
+                    <div class="step-desc">Combine comandos com <code>|</code> para filtrar só pastas, localizar processos e contar arquivos:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — passo 5</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-la</span> <span class="t-path">~/lab-terminal/</span> <span class="t-arg">|</span> <span class="t-cmd">grep</span> <span class="t-string">"^d"</span>    <span class="t-comment"># só pastas</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ps aux</span> <span class="t-arg">|</span> <span class="t-cmd">grep</span> <span class="t-arg">bash</span>                 <span class="t-comment"># processos bash</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-arg">|</span> <span class="t-cmd">wc -l</span>                           <span class="t-comment"># conta arquivos</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">6</div>
                 <div class="step-body">
                     <div class="step-label">Redirecionar saída para arquivo de log</div>
-                    <div class="step-desc">Gere um relatório: <code>echo "=== Relatório $(date) ===" > ~/lab-terminal/logs/relatorio.txt</code>, depois <code>ls -la ~/lab-terminal/ >> ~/lab-terminal/logs/relatorio.txt</code>. Visualize com <code>cat ~/lab-terminal/logs/relatorio.txt</code>.</div>
+                    <div class="step-desc">Gere um relatório com <code>&gt;</code> (cria) e <code>&gt;&gt;</code> (acrescenta), depois visualize o resultado:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — passo 6</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">echo</span> <span class="t-string">"=== Relatório $(date) ==="</span> <span class="t-arg">&gt;</span> <span class="t-path">~/lab-terminal/logs/relatorio.txt</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-la</span> <span class="t-path">~/lab-terminal/</span> <span class="t-arg">&gt;&gt;</span> <span class="t-path">~/lab-terminal/logs/relatorio.txt</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">cat</span> <span class="t-path">~/lab-terminal/logs/relatorio.txt</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
