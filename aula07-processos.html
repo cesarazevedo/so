@@ -966,43 +966,127 @@
             <div class="prat-step">
                 <div class="step-num">1</div>
                 <div class="step-body">
-                    <div class="step-label">Use o <code>top</code> para ver processos em tempo real</div>
-                    <div class="step-desc">Execute <code>top</code>. Pressione <strong>M</strong> para ordenar por mem&oacute;ria e <strong>P</strong> para voltar a CPU. Tire screenshot com os 5 primeiros processos. Pressione <strong>q</strong> para sair.</div>
+                    <div class="step-label">Use o top para ver processos em tempo real</div>
+                    <div class="step-desc">Abra o monitor interativo, ordene por memória e depois por CPU. Tire screenshot com os 5 primeiros processos:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — passo 1</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">top</span>
+<span class="t-comment"># dentro do top:</span>
+<span class="t-comment">#   M  — ordena por uso de memória</span>
+<span class="t-comment">#   P  — ordena por uso de CPU</span>
+<span class="t-comment">#   q  — sai</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">2</div>
                 <div class="step-body">
-                    <div class="step-label">Liste e conte processos com <code>ps aux</code></div>
-                    <div class="step-desc">Execute <code>ps aux</code> e observe a sa&iacute;da. Em seguida <code>ps aux | wc -l</code> para contar quantos processos est&atilde;o rodando. Anote o n&uacute;mero.</div>
+                    <div class="step-label">Liste e conte processos com ps aux</div>
+                    <div class="step-desc">Liste todos os processos e conte quantos estão rodando no momento. Anote o número:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — passo 2</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ps</span> <span class="t-flag">aux</span>
+<span class="t-out">USER       PID %CPU %MEM    VSZ   RSS COMMAND</span>
+<span class="t-out">root         1  0.0  0.3 169512 12288 /sbin/init</span>
+<span class="t-out">root         2  0.0  0.0      0     0 [kthreadd]</span>
+<span class="t-comment"># conta o total de processos em execução</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ps</span> <span class="t-flag">aux</span> | <span class="t-cmd">wc</span> <span class="t-flag">-l</span>
+<span class="t-out">112</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">3</div>
                 <div class="step-body">
-                    <div class="step-label">Crie e encerre um processo com <code>kill</code></div>
-                    <div class="step-desc">Execute <code>sleep 300 &amp;</code> para criar um processo em background. Anote o PID exibido. Encerre com <code>kill PID</code> e confirme com <code>ps aux | grep sleep</code>.</div>
+                    <div class="step-label">Crie e encerre um processo com kill</div>
+                    <div class="step-desc">Dispare um processo em background, anote o PID, encerre-o e confirme que sumiu:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — passo 3</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">sleep</span> <span class="t-arg">300</span> <span class="t-arg">&amp;</span>
+<span class="t-out">[1] 4821</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">kill</span> <span class="t-arg">4821</span>
+<span class="t-out">[1]+  Terminated    sleep 300</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ps</span> <span class="t-flag">aux</span> | <span class="t-cmd">grep</span> <span class="t-arg">sleep</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">4</div>
                 <div class="step-body">
-                    <div class="step-label">Gerencie o SSH com <code>systemctl</code></div>
-                    <div class="step-desc">Execute em sequ&ecirc;ncia: <code>sudo systemctl status ssh</code>, <code>sudo systemctl restart ssh</code> e novamente <code>sudo systemctl status ssh</code>. Verifique que o servi&ccedil;o reiniciou (PID mudou).</div>
+                    <div class="step-label">Gerencie o SSH com systemctl</div>
+                    <div class="step-desc">Verifique o status, reinicie o serviço e confirme que o PID mudou após o restart:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — passo 4</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">sudo</span> systemctl status <span class="t-arg">ssh</span>
+<span class="t-out">● ssh.service - OpenBSD Secure Shell server</span>
+<span class="t-out">     Active: active (running) since ... ; 2h ago</span>
+<span class="t-out">   Main PID: 683 (sshd)</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">sudo</span> systemctl restart <span class="t-arg">ssh</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">sudo</span> systemctl status <span class="t-arg">ssh</span>
+<span class="t-out">     Active: active (running) since ... ; 2s ago</span>
+<span class="t-out">   Main PID: 5103 (sshd)</span>   <span class="t-comment"># PID diferente — reiniciou!</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">5</div>
                 <div class="step-body">
-                    <div class="step-label">Investigue logs com <code>journalctl</code></div>
-                    <div class="step-desc">Execute <code>sudo journalctl -u ssh -n 20</code> para ver as &uacute;ltimas 20 linhas do SSH. Voc&ecirc; deve ver o registro do restart do passo anterior. Tire screenshot mostrando as entradas de log com o hor&aacute;rio.</div>
+                    <div class="step-label">Investigue logs com journalctl</div>
+                    <div class="step-desc">Leia as últimas entradas do log do SSH e identifique o registro do restart do passo anterior:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — passo 5</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">sudo</span> journalctl <span class="t-flag">-u</span> <span class="t-arg">ssh</span> <span class="t-flag">-n</span> <span class="t-arg">20</span>
+<span class="t-out">Mar 22 14:10:01 servidor sshd[683]: Server listening on 0.0.0.0 port 22.</span>
+<span class="t-out">Mar 22 15:33:44 servidor systemd[1]: Stopping OpenBSD Secure Shell server...</span>
+<span class="t-out">Mar 22 15:33:44 servidor systemd[1]: Started OpenBSD Secure Shell server.</span>
+<span class="t-out">Mar 22 15:33:44 servidor sshd[5103]: Server listening on 0.0.0.0 port 22.</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">6</div>
                 <div class="step-body">
-                    <div class="step-label">Teste o <code>nice</code> com uma tarefa pesada</div>
-                    <div class="step-desc">Execute <code>nice -n 19 find / -name "*.log" 2>/dev/null</code>. Em outro terminal, observe com <code>top</code> que o processo <code>find</code> tem prioridade baixa (coluna NI = 19). Encerre com Ctrl+C.</div>
+                    <div class="step-label">Teste o nice com uma tarefa pesada</div>
+                    <div class="step-desc">Execute um processo com prioridade mínima e observe no <code>top</code> que a coluna NI mostra 19 (mais gentil com outros processos):</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — passo 6</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-comment"># niceness 19 = menor prioridade possível</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">nice</span> <span class="t-flag">-n</span> <span class="t-arg">19</span> <span class="t-cmd">find</span> / <span class="t-flag">-name</span> <span class="t-string">"*.log"</span> <span class="t-arg">2&gt;</span>/dev/null
+<span class="t-comment"># em outro terminal, observe NI=19 na coluna do find:</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ps</span> <span class="t-flag">-o</span> <span class="t-arg">pid,ni,comm</span> <span class="t-flag">-C</span> <span class="t-arg">find</span>
+<span class="t-out">  PID  NI COMMAND</span>
+<span class="t-out"> 5210  19 find</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
