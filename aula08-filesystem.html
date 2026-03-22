@@ -1148,37 +1148,112 @@ UUID=1A2B-3C4D                             /mnt/usb vfat  defaults,nofail 0 0
                 <div class="step-num">1</div>
                 <div class="step-body">
                     <div class="step-label">Inspecione os discos do sistema</div>
-                    <div class="step-desc">Execute <code>lsblk</code> e depois <code>df -h</code>. Identifique: quantos discos existem, quais parti&ccedil;&otilde;es est&atilde;o montadas e qual o espa&ccedil;o dispon&iacute;vel em cada uma. Tire screenshot.</div>
+                    <div class="step-desc">Visualize a árvore de blocos e o espaço disponível em cada partição montada. Tire screenshot:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — passo 1</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">lsblk</span>
+<span class="t-out">NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT</span>
+<span class="t-out">sda      8:0    0   20G  0 disk</span>
+<span class="t-out">├─sda1   8:1    0   19G  0 part /</span>
+<span class="t-out">└─sda2   8:2    0    1G  0 part [SWAP]</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">df</span> <span class="t-flag">-h</span>
+<span class="t-out">Filesystem      Size  Used Avail Use% Mounted on</span>
+<span class="t-out">/dev/sda1        19G  4,2G   14G  24% /</span>
+<span class="t-out">tmpfs           991M     0  991M   0% /dev/shm</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">2</div>
                 <div class="step-body">
                     <div class="step-label">Leia o /etc/fstab e entenda cada linha</div>
-                    <div class="step-desc">Execute <code>cat /etc/fstab</code>. Para cada linha ativa (sem <code>#</code>), identifique: o dispositivo ou UUID, o ponto de montagem, o tipo de filesystem e as op&ccedil;&otilde;es. Execute tamb&eacute;m <code>blkid</code> para confirmar os UUIDs.</div>
+                    <div class="step-desc">Para cada linha ativa (sem <code>#</code>), identifique: UUID, ponto de montagem, tipo e opções. Confirme os UUIDs com <code>blkid</code>:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — passo 2</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">cat</span> <span class="t-path">/etc/fstab</span>
+<span class="t-out"># &lt;file system&gt;  &lt;mount point&gt;  &lt;type&gt;  &lt;options&gt;  &lt;dump&gt;  &lt;pass&gt;</span>
+<span class="t-out">UUID=a1b2c3d4-...  /       ext4  errors=remount-ro  0  1</span>
+<span class="t-out">UUID=e5f6a7b8-...  none    swap  sw                 0  0</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">sudo</span> blkid
+<span class="t-out">/dev/sda1: UUID="a1b2c3d4-..." TYPE="ext4"</span>
+<span class="t-out">/dev/sda2: UUID="e5f6a7b8-..." TYPE="swap"</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">3</div>
                 <div class="step-body">
                     <div class="step-label">Adicione um disco virtual (loop device)</div>
-                    <div class="step-desc">Crie um arquivo de 50 MB e o use como disco virtual:<br>
-                    <code style="display:block;background:#f1f5f9;padding:8px 12px;border-radius:6px;margin-top:8px;font-family:monospace;font-size:.85em;">dd if=/dev/zero of=/tmp/disco.img bs=1M count=50<br>mkfs.ext4 /tmp/disco.img<br>mkdir -p /mnt/teste<br>mount -o loop /tmp/disco.img /mnt/teste<br>df -h /mnt/teste</code>
-                    Confirme que o disco virtual foi montado corretamente.</div>
+                    <div class="step-desc">Crie um arquivo de 50 MB, formate-o como ext4 e monte-o como se fosse um disco real:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — passo 3</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">dd</span> <span class="t-arg">if=/dev/zero</span> <span class="t-arg">of=/tmp/disco.img</span> <span class="t-arg">bs=1M</span> <span class="t-arg">count=50</span>
+<span class="t-out">50+0 records in — 52428800 bytes (52 MB) copied</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">sudo</span> mkfs.ext4 <span class="t-path">/tmp/disco.img</span>
+<span class="t-out">Creating filesystem with 51200 1k blocks and 12824 inodes</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">sudo</span> mkdir <span class="t-flag">-p</span> <span class="t-path">/mnt/teste</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">sudo</span> mount <span class="t-flag">-o</span> <span class="t-arg">loop</span> <span class="t-path">/tmp/disco.img</span> <span class="t-path">/mnt/teste</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">df</span> <span class="t-flag">-h</span> <span class="t-path">/mnt/teste</span>
+<span class="t-out">/dev/loop0       46M  1,4M   42M   4% /mnt/teste</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">4</div>
                 <div class="step-body">
                     <div class="step-label">Crie arquivos e desmonte</div>
-                    <div class="step-desc">Dentro do disco montado, crie alguns arquivos: <code>echo "teste" &gt; /mnt/teste/arquivo.txt &amp;&amp; ls /mnt/teste</code>. Depois desmonte: <code>umount /mnt/teste</code>. Verifique que o conte&uacute;do n&atilde;o est&aacute; mais acess&iacute;vel em <code>/mnt/teste</code>.</div>
+                    <div class="step-desc">Escreva um arquivo dentro do disco virtual, desmonte e confirme que o conteúdo não está mais acessível:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — passo 4</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">bash</span> <span class="t-flag">-c</span> <span class="t-string">'echo "teste" &gt; /mnt/teste/arquivo.txt'</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-path">/mnt/teste</span>
+<span class="t-out">arquivo.txt  lost+found</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">sudo</span> umount <span class="t-path">/mnt/teste</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-path">/mnt/teste</span>
+<span class="t-out">                      </span><span class="t-comment"># vazio — disco desmontado</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">5</div>
                 <div class="step-body">
-                    <div class="step-label">Remonte e verifique persist&ecirc;ncia</div>
-                    <div class="step-desc">Monte novamente o mesmo arquivo: <code>mount -o loop /tmp/disco.img /mnt/teste &amp;&amp; ls /mnt/teste</code>. Confirme que o arquivo criado no passo anterior ainda existe. Isso demonstra que o filesystem persiste no arquivo <code>.img</code>. Tire screenshot e desmonte ao finalizar.</div>
+                    <div class="step-label">Remonte e verifique persistência</div>
+                    <div class="step-desc">Monte novamente o mesmo <code>.img</code> e confirme que o arquivo criado antes ainda existe — o filesystem persiste no arquivo:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — passo 5</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">sudo</span> mount <span class="t-flag">-o</span> <span class="t-arg">loop</span> <span class="t-path">/tmp/disco.img</span> <span class="t-path">/mnt/teste</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-path">/mnt/teste</span>
+<span class="t-out">arquivo.txt  lost+found</span>   <span class="t-comment"># arquivo ainda existe!</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">cat</span> <span class="t-path">/mnt/teste/arquivo.txt</span>
+<span class="t-out">teste</span>
+<span class="t-comment"># desmonte ao finalizar</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">sudo</span> umount <span class="t-path">/mnt/teste</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
