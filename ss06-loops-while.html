@@ -566,29 +566,168 @@
             <div class="prat-step">
                 <div class="step-num">1</div>
                 <div class="step-body">
-                    <div class="step-label">Contador b&aacute;sico</div>
-                    <div class="step-desc">Crie <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">contador.sh</code> que use <code>while</code> para contar de 1 at&eacute; 10, exibindo cada n&uacute;mero. Em seguida, adapte para contar de 10 at&eacute; 1 (contagem regressiva) usando <code>-gt</code> e decremento.</div>
+                    <div class="step-label">Contador básico</div>
+                    <div class="step-desc">Escreva <code>contador.sh</code> com dois loops <code>while</code>: crescente de 1 a 10 e contagem regressiva de 10 a 1:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">~/scripts/contador.sh</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-shebang">#!/bin/bash</span>
+<span class="t-comment"># crescente</span>
+<span class="t-var">N</span>=<span class="t-arg">1</span>
+<span class="t-cmd">while</span> [ <span class="t-string">"<span class="t-var">$N</span>"</span> <span class="t-flag">-le</span> <span class="t-arg">10</span> ]; <span class="t-cmd">do</span>
+    <span class="t-cmd">echo</span> <span class="t-flag">-n</span> <span class="t-string">"<span class="t-var">$N</span> "</span>
+    <span class="t-var">N</span>=$(( <span class="t-var">N</span> + 1 ))
+<span class="t-cmd">done</span>; <span class="t-cmd">echo</span>
+
+<span class="t-comment"># regressiva</span>
+<span class="t-var">N</span>=<span class="t-arg">10</span>
+<span class="t-cmd">while</span> [ <span class="t-string">"<span class="t-var">$N</span>"</span> <span class="t-flag">-gt</span> <span class="t-arg">0</span> ]; <span class="t-cmd">do</span>
+    <span class="t-cmd">echo</span> <span class="t-flag">-n</span> <span class="t-string">"<span class="t-var">$N</span> "</span>
+    <span class="t-var">N</span>=$(( <span class="t-var">N</span> - 1 ))
+<span class="t-cmd">done</span>; <span class="t-cmd">echo</span>
+                        </div>
+                    </div>
+                    <div class="terminal" style="margin-top:8px;">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — saída</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~/scripts$</span> <span class="t-arg">./contador.sh</span>
+<span class="t-out">1 2 3 4 5 6 7 8 9 10</span>
+<span class="t-out">10 9 8 7 6 5 4 3 2 1</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">2</div>
                 <div class="step-body">
                     <div class="step-label">Menu interativo</div>
-                    <div class="step-desc">Crie <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">menu.sh</code> com <code>while true</code> + <code>case</code> que ofere&ccedil;a 4 op&ccedil;&otilde;es: exibir data (<code>date</code>), espa&ccedil;o em disco (<code>df -h</code>), usu&aacute;rio logado (<code>whoami</code>) e sair. O menu deve reaparecer ap&oacute;s cada a&ccedil;&atilde;o.</div>
+                    <div class="step-desc">Escreva <code>menu.sh</code> com <code>while true</code> + <code>case</code>. O menu reaparece após cada ação até o usuário escolher sair:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">~/scripts/menu.sh</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-shebang">#!/bin/bash</span>
+<span class="t-cmd">while</span> true; <span class="t-cmd">do</span>
+    <span class="t-cmd">echo</span> <span class="t-string">"--- MENU ---"</span>
+    <span class="t-cmd">echo</span> <span class="t-string">"1) Data  2) Disco  3) Usuário  4) Sair"</span>
+    <span class="t-cmd">read</span> <span class="t-flag">-p</span> <span class="t-string">"Opção: "</span> <span class="t-var">OP</span>
+    <span class="t-cmd">case</span> <span class="t-string">"<span class="t-var">$OP</span>"</span> <span class="t-cmd">in</span>
+        1) <span class="t-cmd">date</span> ;;
+        2) <span class="t-cmd">df</span> <span class="t-flag">-h</span> ;;
+        3) <span class="t-cmd">whoami</span> ;;
+        4) <span class="t-cmd">echo</span> <span class="t-string">"Saindo..."</span>; <span class="t-cmd">break</span> ;;
+        *) <span class="t-cmd">echo</span> <span class="t-string">"Opção inválida"</span> ;;
+    <span class="t-cmd">esac</span>
+<span class="t-cmd">done</span>
+                        </div>
+                    </div>
+                    <div class="terminal" style="margin-top:8px;">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — sessão de uso</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~/scripts$</span> <span class="t-arg">./menu.sh</span>
+<span class="t-out">--- MENU ---</span>
+<span class="t-out">1) Data  2) Disco  3) Usuário  4) Sair</span>
+<span class="t-out">Opção: 1</span>
+<span class="t-out">Sáb Mar 22 10:30:00 -03 2026</span>
+<span class="t-out">--- MENU ---</span>
+<span class="t-out">1) Data  2) Disco  3) Usuário  4) Sair</span>
+<span class="t-out">Opção: 4</span>
+<span class="t-out">Saindo...</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">3</div>
                 <div class="step-body">
                     <div class="step-label">Leitura de arquivo</div>
-                    <div class="step-desc">Crie um arquivo <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">nomes.txt</code> com 5 nomes completos (um por linha). Fa&ccedil;a <code>ler-nomes.sh</code> com <code>while read</code> que exiba cada nome numerado e tamb&eacute;m conte quantas letras tem cada nome com <code>${#NOME}</code>.</div>
+                    <div class="step-desc">Crie <code>nomes.txt</code> com 5 nomes e escreva <code>ler-nomes.sh</code> com <code>while read</code> exibindo cada nome numerado e seu comprimento:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">~/scripts/ler-nomes.sh</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-shebang">#!/bin/bash</span>
+<span class="t-var">I</span>=<span class="t-arg">1</span>
+<span class="t-cmd">while</span> <span class="t-cmd">read</span> <span class="t-flag">-r</span> <span class="t-var">NOME</span>; <span class="t-cmd">do</span>
+    <span class="t-cmd">echo</span> <span class="t-string">"<span class="t-var">$I</span>. <span class="t-var">$NOME</span> (<span class="t-var">${#NOME}</span> letras)"</span>
+    <span class="t-var">I</span>=$(( <span class="t-var">I</span> + 1 ))
+<span class="t-cmd">done</span> <span class="t-arg">&lt;</span> nomes.txt
+                        </div>
+                    </div>
+                    <div class="terminal" style="margin-top:8px;">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — criar arquivo e executar</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~/scripts$</span> <span class="t-cmd">printf</span> <span class="t-string">"Ana Silva\nBruno Costa\nCarla Souza\nDiego Lima\nElisa Ramos\n"</span> <span class="t-arg">&gt;</span> nomes.txt
+<span class="t-prompt">usuario@servidor:~/scripts$</span> <span class="t-arg">./ler-nomes.sh</span>
+<span class="t-out">1. Ana Silva (9 letras)</span>
+<span class="t-out">2. Bruno Costa (11 letras)</span>
+<span class="t-out">3. Carla Souza (11 letras)</span>
+<span class="t-out">4. Diego Lima (10 letras)</span>
+<span class="t-out">5. Elisa Ramos (11 letras)</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">4</div>
                 <div class="step-body">
-                    <div class="step-label">Jogo de adivinha&ccedil;&atilde;o</div>
-                    <div class="step-desc">Implemente <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">adivinha.sh</code> com n&uacute;mero secreto fixo. Use <code>while true</code> e d&ecirc; dicas &ldquo;Maior!&rdquo; ou &ldquo;Menor!&rdquo;. Ao acertar, exiba o n&uacute;mero de tentativas. Bônus: limite em 5 tentativas usando um contador com <code>break</code> ao atingir o limite.</div>
+                    <div class="step-label">Jogo de adivinhação</div>
+                    <div class="step-desc">Implemente <code>adivinha.sh</code> com dicas e limite de 5 tentativas usando <code>break</code>:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">~/scripts/adivinha.sh</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-shebang">#!/bin/bash</span>
+<span class="t-var">SECRETO</span>=<span class="t-arg">42</span>
+<span class="t-var">TENTATIVAS</span>=<span class="t-arg">0</span>
+
+<span class="t-cmd">while</span> true; <span class="t-cmd">do</span>
+    <span class="t-cmd">read</span> <span class="t-flag">-p</span> <span class="t-string">"Chute (tentativa $((<span class="t-var">TENTATIVAS</span>+1))/5): "</span> <span class="t-var">PALPITE</span>
+    <span class="t-var">TENTATIVAS</span>=$(( <span class="t-var">TENTATIVAS</span> + 1 ))
+    <span class="t-cmd">if</span> [ <span class="t-string">"<span class="t-var">$PALPITE</span>"</span> <span class="t-flag">-eq</span> <span class="t-var">$SECRETO</span> ]; <span class="t-cmd">then</span>
+        <span class="t-cmd">echo</span> <span class="t-string">"🎉 Acertou em <span class="t-var">$TENTATIVAS</span> tentativas!"</span>; <span class="t-cmd">break</span>
+    <span class="t-cmd">elif</span> [ <span class="t-string">"<span class="t-var">$PALPITE</span>"</span> <span class="t-flag">-lt</span> <span class="t-var">$SECRETO</span> ]; <span class="t-cmd">then</span>
+        <span class="t-cmd">echo</span> <span class="t-string">"📈 Maior!"</span>
+    <span class="t-cmd">else</span>
+        <span class="t-cmd">echo</span> <span class="t-string">"📉 Menor!"</span>
+    <span class="t-cmd">fi</span>
+    [ <span class="t-string">"<span class="t-var">$TENTATIVAS</span>"</span> <span class="t-flag">-ge</span> <span class="t-arg">5</span> ] <span class="t-arg">&amp;&amp;</span> <span class="t-cmd">echo</span> <span class="t-string">"❌ Fim! Era <span class="t-var">$SECRETO</span>"</span> <span class="t-arg">&amp;&amp;</span> <span class="t-cmd">break</span>
+<span class="t-cmd">done</span>
+                        </div>
+                    </div>
+                    <div class="terminal" style="margin-top:8px;">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — partida de exemplo</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~/scripts$</span> <span class="t-arg">./adivinha.sh</span>
+<span class="t-out">Chute (tentativa 1/5): 50</span>
+<span class="t-out">📉 Menor!</span>
+<span class="t-out">Chute (tentativa 2/5): 30</span>
+<span class="t-out">📈 Maior!</span>
+<span class="t-out">Chute (tentativa 3/5): 42</span>
+<span class="t-out">🎉 Acertou em 3 tentativas!</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
