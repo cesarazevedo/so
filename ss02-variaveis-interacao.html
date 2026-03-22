@@ -470,42 +470,146 @@
                 <div class="step-num">1</div>
                 <div class="step-body">
                     <div class="step-label">Crie o script que pede nome e e-mail</div>
-                    <div class="step-desc">No terminal: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">vim ~/scripts/cadastro.sh</code>. Pressione <strong>i</strong> e escreva o shebang (<code>#!/bin/bash</code>), coment&aacute;rio de cabe&ccedil;alho e dois <code>read -p</code>: um para <code>NOME</code> e outro para <code>EMAIL</code>. Salve com <kbd>Esc</kbd> <kbd>:wq</kbd>.</div>
+                    <div class="step-desc">Abra o editor e escreva o shebang e dois <code>read -p</code> para capturar os dados do usuário. Salve com <kbd>Esc</kbd> <kbd>:wq</kbd>:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">~/scripts/cadastro.sh — INSERT</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-shebang">#!/bin/bash</span>
+<span class="t-comment"># Cadastro de usuário — Autor: Seu Nome</span>
+<span class="t-cmd">read</span> <span class="t-flag">-p</span> <span class="t-string">"Digite seu nome: "</span> <span class="t-var">NOME</span>
+<span class="t-cmd">read</span> <span class="t-flag">-p</span> <span class="t-string">"Digite seu e-mail: "</span> <span class="t-var">EMAIL</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">2</div>
                 <div class="step-body">
-                    <div class="step-label">Valide se os campos est&atilde;o preenchidos</div>
-                    <div class="step-desc">Ap&oacute;s o <code>read</code> de cada campo, adicione uma verifica&ccedil;&atilde;o simples: <code style="background:#f1f5f9;padding:2px 5px;border-radius:3px;font-family:monospace;display:block;margin-top:6px;">[ -z "$NOME" ] &amp;&amp; echo "ERRO: Nome obrigatório!" &amp;&amp; exit 1</code> Fa&ccedil;a o mesmo para <code>EMAIL</code>. Isso usa operadores de string para checar campo vazio.</div>
+                    <div class="step-label">Valide se os campos estão preenchidos</div>
+                    <div class="step-desc">Após cada <code>read</code>, adicione uma verificação que aborta o script com mensagem de erro se o campo estiver vazio:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">~/scripts/cadastro.sh — validações</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-cmd">read</span> <span class="t-flag">-p</span> <span class="t-string">"Digite seu nome: "</span> <span class="t-var">NOME</span>
+[ <span class="t-flag">-z</span> <span class="t-string">"<span class="t-var">$NOME</span>"</span> ] <span class="t-arg">&amp;&amp;</span> <span class="t-cmd">echo</span> <span class="t-string">"ERRO: Nome obrigatório!"</span> <span class="t-arg">&amp;&amp;</span> <span class="t-cmd">exit</span> <span class="t-arg">1</span>
+
+<span class="t-cmd">read</span> <span class="t-flag">-p</span> <span class="t-string">"Digite seu e-mail: "</span> <span class="t-var">EMAIL</span>
+[ <span class="t-flag">-z</span> <span class="t-string">"<span class="t-var">$EMAIL</span>"</span> ] <span class="t-arg">&amp;&amp;</span> <span class="t-cmd">echo</span> <span class="t-string">"ERRO: E-mail obrigatório!"</span> <span class="t-arg">&amp;&amp;</span> <span class="t-cmd">exit</span> <span class="t-arg">1</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">3</div>
                 <div class="step-body">
-                    <div class="step-label">Exiba o resumo com as vari&aacute;veis</div>
-                    <div class="step-desc">Adicione ao final do script: <code style="background:#f1f5f9;padding:2px 5px;border-radius:3px;font-family:monospace;display:block;margin-top:6px;">DATA=$(date +"%d/%m/%Y %H:%M")<br>echo "=== RESUMO ==="<br>echo "Nome:  $NOME"<br>echo "Email: $EMAIL"<br>echo "Data:  $DATA"</code> Use aspas duplas para garantir a interpreta&ccedil;&atilde;o das vari&aacute;veis.</div>
+                    <div class="step-label">Exiba o resumo com as variáveis</div>
+                    <div class="step-desc">Adicione ao final do script o bloco de resumo usando substituição de comando para capturar a data:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">~/scripts/cadastro.sh — resumo</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-var">DATA</span>=<span class="t-string">$(date +"%d/%m/%Y %H:%M")</span>
+<span class="t-cmd">echo</span> <span class="t-string">"=== RESUMO ==="</span>
+<span class="t-cmd">echo</span> <span class="t-string">"Nome:  <span class="t-var">$NOME</span>"</span>
+<span class="t-cmd">echo</span> <span class="t-string">"Email: <span class="t-var">$EMAIL</span>"</span>
+<span class="t-cmd">echo</span> <span class="t-string">"Data:  <span class="t-var">$DATA</span>"</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">4</div>
                 <div class="step-body">
                     <div class="step-label">Use exit code para indicar sucesso</div>
-                    <div class="step-desc">Na &uacute;ltima linha do script, adicione <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">exit 0</code>. D&ecirc; permiss&atilde;o e execute: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">chmod +x ~/scripts/cadastro.sh &amp;&amp; ~/scripts/cadastro.sh</code>. Ap&oacute;s a execu&ccedil;&atilde;o, execute <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">echo $?</code> e confirme que retorna <code>0</code>.</div>
+                    <div class="step-desc">Adicione <code>exit 0</code> no final, dê permissão, execute e confirme o código de retorno:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — passo 4</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">chmod</span> <span class="t-flag">+x</span> <span class="t-path">~/scripts/cadastro.sh</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-arg">~/scripts/cadastro.sh</span>
+<span class="t-out">Digite seu nome: João Silva</span>
+<span class="t-out">Digite seu e-mail: joao@email.com</span>
+<span class="t-out">=== RESUMO ===</span>
+<span class="t-out">Nome:  João Silva</span>
+<span class="t-out">Email: joao@email.com</span>
+<span class="t-out">Data:  22/03/2026 10:30</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">echo</span> <span class="t-var">$?</span>
+<span class="t-out">0</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">5</div>
                 <div class="step-body">
                     <div class="step-label">Teste com argumentos posicionais</div>
-                    <div class="step-desc">Crie uma vers&atilde;o alternativa que recebe nome via argumento: <code style="background:#f1f5f9;padding:2px 5px;border-radius:3px;font-family:monospace;display:block;margin-top:6px;">NOME=$1<br>echo "Olá, $NOME! (via argumento $0)"<br>echo "Total de argumentos: $#"</code> Execute: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">./cadastro.sh "João Silva"</code> e verifique as vari&aacute;veis especiais.</div>
+                    <div class="step-desc">Adicione ao script o trecho abaixo e passe o nome diretamente como argumento na linha de comando:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">~/scripts/cadastro.sh — argumentos</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-var">NOME</span>=<span class="t-var">$1</span>
+<span class="t-cmd">echo</span> <span class="t-string">"Olá, <span class="t-var">$NOME</span>! (via <span class="t-var">$0</span>)"</span>
+<span class="t-cmd">echo</span> <span class="t-string">"Total de argumentos: <span class="t-var">$#</span>"</span>
+                        </div>
+                    </div>
+                    <div class="terminal" style="margin-top:8px;">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — executar com argumento</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~/scripts$</span> <span class="t-arg">./cadastro.sh</span> <span class="t-string">"João Silva"</span>
+<span class="t-out">Olá, João Silva! (via ./cadastro.sh)</span>
+<span class="t-out">Total de argumentos: 1</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">6</div>
                 <div class="step-body">
                     <div class="step-label">Use export para configurar ambiente</div>
-                    <div class="step-desc">Adicione ao in&iacute;cio do script: <code style="background:#f1f5f9;padding:2px 5px;border-radius:3px;font-family:monospace;display:block;margin-top:6px;">export APP_ENV="dev"<br>export LOG_DIR="$HOME/logs"<br>mkdir -p "$LOG_DIR"<br>echo "Ambiente: $APP_ENV"</code> Verifique que <code>printenv APP_ENV</code> mostra o valor dentro do script e que a pasta de log foi criada.</div>
+                    <div class="step-desc">Exporte variáveis de ambiente ao início do script e verifique que ficam disponíveis durante a execução:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">~/scripts/cadastro.sh — export</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-cmd">export</span> <span class="t-var">APP_ENV</span>=<span class="t-string">"dev"</span>
+<span class="t-cmd">export</span> <span class="t-var">LOG_DIR</span>=<span class="t-string">"$HOME/logs"</span>
+<span class="t-cmd">mkdir</span> <span class="t-flag">-p</span> <span class="t-string">"<span class="t-var">$LOG_DIR</span>"</span>
+<span class="t-cmd">echo</span> <span class="t-string">"Ambiente: <span class="t-var">$APP_ENV</span>"</span>
+<span class="t-cmd">printenv</span> <span class="t-var">APP_ENV</span>
+                        </div>
+                    </div>
+                    <div class="terminal" style="margin-top:8px;">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — verificar resultado</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-arg">~/scripts/cadastro.sh</span>
+<span class="t-out">Ambiente: dev</span>
+<span class="t-out">dev</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-path">~/logs/</span>
+<span class="t-out">                </span><span class="t-comment"># pasta criada com sucesso</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
