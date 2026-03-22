@@ -566,28 +566,154 @@
                 <div class="step-num">1</div>
                 <div class="step-body">
                     <div class="step-label">Backup com wildcards</div>
-                    <div class="step-desc">Crie <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">backup.sh</code> que crie a pasta <code>backup/</code> e copie todos os arquivos <code>.txt</code> do diret&oacute;rio atual para ela usando <code>for</code> com wildcard. Exiba o nome de cada arquivo copiado.</div>
+                    <div class="step-desc">Escreva <code>backup.sh</code> que cria a pasta <code>backup/</code> e copia cada <code>.txt</code> do diretório atual exibindo o progresso:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">~/scripts/backup.sh</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-shebang">#!/bin/bash</span>
+<span class="t-cmd">mkdir</span> <span class="t-flag">-p</span> backup
+
+<span class="t-cmd">for</span> <span class="t-var">ARQ</span> <span class="t-cmd">in</span> *.txt; <span class="t-cmd">do</span>
+    <span class="t-cmd">cp</span> <span class="t-string">"<span class="t-var">$ARQ</span>"</span> backup/
+    <span class="t-cmd">echo</span> <span class="t-string">"✅ Copiado: <span class="t-var">$ARQ</span>"</span>
+<span class="t-cmd">done</span>
+<span class="t-cmd">echo</span> <span class="t-string">"Backup concluído em backup/"</span>
+                        </div>
+                    </div>
+                    <div class="terminal" style="margin-top:8px;">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — executar</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~/scripts$</span> <span class="t-cmd">touch</span> notas.txt config.txt log.txt
+<span class="t-prompt">usuario@servidor:~/scripts$</span> <span class="t-arg">./backup.sh</span>
+<span class="t-out">✅ Copiado: config.txt</span>
+<span class="t-out">✅ Copiado: log.txt</span>
+<span class="t-out">✅ Copiado: notas.txt</span>
+<span class="t-out">Backup concluído em backup/</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">2</div>
                 <div class="step-body">
-                    <div class="step-label">Contagem e sequ&ecirc;ncias</div>
-                    <div class="step-desc">Crie <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">sequencias.sh</code> com tr&ecirc;s loops: um com <code>{1..10}</code>, um com <code>$(seq 0 2 20)</code> (pares at&eacute; 20) e uma contagem regressiva de 5 at&eacute; 1 com <code>sleep 1</code>.</div>
+                    <div class="step-label">Contagem e sequências</div>
+                    <div class="step-desc">Escreva <code>sequencias.sh</code> com três loops: intervalo com <code>{}</code>, pares com <code>seq</code> e contagem regressiva:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">~/scripts/sequencias.sh</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-shebang">#!/bin/bash</span>
+<span class="t-comment"># 1 a 10</span>
+<span class="t-cmd">for</span> <span class="t-var">N</span> <span class="t-cmd">in</span> {1..10}; <span class="t-cmd">do</span> <span class="t-cmd">echo</span> <span class="t-flag">-n</span> <span class="t-string">"<span class="t-var">$N</span> "</span>; <span class="t-cmd">done</span>; <span class="t-cmd">echo</span>
+
+<span class="t-comment"># pares até 20</span>
+<span class="t-cmd">for</span> <span class="t-var">N</span> <span class="t-cmd">in</span> $(<span class="t-cmd">seq</span> <span class="t-arg">0 2 20</span>); <span class="t-cmd">do</span> <span class="t-cmd">echo</span> <span class="t-flag">-n</span> <span class="t-string">"<span class="t-var">$N</span> "</span>; <span class="t-cmd">done</span>; <span class="t-cmd">echo</span>
+
+<span class="t-comment"># contagem regressiva</span>
+<span class="t-cmd">for</span> <span class="t-var">N</span> <span class="t-cmd">in</span> {5..1}; <span class="t-cmd">do</span>
+    <span class="t-cmd">echo</span> <span class="t-string">"<span class="t-var">$N</span>..."</span>; <span class="t-cmd">sleep</span> <span class="t-arg">1</span>
+<span class="t-cmd">done</span>
+<span class="t-cmd">echo</span> <span class="t-string">"🚀 Lançamento!"</span>
+                        </div>
+                    </div>
+                    <div class="terminal" style="margin-top:8px;">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — saída</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~/scripts$</span> <span class="t-arg">./sequencias.sh</span>
+<span class="t-out">1 2 3 4 5 6 7 8 9 10</span>
+<span class="t-out">0 2 4 6 8 10 12 14 16 18 20</span>
+<span class="t-out">5...</span>
+<span class="t-out">4...</span>
+<span class="t-out">3...</span>
+<span class="t-out">2...</span>
+<span class="t-out">1...</span>
+<span class="t-out">🚀 Lançamento!</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">3</div>
                 <div class="step-body">
-                    <div class="step-label">Estrutura de diret&oacute;rios</div>
-                    <div class="step-desc">Crie <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">criar-estrutura.sh</code> que use <code>for ANO in {2022..2025}</code> para criar pastas <code>relatorio_ANO</code> e dentro de cada uma as subpastas <code>jan</code>, <code>fev</code> e <code>mar</code> com outro <code>for</code> aninhado.</div>
+                    <div class="step-label">Estrutura de diretórios</div>
+                    <div class="step-desc">Escreva <code>criar-estrutura.sh</code> com loops aninhados para gerar pastas de relatório por ano e mês:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">~/scripts/criar-estrutura.sh</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-shebang">#!/bin/bash</span>
+<span class="t-cmd">for</span> <span class="t-var">ANO</span> <span class="t-cmd">in</span> {2022..2025}; <span class="t-cmd">do</span>
+    <span class="t-cmd">for</span> <span class="t-var">MES</span> <span class="t-cmd">in</span> jan fev mar; <span class="t-cmd">do</span>
+        <span class="t-cmd">mkdir</span> <span class="t-flag">-p</span> <span class="t-string">"relatorio_<span class="t-var">$ANO</span>/<span class="t-var">$MES</span>"</span>
+    <span class="t-cmd">done</span>
+    <span class="t-cmd">echo</span> <span class="t-string">"📁 relatorio_<span class="t-var">$ANO</span> criado"</span>
+<span class="t-cmd">done</span>
+                        </div>
+                    </div>
+                    <div class="terminal" style="margin-top:8px;">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — executar e verificar</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~/scripts$</span> <span class="t-arg">./criar-estrutura.sh</span>
+<span class="t-out">📁 relatorio_2022 criado</span>
+<span class="t-out">📁 relatorio_2023 criado</span>
+<span class="t-out">📁 relatorio_2024 criado</span>
+<span class="t-out">📁 relatorio_2025 criado</span>
+<span class="t-prompt">usuario@servidor:~/scripts$</span> <span class="t-cmd">ls</span> relatorio_2024/
+<span class="t-out">fev  jan  mar</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">4</div>
                 <div class="step-body">
                     <div class="step-label">Renomeador com contador</div>
-                    <div class="step-desc">Adapte o <code>renomeador.sh</code> da aula para renomear arquivos <code>.txt</code> no formato <code>doc_001.txt</code>, <code>doc_002.txt</code>, usando <code>printf</code> para formatar o n&uacute;mero com zeros &agrave; esquerda: <code>printf "%03d" $CONTADOR</code>.</div>
+                    <div class="step-desc">Escreva <code>renomeador.sh</code> que renomeia cada <code>.txt</code> para <code>doc_001.txt</code>, <code>doc_002.txt</code>… usando <code>printf</code> para formatar o número:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">~/scripts/renomeador.sh</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-shebang">#!/bin/bash</span>
+<span class="t-var">CONTADOR</span>=<span class="t-arg">1</span>
+
+<span class="t-cmd">for</span> <span class="t-var">ARQ</span> <span class="t-cmd">in</span> *.txt; <span class="t-cmd">do</span>
+    <span class="t-var">NOVO</span>=<span class="t-string">"doc_$(printf "%03d" <span class="t-var">$CONTADOR</span>).txt"</span>
+    <span class="t-cmd">mv</span> <span class="t-string">"<span class="t-var">$ARQ</span>"</span> <span class="t-string">"<span class="t-var">$NOVO</span>"</span>
+    <span class="t-cmd">echo</span> <span class="t-string">"<span class="t-var">$ARQ</span> → <span class="t-var">$NOVO</span>"</span>
+    <span class="t-var">CONTADOR</span>=$(( <span class="t-var">CONTADOR</span> + 1 ))
+<span class="t-cmd">done</span>
+                        </div>
+                    </div>
+                    <div class="terminal" style="margin-top:8px;">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — executar</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~/scripts$</span> <span class="t-arg">./renomeador.sh</span>
+<span class="t-out">config.txt → doc_001.txt</span>
+<span class="t-out">log.txt    → doc_002.txt</span>
+<span class="t-out">notas.txt  → doc_003.txt</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
