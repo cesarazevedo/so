@@ -773,42 +773,122 @@
                 <div class="step-num">1</div>
                 <div class="step-body">
                     <div class="step-label">Criar o usuário aluno</div>
-                    <div class="step-desc">Crie um novo usuário com pasta home: <code>sudo useradd -m -s /bin/bash -c "Aluno de SO2" aluno</code>. Confirme com <code>grep "aluno" /etc/passwd</code> e verifique se o home foi criado: <code>ls -la /home/aluno</code>.</div>
+                    <div class="step-desc">Crie um novo usuário com pasta home e confirme a criação no <code>/etc/passwd</code>:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — passo 1</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">sudo</span> useradd <span class="t-flag">-m</span> <span class="t-flag">-s</span> <span class="t-arg">/bin/bash</span> <span class="t-flag">-c</span> <span class="t-string">"Aluno de SO2"</span> <span class="t-arg">aluno</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">grep</span> <span class="t-string">"aluno"</span> /etc/passwd
+<span class="t-out">aluno:x:1001:1001:Aluno de SO2:/home/aluno:/bin/bash</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-la</span> /home/aluno
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">2</div>
                 <div class="step-body">
                     <div class="step-label">Definir a senha do usuário</div>
-                    <div class="step-desc">Defina uma senha: <code>sudo passwd aluno</code>. Em seguida, force a troca no primeiro login (boa prática): <code>sudo passwd -e aluno</code>.</div>
+                    <div class="step-desc">Defina uma senha e force a troca no primeiro login (boa prática de segurança):</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — passo 2</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">sudo</span> passwd <span class="t-arg">aluno</span>
+<span class="t-out">New password:</span>
+<span class="t-out">Retype new password:</span>
+<span class="t-out">passwd: password updated successfully</span>
+<span class="t-comment"># Força troca de senha no primeiro login</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">sudo</span> passwd <span class="t-flag">-e</span> <span class="t-arg">aluno</span>
+<span class="t-out">passwd: password expiry information changed.</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">3</div>
                 <div class="step-body">
                     <div class="step-label">Criar o grupo turma e adicionar o usuário</div>
-                    <div class="step-desc">Crie o grupo: <code>sudo groupadd turma</code>. Adicione o usuário: <code>sudo usermod -aG turma aluno</code>. Confirme: <code>getent group turma</code>.</div>
+                    <div class="step-desc">Crie o grupo e adicione o usuário com <code>-aG</code> (append, sem remover grupos existentes):</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — passo 3</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">sudo</span> groupadd <span class="t-arg">turma</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">sudo</span> usermod <span class="t-flag">-aG</span> <span class="t-arg">turma aluno</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">getent</span> group <span class="t-arg">turma</span>
+<span class="t-out">turma:x:1002:aluno</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">4</div>
                 <div class="step-body">
                     <div class="step-label">Adicionar ao grupo sudo e testar privilégios</div>
-                    <div class="step-desc">Adicione ao sudo: <code>sudo usermod -aG sudo aluno</code>. Troque para o usuário: <code>su - aluno</code>. Teste: <code>sudo ls /root</code>. Se executar, o sudo está funcionando. Volte com <code>exit</code>.</div>
+                    <div class="step-desc">Adicione ao sudo, troque para o usuário e teste se consegue executar comandos como root:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — passo 4</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">sudo</span> usermod <span class="t-flag">-aG</span> <span class="t-arg">sudo aluno</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">su</span> <span class="t-flag">-</span> <span class="t-arg">aluno</span>
+<span class="t-prompt">aluno@servidor:~$</span> <span class="t-cmd">sudo</span> ls /root
+<span class="t-out">[sudo] password for aluno:</span>
+<span class="t-out">snap</span>
+<span class="t-prompt">aluno@servidor:~$</span> <span class="t-cmd">exit</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">5</div>
                 <div class="step-body">
                     <div class="step-label">Verificar com id e groups</div>
-                    <div class="step-desc">Verifique todos os grupos: <code>id aluno</code>. Deve mostrar UID, GID e grupos: aluno, turma e sudo. Confirme com <code>groups aluno</code>, <code>who</code> e <code>w</code>.</div>
+                    <div class="step-desc">Confirme que o usuário aparece nos três grupos esperados — aluno, turma e sudo:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — passo 5</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">id</span> <span class="t-arg">aluno</span>
+<span class="t-out">uid=1001(aluno) gid=1001(aluno) grupos=1001(aluno),27(sudo),1002(turma)</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">groups</span> <span class="t-arg">aluno</span>
+<span class="t-out">aluno : aluno sudo turma</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">who</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">w</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">6</div>
                 <div class="step-body">
                     <div class="step-label">Limpar: remover o usuário de teste</div>
-                    <div class="step-desc">Remova o usuário e a pasta home: <code>sudo userdel -r aluno</code>. Confirme a remoção com <code>id aluno</code> (deve dar erro) e <code>ls /home/</code>. Tire screenshot mostrando o resultado.</div>
+                    <div class="step-desc">Remova o usuário e sua pasta home. Confirme que o sistema não reconhece mais a conta:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — passo 6</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">sudo</span> userdel <span class="t-flag">-r</span> <span class="t-arg">aluno</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">id</span> <span class="t-arg">aluno</span>
+<span class="t-out">id: 'aluno': no such user</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> /home/
+<span class="t-out">usuario</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
