@@ -642,29 +642,176 @@
             <div class="prat-step">
                 <div class="step-num">1</div>
                 <div class="step-body">
-                    <div class="step-label">Fun&ccedil;&otilde;es b&aacute;sicas com par&acirc;metros</div>
-                    <div class="step-desc">Crie <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">calculadora.sh</code> com quatro fun&ccedil;&otilde;es: <code>somar</code>, <code>subtrair</code>, <code>multiplicar</code> e <code>dividir</code>. Cada uma recebe dois par&acirc;metros e exibe o resultado. Teste com pelo menos 3 chamadas de cada fun&ccedil;&atilde;o.</div>
+                    <div class="step-label">Funções básicas com parâmetros</div>
+                    <div class="step-desc">Escreva <code>calculadora.sh</code> com quatro funções aritméticas. Cada uma recebe <code>$1</code> e <code>$2</code> e exibe o resultado:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">~/scripts/calculadora.sh</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-shebang">#!/bin/bash</span>
+somar()       { <span class="t-cmd">echo</span> <span class="t-string">"<span class="t-var">$1</span> + <span class="t-var">$2</span> = $(( <span class="t-var">$1</span> + <span class="t-var">$2</span> ))"</span>; }
+subtrair()    { <span class="t-cmd">echo</span> <span class="t-string">"<span class="t-var">$1</span> - <span class="t-var">$2</span> = $(( <span class="t-var">$1</span> - <span class="t-var">$2</span> ))"</span>; }
+multiplicar() { <span class="t-cmd">echo</span> <span class="t-string">"<span class="t-var">$1</span> × <span class="t-var">$2</span> = $(( <span class="t-var">$1</span> * <span class="t-var">$2</span> ))"</span>; }
+dividir()     { <span class="t-cmd">echo</span> <span class="t-string">"<span class="t-var">$1</span> ÷ <span class="t-var">$2</span> = $(( <span class="t-var">$1</span> / <span class="t-var">$2</span> ))"</span>; }
+
+somar <span class="t-arg">10 3</span>
+subtrair <span class="t-arg">10 3</span>
+multiplicar <span class="t-arg">10 3</span>
+dividir <span class="t-arg">10 3</span>
+                        </div>
+                    </div>
+                    <div class="terminal" style="margin-top:8px;">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — saída</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~/scripts$</span> <span class="t-arg">./calculadora.sh</span>
+<span class="t-out">10 + 3 = 13</span>
+<span class="t-out">10 - 3 = 7</span>
+<span class="t-out">10 × 3 = 30</span>
+<span class="t-out">10 ÷ 3 = 3</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">2</div>
                 <div class="step-body">
-                    <div class="step-label">Fun&ccedil;&atilde;o com <code>local</code> e <code>return</code></div>
-                    <div class="step-desc">Crie <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">validar.sh</code> com uma fun&ccedil;&atilde;o <code>verificar_numero</code> que use <code>local</code> para vari&aacute;veis internas e <code>return 0</code> se o par&acirc;metro for um n&uacute;mero positivo ou <code>return 1</code> se for negativo ou zero. Use a fun&ccedil;&atilde;o em um <code>if</code>.</div>
+                    <div class="step-label">Função com local e return</div>
+                    <div class="step-desc">Escreva <code>validar.sh</code> com <code>verificar_numero</code> usando variável <code>local</code> e <code>return</code> como código de saída para uso em <code>if</code>:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">~/scripts/validar.sh</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-shebang">#!/bin/bash</span>
+verificar_numero() {
+    <span class="t-cmd">local</span> <span class="t-var">NUM</span>=<span class="t-string">"$1"</span>
+    [ <span class="t-string">"<span class="t-var">$NUM</span>"</span> <span class="t-flag">-gt</span> <span class="t-arg">0</span> ] <span class="t-arg">&amp;&amp;</span> <span class="t-cmd">return</span> <span class="t-arg">0</span>
+    <span class="t-cmd">return</span> <span class="t-arg">1</span>
+}
+
+<span class="t-cmd">read</span> <span class="t-flag">-p</span> <span class="t-string">"Digite um número: "</span> <span class="t-var">VALOR</span>
+<span class="t-cmd">if</span> verificar_numero <span class="t-string">"<span class="t-var">$VALOR</span>"</span>; <span class="t-cmd">then</span>
+    <span class="t-cmd">echo</span> <span class="t-string">"✅ Número positivo"</span>
+<span class="t-cmd">else</span>
+    <span class="t-cmd">echo</span> <span class="t-string">"❌ Zero ou negativo"</span>
+<span class="t-cmd">fi</span>
+                        </div>
+                    </div>
+                    <div class="terminal" style="margin-top:8px;">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — testar</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~/scripts$</span> <span class="t-arg">./validar.sh</span>
+<span class="t-out">Digite um número: 7</span>
+<span class="t-out">✅ Número positivo</span>
+<span class="t-prompt">usuario@servidor:~/scripts$</span> <span class="t-arg">./validar.sh</span>
+<span class="t-out">Digite um número: -3</span>
+<span class="t-out">❌ Zero ou negativo</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">3</div>
                 <div class="step-body">
-                    <div class="step-label">Biblioteca de fun&ccedil;&otilde;es</div>
-                    <div class="step-desc">Crie <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">lib.sh</code> com fun&ccedil;&otilde;es de utilidade: <code>linha_separadora</code> (imprime 40 h&iacute;fens), <code>cabecalho TITULO</code> (imprime t&iacute;tulo entre linhas) e <code>log MENSAGEM</code> (imprime com data/hora). Importe em <code>main.sh</code> com <code>source</code> e use as tr&ecirc;s fun&ccedil;&otilde;es.</div>
+                    <div class="step-label">Biblioteca de funções</div>
+                    <div class="step-desc">Crie <code>lib.sh</code> com funções utilitárias e importe-a em <code>main.sh</code> com <code>source</code>:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">~/scripts/lib.sh</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-shebang">#!/bin/bash</span>
+linha_separadora() { <span class="t-cmd">printf</span> <span class="t-string">'%.0s-'</span> {1..40}; <span class="t-cmd">echo</span>; }
+cabecalho()        { linha_separadora; <span class="t-cmd">echo</span> <span class="t-string">"  <span class="t-var">$1</span>"</span>; linha_separadora; }
+log()              { <span class="t-cmd">echo</span> <span class="t-string">"[$(date '+%H:%M:%S')] <span class="t-var">$1</span>"</span>; }
+                        </div>
+                    </div>
+                    <div class="terminal" style="margin-top:8px;">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">~/scripts/main.sh</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-shebang">#!/bin/bash</span>
+<span class="t-cmd">source</span> <span class="t-path">./lib.sh</span>
+
+cabecalho <span class="t-string">"Relatório do Sistema"</span>
+log <span class="t-string">"Iniciando verificações..."</span>
+log <span class="t-string">"Usuário: $(whoami)"</span>
+linha_separadora
+                        </div>
+                    </div>
+                    <div class="terminal" style="margin-top:8px;">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — executar</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~/scripts$</span> <span class="t-arg">./main.sh</span>
+<span class="t-out">----------------------------------------</span>
+<span class="t-out">  Relatório do Sistema</span>
+<span class="t-out">----------------------------------------</span>
+<span class="t-out">[10:30:01] Iniciando verificações...</span>
+<span class="t-out">[10:30:01] Usuário: usuario</span>
+<span class="t-out">----------------------------------------</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">4</div>
                 <div class="step-body">
-                    <div class="step-label">Menu completo com fun&ccedil;&otilde;es</div>
-                    <div class="step-desc">Crie <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">sistema.sh</code> com fun&ccedil;&otilde;es separadas para: exibir o menu, mostrar informa&ccedil;&otilde;es do sistema (<code>uname -a</code>, <code>uptime</code>), listar usu&aacute;rios logados (<code>who</code>) e verificar espa&ccedil;o em disco (<code>df -h</code>). Use <code>while true</code> + <code>case</code> para chamar cada fun&ccedil;&atilde;o.</div>
+                    <div class="step-label">Menu completo com funções</div>
+                    <div class="step-desc">Escreva <code>sistema.sh</code> onde cada opção do menu é uma função dedicada, mantendo o código organizado e legível:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">~/scripts/sistema.sh</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-shebang">#!/bin/bash</span>
+info_sistema()  { <span class="t-cmd">uname</span> <span class="t-flag">-a</span>; <span class="t-cmd">uptime</span>; }
+usuarios()      { <span class="t-cmd">who</span>; }
+espaco_disco()  { <span class="t-cmd">df</span> <span class="t-flag">-h</span>; }
+exibir_menu()   {
+    <span class="t-cmd">echo</span> <span class="t-string">"1) Info sistema  2) Usuários  3) Disco  4) Sair"</span>
+}
+
+<span class="t-cmd">while</span> true; <span class="t-cmd">do</span>
+    exibir_menu
+    <span class="t-cmd">read</span> <span class="t-flag">-p</span> <span class="t-string">"Opção: "</span> <span class="t-var">OP</span>
+    <span class="t-cmd">case</span> <span class="t-string">"<span class="t-var">$OP</span>"</span> <span class="t-cmd">in</span>
+        1) info_sistema ;;  2) usuarios ;;
+        3) espaco_disco ;;  4) <span class="t-cmd">break</span> ;;
+    <span class="t-cmd">esac</span>
+<span class="t-cmd">done</span>
+                        </div>
+                    </div>
+                    <div class="terminal" style="margin-top:8px;">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — sessão de uso</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~/scripts$</span> <span class="t-arg">./sistema.sh</span>
+<span class="t-out">1) Info sistema  2) Usuários  3) Disco  4) Sair</span>
+<span class="t-out">Opção: 1</span>
+<span class="t-out">Linux servidor 5.15.0-91-generic #101-Ubuntu x86_64</span>
+<span class="t-out"> 10:30:05 up 2:14,  1 user,  load average: 0.01</span>
+<span class="t-out">1) Info sistema  2) Usuários  3) Disco  4) Sair</span>
+<span class="t-out">Opção: 4</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
