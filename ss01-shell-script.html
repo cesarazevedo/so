@@ -448,37 +448,118 @@
             <div class="prat-step">
                 <div class="step-num">1</div>
                 <div class="step-body">
-                    <div class="step-label">Crie o diret&oacute;rio de scripts e o arquivo</div>
-                    <div class="step-desc">No terminal, crie uma pasta dedicada e o script: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">mkdir -p ~/scripts && vim ~/scripts/relatorio.sh</code>. Dentro do Vim, pressione <strong>i</strong> para entrar em modo INSERT.</div>
+                    <div class="step-label">Crie o diretório de scripts e o arquivo</div>
+                    <div class="step-desc">Crie a pasta dedicada e abra o novo script no Vim. Pressione <strong>i</strong> para entrar em modo INSERT:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — passo 1</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">mkdir</span> <span class="t-flag">-p</span> <span class="t-path">~/scripts</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">vim</span> <span class="t-arg">~/scripts/relatorio.sh</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">2</div>
                 <div class="step-body">
-                    <div class="step-label">Escreva o script de relat&oacute;rio do sistema</div>
-                    <div class="step-desc">Digite o seguinte conte&uacute;do (adapte com seu nome):<br>
-                    <code style="background:#f1f5f9;padding:2px 5px;border-radius:3px;font-family:monospace;display:block;margin-top:6px;">#!/bin/bash<br># Relatório do Sistema — Autor: Seu Nome<br>echo "==============================="<br>echo "   RELATÓRIO DO SISTEMA"<br>echo "==============================="<br>echo "Usuário: $(whoami)"<br>echo "Hostname: $(hostname)"<br>echo "Data/Hora: $(date)"<br>echo "Uptime: $(uptime -p)"<br>echo "Memória: $(free -h | grep Mem)"<br>echo "==============================="</code></div>
+                    <div class="step-label">Escreva o script de relatório do sistema</div>
+                    <div class="step-desc">No modo INSERT do Vim, digite o conteúdo abaixo (adapte com seu nome). Pressione <strong>Esc</strong> e <strong>:wq</strong> para salvar:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">~/scripts/relatorio.sh — INSERT</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-shebang">#!/bin/bash</span>
+<span class="t-comment"># Relatório do Sistema — Autor: Seu Nome</span>
+<span class="t-cmd">echo</span> <span class="t-string">"==============================="</span>
+<span class="t-cmd">echo</span> <span class="t-string">"   RELATÓRIO DO SISTEMA"</span>
+<span class="t-cmd">echo</span> <span class="t-string">"==============================="</span>
+<span class="t-cmd">echo</span> <span class="t-string">"Usuário:   $(whoami)"</span>
+<span class="t-cmd">echo</span> <span class="t-string">"Hostname:  $(hostname)"</span>
+<span class="t-cmd">echo</span> <span class="t-string">"Data/Hora: $(date)"</span>
+<span class="t-cmd">echo</span> <span class="t-string">"Uptime:    $(uptime -p)"</span>
+<span class="t-cmd">echo</span> <span class="t-string">"Memória:   $(free -h | grep Mem)"</span>
+<span class="t-cmd">echo</span> <span class="t-string">"==============================="</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">3</div>
                 <div class="step-body">
-                    <div class="step-label">Salve, d&ecirc; permiss&atilde;o e execute</div>
-                    <div class="step-desc">Pressione <strong>Esc</strong>, digite <strong>:wq</strong> e Enter para salvar. Depois: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">chmod +x ~/scripts/relatorio.sh && ~/scripts/relatorio.sh</code>. O relat&oacute;rio deve aparecer formatado na tela.</div>
+                    <div class="step-label">Dê permissão e execute</div>
+                    <div class="step-desc">Torne o script executável e rode-o. O relatório deve aparecer formatado na tela:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — passo 3</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">chmod</span> <span class="t-flag">+x</span> <span class="t-path">~/scripts/relatorio.sh</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-arg">~/scripts/relatorio.sh</span>
+<span class="t-out">=================================</span>
+<span class="t-out">   RELATÓRIO DO SISTEMA</span>
+<span class="t-out">=================================</span>
+<span class="t-out">Usuário:   usuario</span>
+<span class="t-out">Hostname:  servidor</span>
+<span class="t-out">Data/Hora: Sáb Mar 22 10:30:00 -03 2026</span>
+<span class="t-out">Uptime:    up 2 hours, 14 minutes</span>
+<span class="t-out">Memória:   Mem:  1,9Gi  512Mi  1,1Gi</span>
+<span class="t-out">=================================</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">4</div>
                 <div class="step-body">
-                    <div class="step-label">Adicione uma vari&aacute;vel e salve a sa&iacute;da em arquivo</div>
-                    <div class="step-desc">Edite o script novamente (<code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">vim ~/scripts/relatorio.sh</code>). Adicione no in&iacute;cio (logo ap&oacute;s o shebang): <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">ARQUIVO_LOG="$HOME/relatorio_$(date +%Y%m%d).txt"</code>. No final do script, adicione: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">echo "Log salvo em: $ARQUIVO_LOG"</code>. Execute redirecionando a sa&iacute;da: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">./relatorio.sh > $HOME/relatorio_$(date +%Y%m%d).txt</code>. Verifique o arquivo criado com <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">cat</code>.</div>
+                    <div class="step-label">Adicione uma variável e salve a saída em arquivo</div>
+                    <div class="step-desc">Edite o script, declare uma variável com o nome do log e redirecione a saída para um arquivo:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">~/scripts/relatorio.sh — trecho adicionado</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-shebang">#!/bin/bash</span>
+<span class="t-var">ARQUIVO_LOG</span>=<span class="t-string">"$HOME/relatorio_$(date +%Y%m%d).txt"</span>
+<span class="t-comment"># ... restante do script ...</span>
+<span class="t-cmd">echo</span> <span class="t-string">"Log salvo em: <span class="t-var">$ARQUIVO_LOG</span>"</span>
+                        </div>
+                    </div>
+                    <div class="terminal" style="margin-top:8px;">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — executar e verificar</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~/scripts$</span> <span class="t-arg">./relatorio.sh</span> <span class="t-arg">&gt;</span> <span class="t-path">$HOME/relatorio_$(date +%Y%m%d).txt</span>
+<span class="t-prompt">usuario@servidor:~/scripts$</span> <span class="t-cmd">cat</span> <span class="t-path">~/relatorio_20260322.txt</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">5</div>
                 <div class="step-body">
-                    <div class="step-label">Verifique as permiss&otilde;es e tire screenshot</div>
-                    <div class="step-desc">Execute <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">ls -la ~/scripts/</code> para ver as permiss&otilde;es do script (deve mostrar <code>-rwxr-xr-x</code> ou similar com o <code>x</code> ativo). Tire um screenshot mostrando: a listagem de permiss&otilde;es, a sa&iacute;da do script e o arquivo de log criado.</div>
+                    <div class="step-label">Verifique as permissões e tire screenshot</div>
+                    <div class="step-desc">Confirme que o script tem o bit <code>x</code> ativo e que o arquivo de log foi criado:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — passo 5</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-la</span> <span class="t-path">~/scripts/</span>
+<span class="t-out">-rwxr-xr-x 1 usuario usuario 285 Mar 22 10:28 relatorio.sh</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-lh</span> <span class="t-path">~/relatorio_*.txt</span>
+<span class="t-out">-rw-r--r-- 1 usuario usuario 212 Mar 22 10:30 relatorio_20260322.txt</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
