@@ -1024,35 +1024,106 @@
                 <div class="step-num">1</div>
                 <div class="step-body">
                     <div class="step-label">Atualize o sistema</div>
-                    <div class="step-desc">Execute <code>apt update &amp;&amp; apt upgrade -y</code>. Observe os reposit&oacute;rios sendo consultados e os pacotes atualizados. Tire screenshot da sa&iacute;da final mostrando os pacotes atualizados.</div>
+                    <div class="step-desc">Sincronize a lista de pacotes e aplique todas as atualizações disponíveis:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — passo 1</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">sudo</span> apt update
+<span class="t-out">Hit:1 http://archive.ubuntu.com/ubuntu jammy InRelease</span>
+<span class="t-out">Reading package lists... Done</span>
+<span class="t-out">2 packages can be upgraded.</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">sudo</span> apt upgrade <span class="t-flag">-y</span>
+<span class="t-out">Reading package lists... Done</span>
+<span class="t-out">0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">2</div>
                 <div class="step-body">
                     <div class="step-label">Instale e teste o htop</div>
-                    <div class="step-desc">Execute <code>apt install -y htop</code>. Ap&oacute;s instalado, rode <code>htop</code> para visualizar os processos em tempo real. Pressione <strong>q</strong> para sair.</div>
+                    <div class="step-desc">Instale o monitor de processos interativo e execute-o para visualizar o sistema em tempo real (pressione <strong>q</strong> para sair):</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — passo 2</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">sudo</span> apt install <span class="t-flag">-y</span> <span class="t-arg">htop</span>
+<span class="t-out">Reading package lists... Done</span>
+<span class="t-out">The following NEW packages will be installed: htop</span>
+<span class="t-out">Setting up htop (3.0.5-7build2) ...</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">htop</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">3</div>
                 <div class="step-body">
                     <div class="step-label">Pesquise e inspecione um pacote</div>
-                    <div class="step-desc">Busque editores de texto com <code>apt search editor | head -10</code>. Depois veja os detalhes do nano: <code>apt show nano</code>. Identifique a vers&atilde;o e as depend&ecirc;ncias listadas.</div>
+                    <div class="step-desc">Busque por editores de texto e inspecione os detalhes do nano — versão e dependências:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — passo 3</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">apt</span> search <span class="t-arg">editor</span> | <span class="t-cmd">head</span> <span class="t-flag">-10</span>
+<span class="t-out">ed/jammy 1.18-1 amd64 — classic UNIX line editor</span>
+<span class="t-out">nano/jammy 6.2-1 amd64 — small, friendly text editor</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">apt</span> show <span class="t-arg">nano</span>
+<span class="t-out">Package: nano</span>
+<span class="t-out">Version: 6.2-1</span>
+<span class="t-out">Depends: libncursesw6, libtinfo6, ...</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">4</div>
                 <div class="step-body">
                     <div class="step-label">Remova com remove e depois com purge</div>
-                    <div class="step-desc">Remova o htop com <code>apt remove htop</code>. Use <code>dpkg -l | grep htop</code> para ver o status — deve aparecer como <code>rc</code> (removido, configs mantidas). Depois faça <code>apt purge htop</code> e verifique novamente.</div>
+                    <div class="step-desc">Observe a diferença entre <code>remove</code> (mantém configs) e <code>purge</code> (remove tudo) pelo status do <code>dpkg</code>:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — passo 4</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">sudo</span> apt remove <span class="t-arg">htop</span>
+<span class="t-comment"># rc = removido mas configs mantidas</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">dpkg</span> <span class="t-flag">-l</span> | <span class="t-cmd">grep</span> <span class="t-arg">htop</span>
+<span class="t-out">rc  htop  3.0.5-7build2  amd64  interactive processes viewer</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">sudo</span> apt purge <span class="t-arg">htop</span>
+<span class="t-comment"># agora não aparece mais</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">dpkg</span> <span class="t-flag">-l</span> | <span class="t-cmd">grep</span> <span class="t-arg">htop</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">5</div>
                 <div class="step-body">
-                    <div class="step-label">Fa&ccedil;a a limpeza do sistema</div>
-                    <div class="step-desc">Execute <code>apt autoremove &amp;&amp; apt autoclean</code>. Observe quantos pacotes e megabytes foram liberados. Tire screenshot mostrando o resultado da limpeza.</div>
+                    <div class="step-label">Faça a limpeza do sistema</div>
+                    <div class="step-desc">Remova dependências órfãs e limpe o cache de pacotes baixados. Observe o espaço liberado:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — passo 5</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">sudo</span> apt autoremove
+<span class="t-out">0 upgraded, 0 newly installed, 3 to remove and 0 not upgraded.</span>
+<span class="t-out">After this operation, 2,048 kB disk space will be freed.</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">sudo</span> apt autoclean
+<span class="t-out">Del htop 3.0.5-7build2 [...]</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
