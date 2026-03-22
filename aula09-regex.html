@@ -469,42 +469,126 @@
                 <div class="step-num">1</div>
                 <div class="step-body">
                     <div class="step-label">Buscar erros no syslog com grep</div>
-                    <div class="step-desc">Execute <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">grep -i "error" /var/log/syslog | tail -20</code>. Observe as últimas 20 linhas com erros. Em seguida, use <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">grep -c "error" /var/log/syslog</code> para contar o total de ocorrências e registre o número.</div>
+                    <div class="step-desc">Filtre as últimas 20 linhas com erros e depois conte o total de ocorrências. Registre o número:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — passo 1</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">grep</span> <span class="t-flag">-i</span> <span class="t-string">"error"</span> /var/log/syslog | <span class="t-cmd">tail</span> <span class="t-flag">-20</span>
+<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">grep</span> <span class="t-flag">-c</span> <span class="t-string">"error"</span> /var/log/syslog
+<span class="t-out">47</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">2</div>
                 <div class="step-body">
-                    <div class="step-label">Filtrar por IP específico</div>
-                    <div class="step-desc">Use <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">grep -rE "192\.168\.[0-9]+" /etc/</code> para localizar arquivos de configuração que referenciam endereços IP da rede local. Depois experimente <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">grep -Eo "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+" /etc/hosts</code> para extrair apenas os IPs.</div>
+                    <div class="step-label">Filtrar por IP com regex extendida</div>
+                    <div class="step-desc">Localize arquivos de configuração que referenciam a rede local e extraia apenas os IPs de <code>/etc/hosts</code>:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — passo 2</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-comment"># Busca recursiva por IPs 192.168.x.x em /etc/</span>
+<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">grep</span> <span class="t-flag">-rE</span> <span class="t-regex">"192\.168\.[0-9]+"</span> /etc/
+
+<span class="t-comment"># Extrai apenas os endereços IP do /etc/hosts</span>
+<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">grep</span> <span class="t-flag">-Eo</span> <span class="t-regex">"[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+"</span> /etc/hosts
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">3</div>
                 <div class="step-body">
-                    <div class="step-label">Substituir texto com sed</div>
-                    <div class="step-desc">Crie um arquivo de teste: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">echo -e "erro: disco cheio\nerro: memória baixa\ninfo: tudo ok" > teste.log</code>. Depois aplique <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">sed 's/erro/ALERTA/g' teste.log</code> e observe a substituição. Tente também deletar as linhas de info: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">sed '/^info/d' teste.log</code>.</div>
+                    <div class="step-label">Substituir e deletar linhas com sed</div>
+                    <div class="step-desc">Crie um arquivo de log de teste e aplique substituição global e deleção de linhas por padrão:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — passo 3</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-comment"># Cria o arquivo de teste</span>
+<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">echo</span> <span class="t-flag">-e</span> <span class="t-string">"erro: disco cheio\nerro: memória baixa\ninfo: tudo ok"</span> <span class="t-arg">&gt;</span> teste.log
+
+<span class="t-comment"># Substitui todas as ocorrências de "erro" por "ALERTA"</span>
+<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">sed</span> <span class="t-regex">'s/erro/ALERTA/g'</span> teste.log
+<span class="t-out">ALERTA: disco cheio</span>
+<span class="t-out">ALERTA: memória baixa</span>
+<span class="t-out">info: tudo ok</span>
+
+<span class="t-comment"># Deleta linhas que começam com "info"</span>
+<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">sed</span> <span class="t-regex">'/^info/d'</span> teste.log
+<span class="t-out">erro: disco cheio</span>
+<span class="t-out">erro: memória baixa</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">4</div>
                 <div class="step-body">
                     <div class="step-label">Extrair colunas com awk</div>
-                    <div class="step-desc">Use <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">awk -F: '{print $1, $3}' /etc/passwd | head -10</code> para listar nome e UID dos usuários. Em seguida filtre apenas os usuários do sistema: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">awk -F: '$3 >= 1000 {print $1}' /etc/passwd</code>.</div>
+                    <div class="step-desc">Liste nome e UID dos primeiros usuários e depois filtre apenas os usuários reais (UID ≥ 1000):</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — passo 4</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-comment"># Imprime nome (col 1) e UID (col 3) separados por ":"</span>
+<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">awk</span> <span class="t-flag">-F</span><span class="t-string">:</span> <span class="t-regex">'{print $1, $3}'</span> /etc/passwd | <span class="t-cmd">head</span> <span class="t-flag">-10</span>
+
+<span class="t-comment"># Filtra apenas usuários reais (UID >= 1000)</span>
+<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">awk</span> <span class="t-flag">-F</span><span class="t-string">:</span> <span class="t-regex">'$3 >= 1000 {print $1}'</span> /etc/passwd
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">5</div>
                 <div class="step-body">
                     <div class="step-label">Combinar filtros com pipe</div>
-                    <div class="step-desc">Monte um pipeline completo: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">grep -i "error" /var/log/syslog | awk '{print $3}' | cut -d: -f1 | sort | uniq -c | sort -rn | head -5</code>. Este comando conta quantos erros ocorreram em cada hora do dia, mostrando os 5 horários com mais problemas.</div>
+                    <div class="step-desc">Monte um pipeline completo para descobrir os 5 horários do dia com mais erros no syslog:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — passo 5</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">grep</span> <span class="t-flag">-i</span> <span class="t-string">"error"</span> /var/log/syslog \
+    | <span class="t-cmd">awk</span> <span class="t-regex">'{print $3}'</span> \
+    | <span class="t-cmd">cut</span> <span class="t-flag">-d</span><span class="t-string">:</span> <span class="t-flag">-f1</span> \
+    | sort | uniq <span class="t-flag">-c</span> \
+    | sort <span class="t-flag">-rn</span> | <span class="t-cmd">head</span> <span class="t-flag">-5</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">6</div>
                 <div class="step-body">
-                    <div class="step-label">Criar relatório de acesso</div>
-                    <div class="step-desc">Se existir <code>/var/log/auth.log</code>, execute: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">grep "Failed password" /var/log/auth.log | awk '{print $(NF-3)}' | sort | uniq -c | sort -rn > ~/relatorio_acesso.txt && cat ~/relatorio_acesso.txt</code>. Isso gera um relatório com os usuários que tiveram mais tentativas de login falhas.</div>
+                    <div class="step-label">Criar relatório de tentativas de acesso</div>
+                    <div class="step-desc">Gere um relatório com os usuários que tiveram mais tentativas de login falhas e salve em arquivo:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — passo 6</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">grep</span> <span class="t-string">"Failed password"</span> /var/log/auth.log \
+    | <span class="t-cmd">awk</span> <span class="t-regex">'{print $(NF-3)}'</span> \
+    | sort | uniq <span class="t-flag">-c</span> | sort <span class="t-flag">-rn</span> \
+    <span class="t-arg">&gt;</span> ~/relatorio_acesso.txt
+<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">cat</span> ~/relatorio_acesso.txt
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
