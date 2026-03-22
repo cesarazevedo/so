@@ -723,35 +723,94 @@
                 <div class="step-num">1</div>
                 <div class="step-body">
                     <div class="step-label">Navegar pelos diretórios principais</div>
-                    <div class="step-desc">Use <code>ls /</code> para listar a raiz. Em seguida execute <code>ls -la /home</code>, <code>ls /usr</code> e <code>ls /boot</code>. Use <code>cd /etc && ls | head -20</code> para entrar no /etc. Execute <code>cd ~</code> para voltar ao home. Anote o que você encontrou em cada diretório.</div>
+                    <div class="step-desc">Liste a raiz e explore os diretórios principais. Anote o que você encontrou em cada um:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — passo 1</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-path">/</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-la</span> <span class="t-path">/home</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-path">/usr</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-path">/boot</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">cd</span> <span class="t-path">/etc</span> <span class="t-arg">&amp;&amp;</span> <span class="t-cmd">ls</span> <span class="t-arg">|</span> <span class="t-cmd">head</span> <span class="t-flag">-20</span>
+<span class="t-prompt">usuario@servidor:/etc$</span> <span class="t-cmd">cd</span> <span class="t-path">~</span>             <span class="t-comment"># volta ao home</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">2</div>
                 <div class="step-body">
                     <div class="step-label">Listar e ler arquivos de configuração em /etc</div>
-                    <div class="step-desc">Execute <code>cat /etc/hostname</code>, <code>cat /etc/hosts</code> e <code>cat /etc/os-release</code>. Observe como as configurações são simples arquivos de texto editáveis com qualquer editor.</div>
+                    <div class="step-desc">Observe como as configurações do sistema são simples arquivos de texto editáveis com qualquer editor:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — passo 2</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">cat</span> <span class="t-path">/etc/hostname</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">cat</span> <span class="t-path">/etc/hosts</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">cat</span> <span class="t-path">/etc/os-release</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">3</div>
                 <div class="step-body">
                     <div class="step-label">Visualizar logs em /var/log</div>
-                    <div class="step-desc">Execute <code>ls /var/log</code> para listar os logs. Veja as últimas linhas: <code>tail -20 /var/log/syslog</code>. Se existir, leia também <code>tail -10 /var/log/auth.log</code>. Identifique o formato de data e horário nos logs.</div>
+                    <div class="step-desc">Liste os arquivos de log e visualize as últimas entradas. Identifique o formato de data e horário:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — passo 3</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-path">/var/log</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">tail</span> <span class="t-flag">-20</span> <span class="t-path">/var/log/syslog</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">tail</span> <span class="t-flag">-10</span> <span class="t-path">/var/log/auth.log</span>  <span class="t-comment"># se existir</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">4</div>
                 <div class="step-body">
                     <div class="step-label">Identificar dispositivos em /dev</div>
-                    <div class="step-desc">Execute <code>ls /dev/sd*</code> para listar discos. Execute <code>ls /dev/tty*</code> para listar terminais. Teste: <code>ls /pastaqueNaoExiste 2>/dev/null</code> — observe que nenhum erro aparece.</div>
+                    <div class="step-desc">Liste discos e terminais disponíveis. Teste o redirecionamento de erros para <code>/dev/null</code>:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — passo 4</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-path">/dev/sd*</span>                        <span class="t-comment"># discos</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-path">/dev/tty*</span>                       <span class="t-comment"># terminais</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-path">/pastaqueNaoExiste</span> <span class="t-arg">2&gt;</span><span class="t-path">/dev/null</span>  <span class="t-comment"># erro suprimido</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">5</div>
                 <div class="step-body">
                     <div class="step-label">Criar uma estrutura de diretórios de projeto</div>
-                    <div class="step-desc">Crie uma estrutura: <code>mkdir -p ~/projeto/{scripts,logs,configs,docs}</code>. Verifique com <code>tree ~/projeto</code> (ou <code>ls -la ~/projeto</code>). Crie um README: <code>echo "Meu projeto Linux" > ~/projeto/docs/README.txt</code>. Tire um screenshot.</div>
+                    <div class="step-desc">Crie uma estrutura de projeto completa e adicione um arquivo README. Tire um screenshot do resultado:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — passo 5</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">mkdir</span> <span class="t-flag">-p</span> <span class="t-path">~/projeto/{scripts,logs,configs,docs}</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-la</span> <span class="t-path">~/projeto</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">echo</span> <span class="t-string">"Meu projeto Linux"</span> <span class="t-arg">&gt;</span> <span class="t-path">~/projeto/docs/README.txt</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">cat</span> <span class="t-path">~/projeto/docs/README.txt</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
