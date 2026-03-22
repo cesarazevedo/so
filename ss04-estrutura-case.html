@@ -456,28 +456,156 @@
                 <div class="step-num">1</div>
                 <div class="step-body">
                     <div class="step-label">Menu simples com case</div>
-                    <div class="step-desc">Crie <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">menu.sh</code> com 4 op&ccedil;&otilde;es (listar, criar, remover, sair) usando <code>case</code>. O caso <code>*)</code> deve exibir as op&ccedil;&otilde;es v&aacute;lidas. Teste com op&ccedil;&otilde;es v&aacute;lidas e inv&aacute;lidas.</div>
+                    <div class="step-desc">Escreva <code>menu.sh</code> com 4 opções usando <code>case</code>. O padrão <code>*)</code> captura opções inválidas:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">~/scripts/menu.sh</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-shebang">#!/bin/bash</span>
+<span class="t-cmd">read</span> <span class="t-flag">-p</span> <span class="t-string">"Escolha [listar/criar/remover/sair]: "</span> <span class="t-var">OP</span>
+
+<span class="t-cmd">case</span> <span class="t-string">"<span class="t-var">$OP</span>"</span> <span class="t-cmd">in</span>
+    listar)  <span class="t-cmd">ls</span> <span class="t-flag">-la</span> ;;
+    criar)   <span class="t-cmd">read</span> <span class="t-flag">-p</span> <span class="t-string">"Nome do arquivo: "</span> <span class="t-var">F</span>; <span class="t-cmd">touch</span> <span class="t-string">"<span class="t-var">$F</span>"</span> ;;
+    remover) <span class="t-cmd">read</span> <span class="t-flag">-p</span> <span class="t-string">"Arquivo a remover: "</span> <span class="t-var">F</span>; <span class="t-cmd">rm</span> <span class="t-string">"<span class="t-var">$F</span>"</span> ;;
+    sair)    <span class="t-cmd">echo</span> <span class="t-string">"Saindo..."</span>; <span class="t-cmd">exit</span> <span class="t-arg">0</span> ;;
+    *)       <span class="t-cmd">echo</span> <span class="t-string">"Opções: listar | criar | remover | sair"</span> ;;
+<span class="t-cmd">esac</span>
+                        </div>
+                    </div>
+                    <div class="terminal" style="margin-top:8px;">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — testar opções válidas e inválidas</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~/scripts$</span> <span class="t-arg">./menu.sh</span>
+<span class="t-out">Escolha [listar/criar/remover/sair]: listar</span>
+<span class="t-out">-rwxr-xr-x 1 usuario usuario 198 Mar 22 menu.sh</span>
+<span class="t-prompt">usuario@servidor:~/scripts$</span> <span class="t-arg">./menu.sh</span>
+<span class="t-out">Escolha [listar/criar/remover/sair]: apagar</span>
+<span class="t-out">Opções: listar | criar | remover | sair</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">2</div>
                 <div class="step-body">
-                    <div class="step-label">Validador sim/n&atilde;o</div>
-                    <div class="step-desc">Crie <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">confirmar.sh</code> que aceite <code>sim</code>, <code>SIM</code>, <code>s</code>, <code>S</code> como confirma&ccedil;&atilde;o e <code>nao</code>, <code>n</code>, <code>N</code> como nega&ccedil;&atilde;o usando o operador <code>|</code>. Tire screenshot dos testes.</div>
+                    <div class="step-label">Validador sim/não</div>
+                    <div class="step-desc">Escreva <code>confirmar.sh</code> usando <code>|</code> para aceitar múltiplas formas da mesma resposta em cada padrão:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">~/scripts/confirmar.sh</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-shebang">#!/bin/bash</span>
+<span class="t-cmd">read</span> <span class="t-flag">-p</span> <span class="t-string">"Confirma a operação? "</span> <span class="t-var">RESP</span>
+
+<span class="t-cmd">case</span> <span class="t-string">"<span class="t-var">$RESP</span>"</span> <span class="t-cmd">in</span>
+    sim|SIM|s|S) <span class="t-cmd">echo</span> <span class="t-string">"✅ Operação confirmada"</span> ;;
+    nao|NAO|n|N) <span class="t-cmd">echo</span> <span class="t-string">"❌ Operação cancelada"</span> ;;
+    *)           <span class="t-cmd">echo</span> <span class="t-string">"⚠️  Responda sim ou nao"</span> ;;
+<span class="t-cmd">esac</span>
+                        </div>
+                    </div>
+                    <div class="terminal" style="margin-top:8px;">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — testar variações</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~/scripts$</span> <span class="t-arg">./confirmar.sh</span>
+<span class="t-out">Confirma a operação? S</span>
+<span class="t-out">✅ Operação confirmada</span>
+<span class="t-prompt">usuario@servidor:~/scripts$</span> <span class="t-arg">./confirmar.sh</span>
+<span class="t-out">Confirma a operação? nao</span>
+<span class="t-out">❌ Operação cancelada</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">3</div>
                 <div class="step-body">
-                    <div class="step-label">Detector de extens&atilde;o</div>
-                    <div class="step-desc">Crie <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">tipo.sh</code> que recebe o nome de um arquivo e usa <code>*.ext</code> para identificar: imagem (jpg/png), &aacute;udio (mp3/wav), script (.sh) e tipo desconhecido. Teste com pelo menos 5 arquivos diferentes.</div>
+                    <div class="step-label">Detector de extensão</div>
+                    <div class="step-desc">Escreva <code>tipo.sh</code> usando padrões <code>*.ext</code> para identificar o tipo do arquivo pelo nome. Teste com pelo menos 5 extensões:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">~/scripts/tipo.sh</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-shebang">#!/bin/bash</span>
+<span class="t-var">ARQ</span>=<span class="t-string">"$1"</span>
+
+<span class="t-cmd">case</span> <span class="t-string">"<span class="t-var">$ARQ</span>"</span> <span class="t-cmd">in</span>
+    *.jpg|*.png|*.gif) <span class="t-cmd">echo</span> <span class="t-string">"🖼️  Imagem"</span> ;;
+    *.mp3|*.wav|*.ogg) <span class="t-cmd">echo</span> <span class="t-string">"🎵 Áudio"</span> ;;
+    *.sh)              <span class="t-cmd">echo</span> <span class="t-string">"⚙️  Script Shell"</span> ;;
+    *.txt|*.md)        <span class="t-cmd">echo</span> <span class="t-string">"📄 Texto"</span> ;;
+    *)                 <span class="t-cmd">echo</span> <span class="t-string">"❓ Tipo desconhecido"</span> ;;
+<span class="t-cmd">esac</span>
+                        </div>
+                    </div>
+                    <div class="terminal" style="margin-top:8px;">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — testar extensões</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~/scripts$</span> <span class="t-arg">./tipo.sh</span> <span class="t-string">foto.jpg</span>
+<span class="t-out">🖼️  Imagem</span>
+<span class="t-prompt">usuario@servidor:~/scripts$</span> <span class="t-arg">./tipo.sh</span> <span class="t-string">musica.mp3</span>
+<span class="t-out">🎵 Áudio</span>
+<span class="t-prompt">usuario@servidor:~/scripts$</span> <span class="t-arg">./tipo.sh</span> <span class="t-string">deploy.sh</span>
+<span class="t-out">⚙️  Script Shell</span>
+<span class="t-prompt">usuario@servidor:~/scripts$</span> <span class="t-arg">./tipo.sh</span> <span class="t-string">dados.csv</span>
+<span class="t-out">❓ Tipo desconhecido</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">4</div>
                 <div class="step-body">
-                    <div class="step-label">CASE com exit code</div>
-                    <div class="step-desc">Crie <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">ping.sh</code> que fa&ccedil;a <code>ping -c 1</code> em um host digitado pelo usu&aacute;rio, capture o exit code em <code>$?</code> e use <code>case</code> para exibir: "Acess&iacute;vel" (0), "Sem resposta" (1) ou "Erro" (*).</div>
+                    <div class="step-label">case com exit code do ping</div>
+                    <div class="step-desc">Escreva <code>ping.sh</code> que captura o exit code do <code>ping</code> em <code>$?</code> e usa <code>case</code> para interpretar o resultado:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">~/scripts/ping.sh</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-shebang">#!/bin/bash</span>
+<span class="t-cmd">read</span> <span class="t-flag">-p</span> <span class="t-string">"Host para testar: "</span> <span class="t-var">HOST</span>
+ping <span class="t-flag">-c</span> <span class="t-arg">1</span> <span class="t-flag">-W</span> <span class="t-arg">2</span> <span class="t-string">"<span class="t-var">$HOST</span>"</span> <span class="t-arg">&gt;</span>/dev/null <span class="t-arg">2&gt;&amp;1</span>
+<span class="t-var">CODIGO</span>=<span class="t-string">$?</span>
+
+<span class="t-cmd">case</span> <span class="t-string">"<span class="t-var">$CODIGO</span>"</span> <span class="t-cmd">in</span>
+    0) <span class="t-cmd">echo</span> <span class="t-string">"✅ <span class="t-var">$HOST</span>: Acessível"</span> ;;
+    1) <span class="t-cmd">echo</span> <span class="t-string">"⚠️  <span class="t-var">$HOST</span>: Sem resposta"</span> ;;
+    *) <span class="t-cmd">echo</span> <span class="t-string">"❌ <span class="t-var">$HOST</span>: Erro (código <span class="t-var">$CODIGO</span>)"</span> ;;
+<span class="t-cmd">esac</span>
+                        </div>
+                    </div>
+                    <div class="terminal" style="margin-top:8px;">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — testar hosts</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~/scripts$</span> <span class="t-arg">./ping.sh</span>
+<span class="t-out">Host para testar: 8.8.8.8</span>
+<span class="t-out">✅ 8.8.8.8: Acessível</span>
+<span class="t-prompt">usuario@servidor:~/scripts$</span> <span class="t-arg">./ping.sh</span>
+<span class="t-out">Host para testar: 192.168.99.99</span>
+<span class="t-out">⚠️  192.168.99.99: Sem resposta</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
