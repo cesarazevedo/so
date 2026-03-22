@@ -1081,43 +1081,128 @@
             <div class="prat-step">
                 <div class="step-num">1</div>
                 <div class="step-body">
-                    <div class="step-label">Criar estrutura de diret&oacute;rios</div>
-                    <div class="step-desc">Crie a estrutura base: <code>mkdir -p ~/lab-perm/{publico,privado,scripts}</code>. Crie arquivos de teste: <code>touch ~/lab-perm/publico/doc.txt ~/lab-perm/privado/senha.txt ~/lab-perm/scripts/deploy.sh</code>. Verifique com <code>ls -lR ~/lab-perm/</code>.</div>
+                    <div class="step-label">Criar estrutura de diretórios</div>
+                    <div class="step-desc">Crie a estrutura base com três diretórios e arquivos de teste, depois verifique as permissões iniciais:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — passo 1</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">mkdir</span> <span class="t-flag">-p</span> <span class="t-path">~/lab-perm/{publico,privado,scripts}</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">touch</span> <span class="t-path">~/lab-perm/publico/doc.txt</span> <span class="t-path">~/lab-perm/privado/senha.txt</span> <span class="t-path">~/lab-perm/scripts/deploy.sh</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-lR</span> <span class="t-path">~/lab-perm/</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">2</div>
                 <div class="step-body">
-                    <div class="step-label">Aplicar permiss&otilde;es adequadas</div>
-                    <div class="step-desc">Configure as permiss&otilde;es corretas: <code>chmod 644 ~/lab-perm/publico/doc.txt</code> (leitura p&uacute;blica), <code>chmod 600 ~/lab-perm/privado/senha.txt</code> (s&oacute; o dono), <code>chmod 750 ~/lab-perm/scripts/deploy.sh</code> (script para dono e grupo).</div>
+                    <div class="step-label">Aplicar permissões adequadas</div>
+                    <div class="step-desc">Configure cada arquivo com a permissão mínima necessária para sua função:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — passo 2</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-comment"># 644 — leitura pública, escrita só para o dono</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">chmod</span> <span class="t-arg">644</span> <span class="t-path">~/lab-perm/publico/doc.txt</span>
+<span class="t-comment"># 600 — somente o dono lê e escreve</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">chmod</span> <span class="t-arg">600</span> <span class="t-path">~/lab-perm/privado/senha.txt</span>
+<span class="t-comment"># 750 — dono executa, grupo lê; outros sem acesso</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">chmod</span> <span class="t-arg">750</span> <span class="t-path">~/lab-perm/scripts/deploy.sh</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-l</span> <span class="t-path">~/lab-perm/privado/senha.txt</span>
+<span class="t-out">-rw------- 1 usuario usuario 0 ... senha.txt</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">3</div>
                 <div class="step-body">
-                    <div class="step-label">Testar acesso com diferentes usu&aacute;rios</div>
-                    <div class="step-desc">Crie um usu&aacute;rio de teste: <code>sudo useradd -m testuser</code>. Tente acessar o arquivo privado: <code>sudo -u testuser cat ~/lab-perm/privado/senha.txt</code> &mdash; deve retornar "Permiss&atilde;o negada". Com <code>sudo cat</code> (root) deve funcionar pois root ignora permiss&otilde;es.</div>
+                    <div class="step-label">Testar acesso com diferentes usuários</div>
+                    <div class="step-desc">Crie um usuário de teste e verifique que ele não consegue ler o arquivo privado, mas root consegue:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — passo 3</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">sudo</span> useradd <span class="t-flag">-m</span> <span class="t-arg">testuser</span>
+<span class="t-comment"># testuser não tem permissão — deve falhar</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">sudo</span> <span class="t-flag">-u</span> <span class="t-arg">testuser</span> <span class="t-cmd">cat</span> <span class="t-path">~/lab-perm/privado/senha.txt</span>
+<span class="t-out">cat: /home/usuario/lab-perm/privado/senha.txt: Permission denied</span>
+<span class="t-comment"># root ignora permissões — deve funcionar</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">sudo</span> <span class="t-cmd">cat</span> <span class="t-path">~/lab-perm/privado/senha.txt</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">4</div>
                 <div class="step-body">
-                    <div class="step-label">Usar chmod simb&oacute;lico e octal</div>
-                    <div class="step-desc">Adicione execu&ccedil;&atilde;o com nota&ccedil;&atilde;o simb&oacute;lica: <code>chmod u+x ~/lab-perm/scripts/deploy.sh</code>. Depois use octal para um diret&oacute;rio completo: <code>chmod -R 755 ~/lab-perm/publico/</code>. Verifique cada mudan&ccedil;a com <code>ls -l</code>.</div>
+                    <div class="step-label">Usar chmod simbólico e octal</div>
+                    <div class="step-desc">Adicione execução com notação simbólica e aplique permissão recursiva com octal:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — passo 4</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-comment"># Notação simbólica: adiciona execução para o dono</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">chmod</span> <span class="t-arg">u+x</span> <span class="t-path">~/lab-perm/scripts/deploy.sh</span>
+<span class="t-comment"># Octal recursivo em todo o diretório publico</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">chmod</span> <span class="t-flag">-R</span> <span class="t-arg">755</span> <span class="t-path">~/lab-perm/publico/</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-l</span> <span class="t-path">~/lab-perm/scripts/deploy.sh</span>
+<span class="t-out">-rwxr-x--- 1 usuario usuario 0 ... deploy.sh</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">5</div>
                 <div class="step-body">
                     <div class="step-label">Configurar e testar umask</div>
-                    <div class="step-desc">Veja o umask atual com <code>umask</code>. Mude para <code>umask 077</code> e crie um arquivo: <code>touch ~/lab-perm/privado/novo.txt && ls -l ~/lab-perm/privado/novo.txt</code>. Deve ter permiss&atilde;o <code>600</code>. Restaure com <code>umask 022</code>.</div>
+                    <div class="step-desc">Altere o umask e observe como ele afeta as permissões dos novos arquivos criados:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — passo 5</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">umask</span>
+<span class="t-out">0022</span>
+<span class="t-comment"># 077 = somente o dono tem acesso a novos arquivos</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">umask</span> <span class="t-arg">077</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">touch</span> <span class="t-path">~/lab-perm/privado/novo.txt</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-l</span> <span class="t-path">~/lab-perm/privado/novo.txt</span>
+<span class="t-out">-rw------- 1 usuario usuario 0 ... novo.txt</span>
+<span class="t-comment"># Restaura o umask padrão</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">umask</span> <span class="t-arg">022</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">6</div>
                 <div class="step-body">
                     <div class="step-label">Auditoria final com ls -la e stat</div>
-                    <div class="step-desc">Liste tudo com permiss&otilde;es: <code>ls -laR ~/lab-perm/</code>. Use <code>stat ~/lab-perm/privado/senha.txt</code> para ver detalhes completos (dono, grupo, permiss&otilde;es em octal). Tire um screenshot da sa&iacute;da.</div>
+                    <div class="step-desc">Liste toda a estrutura e use <code>stat</code> para ver os detalhes completos em octal. Tire um screenshot:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — passo 6</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-laR</span> <span class="t-path">~/lab-perm/</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">stat</span> <span class="t-path">~/lab-perm/privado/senha.txt</span>
+<span class="t-out">  File: /home/usuario/lab-perm/privado/senha.txt</span>
+<span class="t-out">  Size: 0         Blocks: 0    IO Block: 4096</span>
+<span class="t-out">Access: (0600/-rw-------)  Uid: (1000/usuario)  Gid: (1000/usuario)</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
