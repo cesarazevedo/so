@@ -550,28 +550,159 @@
                 <div class="step-num">1</div>
                 <div class="step-body">
                     <div class="step-label">Crie o script de notas</div>
-                    <div class="step-desc">Crie <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">notas.sh</code> com <code>if/elif/else</code> que classifica uma nota: &ge;70 "Aprovado", &ge;50 "Recupera&ccedil;&atilde;o", caso contr&aacute;rio "Reprovado". Teste com tr&ecirc;s valores diferentes.</div>
+                    <div class="step-desc">Escreva <code>notas.sh</code> com <code>if/elif/else</code> que classifica a nota. Teste com três valores diferentes:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">~/scripts/notas.sh</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-shebang">#!/bin/bash</span>
+<span class="t-cmd">read</span> <span class="t-flag">-p</span> <span class="t-string">"Digite a nota (0-100): "</span> <span class="t-var">NOTA</span>
+
+<span class="t-cmd">if</span> [ <span class="t-string">"<span class="t-var">$NOTA</span>"</span> <span class="t-flag">-ge</span> <span class="t-arg">70</span> ]; <span class="t-cmd">then</span>
+    <span class="t-cmd">echo</span> <span class="t-string">"✅ Aprovado"</span>
+<span class="t-cmd">elif</span> [ <span class="t-string">"<span class="t-var">$NOTA</span>"</span> <span class="t-flag">-ge</span> <span class="t-arg">50</span> ]; <span class="t-cmd">then</span>
+    <span class="t-cmd">echo</span> <span class="t-string">"⚠️  Recuperação"</span>
+<span class="t-cmd">else</span>
+    <span class="t-cmd">echo</span> <span class="t-string">"❌ Reprovado"</span>
+<span class="t-cmd">fi</span>
+                        </div>
+                    </div>
+                    <div class="terminal" style="margin-top:8px;">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — testar com três valores</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~/scripts$</span> <span class="t-arg">./notas.sh</span>
+<span class="t-out">Digite a nota (0-100): 85</span>
+<span class="t-out">✅ Aprovado</span>
+<span class="t-prompt">usuario@servidor:~/scripts$</span> <span class="t-arg">./notas.sh</span>
+<span class="t-out">Digite a nota (0-100): 55</span>
+<span class="t-out">⚠️  Recuperação</span>
+<span class="t-prompt">usuario@servidor:~/scripts$</span> <span class="t-arg">./notas.sh</span>
+<span class="t-out">Digite a nota (0-100): 30</span>
+<span class="t-out">❌ Reprovado</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">2</div>
                 <div class="step-body">
                     <div class="step-label">Teste operadores de arquivo</div>
-                    <div class="step-desc">Crie <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">checa_arquivo.sh</code> que recebe um caminho e verifica: se &eacute; arquivo (<code>-f</code>), se &eacute; diret&oacute;rio (<code>-d</code>) ou se n&atilde;o existe (<code>-e</code> negado). Use <code>read -p</code> para pedir o caminho.</div>
+                    <div class="step-desc">Escreva <code>checa_arquivo.sh</code> que pede um caminho e identifica se é arquivo, diretório ou não existe:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">~/scripts/checa_arquivo.sh</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-shebang">#!/bin/bash</span>
+<span class="t-cmd">read</span> <span class="t-flag">-p</span> <span class="t-string">"Informe o caminho: "</span> <span class="t-var">CAMINHO</span>
+
+<span class="t-cmd">if</span> [ <span class="t-flag">-f</span> <span class="t-string">"<span class="t-var">$CAMINHO</span>"</span> ]; <span class="t-cmd">then</span>
+    <span class="t-cmd">echo</span> <span class="t-string">"📄 É um arquivo regular"</span>
+<span class="t-cmd">elif</span> [ <span class="t-flag">-d</span> <span class="t-string">"<span class="t-var">$CAMINHO</span>"</span> ]; <span class="t-cmd">then</span>
+    <span class="t-cmd">echo</span> <span class="t-string">"📁 É um diretório"</span>
+<span class="t-cmd">elif</span> [ ! <span class="t-flag">-e</span> <span class="t-string">"<span class="t-var">$CAMINHO</span>"</span> ]; <span class="t-cmd">then</span>
+    <span class="t-cmd">echo</span> <span class="t-string">"❌ Não existe"</span>
+<span class="t-cmd">fi</span>
+                        </div>
+                    </div>
+                    <div class="terminal" style="margin-top:8px;">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — testar</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~/scripts$</span> <span class="t-arg">./checa_arquivo.sh</span>
+<span class="t-out">Informe o caminho: /etc/hosts</span>
+<span class="t-out">📄 É um arquivo regular</span>
+<span class="t-prompt">usuario@servidor:~/scripts$</span> <span class="t-arg">./checa_arquivo.sh</span>
+<span class="t-out">Informe o caminho: /var/log</span>
+<span class="t-out">📁 É um diretório</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">3</div>
                 <div class="step-body">
-                    <div class="step-label">Script com operadores l&oacute;gicos</div>
-                    <div class="step-desc">Crie <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">acesso.sh</code> que pergunta usu&aacute;rio e senha. Use <code>-a</code> (AND) para s&oacute; liberar acesso se os dois valores estiverem corretos. Teste com credenciais certas e erradas.</div>
+                    <div class="step-label">Script com operadores lógicos</div>
+                    <div class="step-desc">Escreva <code>acesso.sh</code> que só libera acesso quando usuário AND senha estiverem corretos simultaneamente:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">~/scripts/acesso.sh</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-shebang">#!/bin/bash</span>
+<span class="t-cmd">read</span> <span class="t-flag">-p</span>  <span class="t-string">"Usuário: "</span> <span class="t-var">USR</span>
+<span class="t-cmd">read</span> <span class="t-flag">-sp</span> <span class="t-string">"Senha:   "</span> <span class="t-var">PWD</span>
+<span class="t-cmd">echo</span>
+
+<span class="t-cmd">if</span> [ <span class="t-string">"<span class="t-var">$USR</span>"</span> <span class="t-flag">=</span> <span class="t-string">"admin"</span> <span class="t-flag">-a</span> <span class="t-string">"<span class="t-var">$PWD</span>"</span> <span class="t-flag">=</span> <span class="t-string">"1234"</span> ]; <span class="t-cmd">then</span>
+    <span class="t-cmd">echo</span> <span class="t-string">"✅ Acesso liberado!"</span>
+<span class="t-cmd">else</span>
+    <span class="t-cmd">echo</span> <span class="t-string">"❌ Credenciais inválidas"</span>
+    <span class="t-cmd">exit</span> <span class="t-arg">1</span>
+<span class="t-cmd">fi</span>
+                        </div>
+                    </div>
+                    <div class="terminal" style="margin-top:8px;">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — testar credenciais</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~/scripts$</span> <span class="t-arg">./acesso.sh</span>
+<span class="t-out">Usuário: admin</span>
+<span class="t-out">Senha:  </span>
+<span class="t-out">✅ Acesso liberado!</span>
+<span class="t-prompt">usuario@servidor:~/scripts$</span> <span class="t-arg">./acesso.sh</span>
+<span class="t-out">Usuário: admin</span>
+<span class="t-out">Senha:  </span>
+<span class="t-out">❌ Credenciais inválidas</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="prat-step">
                 <div class="step-num">4</div>
                 <div class="step-body">
                     <div class="step-label">Verificador de sistema com exit code</div>
-                    <div class="step-desc">Crie <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;">verifica_servico.sh</code> que usa <code>if systemctl is-active nginx</code> (sem <code>[ ]</code>) para checar se o nginx est&aacute; ativo. Se estiver, mostre "OK"; sen&atilde;o, mostre "Inativo".</div>
+                    <div class="step-desc">Escreva <code>verifica_servico.sh</code> que usa o exit code do <code>systemctl is-active</code> diretamente no <code>if</code>, sem colchetes:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">~/scripts/verifica_servico.sh</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-shebang">#!/bin/bash</span>
+<span class="t-var">SERVICO</span>=<span class="t-string">"${1:-ssh}"</span>   <span class="t-comment"># usa $1 ou "ssh" como padrão</span>
+
+<span class="t-cmd">if</span> systemctl is-active <span class="t-flag">--quiet</span> <span class="t-string">"<span class="t-var">$SERVICO</span>"</span>; <span class="t-cmd">then</span>
+    <span class="t-cmd">echo</span> <span class="t-string">"✅ <span class="t-var">$SERVICO</span>: OK (ativo)"</span>
+<span class="t-cmd">else</span>
+    <span class="t-cmd">echo</span> <span class="t-string">"❌ <span class="t-var">$SERVICO</span>: Inativo"</span>
+    <span class="t-cmd">exit</span> <span class="t-arg">1</span>
+<span class="t-cmd">fi</span>
+                        </div>
+                    </div>
+                    <div class="terminal" style="margin-top:8px;">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash — testar serviços</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~/scripts$</span> <span class="t-arg">./verifica_servico.sh</span> <span class="t-arg">ssh</span>
+<span class="t-out">✅ ssh: OK (ativo)</span>
+<span class="t-prompt">usuario@servidor:~/scripts$</span> <span class="t-arg">./verifica_servico.sh</span> <span class="t-arg">nginx</span>
+<span class="t-out">❌ nginx: Inativo</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
