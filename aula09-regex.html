@@ -1,616 +1,882 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aula 1.9 — Regex, Filtros e Metacaracteres</title>
-    <link rel="stylesheet" href="slide-mode.css">
-    <link rel="stylesheet" href="exercise.css">
-    <style>
-        :root { --primary: #667eea; --secondary: #764ba2; --bg-light: #f4f7fe; --text-dark: #2d3748; }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: var(--bg-light); color: var(--text-dark); line-height: 1.7; }
-        .top-bar { background: white; padding: 15px 30px; display: flex; align-items: center; gap: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 10; }
-        .back-btn { text-decoration: none; color: var(--primary); font-weight: 600; display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 8px; transition: background .3s; }
-        .back-btn:hover { background: rgba(102,126,234,.08); }
-        .page-badge { font-size: .8em; padding: 4px 12px; border-radius: 20px; background: rgba(102,126,234,.12); color: var(--primary); font-weight: 600; }
-        .content-wrapper { max-width: 800px; margin: 40px auto; padding: 0 30px; }
-        .lesson-hero { background: white; border-radius: 16px; padding: 40px; box-shadow: 0 5px 15px rgba(0,0,0,.05); margin-bottom: 30px; border-top: 4px solid var(--primary); }
-        .lesson-hero h1 { font-size: 2em; margin-bottom: 10px; color: var(--primary); }
-        .lesson-hero .subtitle { font-size: 1.05em; color: #718096; }
-        .content-card { background: white; border-radius: 16px; padding: 35px; box-shadow: 0 5px 15px rgba(0,0,0,.05); margin-bottom: 25px; }
-        .content-card h2 { font-size: 1.4em; color: var(--primary); margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
-        .content-card h3 { font-size: 1.05em; color: #4a5568; margin: 20px 0 10px; }
-        .content-card p { margin-bottom: 15px; text-align: justify; }
-        ul, ol { margin: 10px 0 15px 25px; }
-        li { margin-bottom: 8px; }
-        .highlight-box { background: linear-gradient(135deg,rgba(102,126,234,.05),rgba(118,75,162,.06)); border-left: 4px solid var(--primary); padding: 20px 25px; border-radius: 0 12px 12px 0; margin: 20px 0; }
-        .highlight-box p { margin-bottom: 0; font-style: italic; }
-        .alert-box { background: #fff8e1; border-left: 4px solid #f59e0b; padding: 18px 22px; border-radius: 0 12px 12px 0; margin: 20px 0; }
-        .alert-box p { margin: 0; color: #78350f; font-size: .93em; }
-        .tip-box { background: #f0fdf4; border-left: 4px solid #16a34a; padding: 18px 22px; border-radius: 0 12px 12px 0; margin: 20px 0; }
-        .tip-box p { margin: 0; color: #14532d; font-size: .93em; }
-        .kbd-sm { background: #1e293b; color: #e2e8f0; border-radius: 4px; padding: 2px 6px; font-family:'Consolas',monospace; font-size:.82em; }
-        .terminal { background: #1a202c; border-radius: 12px; overflow: hidden; margin: 16px 0; box-shadow: 0 4px 20px rgba(0,0,0,.3); }
-        .terminal-bar { background: #2d3748; padding: 8px 16px; display: flex; align-items: center; gap: 8px; }
-        .term-dot { width: 12px; height: 12px; border-radius: 50%; }
-        .term-dot.red { background: #fc8181; } .term-dot.yellow { background: #f6e05e; } .term-dot.green { background: #68d391; }
-        .term-title { font-size: .75em; color: #718096; margin-left: 8px; font-family: 'Consolas', monospace; }
-        .terminal-body { padding: 20px 24px; font-family: 'Courier New','Consolas',monospace; font-size: .92em; line-height: 2; color: #a0aec0; white-space: pre-wrap; }
-        .t-prompt { color: #63b3ed; } .t-root { color: #fc8181; } .t-cmd { color: #38ef7d; } .t-flag { color: #f6e05e; } .t-path { color: #fc8181; } .t-arg { color: #90cdf4; } .t-out { color: #a0aec0; } .t-comment { color: #4a5568; font-style: italic; } .t-string { color: #68d391; } .t-var { color: #b794f4; } .t-shebang { color: #f687b3; } .t-ok { color: #38ef7d; font-weight: bold; } .t-err { color: #fc8181; font-weight: bold; } .t-regex { color: #f6e05e; } .t-match { color: #fc8181; font-weight: bold; }
-        .regex-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin: 16px 0; }
-        .regex-card { background: #f8fafc; border-radius: 10px; padding: 14px; text-align: center; border-top: 3px solid var(--primary); }
-        .regex-card .symbol { font-family: 'Consolas', monospace; font-size: 1.8em; color: var(--secondary); margin-bottom: 6px; }
-        .regex-card strong { display: block; font-size: .85em; color: var(--text-dark); margin-bottom: 3px; }
-        .regex-card span { font-size: .78em; color: #718096; }
-        .regex-table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: .86em; }
-        .regex-table th { background: var(--primary); color: white; padding: 8px 12px; text-align: left; }
-        .regex-table th:first-child { border-radius: 6px 0 0 0; }
-        .regex-table th:last-child { border-radius: 0 6px 0 0; }
-        .regex-table td { padding: 7px 12px; border-bottom: 1px solid #e5e7eb; font-family: 'Consolas', monospace; }
-        .regex-table tr:nth-child(even) td { background: #f4f7fe; }
-        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 12px 0; }
-        .nav-footer { display: flex; justify-content: space-between; margin-top: 40px; padding-bottom: 40px; }
-        .nav-link { text-decoration: none; color: var(--primary); font-weight: 600; padding: 12px 24px; border-radius: 10px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,.05); transition: all .3s; }
-        .nav-link:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.1); }
-        @media (max-width: 768px) { .content-wrapper { padding: 0 15px; } .lesson-hero, .content-card { padding: 25px; } .two-col { grid-template-columns: 1fr; } }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aula 1.9 — Metacaracteres do Shell</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --bg2: #1a1d27;
+    --bg3: #22263a;
+    --border: #2e3250;
+    --text: #e2e8f0;
+    --muted: #8892a4;
+    --accent: #7c9fff;
+    --accent2: #a78bfa;
+    --green: #4ade80;
+    --yellow: #fbbf24;
+    --red: #f87171;
+    --cyan: #67e8f9;
+    --orange: #fb923c;
+    --pink: #f472b6;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+ 
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    font-size: 16px;
+  }
+ 
+  /* ── Topbar ── */
+  .topbar {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .topbar a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 14px;
+    transition: color .2s;
+  }
+  .topbar a:hover { color: var(--accent); }
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--muted); }
+  .breadcrumb span { color: var(--border); }
+ 
+  .btn-slide {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--accent);
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background .2s;
+  }
+  .btn-slide:hover { background: var(--border); }
+ 
+  /* ── Layout ── */
+  .container { max-width: 860px; margin: 0 auto; padding: 40px 24px 80px; }
+ 
+  .page-header { margin-bottom: 48px; }
+  .module-tag {
+    display: inline-block;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 12px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+  }
+  .page-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+  .page-header .subtitle { color: var(--muted); font-size: 1rem; }
+ 
+  /* ── Section ── */
+  .section { margin-bottom: 56px; }
+  .section h2 {
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section h2 .icon { font-size: 1.1rem; }
+  .section h3 { font-size: 1rem; font-weight: 600; color: var(--accent); margin: 24px 0 10px; }
+  .section p { color: var(--muted); margin-bottom: 12px; }
+  .section p strong { color: var(--text); }
+ 
+  /* ── Callout ── */
+  .callout {
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    margin: 16px 0;
+    font-size: 14px;
+    border-left: 3px solid;
+  }
+  .callout.tip { background: #0f2a1f; border-color: var(--green); color: #86efac; }
+  .callout.warn { background: #2a1f0f; border-color: var(--yellow); color: #fde68a; }
+  .callout.info { background: #0f1f2a; border-color: var(--accent); color: #bfdbfe; }
+  .callout strong { color: inherit; }
+ 
+  /* ── Metachar grid ── */
+  .meta-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    margin: 20px 0;
+  }
+  .meta-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    transition: border-color .2s;
+  }
+  .meta-card:hover { border-color: var(--accent); }
+  .meta-sym {
+    font-family: 'Courier New', monospace;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--cyan);
+    margin-bottom: 6px;
+  }
+  .meta-name { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+  .meta-desc { font-size: 12px; color: var(--muted); }
+  .meta-ex { font-family: 'Courier New', monospace; font-size: 11px; color: var(--green); margin-top: 6px; }
+ 
+  /* ── Code block ── */
+  .code-block {
+    background: #0d1117;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    margin: 16px 0;
+  }
+  .code-header {
+    background: var(--bg3);
+    padding: 8px 14px;
+    font-size: 12px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .code-header .dots { display: flex; gap: 5px; }
+  .code-header .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-r { background: #ff5f56; }
+  .dot-y { background: #ffbd2e; }
+  .dot-g { background: #27c93f; }
+  .code-header .lang { margin-left: auto; background: var(--bg); padding: 2px 8px; border-radius: 4px; font-size: 11px; }
+  pre {
+    padding: 16px;
+    overflow-x: auto;
+    font-family: 'Courier New', monospace;
+    font-size: 13.5px;
+    line-height: 1.8;
+  }
+  .cm { color: #6a737d; }
+  .cp { color: var(--green); }
+  .cc { color: var(--cyan); }
+  .co { color: var(--orange); }
+  .cs { color: var(--yellow); }
+  .ck { color: var(--accent2); }
+ 
+  /* ── Comparison table ── */
+  .cmp-table { width: 100%; border-collapse: collapse; font-size: 14px; margin: 16px 0; }
+  .cmp-table th {
+    background: var(--bg3);
+    color: var(--accent);
+    padding: 10px 14px;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 1px solid var(--border);
+  }
+  .cmp-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--muted);
+  }
+  .cmp-table td:first-child { font-family: 'Courier New', monospace; color: var(--cyan); font-size: 13px; }
+  .cmp-table tr:hover td { background: var(--bg2); }
+ 
+  /* ── Tags ── */
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+    margin-left: 6px;
+  }
+  .badge-warn { background: #2a1f0f; color: var(--yellow); border: 1px solid #78350f; }
+  .badge-ok   { background: #0f2a1f; color: var(--green);  border: 1px solid #14532d; }
+ 
+  /* ── Drag & Drop exercise ── */
+  .exercise { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; }
+  .ex-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 16px; }
+  .ex-col-title { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 10px; }
+  .draggable {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 9px 12px;
+    font-size: 13px;
+    color: var(--text);
+    cursor: grab;
+    margin-bottom: 7px;
+    transition: border-color .2s, background .2s;
+    user-select: none;
+  }
+  .draggable:hover { border-color: var(--accent); }
+  .draggable.dragging { opacity: .4; }
+  .drop-target {
+    background: var(--bg);
+    border: 1px dashed var(--border);
+    border-radius: 6px;
+    padding: 9px 12px;
+    font-size: 13px;
+    color: var(--muted);
+    min-height: 40px;
+    margin-bottom: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: border-color .2s;
+  }
+  .drop-target.over { border-color: var(--accent); background: var(--bg3); }
+  .drop-target .cmd { font-family: 'Courier New', monospace; font-size: 12px; color: var(--cyan); }
+  .drop-target .placed { font-size: 12px; color: var(--green); }
+  .drop-target.correct { border-color: var(--green); background: #0f2a1f; }
+  .drop-target.wrong   { border-color: var(--red);   background: #2a0f0f; }
+ 
+  .ex-btns { display: flex; gap: 10px; margin-top: 16px; }
+  .btn-check, .btn-reset {
+    padding: 8px 18px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    transition: background .2s;
+  }
+  .btn-check { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 600; }
+  .btn-check:hover { background: #93b4ff; }
+  .btn-reset { background: var(--bg3); color: var(--muted); }
+  .btn-reset:hover { background: var(--border); color: var(--text); }
+  .ex-feedback { font-size: 13px; margin-top: 10px; color: var(--muted); min-height: 20px; }
+ 
+  /* ── Practical steps ── */
+  .step-list { list-style: none; counter-reset: steps; }
+  .step-item { counter-increment: steps; margin-bottom: 32px; }
+  .step-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .step-num {
+    width: 28px; height: 28px;
+    background: var(--accent);
+    color: #000;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .step-title { font-size: 15px; font-weight: 600; color: var(--text); }
+  .step-meta { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+  .step-tag { font-size: 11px; background: var(--bg3); border: 1px solid var(--border); color: var(--muted); padding: 2px 8px; border-radius: 4px; }
+ 
+  /* ── Nav footer ── */
+  .nav-footer {
+    border-top: 1px solid var(--border);
+    padding-top: 24px;
+    margin-top: 48px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .nav-btn {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 18px;
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    font-size: 14px;
+    transition: border-color .2s;
+  }
+  .nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+ 
+  /* ── Slide mode ── */
+  body.slide-mode .container { max-width: 100%; padding: 0; }
+  body.slide-mode .section { display: none; min-height: 100vh; padding: 60px 80px; margin: 0; border-bottom: 1px solid var(--border); }
+  body.slide-mode .section.active { display: block; }
+  body.slide-mode .nav-footer { display: none; }
+  .slide-nav {
+    display: none;
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    gap: 8px;
+    z-index: 200;
+  }
+  body.slide-mode .slide-nav { display: flex; }
+  .slide-btn {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    width: 40px; height: 40px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .2s;
+  }
+  .slide-btn:hover { background: var(--border); }
+  .slide-counter {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 13px;
+    padding: 0 12px;
+    border-radius: 8px;
+    display: flex; align-items: center;
+  }
+ 
+  @media (max-width: 600px) {
+    .ex-cols { grid-template-columns: 1fr; }
+    .meta-grid { grid-template-columns: 1fr 1fr; }
+    .page-header h1 { font-size: 1.5rem; }
+    body.slide-mode .section { padding: 32px 20px; }
+  }
+</style>
 </head>
 <body>
-
-<div class="top-bar">
-    <a href="index.html" class="back-btn">&#x2B05; Voltar ao Dashboard</a>
-    <span class="page-badge">Módulo 1 — Fundamentos Linux</span>
-    <button class="slide-toggle" id="slideToggleBtn">&#x1F4FA; Modo Slide</button>
+ 
+<!-- Topbar -->
+<nav class="topbar">
+  <div class="breadcrumb">
+    <a href="https://cesarazevedo.github.io/so/index.html">⬅ Voltar ao Dashboard</a>
+    <span>›</span>
+    <span>Módulo 1 — Fundamentos Linux</span>
+  </div>
+  <button class="btn-slide" onclick="toggleSlide()">📺 Modo Slide</button>
+</nav>
+ 
+<!-- Slide navigation -->
+<div class="slide-nav">
+  <button class="slide-btn" onclick="prevSlide()">‹</button>
+  <div class="slide-counter" id="slide-counter">1 / 7</div>
+  <button class="slide-btn" onclick="nextSlide()">›</button>
 </div>
-
-<div class="content-wrapper">
-
-    <div class="lesson-hero">
-        <h1>&#x1F50D; Regex e Filtros de Texto</h1>
-        <p class="subtitle">Aula 1.9 — grep, sed, awk e expressões regulares: domine o processamento de texto no Linux</p>
+ 
+<div class="container">
+ 
+  <!-- Header -->
+  <div class="page-header">
+    <div class="module-tag">Módulo 1 — Fundamentos Linux</div>
+    <h1>⚙️ Metacaracteres do Shell</h1>
+    <p class="subtitle">Aula 1.9 — pipe, redirecionamento, controle de fluxo e execução em segundo plano</p>
+  </div>
+ 
+  <!-- ── 1. O que são metacaracteres do shell ── -->
+  <div class="section active" id="sec-1">
+    <h2><span class="icon">🤔</span> O que são metacaracteres do shell?</h2>
+    <p>
+      No terminal Linux, alguns símbolos têm <strong>significado especial para o próprio shell</strong> — antes mesmo de qualquer programa ser executado. Esses símbolos são chamados de <strong>metacaracteres do shell</strong>.
+    </p>
+    <p>
+      Eles não buscam texto dentro de arquivos (isso é tarefa do regex). Eles controlam <strong>como os comandos são conectados, combinados e executados</strong>.
+    </p>
+ 
+    <div class="callout info">
+      <strong>Analogia:</strong> pense nos metacaracteres como a pontuação de uma frase. O ponto final, a vírgula e o ponto e vírgula não são palavras — mas determinam como as palavras se organizam e se relacionam. No shell é igual: o pipe <code>|</code> e o ponto e vírgula <code>;</code> não são comandos, mas ditam como os comandos se encadeiam.
     </div>
-
-    <!-- CARD 1 — O que é Regex -->
-    <div class="content-card">
-        <h2>&#x1F914; O que é Regex?</h2>
-        <p><strong>Regex</strong> (Expressões Regulares) é uma linguagem de padrões usada para buscar, validar e transformar texto. Em vez de procurar uma palavra exata, você descreve um <em>padrão</em> — por exemplo, "qualquer linha que começa com um número seguido de ponto".</p>
-
-        <div class="two-col">
-            <div>
-                <h3>&#x1F3AF; Para que serve?</h3>
-                <ul>
-                    <li>Buscar texto em arquivos e logs</li>
-                    <li>Validar formatos (e-mail, IP, CPF)</li>
-                    <li>Substituir texto em massa</li>
-                    <li>Extrair colunas e informações</li>
-                    <li>Filtrar saída de comandos</li>
-                </ul>
-            </div>
-            <div>
-                <h3>&#x1F527; Ferramentas que usam Regex</h3>
-                <ul>
-                    <li><code>grep</code> — buscar padrões em arquivos</li>
-                    <li><code>sed</code> — substituir texto (stream editor)</li>
-                    <li><code>awk</code> — processar colunas e campos</li>
-                    <li><code>vim</code> — busca e substituição no editor</li>
-                    <li>Python, JavaScript, PHP e outras linguagens</li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="highlight-box">
-            <p>&#x1F4A1; <strong>Analogia:</strong> Regex é como um "curinga super poderoso". Em vez de buscar apenas "gato", você pode buscar "qualquer palavra de quatro letras que começa com g e termina com o".</p>
-        </div>
-
-        <div class="terminal">
-            <div class="terminal-bar">
-                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">bash — exemplo motivador</span>
-            </div>
-            <div class="terminal-body">
-<span class="t-comment"># Encontra todas as linhas que COMEÇAM com "erro" no log</span>
-<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">grep</span> <span class="t-regex">"^erro"</span> /var/log/syslog
-<span class="t-match">erro</span><span class="t-out">: falha na conexão com o servidor</span>
-<span class="t-match">erro</span><span class="t-out">: timeout ao aguardar resposta</span>
-<span class="t-comment"># ^ = metacaractere que significa "início da linha"</span>
-            </div>
-        </div>
+ 
+    <h3>A diferença que confunde todo mundo</h3>
+    <table class="cmp-table">
+      <thead><tr><th>Conceito</th><th>Onde age</th><th>Exemplo</th></tr></thead>
+      <tbody>
+        <tr><td>Metacar. do shell</td><td>No shell, antes de executar</td><td><code>ls | grep foo</code></td></tr>
+        <tr><td>Glob (wildcard)</td><td>No shell, expande nomes de arquivo</td><td><code>ls *.txt</code></td></tr>
+        <tr><td>Regex</td><td>Dentro de programas (grep, sed…)</td><td><code>grep "^root" /etc/passwd</code></td></tr>
+      </tbody>
+    </table>
+ 
+    <div class="callout warn">
+      <strong>Atenção:</strong> o ponto <code>.</code> é metacaractere no regex, mas <strong>não</strong> no shell. <code>ls g.to</code> procura um arquivo literalmente chamado <code>g.to</code>. Para "qualquer caractere" no glob use <code>?</code>.
     </div>
-
-    <!-- CARD 2 — grep -->
-    <div class="content-card">
-        <h2>&#x1F50E; grep — Buscando Padrões</h2>
-        <p><strong>grep</strong> (Global Regular Expression Print) percorre arquivos linha a linha e imprime as que casam com o padrão informado. É a ferramenta de busca mais usada no Linux.</p>
-
-        <h3>Uso básico e flags essenciais</h3>
-        <div class="terminal">
-            <div class="terminal-bar">
-                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">bash — grep</span>
-            </div>
-            <div class="terminal-body">
-<span class="t-comment"># Busca simples</span>
-<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">grep</span> <span class="t-string">"erro"</span> /var/log/syslog
-
-<span class="t-comment"># -i  Ignorar maiúsculas/minúsculas</span>
-<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">grep</span> <span class="t-flag">-i</span> <span class="t-string">"error"</span> /var/log/syslog
-
-<span class="t-comment"># -r  Busca recursiva em diretório</span>
-<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">grep</span> <span class="t-flag">-r</span> <span class="t-string">"TODO"</span> /projeto/
-
-<span class="t-comment"># -n  Numerar as linhas encontradas</span>
-<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">grep</span> <span class="t-flag">-n</span> <span class="t-string">"^root"</span> /etc/passwd
-<span class="t-out">1:root:x:0:0:root:/root:/bin/bash</span>
-
-<span class="t-comment"># -v  Inverter: linhas que NÃO contêm o padrão</span>
-<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">grep</span> <span class="t-flag">-v</span> <span class="t-string">"#"</span> /etc/ssh/sshd_config
-
-<span class="t-comment"># -c  Contar ocorrências</span>
-<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">grep</span> <span class="t-flag">-c</span> <span class="t-string">"warning"</span> /var/log/syslog
-<span class="t-out">47</span>
-
-<span class="t-comment"># -E  Regex extendida (+, ?, |, {} sem escape)</span>
-<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">grep</span> <span class="t-flag">-E</span> <span class="t-regex">"erro|falha|warning"</span> /var/log/syslog
-            </div>
-        </div>
-
-        <div class="tip-box">
-            <p>&#x1F4CC; <strong>Flags mais usadas:</strong> <span class="kbd-sm">-i</span> ignora case &nbsp;|&nbsp; <span class="kbd-sm">-n</span> mostra nº linha &nbsp;|&nbsp; <span class="kbd-sm">-r</span> recursivo &nbsp;|&nbsp; <span class="kbd-sm">-v</span> inverte &nbsp;|&nbsp; <span class="kbd-sm">-c</span> conta &nbsp;|&nbsp; <span class="kbd-sm">-l</span> só nomes dos arquivos &nbsp;|&nbsp; <span class="kbd-sm">-E</span> regex extendida &nbsp;|&nbsp; <span class="kbd-sm">-o</span> só o trecho casado</p>
-        </div>
+  </div>
+ 
+  <!-- ── 2. Os metacaracteres principais ── -->
+  <div class="section" id="sec-2">
+    <h2><span class="icon">⚡</span> Os metacaracteres principais</h2>
+ 
+    <div class="meta-grid">
+      <div class="meta-card">
+        <div class="meta-sym">|</div>
+        <div class="meta-name">Pipe</div>
+        <div class="meta-desc">Passa a saída de um comando para a entrada do próximo</div>
+        <div class="meta-ex">ls | grep ".conf"</div>
+      </div>
+      <div class="meta-card">
+        <div class="meta-sym">&gt;</div>
+        <div class="meta-name">Redirecionar (criar/sobrescrever)</div>
+        <div class="meta-desc">Salva a saída em um arquivo. <strong>Apaga</strong> o conteúdo anterior.</div>
+        <div class="meta-ex">ls &gt; lista.txt</div>
+      </div>
+      <div class="meta-card">
+        <div class="meta-sym">&gt;&gt;</div>
+        <div class="meta-name">Redirecionar (acrescentar)</div>
+        <div class="meta-desc">Adiciona a saída ao final do arquivo sem apagar o conteúdo</div>
+        <div class="meta-ex">echo "ok" &gt;&gt; log.txt</div>
+      </div>
+      <div class="meta-card">
+        <div class="meta-sym">&lt;</div>
+        <div class="meta-name">Entrada de arquivo</div>
+        <div class="meta-desc">Faz o comando ler de um arquivo em vez do teclado</div>
+        <div class="meta-ex">sort &lt; nomes.txt</div>
+      </div>
+      <div class="meta-card">
+        <div class="meta-sym">;</div>
+        <div class="meta-name">Ponto e vírgula</div>
+        <div class="meta-desc">Executa comandos em sequência, um após o outro</div>
+        <div class="meta-ex">cd /tmp ; ls ; pwd</div>
+      </div>
+      <div class="meta-card">
+        <div class="meta-sym">&amp;&amp;</div>
+        <div class="meta-name">E lógico (AND)</div>
+        <div class="meta-desc">Executa o próximo só se o anterior tiver sucesso (exit 0)</div>
+        <div class="meta-ex">mkdir pasta &amp;&amp; cd pasta</div>
+      </div>
+      <div class="meta-card">
+        <div class="meta-sym">||</div>
+        <div class="meta-name">OU lógico (OR)</div>
+        <div class="meta-desc">Executa o próximo só se o anterior falhar</div>
+        <div class="meta-ex">ping host || echo "fora do ar"</div>
+      </div>
+      <div class="meta-card">
+        <div class="meta-sym">&amp;</div>
+        <div class="meta-name">Background</div>
+        <div class="meta-desc">Executa o comando em segundo plano, liberando o terminal</div>
+        <div class="meta-ex">sleep 60 &amp;</div>
+      </div>
     </div>
-
-    <!-- CARD 3 — Metacaracteres -->
-    <div class="content-card">
-        <h2>&#x26A1; Metacaracteres Básicos</h2>
-        <p>Metacaracteres são símbolos com significado especial nas expressões regulares. Dominá-los é a chave para escrever padrões precisos e poderosos.</p>
-
-        <div class="regex-grid">
-            <div class="regex-card">
-                <div class="symbol">.</div>
-                <strong>Qualquer caractere</strong>
-                <span>g.to = gato, geto, gito</span>
-            </div>
-            <div class="regex-card">
-                <div class="symbol">*</div>
-                <strong>Zero ou mais</strong>
-                <span>ab*c = ac, abc, abbc</span>
-            </div>
-            <div class="regex-card">
-                <div class="symbol">^</div>
-                <strong>Início da linha</strong>
-                <span>^root = começa com root</span>
-            </div>
-            <div class="regex-card">
-                <div class="symbol">$</div>
-                <strong>Fim da linha</strong>
-                <span>bash$ = termina com bash</span>
-            </div>
-            <div class="regex-card">
-                <div class="symbol">[ ]</div>
-                <strong>Lista/classe</strong>
-                <span>[aei] = a ou e ou i</span>
-            </div>
-            <div class="regex-card">
-                <div class="symbol">{}</div>
-                <strong>Quantidade exata</strong>
-                <span>[0-9]{3} = três dígitos</span>
-            </div>
-            <div class="regex-card">
-                <div class="symbol">+</div>
-                <strong>Um ou mais</strong>
-                <span>ab+c = abc, abbc</span>
-            </div>
-            <div class="regex-card">
-                <div class="symbol">?</div>
-                <strong>Zero ou um</strong>
-                <span>colou?r = color, colour</span>
-            </div>
-        </div>
-
-        <h3>Classes de caracteres</h3>
-        <div class="two-col">
-            <table class="regex-table">
-                <tr><th>Padrão</th><th>Significado</th></tr>
-                <tr><td>[abc]</td><td>a, b ou c</td></tr>
-                <tr><td>[a-z]</td><td>Letras minúsculas</td></tr>
-                <tr><td>[A-Z]</td><td>Letras maiúsculas</td></tr>
-                <tr><td>[0-9]</td><td>Dígitos</td></tr>
-                <tr><td>[^abc]</td><td>NÃO a, b ou c</td></tr>
-            </table>
-            <table class="regex-table">
-                <tr><th>Escape</th><th>Equivale a</th></tr>
-                <tr><td>\d</td><td>[0-9] — dígito</td></tr>
-                <tr><td>\w</td><td>[a-zA-Z0-9_]</td></tr>
-                <tr><td>\s</td><td>Espaço / tab</td></tr>
-                <tr><td>\.</td><td>Ponto literal</td></tr>
-                <tr><td>\\</td><td>Barra literal</td></tr>
-            </table>
-        </div>
-
-        <div class="tip-box">
-            <p>&#x1F4A1; Use <code>grep -E</code> (ou <code>egrep</code>) para poder usar <code>+</code>, <code>?</code> e <code>|</code> diretamente, sem precisar escapá-los com <code>\</code>.</p>
-        </div>
+  </div>
+ 
+  <!-- ── 3. Pipe e redirecionamento ── -->
+  <div class="section" id="sec-3">
+    <h2><span class="icon">🔗</span> Pipe e redirecionamento em detalhes</h2>
+ 
+    <h3>O pipe <code>|</code> — linha de montagem</h3>
+    <p>O pipe conecta comandos em série: a saída de um vira a entrada do próximo. É como uma esteira de fábrica onde cada máquina processa e passa adiante.</p>
+ 
+    <div class="code-block">
+      <div class="code-header"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>bash — pipe<div class="lang">bash</div></div>
+      <pre><span class="cm"># Listar só pastas (linhas começando com d)</span>
+<span class="cp">usuario@linux:~$</span> <span class="cc">ls -la</span> | <span class="cc">grep</span> <span class="cs">"^d"</span>
+ 
+<span class="cm"># Contar quantos arquivos existem na pasta</span>
+<span class="cp">usuario@linux:~$</span> <span class="cc">ls</span> | <span class="cc">wc -l</span>
+<span class="co">12</span>
+ 
+<span class="cm"># Ver processos bash rodando agora</span>
+<span class="cp">usuario@linux:~$</span> <span class="cc">ps aux</span> | <span class="cc">grep</span> <span class="cs">bash</span>
+ 
+<span class="cm"># Top 5 arquivos maiores na pasta atual</span>
+<span class="cp">usuario@linux:~$</span> <span class="cc">du -sh</span> * | <span class="cc">sort -rh</span> | <span class="cc">head -5</span></pre>
     </div>
-
-    <!-- CARD 4 — sed -->
-    <div class="content-card">
-        <h2>&#x270F;&#xFE0F; sed — Substituição e Edição de Texto</h2>
-        <p><strong>sed</strong> (Stream Editor) processa texto linha a linha, aplicando transformações. O uso mais comum é a substituição com a sintaxe <code>s/padrão/novo/flags</code>.</p>
-
-        <div class="terminal">
-            <div class="terminal-bar">
-                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">bash — sed</span>
-            </div>
-            <div class="terminal-body">
-<span class="t-comment"># Substituir primeira ocorrência em cada linha</span>
-<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">sed</span> <span class="t-regex">'s/old/new/'</span> arquivo.txt
-
-<span class="t-comment"># /g = global: substituir TODAS as ocorrências</span>
-<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">sed</span> <span class="t-regex">'s/old/new/g'</span> arquivo.txt
-
-<span class="t-comment"># -i = editar o arquivo diretamente (cuidado!)</span>
-<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">sed</span> <span class="t-flag">-i</span> <span class="t-regex">'s/http/https/g'</span> config.txt
-
-<span class="t-comment"># Ignorar case com /gi</span>
-<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">sed</span> <span class="t-regex">'s/erro/ERRO/gi'</span> log.txt
-
-<span class="t-comment"># Deletar linhas que contêm um padrão</span>
-<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">sed</span> <span class="t-regex">'/comentario/d'</span> arquivo.txt
-
-<span class="t-comment"># Deletar linhas vazias</span>
-<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">sed</span> <span class="t-regex">'/^$/d'</span> arquivo.txt
-
-<span class="t-comment"># Múltiplas substituições com -e</span>
-<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">sed</span> <span class="t-flag">-e</span> <span class="t-regex">'s/a/A/g'</span> <span class="t-flag">-e</span> <span class="t-regex">'s/b/B/g'</span> arquivo.txt
-            </div>
-        </div>
-
-        <div class="alert-box">
-            <p>&#x26A0;&#xFE0F; <strong>Atenção com <code>-i</code>:</strong> o flag <code>-i</code> modifica o arquivo original permanentemente. Sempre teste o comando sem <code>-i</code> primeiro para verificar o resultado antes de salvar.</p>
-        </div>
+ 
+    <h3>Redirecionamento <code>&gt;</code> e <code>&gt;&gt;</code></h3>
+    <div class="callout warn">
+      <strong>Cuidado com o <code>&gt;</code>:</strong> ele <strong>apaga</strong> o arquivo antes de escrever. Se errar o nome do arquivo, pode perder dados. O <code>&gt;&gt;</code> é mais seguro — ele só adiciona ao final.
     </div>
-
-    <!-- CARD 5 — awk -->
-    <div class="content-card">
-        <h2>&#x1F4CA; awk — Processamento de Colunas</h2>
-        <p><strong>awk</strong> é uma linguagem de processamento de texto orientada a campos (colunas). Ele divide cada linha em campos separados por espaço (ou outro delimitador) e permite trabalhar com cada campo individualmente.</p>
-
-        <div class="terminal">
-            <div class="terminal-bar">
-                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">bash — awk</span>
-            </div>
-            <div class="terminal-body">
-<span class="t-comment"># Arquivo de exemplo</span>
-<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">cat</span> funcionarios.txt
-<span class="t-out">João   Vendas   3500</span>
-<span class="t-out">Maria  TI       4200</span>
-<span class="t-out">Pedro  RH       3800</span>
-
-<span class="t-comment"># $1 = 1ª coluna, $2 = 2ª, $NF = última coluna</span>
-<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">awk</span> <span class="t-regex">'{print $1}'</span> funcionarios.txt
-<span class="t-out">João</span>
-<span class="t-out">Maria</span>
-<span class="t-out">Pedro</span>
-
-<span class="t-comment"># Imprimir nome e salário</span>
-<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">awk</span> <span class="t-regex">'{print $1, $3}'</span> funcionarios.txt
-
-<span class="t-comment"># Filtrar linhas onde salário > 4000</span>
-<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">awk</span> <span class="t-regex">'$3 > 4000 {print $1, $3}'</span> funcionarios.txt
-<span class="t-out">Maria 4200</span>
-
-<span class="t-comment"># -F define separador (ex: CSV com vírgula)</span>
-<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">awk</span> <span class="t-flag">-F</span><span class="t-string">':'</span> <span class="t-regex">'{print $1}'</span> /etc/passwd
-
-<span class="t-comment"># BEGIN = antes de processar; END = depois</span>
-<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">awk</span> <span class="t-regex">'BEGIN{print "--- Relatório ---"} {print $1} END{print "--- Fim ---"}'</span> funcionarios.txt
-
-<span class="t-comment"># Somar valores da coluna 3</span>
-<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">awk</span> <span class="t-regex">'{soma += $3} END {print "Total:", soma}'</span> funcionarios.txt
-<span class="t-out">Total: 11500</span>
-            </div>
-        </div>
-
-        <div class="highlight-box">
-            <p>&#x1F4CC; <strong>Variáveis especiais do awk:</strong> <code>$0</code> = linha inteira &nbsp;|&nbsp; <code>$1</code> a <code>$N</code> = campos &nbsp;|&nbsp; <code>$NF</code> = último campo &nbsp;|&nbsp; <code>NR</code> = nº da linha &nbsp;|&nbsp; <code>FS</code> = separador de campos</p>
-        </div>
+ 
+    <div class="code-block">
+      <div class="code-header"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>bash — redirecionamento<div class="lang">bash</div></div>
+      <pre><span class="cm"># Salvar a lista de arquivos num arquivo</span>
+<span class="cp">usuario@linux:~$</span> <span class="cc">ls -la</span> &gt; <span class="cs">lista.txt</span>
+ 
+<span class="cm"># Adicionar uma linha ao final do log (não apaga)</span>
+<span class="cp">usuario@linux:~$</span> <span class="cc">echo</span> <span class="cs">"Serviço iniciado"</span> &gt;&gt; <span class="cs">servico.log</span>
+ 
+<span class="cm"># Jogar os erros fora (redirecionar stderr para /dev/null)</span>
+<span class="cp">usuario@linux:~$</span> <span class="cc">find</span> / -name <span class="cs">"*.conf"</span> 2&gt;/dev/null
+ 
+<span class="cm"># Salvar saída normal E erros juntos</span>
+<span class="cp">usuario@linux:~$</span> <span class="cc">make</span> &gt; build.log 2&gt;&amp;1</pre>
     </div>
-
-    <!-- CARD 6 — Pipes para encadear filtros -->
-    <div class="content-card">
-        <h2>&#x1F4AB; Pipes — Encadeando Filtros</h2>
-        <p>O pipe <code>|</code> conecta a saída de um comando à entrada do próximo. Combinando <code>grep</code>, <code>sed</code> e <code>awk</code> com pipes, você constrói pipelines de processamento extremamente poderosos.</p>
-
-        <div class="terminal">
-            <div class="terminal-bar">
-                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">bash — pipes</span>
-            </div>
-            <div class="terminal-body">
-<span class="t-comment"># Filtrar falhas e extrair o usuário (coluna 4)</span>
-<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">grep</span> <span class="t-string">"failed"</span> /var/log/auth.log | <span class="t-cmd">awk</span> <span class="t-regex">'{print $4}'</span>
-
-<span class="t-comment"># Contar tentativas por usuário</span>
-<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">grep</span> <span class="t-string">"failed"</span> auth.log | <span class="t-cmd">awk</span> <span class="t-regex">'{print $4}'</span> | sort | uniq -c | sort -rn
-
-<span class="t-comment"># Os 10 IPs que mais acessaram o servidor web</span>
-<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">awk</span> <span class="t-regex">'{print $1}'</span> access.log | sort | uniq -c | sort -rn | head -10
-
-<span class="t-comment"># Remover comentários e linhas vazias de um config</span>
-<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">grep</span> <span class="t-flag">-v</span> <span class="t-regex">"^#\|^$"</span> /etc/ssh/sshd_config
-
-<span class="t-comment"># Extrair IPs de um log com regex extendida</span>
-<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">grep</span> <span class="t-flag">-Eo</span> <span class="t-regex">"[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+"</span> access.log | sort -u
-            </div>
-        </div>
-
-        <div class="tip-box">
-            <p>&#x1F4A1; <strong>Filosofia Unix:</strong> cada ferramenta faz uma coisa bem feita. A combinação delas via pipe cria soluções elegantes. <code>grep</code> filtra, <code>awk</code> processa, <code>sed</code> transforma, <code>sort</code> ordena, <code>uniq</code> deduplica.</p>
-        </div>
+ 
+    <div class="callout info">
+      <strong>Dica:</strong> <code>2&gt;</code> redireciona a saída de erro (stderr). <code>1&gt;</code> ou apenas <code>&gt;</code> redireciona a saída normal (stdout). <code>2&gt;&amp;1</code> significa "redirecione o stderr para onde o stdout está indo".
     </div>
-
-    <!-- CARD 7 — Exemplos práticos com logs -->
-    <div class="content-card">
-        <h2>&#x1F3AF; Exemplos Práticos com Logs de Sistema</h2>
-        <p>Logs de sistema são a principal aplicação cotidiana de regex e filtros. Veja como extrair informações úteis de arquivos como <code>/var/log/syslog</code> e <code>/var/log/auth.log</code>.</p>
-
-        <div class="terminal">
-            <div class="terminal-bar">
-                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">bash — análise de logs</span>
-            </div>
-            <div class="terminal-body">
-<span class="t-comment"># 1. Buscar erros no syslog sem distinção de case</span>
-<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">grep</span> <span class="t-flag">-i</span> <span class="t-string">"error"</span> /var/log/syslog | tail -20
-
-<span class="t-comment"># 2. Encontrar endereços IP específicos</span>
-<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">grep</span> <span class="t-flag">-rE</span> <span class="t-regex">"192\.168\.[0-9]+"</span> /etc/
-
-<span class="t-comment"># 3. Listar usuários com UID >= 1000 (usuários reais)</span>
-<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">awk</span> <span class="t-flag">-F</span><span class="t-string">:</span> <span class="t-regex">'$3 >= 1000 {print $1}'</span> /etc/passwd
-
-<span class="t-comment"># 4. Substituir datas no formato americano para brasileiro</span>
-<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">sed</span> <span class="t-flag">-E</span> <span class="t-regex">'s/([0-9]{4})-([0-9]{2})-([0-9]{2})/\3\/\2\/\1/g'</span> log.txt
-
-<span class="t-comment"># 5. Extrair e-mails de um arquivo de contatos</span>
-<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">grep</span> <span class="t-flag">-Eo</span> <span class="t-regex">"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"</span> contatos.txt
-
-<span class="t-comment"># 6. Contar erros por hora no syslog</span>
-<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">grep</span> <span class="t-string">"error"</span> /var/log/syslog | <span class="t-cmd">awk</span> <span class="t-regex">'{print $3}'</span> | <span class="t-cmd">cut</span> <span class="t-flag">-d</span><span class="t-string">':'</span> <span class="t-flag">-f1</span> | sort | uniq -c
-            </div>
-        </div>
-
-        <div class="alert-box">
-            <p>&#x26A0;&#xFE0F; <strong>Regex e segurança:</strong> analise logs regularmente em busca de tentativas de acesso suspeitas. Múltiplos "failed" do mesmo IP indicam possível ataque de força bruta. Use <code>grep -c "Failed password"</code> no auth.log para monitorar.</p>
-        </div>
-
-        <div class="highlight-box">
-            <p>&#x1F4CC; <strong>Dica de ouro:</strong> teste suas expressões regulares em <a href="https://regex101.com" target="_blank" style="color:var(--primary);">regex101.com</a> antes de aplicar em produção — o site explica cada parte do padrão em tempo real.</p>
-        </div>
+  </div>
+ 
+  <!-- ── 4. Controle de fluxo ── -->
+  <div class="section" id="sec-4">
+    <h2><span class="icon">🔀</span> Controle de fluxo: <code>;</code>, <code>&amp;&amp;</code> e <code>||</code></h2>
+ 
+    <p>Esses três metacaracteres determinam <strong>quando</strong> um comando será executado em relação ao anterior.</p>
+ 
+    <h3>Ponto e vírgula <code>;</code> — sequência simples</h3>
+    <p>Executa os comandos um após o outro, <strong>independente de sucesso ou falha</strong>. É como uma lista de tarefas sem condição.</p>
+ 
+    <div class="code-block">
+      <div class="code-header"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>bash — ponto e vírgula<div class="lang">bash</div></div>
+      <pre><span class="cm"># Executa os três, um por um</span>
+<span class="cp">usuario@linux:~$</span> <span class="cc">cd /tmp</span> ; <span class="cc">ls</span> ; <span class="cc">pwd</span>
+/tmp
+/tmp
+ 
+<span class="cm"># Cria pasta, entra, confirma onde está</span>
+<span class="cp">usuario@linux:~$</span> <span class="cc">mkdir teste</span> ; <span class="cc">cd teste</span> ; <span class="cc">pwd</span>
+/home/usuario/teste</pre>
     </div>
-
-    <!-- EXERCÍCIO -->
-    <div class="content-card exercise-card">
-        <h2>&#x1F3AF; Exercício — Arraste e Conecte</h2>
-        <p style="color:#475569;font-size:.9em;margin-bottom:4px;">Arraste cada descrição para o comando ou expressão correspondente.</p>
-
-        <div class="ex-drag-root" data-ex="ex01">
-            <div class="ex-drag">
-                <div>
-                    <div class="ex-col-title">Descrição</div>
-                    <div class="ex-pool" data-pool="ex01">
-                        <div class="drag-chip" data-id="c1">Busca 'error' sem distinção de maiúsculas</div>
-                        <div class="drag-chip" data-id="c2">Busca linhas que começam com 'root' numerando-as</div>
-                        <div class="drag-chip" data-id="c3">Substitui todas as ocorrências no arquivo</div>
-                        <div class="drag-chip" data-id="c4">Imprime apenas a primeira coluna</div>
-                        <div class="drag-chip" data-id="c5">Busca IPs recursivamente com regex extendida</div>
-                        <div class="drag-chip" data-id="c6">Lista usuários com UID &gt;= 1000</div>
-                    </div>
-                </div>
-                <div>
-                    <div class="ex-col-title">Comando</div>
-                    <div class="ex-zones" data-zones="ex01">
-                        <div class="drop-zone" data-zone="ex01-z1" data-accept="c1">
-                            <span class="zone-name"><code>grep -i "error" /var/log/syslog</code></span>
-                            <div class="zone-slot"></div>
-                            <div class="zone-feedback"></div>
-                        </div>
-                        <div class="drop-zone" data-zone="ex01-z2" data-accept="c2">
-                            <span class="zone-name"><code>grep -n "^root" /etc/passwd</code></span>
-                            <div class="zone-slot"></div>
-                            <div class="zone-feedback"></div>
-                        </div>
-                        <div class="drop-zone" data-zone="ex01-z3" data-accept="c3">
-                            <span class="zone-name"><code>sed 's/old/new/g' arquivo.txt</code></span>
-                            <div class="zone-slot"></div>
-                            <div class="zone-feedback"></div>
-                        </div>
-                        <div class="drop-zone" data-zone="ex01-z4" data-accept="c4">
-                            <span class="zone-name"><code>awk '{print $1}' arquivo.txt</code></span>
-                            <div class="zone-slot"></div>
-                            <div class="zone-feedback"></div>
-                        </div>
-                        <div class="drop-zone" data-zone="ex01-z5" data-accept="c5">
-                            <span class="zone-name"><code>grep -rE "192\.168\.[0-9]+" /etc/</code></span>
-                            <div class="zone-slot"></div>
-                            <div class="zone-feedback"></div>
-                        </div>
-                        <div class="drop-zone" data-zone="ex01-z6" data-accept="c6">
-                            <span class="zone-name"><code>awk -F: '$3 &gt;= 1000 {print $1}' /etc/passwd</code></span>
-                            <div class="zone-slot"></div>
-                            <div class="zone-feedback"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="ex-actions">
-            <button class="btn-verificar" onclick="dragVerify('ex01')">Verificar</button>
-            <button class="btn-refazer"  onclick="dragReset('ex01')">Refazer</button>
-        </div>
-        <div class="ex-result" id="ex01-result"></div>
+ 
+    <h3>E lógico <code>&amp;&amp;</code> — só se deu certo</h3>
+    <p>Executa o próximo comando <strong>somente se o anterior teve sucesso</strong> (código de saída 0). Ótimo para encadeamentos dependentes.</p>
+ 
+    <div class="code-block">
+      <div class="code-header"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>bash — AND lógico<div class="lang">bash</div></div>
+      <pre><span class="cm"># Só entra na pasta se ela foi criada com sucesso</span>
+<span class="cp">usuario@linux:~$</span> <span class="cc">mkdir</span> <span class="cs">/backup</span> &amp;&amp; <span class="cc">cd</span> <span class="cs">/backup</span>
+ 
+<span class="cm"># Atualiza e instala só se a atualização funcionar</span>
+<span class="cp">usuario@linux:~$</span> <span class="cc">apt update</span> &amp;&amp; <span class="cc">apt upgrade -y</span>
+ 
+<span class="cm"># Compila e executa só se não houver erro</span>
+<span class="cp">usuario@linux:~$</span> <span class="cc">gcc programa.c -o programa</span> &amp;&amp; <span class="cc">./programa</span></pre>
     </div>
-
-    <!-- ATIVIDADE PRÁTICA -->
-    <div class="content-card practical-card" id="prat-01">
-        <h2>&#x1F6E0;&#xFE0F; Atividade Prática — Análise de Logs com grep, sed e awk</h2>
-        <div class="prat-meta">
-            <span class="prat-tag">&#x23F1; ~35 min</span>
-            <span class="prat-tag">&#x1F4BB; Ubuntu Server / Terminal</span>
-            <span class="prat-tag">&#x1F4F8; Tirar screenshot da saída</span>
-        </div>
-
-        <div class="prat-steps">
-            <div class="prat-step">
-                <div class="step-num">1</div>
-                <div class="step-body">
-                    <div class="step-label">Buscar erros no syslog com grep</div>
-                    <div class="step-desc">Filtre as últimas 20 linhas com erros e depois conte o total de ocorrências. Registre o número:</div>
-                    <div class="terminal">
-                        <div class="terminal-bar">
-                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                            <span class="term-title">bash — passo 1</span>
-                        </div>
-                        <div class="terminal-body">
-<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">grep</span> <span class="t-flag">-i</span> <span class="t-string">"error"</span> /var/log/syslog | <span class="t-cmd">tail</span> <span class="t-flag">-20</span>
-<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">grep</span> <span class="t-flag">-c</span> <span class="t-string">"error"</span> /var/log/syslog
-<span class="t-out">47</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="prat-step">
-                <div class="step-num">2</div>
-                <div class="step-body">
-                    <div class="step-label">Filtrar por IP com regex extendida</div>
-                    <div class="step-desc">Localize arquivos de configuração que referenciam a rede local e extraia apenas os IPs de <code>/etc/hosts</code>:</div>
-                    <div class="terminal">
-                        <div class="terminal-bar">
-                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                            <span class="term-title">bash — passo 2</span>
-                        </div>
-                        <div class="terminal-body">
-<span class="t-comment"># Busca recursiva por IPs 192.168.x.x em /etc/</span>
-<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">grep</span> <span class="t-flag">-rE</span> <span class="t-regex">"192\.168\.[0-9]+"</span> /etc/
-
-<span class="t-comment"># Extrai apenas os endereços IP do /etc/hosts</span>
-<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">grep</span> <span class="t-flag">-Eo</span> <span class="t-regex">"[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+"</span> /etc/hosts
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="prat-step">
-                <div class="step-num">3</div>
-                <div class="step-body">
-                    <div class="step-label">Substituir e deletar linhas com sed</div>
-                    <div class="step-desc">Crie um arquivo de log de teste e aplique substituição global e deleção de linhas por padrão:</div>
-                    <div class="terminal">
-                        <div class="terminal-bar">
-                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                            <span class="term-title">bash — passo 3</span>
-                        </div>
-                        <div class="terminal-body">
-<span class="t-comment"># Cria o arquivo de teste</span>
-<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">echo</span> <span class="t-flag">-e</span> <span class="t-string">"erro: disco cheio\nerro: memória baixa\ninfo: tudo ok"</span> <span class="t-arg">&gt;</span> teste.log
-
-<span class="t-comment"># Substitui todas as ocorrências de "erro" por "ALERTA"</span>
-<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">sed</span> <span class="t-regex">'s/erro/ALERTA/g'</span> teste.log
-<span class="t-out">ALERTA: disco cheio</span>
-<span class="t-out">ALERTA: memória baixa</span>
-<span class="t-out">info: tudo ok</span>
-
-<span class="t-comment"># Deleta linhas que começam com "info"</span>
-<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">sed</span> <span class="t-regex">'/^info/d'</span> teste.log
-<span class="t-out">erro: disco cheio</span>
-<span class="t-out">erro: memória baixa</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="prat-step">
-                <div class="step-num">4</div>
-                <div class="step-body">
-                    <div class="step-label">Extrair colunas com awk</div>
-                    <div class="step-desc">Liste nome e UID dos primeiros usuários e depois filtre apenas os usuários reais (UID ≥ 1000):</div>
-                    <div class="terminal">
-                        <div class="terminal-bar">
-                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                            <span class="term-title">bash — passo 4</span>
-                        </div>
-                        <div class="terminal-body">
-<span class="t-comment"># Imprime nome (col 1) e UID (col 3) separados por ":"</span>
-<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">awk</span> <span class="t-flag">-F</span><span class="t-string">:</span> <span class="t-regex">'{print $1, $3}'</span> /etc/passwd | <span class="t-cmd">head</span> <span class="t-flag">-10</span>
-
-<span class="t-comment"># Filtra apenas usuários reais (UID >= 1000)</span>
-<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">awk</span> <span class="t-flag">-F</span><span class="t-string">:</span> <span class="t-regex">'$3 >= 1000 {print $1}'</span> /etc/passwd
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="prat-step">
-                <div class="step-num">5</div>
-                <div class="step-body">
-                    <div class="step-label">Combinar filtros com pipe</div>
-                    <div class="step-desc">Monte um pipeline completo para descobrir os 5 horários do dia com mais erros no syslog:</div>
-                    <div class="terminal">
-                        <div class="terminal-bar">
-                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                            <span class="term-title">bash — passo 5</span>
-                        </div>
-                        <div class="terminal-body">
-<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">grep</span> <span class="t-flag">-i</span> <span class="t-string">"error"</span> /var/log/syslog \
-    | <span class="t-cmd">awk</span> <span class="t-regex">'{print $3}'</span> \
-    | <span class="t-cmd">cut</span> <span class="t-flag">-d</span><span class="t-string">:</span> <span class="t-flag">-f1</span> \
-    | sort | uniq <span class="t-flag">-c</span> \
-    | sort <span class="t-flag">-rn</span> | <span class="t-cmd">head</span> <span class="t-flag">-5</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="prat-step">
-                <div class="step-num">6</div>
-                <div class="step-body">
-                    <div class="step-label">Criar relatório de tentativas de acesso</div>
-                    <div class="step-desc">Gere um relatório com os usuários que tiveram mais tentativas de login falhas e salve em arquivo:</div>
-                    <div class="terminal">
-                        <div class="terminal-bar">
-                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                            <span class="term-title">bash — passo 6</span>
-                        </div>
-                        <div class="terminal-body">
-<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">grep</span> <span class="t-string">"Failed password"</span> /var/log/auth.log \
-    | <span class="t-cmd">awk</span> <span class="t-regex">'{print $(NF-3)}'</span> \
-    | sort | uniq <span class="t-flag">-c</span> | sort <span class="t-flag">-rn</span> \
-    <span class="t-arg">&gt;</span> ~/relatorio_acesso.txt
-<span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">cat</span> ~/relatorio_acesso.txt
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="prat-observe">
-            <strong>&#x1F4CC; Para refletir:</strong> grep, sed e awk são ferramentas de 1970 ainda indispensáveis em 2025. Todo administrador de sistemas Linux usa esses comandos diariamente para monitorar servidores, investigar incidentes e automatizar relatórios. Dominar regex é uma das habilidades mais valorizadas no mercado de TI.
-        </div>
-
-        <div class="ex-actions">
-            <button class="btn-print" onclick="printPractical('prat-01', 'Aula 1.9 \u2014 Regex, Filtros e Metacaracteres')">&#x1F5A8;&#xFE0F; Imprimir roteiro</button>
-        </div>
+ 
+    <h3>OU lógico <code>||</code> — plano B</h3>
+    <p>Executa o próximo comando <strong>somente se o anterior falhou</strong>. Perfeito para mensagens de erro ou ações alternativas.</p>
+ 
+    <div class="code-block">
+      <div class="code-header"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>bash — OR lógico<div class="lang">bash</div></div>
+      <pre><span class="cm"># Se o ping falhar, avisa</span>
+<span class="cp">usuario@linux:~$</span> <span class="cc">ping -c1 8.8.8.8</span> || <span class="cc">echo</span> <span class="cs">"Sem conexão com a internet"</span>
+ 
+<span class="cm"># Tenta criar pasta; se falhar, avisa</span>
+<span class="cp">usuario@linux:~$</span> <span class="cc">mkdir</span> <span class="cs">/root/teste</span> || <span class="cc">echo</span> <span class="cs">"Sem permissão!"</span>
+Sem permissão!</pre>
     </div>
-
-    <div class="nav-footer">
-        <a href="aula08-filesystem.html" class="nav-link">&#x2190; Sistema de Arquivos</a>
-        <a href="aula10-projeto-final.html" class="nav-link">Projeto Final &#x2192;</a>
+ 
+    <table class="cmp-table" style="margin-top:16px">
+      <thead><tr><th>Operador</th><th>Executa o próximo quando...</th><th>Analogia</th></tr></thead>
+      <tbody>
+        <tr><td>;</td><td>Sempre</td><td>"Faça isso, depois aquilo."</td></tr>
+        <tr><td>&amp;&amp;</td><td>O anterior teve sucesso</td><td>"Se deu certo, continue."</td></tr>
+        <tr><td>||</td><td>O anterior falhou</td><td>"Se não funcionou, tente outro jeito."</td></tr>
+      </tbody>
+    </table>
+  </div>
+ 
+  <!-- ── 5. Background e controle de jobs ── -->
+  <div class="section" id="sec-5">
+    <h2><span class="icon">⏳</span> Execução em segundo plano: <code>&amp;</code></h2>
+ 
+    <p>O <code>&amp;</code> no final de um comando o executa em <strong>segundo plano (background)</strong>, devolvendo o controle do terminal imediatamente.</p>
+ 
+    <div class="callout info">
+      <strong>Analogia:</strong> é como colocar uma roupa na máquina de lavar e sair para fazer outra coisa. A máquina continua trabalhando, você não precisa ficar parado esperando.
     </div>
-
-</div>
-
-<script src="slide-mode.js"></script>
-<script src="exercise-drag.js"></script>
-<script src="exercise-print.js"></script>
+ 
+    <div class="code-block">
+      <div class="code-header"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>bash — background e jobs<div class="lang">bash</div></div>
+      <pre><span class="cm"># Executar em background (terminal fica livre)</span>
+<span class="cp">usuario@linux:~$</span> <span class="cc">sleep 60</span> &amp;
+<span class="co">[1] 4532</span>   <span class="cm"># [nº do job] PID do processo</span>
+ 
+<span class="cm"># Ver quais jobs estão rodando</span>
+<span class="cp">usuario@linux:~$</span> <span class="cc">jobs</span>
+<span class="co">[1]+  Running   sleep 60 &amp;</span>
+ 
+<span class="cm"># Trazer o job 1 de volta para o primeiro plano</span>
+<span class="cp">usuario@linux:~$</span> <span class="cc">fg %1</span>
+ 
+<span class="cm"># Pausar um comando em execução e mandar pro background</span>
+<span class="cm"># (pressione Ctrl+Z enquanto o comando está rodando)</span>
+<span class="cp">usuario@linux:~$</span> <span class="cc">top</span>
+^Z
+<span class="co">[1]+  Stopped   top</span>
+<span class="cp">usuario@linux:~$</span> <span class="cc">bg %1</span>   <span class="cm"># retoma em background</span>
+ 
+<span class="cm"># Encerrar um job pelo número</span>
+<span class="cp">usuario@linux:~$</span> <span class="cc">kill %1</span></pre>
+    </div>
+ 
+    <div class="callout warn">
+      <strong>Atenção:</strong> processos em background ainda imprimem saída no terminal, o que pode misturar com o que você está digitando. Para evitar isso, redirecione a saída: <code>comando &gt; saida.log 2&gt;&amp;1 &amp;</code>
+    </div>
+  </div>
+ 
+  <!-- ── 6. Exercício drag and drop ── -->
+  <div class="section" id="sec-6">
+    <h2><span class="icon">🎯</span> Exercício — Arraste e Conecte</h2>
+    <p>Arraste cada descrição para o comando ou símbolo correspondente.</p>
+ 
+    <div class="exercise">
+      <div class="ex-cols">
+        <div>
+          <div class="ex-col-title">Descrição</div>
+          <div id="desc-pool">
+            <div class="draggable" draggable="true" data-id="d1">Executa o próximo comando só se o anterior teve sucesso</div>
+            <div class="draggable" draggable="true" data-id="d2">Adiciona saída ao final de um arquivo sem apagar</div>
+            <div class="draggable" draggable="true" data-id="d3">Passa a saída de um comando para a entrada do próximo</div>
+            <div class="draggable" draggable="true" data-id="d4">Executa comandos em sequência, independente do resultado</div>
+            <div class="draggable" draggable="true" data-id="d5">Roda o comando em segundo plano</div>
+            <div class="draggable" draggable="true" data-id="d6">Executa o próximo só se o anterior falhou</div>
+          </div>
+        </div>
+        <div>
+          <div class="ex-col-title">Comando / símbolo</div>
+          <div class="drop-target" data-answer="d3"><span class="cmd">|</span><span class="placed"></span></div>
+          <div class="drop-target" data-answer="d2"><span class="cmd">&gt;&gt;</span><span class="placed"></span></div>
+          <div class="drop-target" data-answer="d1"><span class="cmd">&amp;&amp;</span><span class="placed"></span></div>
+          <div class="drop-target" data-answer="d4"><span class="cmd">;</span><span class="placed"></span></div>
+          <div class="drop-target" data-answer="d6"><span class="cmd">||</span><span class="placed"></span></div>
+          <div class="drop-target" data-answer="d5"><span class="cmd">&amp;</span><span class="placed"></span></div>
+        </div>
+      </div>
+      <div class="ex-btns">
+        <button class="btn-check" onclick="checkExercise()">Verificar</button>
+        <button class="btn-reset" onclick="resetExercise()">Refazer</button>
+      </div>
+      <div class="ex-feedback" id="ex-feedback"></div>
+    </div>
+  </div>
+ 
+  <!-- ── 7. Atividade prática ── -->
+  <div class="section" id="sec-7">
+    <h2><span class="icon">🛠️</span> Atividade Prática — Metacaracteres no Terminal</h2>
+    <div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap">
+      <span class="step-tag">⏱ ~30 min</span>
+      <span class="step-tag">💻 Ubuntu Server / Terminal</span>
+      <span class="step-tag">📸 Tirar screenshot da saída</span>
+    </div>
+ 
+    <ol class="step-list">
+ 
+      <li class="step-item">
+        <div class="step-header"><div class="step-num">1</div><div class="step-title">Explorar o pipe</div></div>
+        <p style="color:var(--muted);margin-bottom:10px">Use pipes para encadear comandos e filtrar informações do sistema.</p>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>bash — passo 1<div class="lang">bash</div></div>
+          <pre><span class="cm"># Liste só as pastas do seu diretório home</span>
+<span class="cp">usuario@linux:~$</span> ls -la ~ | grep <span class="cs">"^d"</span>
+ 
+<span class="cm"># Conte quantos usuários existem no sistema</span>
+<span class="cp">usuario@linux:~$</span> cat /etc/passwd | wc -l
+ 
+<span class="cm"># Veja os 5 processos que mais usam memória</span>
+<span class="cp">usuario@linux:~$</span> ps aux | sort -k4 -rn | head -5</pre>
+        </div>
+      </li>
+ 
+      <li class="step-item">
+        <div class="step-header"><div class="step-num">2</div><div class="step-title">Praticar redirecionamento</div></div>
+        <p style="color:var(--muted);margin-bottom:10px">Crie arquivos com <code>&gt;</code> e adicione conteúdo com <code>&gt;&gt;</code>. Observe a diferença.</p>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>bash — passo 2<div class="lang">bash</div></div>
+          <pre><span class="cm"># Cria (ou sobrescreve) o arquivo com a lista</span>
+<span class="cp">usuario@linux:~$</span> ls /etc > ~/lista-etc.txt
+<span class="cp">usuario@linux:~$</span> wc -l ~/lista-etc.txt
+ 
+<span class="cm"># Adiciona uma linha sem apagar o arquivo</span>
+<span class="cp">usuario@linux:~$</span> echo "--- fim da lista ---" >> ~/lista-etc.txt
+<span class="cp">usuario@linux:~$</span> tail -3 ~/lista-etc.txt
+ 
+<span class="cm"># Experimento: rode duas vezes e compare o tamanho</span>
+<span class="cp">usuario@linux:~$</span> date > ~/teste.txt ; wc -l ~/teste.txt
+<span class="cp">usuario@linux:~$</span> date >> ~/teste.txt ; wc -l ~/teste.txt</pre>
+        </div>
+      </li>
+ 
+      <li class="step-item">
+        <div class="step-header"><div class="step-num">3</div><div class="step-title">Controle de fluxo com <code>&amp;&amp;</code> e <code>||</code></div></div>
+        <p style="color:var(--muted);margin-bottom:10px">Observe como o shell decide executar ou não o próximo comando.</p>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>bash — passo 3<div class="lang">bash</div></div>
+          <pre><span class="cm"># Cria uma pasta e entra nela em um único comando</span>
+<span class="cp">usuario@linux:~$</span> mkdir ~/lab-shell && cd ~/lab-shell && pwd
+ 
+<span class="cm"># Tenta criar em /root (vai falhar) e exibe mensagem</span>
+<span class="cp">usuario@linux:~$</span> mkdir /root/proibido || echo "Sem permissão para criar aqui"
+ 
+<span class="cm"># Sequência com ; (roda tudo, com ou sem erro)</span>
+<span class="cp">usuario@linux:~$</span> cd /tmp ; ls ; echo "Estou em: $(pwd)"</pre>
+        </div>
+      </li>
+ 
+      <li class="step-item">
+        <div class="step-header"><div class="step-num">4</div><div class="step-title">Execução em background</div></div>
+        <p style="color:var(--muted);margin-bottom:10px">Execute um processo demorado em background e gerencie com <code>jobs</code>, <code>fg</code> e <code>kill</code>.</p>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>bash — passo 4<div class="lang">bash</div></div>
+          <pre><span class="cm"># Inicia um sleep longo em background</span>
+<span class="cp">usuario@linux:~$</span> sleep 120 &
+<span class="co">[1] 4532</span>
+ 
+<span class="cm"># Veja que o terminal ficou livre — liste os jobs</span>
+<span class="cp">usuario@linux:~$</span> jobs
+<span class="co">[1]+  Running   sleep 120 &</span>
+ 
+<span class="cm"># Encerra o job sem precisar esperar</span>
+<span class="cp">usuario@linux:~$</span> kill %1
+<span class="co">[1]+  Terminated   sleep 120</span></pre>
+        </div>
+      </li>
+ 
+      <li class="step-item">
+        <div class="step-header"><div class="step-num">5</div><div class="step-title">Pipeline completo</div></div>
+        <p style="color:var(--muted);margin-bottom:10px">Monte um pipeline que combine vários metacaracteres para gerar um relatório.</p>
+        <div class="code-block">
+          <div class="code-header"><div class="dots"><div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div></div>bash — passo 5<div class="lang">bash</div></div>
+          <pre><span class="cm"># Lista os shells disponíveis no sistema e salva em arquivo</span>
+<span class="cp">usuario@linux:~$</span> cat /etc/shells | grep -v "^#" | sort > ~/shells.txt \
+  && echo "Salvo com sucesso!" \
+  || echo "Algo deu errado"
+ 
+<span class="cm"># Exibe o relatório formatado</span>
+<span class="cp">usuario@linux:~$</span> echo "=== Shells disponíveis ===" ; \
+  cat ~/shells.txt ; \
+  echo "Total: $(wc -l < ~/shells.txt)"</pre>
+        </div>
+      </li>
+ 
+    </ol>
+ 
+    <div class="callout tip">
+      <strong>📌 Para refletir:</strong> os metacaracteres do shell são a "cola" que une comandos simples em soluções poderosas. Um administrador Linux experiente raramente digita um único comando por vez — ele encadeia vários com pipes e operadores lógicos para fazer em segundos o que levaria minutos manualmente.
+    </div>
+  </div>
+ 
+  <!-- Nav footer -->
+  <div class="nav-footer">
+    <a href="https://cesarazevedo.github.io/so/aula08-filesystem.html" class="nav-btn">← Sistema de Arquivos</a>
+    <a href="https://cesarazevedo.github.io/so/aula10-projeto-final.html" class="nav-btn">Projeto Final →</a>
+  </div>
+ 
+</div><!-- /container -->
+ 
+<script>
+// ── Slide mode ──
+const sections = Array.from(document.querySelectorAll('.section'));
+let currentSlide = 0;
+ 
+function toggleSlide() {
+  document.body.classList.toggle('slide-mode');
+  if (document.body.classList.contains('slide-mode')) {
+    sections.forEach((s, i) => s.classList.toggle('active', i === currentSlide));
+    updateCounter();
+  } else {
+    sections.forEach(s => s.classList.add('active'));
+  }
+}
+ 
+function nextSlide() {
+  if (currentSlide < sections.length - 1) {
+    sections[currentSlide].classList.remove('active');
+    currentSlide++;
+    sections[currentSlide].classList.add('active');
+    updateCounter();
+  }
+}
+ 
+function prevSlide() {
+  if (currentSlide > 0) {
+    sections[currentSlide].classList.remove('active');
+    currentSlide--;
+    sections[currentSlide].classList.add('active');
+    updateCounter();
+  }
+}
+ 
+function updateCounter() {
+  document.getElementById('slide-counter').textContent = (currentSlide + 1) + ' / ' + sections.length;
+}
+ 
+document.addEventListener('keydown', e => {
+  if (!document.body.classList.contains('slide-mode')) return;
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') nextSlide();
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   prevSlide();
+});
+ 
+// ── Drag & Drop ──
+let draggedId = null;
+ 
+document.addEventListener('dragstart', e => {
+  const el = e.target.closest('.draggable');
+  if (!el) return;
+  draggedId = el.dataset.id;
+  el.classList.add('dragging');
+});
+ 
+document.addEventListener('dragend', e => {
+  const el = e.target.closest('.draggable');
+  if (el) el.classList.remove('dragging');
+});
+ 
+document.querySelectorAll('.drop-target').forEach(target => {
+  target.addEventListener('dragover', e => { e.preventDefault(); target.classList.add('over'); });
+  target.addEventListener('dragleave', () => target.classList.remove('over'));
+  target.addEventListener('drop', e => {
+    e.preventDefault();
+    target.classList.remove('over');
+    target.classList.remove('correct', 'wrong');
+    const placed = target.querySelector('.placed');
+    const draggable = document.querySelector(`[data-id="${draggedId}"]`);
+    if (!draggable) return;
+    // Se o alvo já tinha uma descrição, devolve ao pool
+    if (placed.dataset.srcId) {
+      const old = document.querySelector(`[data-id="${placed.dataset.srcId}"]`);
+      if (old) old.style.display = '';
+    }
+    placed.textContent = draggable.textContent;
+    placed.dataset.srcId = draggedId;
+    draggable.style.display = 'none';
+  });
+});
+ 
+function checkExercise() {
+  let correct = 0;
+  document.querySelectorAll('.drop-target').forEach(t => {
+    t.classList.remove('correct', 'wrong');
+    const placed = t.querySelector('.placed');
+    if (!placed.dataset.srcId) return;
+    if (placed.dataset.srcId === t.dataset.answer) {
+      t.classList.add('correct'); correct++;
+    } else {
+      t.classList.add('wrong');
+    }
+  });
+  const total = document.querySelectorAll('.drop-target').length;
+  const fb = document.getElementById('ex-feedback');
+  if (correct === total) {
+    fb.style.color = 'var(--green)';
+    fb.textContent = '✓ Perfeito! Todos os ' + total + ' corretos.';
+  } else {
+    fb.style.color = 'var(--yellow)';
+    fb.textContent = correct + ' de ' + total + ' corretos. Os marcados em vermelho precisam de ajuste.';
+  }
+}
+ 
+function resetExercise() {
+  document.querySelectorAll('.drop-target').forEach(t => {
+    t.classList.remove('correct', 'wrong');
+    const placed = t.querySelector('.placed');
+    if (placed.dataset.srcId) {
+      const el = document.querySelector(`[data-id="${placed.dataset.srcId}"]`);
+      if (el) el.style.display = '';
+    }
+    placed.textContent = '';
+    delete placed.dataset.srcId;
+  });
+  document.getElementById('ex-feedback').textContent = '';
+}
+</script>
 </body>
 </html>
