@@ -116,19 +116,6 @@
       <p><strong>Analogia:</strong> pense nos metacaracteres como a pontua&ccedil;&atilde;o de uma frase. O ponto final, a v&iacute;rgula e o ponto e v&iacute;rgula n&atilde;o s&atilde;o palavras &mdash; mas determinam como as palavras se organizam e se relacionam. No shell &eacute; igual: o pipe <code>|</code> e o ponto e v&iacute;rgula <code>;</code> n&atilde;o s&atilde;o comandos, mas ditam como os comandos se encadeiam.</p>
     </div>
 
-    <h3>A diferen&ccedil;a que confunde todo mundo</h3>
-    <table class="cmp-table">
-      <thead><tr><th>Conceito</th><th>Onde age</th><th>Exemplo</th></tr></thead>
-      <tbody>
-        <tr><td>Metacar. do shell</td><td>No shell, antes de executar</td><td><code>ls | grep foo</code></td></tr>
-        <tr><td>Glob (wildcard)</td><td>No shell, expande nomes de arquivo</td><td><code>ls *.txt</code></td></tr>
-        <tr><td>Regex</td><td>Dentro de programas (grep, sed&hellip;)</td><td><code>grep "^root" /etc/passwd</code></td></tr>
-      </tbody>
-    </table>
-
-    <div class="alert-box">
-      <p><strong>Aten&ccedil;&atilde;o:</strong> o ponto <code>.</code> &eacute; metacaractere no regex, mas <strong>n&atilde;o</strong> no shell. <code>ls g.to</code> procura um arquivo literalmente chamado <code>g.to</code>. Para "qualquer caractere" no glob use <code>?</code>.</p>
-    </div>
   </div>
 
   <!-- ── 2. Os metacaracteres principais ── -->
