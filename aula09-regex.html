@@ -357,44 +357,52 @@
     <p>Arraste cada descri&ccedil;&atilde;o para o comando ou s&iacute;mbolo correspondente.</p>
 
     <div class="ex-drag-root" data-ex="ex-metachar">
-      <div class="ex-pool" data-pool="ex-metachar">
-        <div class="drag-chip" data-id="d1">Executa o pr&oacute;ximo comando s&oacute; se o anterior teve sucesso</div>
-        <div class="drag-chip" data-id="d2">Adiciona sa&iacute;da ao final de um arquivo sem apagar</div>
-        <div class="drag-chip" data-id="d3">Passa a sa&iacute;da de um comando para a entrada do pr&oacute;ximo</div>
-        <div class="drag-chip" data-id="d4">Executa comandos em sequ&ecirc;ncia, independente do resultado</div>
-        <div class="drag-chip" data-id="d5">Roda o comando em segundo plano</div>
-        <div class="drag-chip" data-id="d6">Executa o pr&oacute;ximo s&oacute; se o anterior falhou</div>
-      </div>
-      <div class="ex-zones" data-zones="ex-metachar">
-        <div class="drop-zone" data-zone="ex-metachar-z1" data-accept="d3">
-          <span class="zone-name">|</span>
-          <div class="zone-slot"></div>
-          <div class="zone-feedback"></div>
+      <div class="ex-drag">
+        <div>
+          <div class="ex-col-title">Descri&ccedil;&atilde;o</div>
+          <div class="ex-pool" data-pool="ex-metachar">
+            <div class="drag-chip" data-id="d1">Executa o pr&oacute;ximo comando s&oacute; se o anterior teve sucesso</div>
+            <div class="drag-chip" data-id="d2">Adiciona sa&iacute;da ao final de um arquivo sem apagar</div>
+            <div class="drag-chip" data-id="d3">Passa a sa&iacute;da de um comando para a entrada do pr&oacute;ximo</div>
+            <div class="drag-chip" data-id="d4">Executa comandos em sequ&ecirc;ncia, independente do resultado</div>
+            <div class="drag-chip" data-id="d5">Roda o comando em segundo plano</div>
+            <div class="drag-chip" data-id="d6">Executa o pr&oacute;ximo s&oacute; se o anterior falhou</div>
+          </div>
         </div>
-        <div class="drop-zone" data-zone="ex-metachar-z2" data-accept="d2">
-          <span class="zone-name">&gt;&gt;</span>
-          <div class="zone-slot"></div>
-          <div class="zone-feedback"></div>
-        </div>
-        <div class="drop-zone" data-zone="ex-metachar-z3" data-accept="d1">
-          <span class="zone-name">&amp;&amp;</span>
-          <div class="zone-slot"></div>
-          <div class="zone-feedback"></div>
-        </div>
-        <div class="drop-zone" data-zone="ex-metachar-z4" data-accept="d4">
-          <span class="zone-name">;</span>
-          <div class="zone-slot"></div>
-          <div class="zone-feedback"></div>
-        </div>
-        <div class="drop-zone" data-zone="ex-metachar-z5" data-accept="d6">
-          <span class="zone-name">||</span>
-          <div class="zone-slot"></div>
-          <div class="zone-feedback"></div>
-        </div>
-        <div class="drop-zone" data-zone="ex-metachar-z6" data-accept="d5">
-          <span class="zone-name">&amp;</span>
-          <div class="zone-slot"></div>
-          <div class="zone-feedback"></div>
+        <div>
+          <div class="ex-col-title">Comando / s&iacute;mbolo</div>
+          <div class="ex-zones" data-zones="ex-metachar">
+            <div class="drop-zone" data-zone="ex-metachar-z1" data-accept="d3">
+              <span class="zone-name">|</span>
+              <div class="zone-slot"></div>
+              <div class="zone-feedback"></div>
+            </div>
+            <div class="drop-zone" data-zone="ex-metachar-z2" data-accept="d2">
+              <span class="zone-name">&gt;&gt;</span>
+              <div class="zone-slot"></div>
+              <div class="zone-feedback"></div>
+            </div>
+            <div class="drop-zone" data-zone="ex-metachar-z3" data-accept="d1">
+              <span class="zone-name">&amp;&amp;</span>
+              <div class="zone-slot"></div>
+              <div class="zone-feedback"></div>
+            </div>
+            <div class="drop-zone" data-zone="ex-metachar-z4" data-accept="d4">
+              <span class="zone-name">;</span>
+              <div class="zone-slot"></div>
+              <div class="zone-feedback"></div>
+            </div>
+            <div class="drop-zone" data-zone="ex-metachar-z5" data-accept="d6">
+              <span class="zone-name">||</span>
+              <div class="zone-slot"></div>
+              <div class="zone-feedback"></div>
+            </div>
+            <div class="drop-zone" data-zone="ex-metachar-z6" data-accept="d5">
+              <span class="zone-name">&amp;</span>
+              <div class="zone-slot"></div>
+              <div class="zone-feedback"></div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
