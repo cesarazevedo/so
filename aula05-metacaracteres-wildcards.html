@@ -798,6 +798,182 @@
         </div>
     </div>
 
+    <!-- ATIVIDADE PRÁTICA -->
+    <div class="content-card practical-card" id="prat-wildcards">
+        <h2>&#x1F6E0;&#xFE0F; Atividade Pr&aacute;tica &mdash; Wildcards no Ubuntu Server</h2>
+        <div class="prat-meta">
+            <span class="prat-tag">&#x23F1;&#xFE0F; ~30 min</span>
+            <span class="prat-tag">&#x1F4BB; Ubuntu Server 20.04</span>
+            <span class="prat-tag">&#x1F4F8; Tirar screenshot da sa&iacute;da</span>
+        </div>
+
+        <div class="prat-steps">
+
+            <div class="prat-step">
+                <div class="step-num">1</div>
+                <div class="step-body">
+                    <div class="step-label">Criar ambiente de teste</div>
+                    <div class="step-desc">Crie um diret&oacute;rio de laboratório e popule-o com arquivos para praticar. O <code>{}</code> j&aacute; &eacute; um wildcard &mdash; veja como ele cria v&aacute;rios arquivos de uma vez:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash &mdash; passo 1</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">mkdir</span> <span class="t-path">~/lab-wildcards</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">cd</span> <span class="t-path">~/lab-wildcards</span>
+<span class="t-prompt">usuario@servidor:~/lab-wildcards$</span> <span class="t-cmd">touch</span> relatorio{1..5}.txt
+<span class="t-prompt">usuario@servidor:~/lab-wildcards$</span> <span class="t-cmd">touch</span> log{01..12}.txt
+<span class="t-prompt">usuario@servidor:~/lab-wildcards$</span> <span class="t-cmd">touch</span> config.{conf,bak,old}
+<span class="t-prompt">usuario@servidor:~/lab-wildcards$</span> <span class="t-cmd">ls</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="prat-step">
+                <div class="step-num">2</div>
+                <div class="step-body">
+                    <div class="step-label">Praticar <code>*</code> &mdash; zero ou mais caracteres</div>
+                    <div class="step-desc">Primeiro nos arquivos que voc&ecirc; criou, depois em arquivos reais do sistema que existem em qualquer Ubuntu Server:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash &mdash; passo 2</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-comment"># Nos seus arquivos criados</span>
+<span class="t-prompt">usuario@servidor:~/lab-wildcards$</span> <span class="t-cmd">ls</span> *.txt
+<span class="t-prompt">usuario@servidor:~/lab-wildcards$</span> <span class="t-cmd">ls</span> relatorio*.txt
+<span class="t-prompt">usuario@servidor:~/lab-wildcards$</span> <span class="t-cmd">ls</span> config.*
+
+<span class="t-comment"># Em arquivos reais do sistema</span>
+<span class="t-prompt">usuario@servidor:~/lab-wildcards$</span> <span class="t-cmd">ls</span> <span class="t-path">/etc/*.conf</span>
+<span class="t-prompt">usuario@servidor:~/lab-wildcards$</span> <span class="t-cmd">ls</span> <span class="t-path">/var/log/*.log</span>
+<span class="t-prompt">usuario@servidor:~/lab-wildcards$</span> <span class="t-cmd">ls</span> <span class="t-path">~/.bash*</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="prat-step">
+                <div class="step-num">3</div>
+                <div class="step-body">
+                    <div class="step-label">Praticar <code>?</code> &mdash; exatamente 1 caractere</div>
+                    <div class="step-desc">Use <code>?</code> para ser preciso: <code>log??.txt</code> filtra apenas logs com 2 d&iacute;gitos. Teste tamb&eacute;m em diret&oacute;rios reais do sistema:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash &mdash; passo 3</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-comment"># log com exatamente 2 dígitos: log01.txt .. log12.txt</span>
+<span class="t-prompt">usuario@servidor:~/lab-wildcards$</span> <span class="t-cmd">ls</span> log??.txt
+
+<span class="t-comment"># relatorio com exatamente 1 dígito: relatorio1.txt .. relatorio5.txt</span>
+<span class="t-prompt">usuario@servidor:~/lab-wildcards$</span> <span class="t-cmd">ls</span> relatorio?.txt
+
+<span class="t-comment"># Runlevels do sistema: rc0.d rc1.d rc2.d ... rc6.d</span>
+<span class="t-prompt">usuario@servidor:~/lab-wildcards$</span> <span class="t-cmd">ls</span> <span class="t-path">/etc/rc?.d</span>
+
+<span class="t-comment"># Discos detectados pelo kernel: sda, sdb...</span>
+<span class="t-prompt">usuario@servidor:~/lab-wildcards$</span> <span class="t-cmd">ls</span> <span class="t-path">/dev/sd?</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="prat-step">
+                <div class="step-num">4</div>
+                <div class="step-body">
+                    <div class="step-label">Praticar <code>[ ]</code> &mdash; conjuntos e intervalos</div>
+                    <div class="step-desc">Use conjuntos para filtrar com mais controle. Compare: <code>[135]</code> aceita s&oacute; os listados; <code>[1-5]</code> aceita o intervalo inteiro:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash &mdash; passo 4</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-comment"># Apenas relatórios 1, 3 e 5</span>
+<span class="t-prompt">usuario@servidor:~/lab-wildcards$</span> <span class="t-cmd">ls</span> relatorio[135].txt
+
+<span class="t-comment"># Logs do mês 01 ao 06 (primeiro semestre)</span>
+<span class="t-prompt">usuario@servidor:~/lab-wildcards$</span> <span class="t-cmd">ls</span> log0[1-6].txt
+
+<span class="t-comment"># Runlevels de inicialização 0, 1 e 2 apenas</span>
+<span class="t-prompt">usuario@servidor:~/lab-wildcards$</span> <span class="t-cmd">ls</span> <span class="t-path">/etc/rc[012].d</span>
+
+<span class="t-comment"># Arquivos de config que NÃO começam com 'c'</span>
+<span class="t-prompt">usuario@servidor:~/lab-wildcards$</span> <span class="t-cmd">ls</span> [^c]*.conf <span class="t-path">/etc/</span>[^c]*.conf
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="prat-step">
+                <div class="step-num">5</div>
+                <div class="step-body">
+                    <div class="step-label">Praticar <code>{ }</code> &mdash; expans&atilde;o de listas</div>
+                    <div class="step-desc">Use chaves para operar em m&uacute;ltiplos alvos de uma vez. O truque <code>arquivo{,.bak}</code> faz backup sem redigitar o nome:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash &mdash; passo 5</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-comment"># Copiar hosts e hostname de uma vez para /tmp</span>
+<span class="t-prompt">usuario@servidor:~/lab-wildcards$</span> <span class="t-cmd">cp</span> <span class="t-path">/etc/{hosts,hostname}</span> <span class="t-path">/tmp/</span>
+<span class="t-prompt">usuario@servidor:~/lab-wildcards$</span> <span class="t-cmd">ls</span> <span class="t-path">/tmp/</span>
+
+<span class="t-comment"># Backup rápido do config.conf → config.conf.bak</span>
+<span class="t-prompt">usuario@servidor:~/lab-wildcards$</span> <span class="t-cmd">cp</span> config.conf{,.bak}
+<span class="t-prompt">usuario@servidor:~/lab-wildcards$</span> <span class="t-cmd">ls</span> config.*
+
+<span class="t-comment"># Listar passwd, group e shadow juntos</span>
+<span class="t-prompt">usuario@servidor:~/lab-wildcards$</span> <span class="t-cmd">ls</span> <span class="t-flag">-l</span> <span class="t-path">/etc/{passwd,group,shadow}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="prat-step">
+                <div class="step-num">6</div>
+                <div class="step-body">
+                    <div class="step-label">Limpeza &mdash; remover com wildcard (com cuidado!)</div>
+                    <div class="step-desc">Sempre confirme com <code>ls</code> antes de usar <code>rm</code> com wildcards. Use o ambiente de teste criado no passo 1 para praticar com seguran&ccedil;a:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash &mdash; passo 6</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-comment"># ✅ SEMPRE verifique antes de remover!</span>
+<span class="t-prompt">usuario@servidor:~/lab-wildcards$</span> <span class="t-cmd">ls</span> *.txt
+<span class="t-prompt">usuario@servidor:~/lab-wildcards$</span> <span class="t-cmd">ls</span> *.conf
+
+<span class="t-comment"># Agora sim: remove só os .txt do lab</span>
+<span class="t-prompt">usuario@servidor:~/lab-wildcards$</span> <span class="t-cmd">rm</span> *.txt
+<span class="t-prompt">usuario@servidor:~/lab-wildcards$</span> <span class="t-cmd">ls</span>
+
+<span class="t-comment"># Remove o diretório inteiro ao final</span>
+<span class="t-prompt">usuario@servidor:~/lab-wildcards$</span> <span class="t-cmd">cd</span> ~
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">rm</span> <span class="t-flag">-r</span> <span class="t-path">~/lab-wildcards</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="prat-observe">
+            <strong>&#x1F4CC; Para refletir:</strong> wildcards n&atilde;o s&atilde;o apenas atalhos &mdash; s&atilde;o a forma como administradores operam em dezenas ou centenas de arquivos de uma vez. Um <code>ls /etc/*.conf</code> ou <code>ls /var/log/*.log</code> &eacute; algo que voc&ecirc; vai usar toda semana num servidor real.
+        </div>
+
+        <div class="ex-actions">
+            <button class="btn-print" onclick="printPractical('prat-wildcards', 'Aula 05 \u2014 Wildcards no Ubuntu Server')">&#x1F5A8;&#xFE0F; Imprimir roteiro</button>
+        </div>
+    </div>
+
     <!-- MÚLTIPLA ESCOLHA -->
     <div class="content-card exercise-card">
         <h2>&#x2753; Verifique seu Conhecimento</h2>
