@@ -512,13 +512,13 @@
             <span class="term-title">bash &mdash; passo 5</span>
           </div>
           <div class="terminal-body"><span class="t-comment"># Lista os shells disponíveis no sistema e salva em arquivo</span>
-<span class="t-prompt">usuario@linux:~$</span> cat /etc/shells | grep -v "^#" | sort > ~/shells.txt \
-  && echo "Salvo com sucesso!" \
+<span class="t-prompt">usuario@linux:~$</span> cat /etc/shells | grep -v "^#" | sort > ~/shells.txt
+  && echo "Salvo com sucesso!"
   || echo "Algo deu errado"
 
 <span class="t-comment"># Exibe o relatório formatado</span>
-<span class="t-prompt">usuario@linux:~$</span> echo "=== Shells disponíveis ===" ; \
-  cat ~/shells.txt ; \
+<span class="t-prompt">usuario@linux:~$</span> echo "=== Shells disponíveis ===" ;
+  cat ~/shells.txt ;
   echo "Total: $(wc -l < ~/shells.txt)"</div>
         </div>
       </li>
