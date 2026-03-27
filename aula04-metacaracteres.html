@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aula 04 - Metacaracteres e Expressões Regulares</title>
+    <title>Aula 04 - Metacaracteres do Shell</title>
     <link rel="stylesheet" href="slide-mode.css">
     <link rel="stylesheet" href="exercise.css">
     <link rel="stylesheet" href="lesson.css">
@@ -687,184 +687,6 @@
         </div>
     </div>
 
-    <!-- Card 8: grep e Regex -->
-    <div class="content-card">
-        <h2>🔎 grep &mdash; Filtro com Express&otilde;es Regulares</h2>
-        <p>Enquanto wildcards operam em <strong>nomes de arquivo</strong>, o <code>grep</code> filtra o <strong>conte&uacute;do</strong> de arquivos usando Express&otilde;es Regulares (regex).</p>
-        <div class="highlight-box">
-            <p>💡 <strong>Sintaxe:</strong> <code>grep [opções] "padrão" arquivo</code><br>
-            O grep retorna as <strong>linhas</strong> que combinam com o padr&atilde;o.</p>
-        </div>
-        <div class="terminal">
-            <div class="terminal-bar">
-                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">grep básico</span>
-            </div>
-            <div class="terminal-body">
-<span class="t-comment"># Buscar "root" em /etc/passwd</span>
-<span class="t-prompt">user@linux:~$</span> <span class="t-cmd">grep <span class="t-str">"root"</span> /etc/passwd</span>
-<span class="t-out">root:x:0:0:root:/root:/bin/bash</span>
-
-<span class="t-comment"># Ignorar maiúsculas/minúsculas (-i)</span>
-<span class="t-prompt">user@linux:~$</span> <span class="t-cmd">grep <span class="t-flag">-i</span> <span class="t-str">"erro"</span> /var/log/syslog</span>
-<span class="t-out">Nov 12 erro: disk I/O</span>
-<span class="t-out">Nov 13 ERRO: network timeout</span>
-
-<span class="t-comment"># Contar ocorrências</span>
-<span class="t-prompt">user@linux:~$</span> <span class="t-cmd">grep <span class="t-flag">-c</span> <span class="t-str">"failed"</span> /var/log/auth.log</span>
-<span class="t-out">47</span>
-            </div>
-        </div>
-
-        <h3>⚑ Flags mais usadas</h3>
-        <div class="grep-flags">
-            <div class="gf-card gf-i">
-                <div class="gf-flag">-i</div>
-                <div class="gf-desc">Case insensitive<br>(ignora mai&uacute;s./min&uacute;s.)</div>
-            </div>
-            <div class="gf-card gf-r">
-                <div class="gf-flag">-r</div>
-                <div class="gf-desc">Recursivo em<br>subdiret&oacute;rios</div>
-            </div>
-            <div class="gf-card gf-n">
-                <div class="gf-flag">-n</div>
-                <div class="gf-desc">Mostra n&uacute;mero<br>da linha</div>
-            </div>
-            <div class="gf-card gf-c">
-                <div class="gf-flag">-c</div>
-                <div class="gf-desc">Conta ocorr&ecirc;ncias<br>(n&atilde;o mostra linhas)</div>
-            </div>
-            <div class="gf-card gf-v">
-                <div class="gf-flag">-v</div>
-                <div class="gf-desc">Inverte: mostra<br>o que <em>não</em> combina</div>
-            </div>
-            <div class="gf-card gf-e">
-                <div class="gf-flag">-E</div>
-                <div class="gf-desc">Regex estendida<br>(<code>+</code>, <code>?</code>, <code>|</code>)</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Card 9: Regex -->
-    <div class="content-card">
-        <h2>🧩 Express&otilde;es Regulares (Regex)</h2>
-        <p>Regex &eacute; uma <strong>linguagem de padr&otilde;es</strong> muito mais poderosa que os wildcards do shell. Usada dentro do <code>grep</code>, <code>sed</code> e <code>awk</code>.</p>
-        <div class="regex-grid">
-            <div class="regex-card rc-anchor">
-                <div class="rc-sym">^ e $</div>
-                <div class="rc-label">&#x2693; &Acirc;ncoras de posi&ccedil;&atilde;o</div>
-                <div class="rc-ex"><span style="color:#f87171">^</span>root → linha começa com root
-admin<span style="color:#f87171">$</span> → linha termina com admin
-<span style="color:#f87171">^$</span>     → linha vazia</div>
-            </div>
-            <div class="regex-card rc-class">
-                <div class="rc-sym">[ ] e .</div>
-                <div class="rc-label">&#x1F4CB; Classes de caractere</div>
-                <div class="rc-ex"><span style="color:#60a5fa">[0-9]</span>   → qualquer dígito
-<span style="color:#60a5fa">[a-zA-Z]</span> → qualquer letra
-<span style="color:#60a5fa">.</span>       → qualquer caractere</div>
-            </div>
-            <div class="regex-card rc-quant">
-                <div class="rc-sym">* + ? {}</div>
-                <div class="rc-label">&#x1F522; Quantificadores</div>
-                <div class="rc-ex">a<span style="color:#34d399">*</span>  → zero ou mais 'a'
-a<span style="color:#34d399">+</span>  → um ou mais 'a'
-a<span style="color:#34d399">?</span>  → zero ou um 'a'
-a<span style="color:#34d399">{3}</span> → exatamente 3 'a'</div>
-            </div>
-            <div class="regex-card rc-group">
-                <div class="rc-sym">| e ( )</div>
-                <div class="rc-label">&#x1F500; Alternativas e grupos</div>
-                <div class="rc-ex">cat<span style="color:#c084fc">|</span>dog → cat OU dog
-<span style="color:#c084fc">(ha)+</span>  → ha, haha, hahaha...
-<span style="color:#c084fc">[^abc]</span> → NÃO é a, b ou c</div>
-            </div>
-        </div>
-        <div class="terminal">
-            <div class="terminal-bar">
-                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">grep com regex</span>
-            </div>
-            <div class="terminal-body">
-<span class="t-comment"># Linhas que COMEÇAM com "root"</span>
-<span class="t-prompt">user@linux:~$</span> <span class="t-cmd">grep <span class="t-str">"^root"</span> /etc/passwd</span>
-<span class="t-out">root:x:0:0:root:/root:/bin/bash</span>
-
-<span class="t-comment"># Linhas que TERMINAM com "/bash"</span>
-<span class="t-prompt">user@linux:~$</span> <span class="t-cmd">grep <span class="t-str">"/bash$"</span> /etc/passwd</span>
-<span class="t-out">root:x:0:0:root:/root:/bin/bash</span>
-<span class="t-out">cesar:x:1000:1000::/home/cesar:/bin/bash</span>
-
-<span class="t-comment"># Buscar "error" OU "fail" (grep -E = regex estendida)</span>
-<span class="t-prompt">user@linux:~$</span> <span class="t-cmd">grep <span class="t-flag">-E</span> <span class="t-str">"error|fail"</span> /var/log/syslog</span>
-<span class="t-out">Nov 12 10:23 error: connection refused</span>
-<span class="t-out">Nov 12 11:45 fail: authentication failed</span>
-
-<span class="t-comment"># Mostrar número da linha + recursivo em /etc</span>
-<span class="t-prompt">user@linux:~$</span> <span class="t-cmd">grep <span class="t-flag">-rn</span> <span class="t-str">"PermitRootLogin"</span> /etc/ssh/</span>
-<span class="t-out">/etc/ssh/sshd_config:38:PermitRootLogin yes</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- Card 10: Wildcards vs Regex -->
-    <div class="content-card">
-        <h2>🆚 Wildcards do Shell vs Regex</h2>
-        <div class="alert-box">
-            <p>⚠️ <strong>Aten&ccedil;&atilde;o!</strong> O <code>*</code> do shell e o <code>*</code> do regex s&atilde;o <strong>diferentes</strong>! No shell, <code>*</code> = zero ou mais caracteres. No regex, <code>*</code> = zero ou mais rep. do caractere anterior.</p>
-        </div>
-        <div class="cmp-table" style="overflow-x:auto;">
-            <table class="cmp-table">
-                <tr>
-                    <th>S&iacute;mbolo</th>
-                    <th>No Shell (Wildcard)</th>
-                    <th>No Regex (grep)</th>
-                </tr>
-                <tr>
-                    <td><code>*</code></td>
-                    <td>Zero ou mais <strong>caracteres</strong></td>
-                    <td>Zero ou mais <strong>do char anterior</strong></td>
-                </tr>
-                <tr>
-                    <td><code>?</code></td>
-                    <td>Exatamente <strong>1 caractere</strong></td>
-                    <td>Zero ou um <strong>do char anterior</strong></td>
-                </tr>
-                <tr>
-                    <td><code>.</code></td>
-                    <td><em>Literal</em> (ponto mesmo)</td>
-                    <td>Qualquer <strong>1 caractere</strong></td>
-                </tr>
-                <tr>
-                    <td><code>[abc]</code></td>
-                    <td>Um de: a, b ou c (igual)</td>
-                    <td>Um de: a, b ou c (igual)</td>
-                </tr>
-                <tr>
-                    <td><code>^</code></td>
-                    <td>N&atilde;o tem equivalente</td>
-                    <td>In&iacute;cio da linha</td>
-                </tr>
-            </table>
-        </div>
-        <div class="terminal">
-            <div class="terminal-bar">
-                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">mesmo símbolo, comportamento diferente</span>
-            </div>
-            <div class="terminal-body">
-<span class="t-comment"># Shell: * = qualquer coisa nos nomes dos arquivos</span>
-<span class="t-prompt">user@linux:~$</span> <span class="t-cmd">ls <span class="t-kw">*</span>.txt</span>
-<span class="t-out">a.txt  documento.txt  relatorio_final.txt</span>
-
-<span class="t-comment"># Regex: .* = qualquer coisa no conteúdo da linha</span>
-<span class="t-prompt">user@linux:~$</span> <span class="t-cmd">grep <span class="t-str">"^root.*bash$"</span> /etc/passwd</span>
-<span class="t-out">root:x:0:0:root:/root:/bin/bash</span>
-<span class="t-comment"># ^root = começa com root | .* = qualquer coisa | bash$ = termina com bash</span>
-            </div>
-        </div>
-    </div>
-
     <!-- Card 11: Erros Comuns -->
     <div class="content-card">
         <h2>🚨 Erros Comuns e Como Evitar</h2>
@@ -922,17 +744,7 @@ a<span style="color:#34d399">{3}</span> → exatamente 3 'a'</div>
 <span class="t-prompt">admin@srv:~$</span> <span class="t-cmd">mkdir -p projeto_web/<span class="t-kw">{html,css,js,img}</span>/<span class="t-kw">{dev,prod}</span></span>
 <span class="t-comment"># Cria 8 pastas organizadas de uma vez!</span>
 
-<span class="t-comment"># 4. Investigar tentativas de login falhas</span>
-<span class="t-prompt">admin@srv:~$</span> <span class="t-cmd">grep <span class="t-flag">-c</span> <span class="t-str">"Failed password"</span> /var/log/auth.log</span>
-<span class="t-out">247</span>
-
-<span class="t-comment"># 5. Ver de quais IPs vieram as tentativas</span>
-<span class="t-prompt">admin@srv:~$</span> <span class="t-cmd">grep <span class="t-str">"Failed password"</span> /var/log/auth.log | grep <span class="t-flag">-oE</span> <span class="t-str">"[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+"</span></span>
-<span class="t-out">192.168.1.100</span>
-<span class="t-out">10.0.0.55</span>
-<span class="t-out">203.0.113.42</span>
-
-<span class="t-comment"># 6. Backup das configs de apache, nginx e mysql</span>
+<span class="t-comment"># 4. Backup das configs de apache, nginx e mysql</span>
 <span class="t-prompt">admin@srv:~$</span> <span class="t-cmd">cp /etc/<span class="t-kw">{apache2,nginx,mysql}</span>/<span class="t-kw">*</span>.conf /backup/</span>
 <span class="t-comment"># Copia configs dos 3 serviços de uma vez!</span>
             </div>
@@ -979,8 +791,6 @@ a<span style="color:#34d399">{3}</span> → exatamente 3 'a'</div>
                 <tr><td><code>[^a]</code></td><td>Qualquer, EXCETO a</td><td><code>[^f]*</code></td><td>N&atilde;o come&ccedil;a com f</td></tr>
                 <tr><td><code>{a,b}</code></td><td>Expande: a e b</td><td><code>{doc,img}.zip</code></td><td>doc.zip, img.zip</td></tr>
                 <tr><td><code>{1..5}</code></td><td>Intervalo autom&aacute;tico</td><td><code>file{1..5}.txt</code></td><td>file1.txt at&eacute; file5.txt</td></tr>
-                <tr><td><code>^</code> (regex)</td><td>In&iacute;cio da linha</td><td><code>grep "^root"</code></td><td>Linhas que come&ccedil;am com root</td></tr>
-                <tr><td><code>$</code> (regex)</td><td>Fim da linha</td><td><code>grep "bash$"</code></td><td>Linhas que terminam com bash</td></tr>
             </table>
         </div>
         <div class="tip-box">
@@ -1000,7 +810,7 @@ a<span style="color:#34d399">{3}</span> → exatamente 3 'a'</div>
                 <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>Apenas d&iacute;gitos num&eacute;ricos</span></div>
                 <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>O in&iacute;cio de uma linha</span></div>
             </div>
-            <div class="mc-explanation">&#x2713; <code>*</code> no shell = zero ou mais caracteres: <code>ls *.txt</code> lista todos os .txt. Cuidado: no regex, <code>*</code> significa zero ou mais <em>do caractere anterior</em>.</div>
+            <div class="mc-explanation">&#x2713; <code>*</code> no shell = zero ou mais caracteres: <code>ls *.txt</code> lista todos os .txt.</div>
         </div>
         <hr class="mc-sep">
 
@@ -1028,21 +838,11 @@ a<span style="color:#34d399">{3}</span> → exatamente 3 'a'</div>
         </div>
         <hr class="mc-sep">
 
-        <div class="mc-question" data-correct="d">
-            <p class="mc-q-text">Qual comando usa express&atilde;o regular para buscar linhas que come&ccedil;am com &lsquo;root&rsquo; em /etc/passwd?</p>
-            <div class="mc-options">
-                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>find /etc/passwd -name "^root"</span></div>
-                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>ls /etc/passwd | filter "^root"</span></div>
-                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>cat /etc/passwd | match "^root"</span></div>
-                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>grep "^root" /etc/passwd</span></div>
-            </div>
-            <div class="mc-explanation">&#x2713; O <code>grep</code> aceita regex: <code>^</code> ancora ao in&iacute;cio da linha. Use <code>grep -E</code> (ou <code>egrep</code>) para regex estendida com <code>+</code>, <code>?</code>, <code>|</code>.</div>
-        </div>
     </div>
 
     <div class="nav-footer">
         <a href="aula03-comandos-produtividade.html" class="nav-link">&#x2B05; Comandos de Produtividade</a>
-        <a href="aula05-permissoes.html" class="nav-link">Permiss&otilde;es e ACL &#x27A1;</a>
+        <a href="aula06-permissoes.html" class="nav-link">Permiss&otilde;es e ACL &#x27A1;</a>
     </div>
 
 </div>
