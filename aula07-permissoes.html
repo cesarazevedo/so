@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aula 06 - Permiss&otilde;es de Arquivos</title>
+    <title>Aula 07 - Permiss&otilde;es de Arquivos</title>
     <link rel="stylesheet" href="slide-mode.css">
     <link rel="stylesheet" href="exercise.css">
     <link rel="stylesheet" href="lesson.css">
@@ -12,221 +12,131 @@
 
 <div class="top-bar">
     <a href="index.html" class="back-btn">&#x2B05; Voltar ao Dashboard</a>
-    <span class="page-badge">1&ordm; Bimestre &mdash; Linux B&aacute;sico</span>
+    <span class="page-badge">2&ordm; Bimestre &mdash; Linux Avan&ccedil;ado</span>
     <button class="slide-toggle" id="slideToggleBtn">&#x1F4FA; Modo Slide</button>
 </div>
 
 <div class="content-wrapper">
 
     <div class="lesson-hero">
-        <h1>🔐 Permiss&otilde;es de Arquivos</h1>
-        <p class="subtitle">Controle quem acessa o qu&ecirc; (rwx) &mdash; Comandos chmod, chown e grupos!</p>
+        <h1>🔐 Permiss&otilde;es de Arquivos e Diret&oacute;rios</h1>
+        <p class="subtitle">Controle quem acessa o qu&ecirc; &mdash; Grupos, tipos de permiss&atilde;o e comando chmod!</p>
     </div>
 
-    <!-- Card 1: Por que Permissoes? -->
+    <!-- Card 1: Entendendo Permissões -->
     <div class="content-card">
-        <h2>🤔 Por que Permiss&otilde;es Existem?</h2>
+        <h2>🤔 Entendendo as Permiss&otilde;es no Linux</h2>
         <div class="highlight-box">
-            <p><strong>Seguran&ccedil;a = Controle de Acesso</strong></p>
+            <p><strong>No Linux, arquivos e diret&oacute;rios recebem permiss&otilde;es automaticamente ao serem criados.</strong></p>
         </div>
+        <p>Permiss&otilde;es s&atilde;o divididas em <strong>tr&ecirc;s grupos</strong>:</p>
         <table class="cmp-table">
             <tr>
-                <th>Analogia: Escrit&oacute;rio</th>
-                <th>No Linux</th>
+                <th>S&iacute;mbolo</th>
+                <th>Grupo</th>
+                <th>Descri&ccedil;&atilde;o</th>
             </tr>
             <tr>
-                <td>Nem todo mundo pode entrar em todas as salas</td>
-                <td>Cada arquivo tem um "dono"</td>
+                <td><code>u</code></td>
+                <td>👤 Usu&aacute;rio dono</td>
+                <td>Quem criou o arquivo</td>
             </tr>
             <tr>
-                <td>Documentos confidenciais ficam trancados</td>
-                <td>Usu&aacute;rios pertencem a "grupos"</td>
+                <td><code>g</code></td>
+                <td>👥 Grupo dono</td>
+                <td>Membros do grupo associado ao arquivo</td>
             </tr>
             <tr>
-                <td>Cada funcion&aacute;rio tem seu crach&aacute;</td>
-                <td>3 tipos de acesso: ler, escrever, executar</td>
-            </tr>
-            <tr>
-                <td>Gerentes t&ecirc;m mais acesso que estagi&aacute;rios</td>
-                <td>Root pode tudo (&eacute; o "chef&atilde;o")</td>
+                <td><code>o</code></td>
+                <td>🌍 Outros usu&aacute;rios</td>
+                <td>Todos os demais usu&aacute;rios do sistema</td>
             </tr>
         </table>
-        <div class="alert-box">
-            <p>⚠️ <strong>Sem permiss&otilde;es...</strong></p>
-            <ul>
-                <li>Qualquer usu&aacute;rio poderia apagar arquivos do sistema</li>
-                <li>Dados pessoais ficariam expostos</li>
-                <li>V&iacute;rus teriam acesso total ao computador</li>
-                <li>Seria imposs&iacute;vel ter m&uacute;ltiplos usu&aacute;rios com seguran&ccedil;a</li>
-            </ul>
-        </div>
-        <div class="terminal">
-            <div class="terminal-bar">
-                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">exemplo de permiss&otilde;es</span>
-            </div>
-            <div class="terminal-body">
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">ls -l arquivo.txt</span><br>
-                <span class="t-out">-rwxr-xr-- 1 usuario grupo 1234 Jan 15 arquivo.txt</span><br>
-                <span class="t-comment"># Quem pode ler, escrever e executar? 🤔</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- Card 2: Os 3 Tipos de Permissao -->
-    <div class="content-card">
-        <h2>📝 Os 3 Tipos de Permiss&atilde;o: RWX</h2>
+        <p style="margin-top:1em;">E em <strong>tr&ecirc;s tipos de permiss&atilde;o</strong>:</p>
         <table class="cmp-table">
             <tr>
                 <th>S&iacute;mbolo</th>
                 <th>Nome</th>
                 <th>Valor Octal</th>
-                <th>Em Arquivo</th>
-                <th>Em Diret&oacute;rio</th>
+                <th>O que faz</th>
             </tr>
             <tr>
                 <td><code>r</code></td>
-                <td>📖 Read (leitura)</td>
+                <td>📖 Leitura (Read)</td>
                 <td><strong>4</strong></td>
-                <td>Ver o conte&uacute;do</td>
-                <td>Listar arquivos (ls)</td>
+                <td>Visualizar o conte&uacute;do do arquivo</td>
             </tr>
             <tr>
                 <td><code>w</code></td>
-                <td>✏️ Write (escrita)</td>
+                <td>✏️ Escrita (Write)</td>
                 <td><strong>2</strong></td>
-                <td>Modificar o arquivo</td>
-                <td>Criar/deletar arquivos dentro</td>
+                <td>Alterar o conte&uacute;do do arquivo</td>
             </tr>
             <tr>
                 <td><code>x</code></td>
-                <td>⚡ Execute (execu&ccedil;&atilde;o)</td>
+                <td>⚡ Execu&ccedil;&atilde;o (Execute)</td>
                 <td><strong>1</strong></td>
-                <td>Rodar como programa</td>
-                <td>Entrar no diret&oacute;rio (cd)</td>
-            </tr>
-            <tr>
-                <td><code>-</code></td>
-                <td>Sem permiss&atilde;o</td>
-                <td><strong>0</strong></td>
-                <td>Nenhum acesso</td>
-                <td>Nenhum acesso</td>
+                <td>Executar arquivos e acessar diret&oacute;rios</td>
             </tr>
         </table>
     </div>
 
-    <!-- Card 3: Os 3 Niveis de Usuario -->
+    <!-- Card 2: Visualizando Permissões -->
     <div class="content-card">
-        <h2>👥 Os 3 N&iacute;veis de Usu&aacute;rio</h2>
-        <p>Cada arquivo define permiss&otilde;es para <strong>3 categorias</strong> de usu&aacute;rios:</p>
-        <table class="cmp-table">
-            <tr>
-                <th>S&iacute;mbolo</th>
-                <th>Categoria</th>
-                <th>Descri&ccedil;&atilde;o</th>
-                <th>Posi&ccedil;&atilde;o</th>
-            </tr>
-            <tr>
-                <td><code>u</code></td>
-                <td>👤 Owner (dono)</td>
-                <td>Quem criou o arquivo</td>
-                <td>1&ordm; bloco rwx</td>
-            </tr>
-            <tr>
-                <td><code>g</code></td>
-                <td>👥 Group (grupo)</td>
-                <td>Membros do grupo do arquivo</td>
-                <td>2&ordm; bloco rwx</td>
-            </tr>
-            <tr>
-                <td><code>o</code></td>
-                <td>🌍 Others (outros)</td>
-                <td>Todos os demais usu&aacute;rios</td>
-                <td>3&ordm; bloco rwx</td>
-            </tr>
-        </table>
-        <div class="highlight-box">
-            <p>Leitura de uma string de permiss&otilde;es: <code>-rwxr-xr--</code></p>
-            <ul>
-                <li><code>-</code> &mdash; Tipo (arquivo, d=diret&oacute;rio, l=link)</li>
-                <li><code>rwx</code> &mdash; Permiss&otilde;es do <strong>dono</strong></li>
-                <li><code>r-x</code> &mdash; Permiss&otilde;es do <strong>grupo</strong></li>
-                <li><code>r--</code> &mdash; Permiss&otilde;es dos <strong>outros</strong></li>
-            </ul>
-        </div>
+        <h2>🔍 Visualizando as Permiss&otilde;es: ls -l</h2>
+        <p>Use <code>ls -l</code> para visualizar as permiss&otilde;es de arquivos e diret&oacute;rios:</p>
         <div class="terminal">
             <div class="terminal-bar">
                 <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">ls -l &mdash; lendo permiss&otilde;es</span>
+                <span class="term-title">visualizando permiss&otilde;es</span>
             </div>
             <div class="terminal-body">
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">ls -l</span><br>
-                <span class="t-out">drwxr-xr-x&nbsp;&nbsp;2 usuario grupo 4096 Jan 15 Documentos</span><br>
-                <span class="t-out">-rw-r--r--&nbsp;&nbsp;1 usuario grupo 1234 Jan 15 arquivo.txt</span><br>
-                <span class="t-out">-rwxr-x---&nbsp;&nbsp;1 usuario grupo 5678 Jan 15 script.sh</span><br>
-                <span class="t-out">lrwxrwxrwx&nbsp;&nbsp;1 usuario grupo&nbsp;&nbsp;&nbsp;12 Jan 15 link -&gt; arquivo.txt</span>
+                <span class="t-prompt">usuario@linux:/var/www/html$</span> <span class="t-cmd">ls -l</span><br>
+                <span class="t-out">total 8</span><br>
+                <span class="t-out">-rw-rw-r-- 1 yuri yuri&nbsp;&nbsp;&nbsp;&nbsp;17 Out&nbsp;&nbsp;5 17:45 info.php</span><br>
+                <span class="t-out">drwx------&nbsp;5 yuri yuri&nbsp;&nbsp;4096 Fev 15&nbsp;&nbsp;2017 loja</span>
             </div>
         </div>
-        <table class="cmp-table">
-            <tr>
-                <th>Posi&ccedil;&atilde;o</th>
-                <th>Significado</th>
-                <th>Valores</th>
-            </tr>
-            <tr><td>1&ordm; caractere</td><td>Tipo do arquivo</td><td><code>-</code>=arquivo, <code>d</code>=diret&oacute;rio, <code>l</code>=link</td></tr>
-            <tr><td>2&ordm;&ndash;4&ordm;</td><td>Permiss&otilde;es do DONO</td><td><code>rwx</code> ou <code>---</code></td></tr>
-            <tr><td>5&ordm;&ndash;7&ordm;</td><td>Permiss&otilde;es do GRUPO</td><td><code>rwx</code> ou <code>---</code></td></tr>
-            <tr><td>8&ordm;&ndash;10&ordm;</td><td>Permiss&otilde;es de OUTROS</td><td><code>rwx</code> ou <code>---</code></td></tr>
-        </table>
-        <div class="tip-box">
-            <p>💡 O tra&ccedil;o (<code>-</code>) significa "sem permiss&atilde;o": <code>r--</code> = s&oacute; leitura | <code>rw-</code> = leitura e escrita | <code>rwx</code> = acesso total</p>
-        </div>
-    </div>
-
-    <!-- Card 4: Sistema Octal -->
-    <div class="content-card">
-        <h2>🔢 Sistema Octal (Num&eacute;rico)</h2>
-        <p>Cada permiss&atilde;o tem um <strong>valor num&eacute;rico</strong>. Somando os valores, obt&eacute;m-se o n&uacute;mero octal da permiss&atilde;o:</p>
-        <table class="cmp-table">
-            <tr>
-                <th>Combina&ccedil;&atilde;o</th>
-                <th>C&aacute;lculo</th>
-                <th>Octal</th>
-            </tr>
-            <tr><td><code>rwx</code></td><td>4+2+1</td><td><strong>7</strong></td></tr>
-            <tr><td><code>rw-</code></td><td>4+2+0</td><td><strong>6</strong></td></tr>
-            <tr><td><code>r-x</code></td><td>4+0+1</td><td><strong>5</strong></td></tr>
-            <tr><td><code>r--</code></td><td>4+0+0</td><td><strong>4</strong></td></tr>
-            <tr><td><code>-wx</code></td><td>0+2+1</td><td><strong>3</strong></td></tr>
-            <tr><td><code>-w-</code></td><td>0+2+0</td><td><strong>2</strong></td></tr>
-            <tr><td><code>--x</code></td><td>0+0+1</td><td><strong>1</strong></td></tr>
-            <tr><td><code>---</code></td><td>0+0+0</td><td><strong>0</strong></td></tr>
-        </table>
-        <table class="cmp-table">
-            <tr>
-                <th>Octal</th>
-                <th>Significado</th>
-                <th>Uso T&iacute;pico</th>
-            </tr>
-            <tr><td><code>755</code></td><td>rwxr-xr-x</td><td>Diret&oacute;rios e scripts execut&aacute;veis</td></tr>
-            <tr><td><code>644</code></td><td>rw-r--r--</td><td>Arquivos comuns, configura&ccedil;&otilde;es</td></tr>
-            <tr><td><code>700</code></td><td>rwx------</td><td>S&oacute; o dono acessa</td></tr>
-            <tr><td><code>600</code></td><td>rw-------</td><td>Arquivo privado (ex: chaves SSH)</td></tr>
-            <tr><td><code>750</code></td><td>rwxr-x---</td><td>Dono total, grupo l&ecirc;/executa</td></tr>
-            <tr><td><code>777</code></td><td>rwxrwxrwx</td><td>⚠️ Todos podem tudo (perigoso!)</td></tr>
-        </table>
-        <div class="tip-box">
-            <p>💡 <strong>Memorize: 755 e 644</strong><br>
-            <strong>755</strong> = rwxr-xr-x (diret&oacute;rios e scripts)<br>
-            <strong>644</strong> = rw-r--r-- (documentos e configs)</p>
-        </div>
-    </div>
-
-    <!-- Card 5: chmod Simbolico -->
-    <div class="content-card">
-        <h2>🔧 chmod &mdash; Modo Simb&oacute;lico</h2>
         <div class="highlight-box">
-            <p><strong>chmod</strong> = Change Mode (mudar permiss&otilde;es)</p>
+            <p><strong>Lendo a primeira coluna &mdash; 10 caracteres:</strong></p>
+            <ul>
+                <li>1&ordm; caractere: tipo &mdash; <code>-</code> = arquivo comum &nbsp;|&nbsp; <code>d</code> = diret&oacute;rio</li>
+                <li>2&ordm; ao 4&ordm;: permiss&otilde;es do <strong>usu&aacute;rio dono</strong> (rwx)</li>
+                <li>5&ordm; ao 7&ordm;: permiss&otilde;es do <strong>grupo dono</strong> (rwx)</li>
+                <li>8&ordm; ao 10&ordm;: permiss&otilde;es dos <strong>outros usu&aacute;rios</strong> (rwx)</li>
+            </ul>
+        </div>
+        <p>Permiss&atilde;o <strong>presente</strong>: letra correspondente &nbsp;|&nbsp; Permiss&atilde;o <strong>ausente</strong>: tra&ccedil;o (<code>-</code>)</p>
+        <table class="cmp-table">
+            <tr>
+                <th>Sa&iacute;da</th>
+                <th>Usu&aacute;rio dono</th>
+                <th>Grupo dono</th>
+                <th>Outros</th>
+            </tr>
+            <tr>
+                <td><code>-rw-rw-r--</code></td>
+                <td>rw- (leitura, escrita)</td>
+                <td>rw- (leitura, escrita)</td>
+                <td>r-- (s&oacute; leitura)</td>
+            </tr>
+            <tr>
+                <td><code>drwx------</code></td>
+                <td>rwx (acesso total)</td>
+                <td>--- (nenhuma)</td>
+                <td>--- (nenhuma)</td>
+            </tr>
+        </table>
+        <div class="tip-box">
+            <p>💡 O tra&ccedil;o (<code>-</code>) no lugar de <code>r</code>, <code>w</code> ou <code>x</code> significa &ldquo;sem essa permiss&atilde;o&rdquo;.</p>
+        </div>
+    </div>
+
+    <!-- Card 3: chmod Simbólico -->
+    <div class="content-card">
+        <h2>🔧 Alterando Permiss&otilde;es: chmod Simb&oacute;lico</h2>
+        <div class="highlight-box">
+            <p><strong>chmod</strong> = Change Mode &mdash; altera permiss&otilde;es de arquivos ou diret&oacute;rios.</p>
             <p>Sintaxe: <code>chmod [quem][operador][permiss&atilde;o] arquivo</code></p>
         </div>
         <table class="cmp-table">
@@ -237,10 +147,10 @@
             </tr>
             <tr>
                 <td>
-                    <code>u</code> = user (dono)<br>
-                    <code>g</code> = group<br>
-                    <code>o</code> = others<br>
-                    <code>a</code> = all (todos)
+                    <code>u</code> = usu&aacute;rio dono<br>
+                    <code>g</code> = grupo dono<br>
+                    <code>o</code> = outros<br>
+                    <code>a</code> = todos (ugo)
                 </td>
                 <td>
                     <code>+</code> = adicionar<br>
@@ -248,422 +158,103 @@
                     <code>=</code> = definir exato
                 </td>
                 <td>
-                    <code>r</code> = read<br>
-                    <code>w</code> = write<br>
-                    <code>x</code> = execute
+                    <code>r</code> = leitura<br>
+                    <code>w</code> = escrita<br>
+                    <code>x</code> = execu&ccedil;&atilde;o
                 </td>
             </tr>
         </table>
         <div class="terminal">
             <div class="terminal-bar">
                 <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">chmod modo simb&oacute;lico</span>
+                <span class="term-title">chmod modo simb&oacute;lico &mdash; exemplos</span>
             </div>
             <div class="terminal-body">
-                <span class="t-comment"># Adicionar execu&ccedil;&atilde;o para o dono</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">chmod u+x script.sh</span><br><br>
-                <span class="t-comment"># Remover escrita do grupo e outros</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">chmod go-w documento.txt</span><br><br>
-                <span class="t-comment"># Definir permiss&atilde;o exata para todos</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">chmod a=r arquivo.txt</span><br><br>
-                <span class="t-comment"># M&uacute;ltiplas mudan&ccedil;as de uma vez</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">chmod u+rwx,g+rx,o-rwx programa</span>
+                <span class="t-comment"># Dar leitura a outros</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">chmod o=r diretorio</span><br><br>
+                <span class="t-comment"># Conceder todas as permiss&otilde;es para todos</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">chmod ugo=rwx diretorio</span><br><br>
+                <span class="t-comment"># Adicionar execu&ccedil;&atilde;o ao usu&aacute;rio dono</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">chmod u+x teste.txt</span><br>
+                <span class="t-comment"># (adiciona ao usu&aacute;rio a permiss&atilde;o de execu&ccedil;&atilde;o do arquivo teste.txt)</span><br><br>
+                <span class="t-comment"># Remover execu&ccedil;&atilde;o do usu&aacute;rio dono</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">chmod u-x teste.txt</span><br>
+                <span class="t-comment"># (retira do usu&aacute;rio a permiss&atilde;o de execu&ccedil;&atilde;o do arquivo teste.txt)</span><br><br>
+                <span class="t-comment"># Adicionar permiss&atilde;o de gravação para o usuário (u+w)</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">chmod u+w ProvaFinal.odt</span>
             </div>
         </div>
     </div>
 
-    <!-- Card 6: chmod Octal -->
+    <!-- Card 4: chmod Octal -->
     <div class="content-card">
-        <h2>🔧 chmod &mdash; Modo Octal</h2>
-        <div class="highlight-box">
-            <p>Modo octal &eacute; mais <strong>r&aacute;pido</strong> e <strong>direto</strong>!</p>
-        </div>
-        <div class="terminal">
-            <div class="terminal-bar">
-                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">chmod modo octal</span>
-            </div>
-            <div class="terminal-body">
-                <span class="t-comment"># Sintaxe: chmod NNN arquivo</span><br>
-                <span class="t-comment"># Onde NNN = dono-grupo-outros</span><br><br>
-                <span class="t-comment"># Permiss&atilde;o padr&atilde;o para arquivo (rw-r--r--)</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">chmod 644 arquivo.txt</span><br><br>
-                <span class="t-comment"># Permiss&atilde;o para script (rwxr-xr-x)</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">chmod 755 script.sh</span><br><br>
-                <span class="t-comment"># S&oacute; o dono acessa (rwx------)</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">chmod 700 pasta_privada</span><br><br>
-                <span class="t-comment"># Arquivo secreto (rw-------)</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">chmod 600 chave_ssh</span>
-            </div>
-        </div>
+        <h2>🔢 Alterando Permiss&otilde;es: Modo Octal</h2>
+        <p>Recebe este nome por utilizar oito n&uacute;meros (0 a 7). Cada n&uacute;mero corresponde a uma combina&ccedil;&atilde;o de permiss&otilde;es:</p>
         <table class="cmp-table">
             <tr>
-                <th>Vantagens do Octal</th>
-                <th>Vantagens do Simb&oacute;lico</th>
+                <th>N&uacute;mero</th>
+                <th>Permiss&atilde;o</th>
+                <th>C&aacute;lculo</th>
             </tr>
-            <tr>
-                <td>Define TUDO de uma vez</td>
-                <td>Mais intuitivo para iniciantes</td>
-            </tr>
-            <tr>
-                <td>Mais curto de digitar</td>
-                <td>Modifica s&oacute; o necess&aacute;rio</td>
-            </tr>
-            <tr>
-                <td>Padr&atilde;o em scripts</td>
-                <td>Mais leg&iacute;vel em scripts</td>
-            </tr>
+            <tr><td><strong>4</strong></td><td>Leitura (r)</td><td>4+0+0</td></tr>
+            <tr><td><strong>2</strong></td><td>Escrita (w)</td><td>0+2+0</td></tr>
+            <tr><td><strong>1</strong></td><td>Execu&ccedil;&atilde;o (x)</td><td>0+0+1</td></tr>
+            <tr><td><strong>7</strong></td><td>Todas (rwx)</td><td>4+2+1</td></tr>
+            <tr><td><strong>6</strong></td><td>Leitura + escrita (rw-)</td><td>4+2+0</td></tr>
+            <tr><td><strong>5</strong></td><td>Leitura + execu&ccedil;&atilde;o (r-x)</td><td>4+0+1</td></tr>
+            <tr><td><strong>0</strong></td><td>Nenhuma (---)</td><td>0+0+0</td></tr>
         </table>
-    </div>
-
-    <!-- Card 7: chmod Recursivo -->
-    <div class="content-card">
-        <h2>📁 chmod Recursivo (-R)</h2>
-        <p>Aplicar permiss&otilde;es em <strong>toda uma pasta</strong> e seu conte&uacute;do:</p>
+        <p style="margin-top:1em;">A ordem &eacute; sempre: <strong>usu&aacute;rio dono &mdash; grupo dono &mdash; outros usu&aacute;rios</strong>.</p>
         <div class="terminal">
             <div class="terminal-bar">
                 <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">chmod -R</span>
+                <span class="term-title">chmod modo octal &mdash; exemplos</span>
             </div>
             <div class="terminal-body">
-                <span class="t-comment"># Aplicar 755 em tudo dentro de /var/www</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">chmod -R 755 /var/www</span><br><br>
-                <span class="t-comment"># Adicionar leitura para todos, recursivamente</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">chmod -R a+r documentos/</span><br><br>
-                <span class="t-comment"># 755 s&oacute; para diret&oacute;rios</span><br>
-                <span class="t-cmd">find pasta/ -type d -exec chmod 755 {} \;</span><br><br>
-                <span class="t-comment"># 644 s&oacute; para arquivos</span><br>
-                <span class="t-cmd">find pasta/ -type f -exec chmod 644 {} \;</span>
+                <span class="t-comment"># Leitura p/ dono (4), escrita p/ grupo (2), execu&ccedil;&atilde;o p/ outros (1)</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">chmod 421 teste.txt</span><br><br>
+                <span class="t-comment"># Todas as permiss&otilde;es para todos: (4+2+1),(4+2+1),(4+2+1)</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">chmod 777 teste.txt</span><br><br>
+                <span class="t-comment"># 754: dono=rwx(7), grupo=r-x(5), outros=r--(4)</span><br>
+                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">chmod 754 teste.txt</span><br>
+                <span class="t-out">-rwxr-xr-- 1 usuario grupo 0 Jan 15 teste.txt</span>
             </div>
         </div>
         <div class="alert-box">
-            <p>⚠️ <strong>Cuidado com -R!</strong></p>
-            <ul>
-                <li>N&atilde;o use em diret&oacute;rios do sistema (/, /etc, /bin)</li>
-                <li>Verifique DUAS VEZES antes de executar</li>
-                <li><code>chmod -R 777</code> &eacute; quase sempre ERRADO e perigoso!</li>
-            </ul>
+            <p>⚠️ <strong>Evite chmod 777 em produ&ccedil;&atilde;o!</strong> Qualquer usu&aacute;rio do sistema poder&aacute; ler, escrever e executar o arquivo &mdash; isso &eacute; um risco de seguran&ccedil;a.</p>
         </div>
     </div>
 
-    <!-- Card 8: chown -->
+    <!-- Card 5: Resumo -->
     <div class="content-card">
-        <h2>👤 chown &mdash; Mudar Dono e Grupo</h2>
-        <div class="highlight-box">
-            <p><strong>chown</strong> = Change Owner (mudar propriet&aacute;rio)</p>
-        </div>
-        <div class="terminal">
-            <div class="terminal-bar">
-                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">chown &mdash; exemplos</span>
-            </div>
-            <div class="terminal-body">
-                <span class="t-comment"># Mudar dono do arquivo</span><br>
-                <span class="t-prompt">root@linux:~#</span> <span class="t-cmd">chown maria arquivo.txt</span><br><br>
-                <span class="t-comment"># Mudar dono e grupo</span><br>
-                <span class="t-prompt">root@linux:~#</span> <span class="t-cmd">chown maria:desenvolvedores arquivo.txt</span><br><br>
-                <span class="t-comment"># Mudar s&oacute; o grupo (duas formas)</span><br>
-                <span class="t-prompt">root@linux:~#</span> <span class="t-cmd">chown :webteam site/</span><br>
-                <span class="t-prompt">root@linux:~#</span> <span class="t-cmd">chgrp webteam site/</span><br><br>
-                <span class="t-comment"># Recursivo (-R)</span><br>
-                <span class="t-prompt">root@linux:~#</span> <span class="t-cmd">chown -R www-data:www-data /var/www/html</span>
-            </div>
-        </div>
-        <table class="cmp-table">
-            <tr>
-                <th>Sintaxe</th>
-                <th>A&ccedil;&atilde;o</th>
-            </tr>
-            <tr><td><code>chown usuario arquivo</code></td><td>Muda apenas o dono</td></tr>
-            <tr><td><code>chown usuario:grupo arquivo</code></td><td>Muda dono e grupo</td></tr>
-            <tr><td><code>chown :grupo arquivo</code></td><td>Muda apenas o grupo</td></tr>
-            <tr><td><code>chgrp grupo arquivo</code></td><td>Muda apenas o grupo (alternativo)</td></tr>
-        </table>
-        <div class="alert-box">
-            <p>⚠️ S&oacute; <strong>root</strong> pode mudar o dono de arquivos! Usu&aacute;rio comum s&oacute; pode mudar o grupo para grupos dos quais faz parte.</p>
-        </div>
-    </div>
-
-    <!-- Card 9: Grupos -->
-    <div class="content-card">
-        <h2>👥 Trabalhando com Grupos</h2>
-        <p>Grupos permitem compartilhar acesso entre usu&aacute;rios!</p>
-        <div class="terminal">
-            <div class="terminal-bar">
-                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">consultando grupos</span>
-            </div>
-            <div class="terminal-body">
-                <span class="t-comment"># Ver grupos do usu&aacute;rio atual</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">groups</span><br>
-                <span class="t-out">usuario sudo docker www-data</span><br><br>
-                <span class="t-comment"># Ver grupos de outro usu&aacute;rio</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">groups maria</span><br>
-                <span class="t-out">maria : maria desenvolvedores</span><br><br>
-                <span class="t-comment"># Ver detalhes com id</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">id</span><br>
-                <span class="t-out">uid=1000(usuario) gid=1000(usuario) groups=1000(usuario),27(sudo),999(docker)</span><br><br>
-                <span class="t-comment"># Listar todos os grupos do sistema</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">cat /etc/group</span>
-            </div>
-        </div>
-        <div class="terminal">
-            <div class="terminal-bar">
-                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">gerenciando grupos (como root)</span>
-            </div>
-            <div class="terminal-body">
-                <span class="t-comment"># Criar novo grupo</span><br>
-                <span class="t-prompt">root:~#</span> <span class="t-cmd">groupadd desenvolvedores</span><br><br>
-                <span class="t-comment"># Adicionar usu&aacute;rio ao grupo</span><br>
-                <span class="t-prompt">root:~#</span> <span class="t-cmd">usermod -aG desenvolvedores maria</span><br><br>
-                <span class="t-comment"># Remover usu&aacute;rio do grupo</span><br>
-                <span class="t-prompt">root:~#</span> <span class="t-cmd">gpasswd -d maria desenvolvedores</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- Card 10: umask -->
-    <div class="content-card">
-        <h2>🎭 umask &mdash; Permiss&otilde;es Padr&atilde;o</h2>
-        <div class="highlight-box">
-            <p><strong>umask</strong> define as permiss&otilde;es padr&atilde;o para novos arquivos!</p>
-            <p>umask &eacute; uma <strong>m&aacute;scara de subtra&ccedil;&atilde;o</strong>: Permiss&atilde;o Base &minus; umask = Permiss&atilde;o Final</p>
-            <ul>
-                <li><strong>Base para arquivos:</strong> 666 (rw-rw-rw-)</li>
-                <li><strong>Base para diret&oacute;rios:</strong> 777 (rwxrwxrwx)</li>
-            </ul>
-        </div>
-        <table class="cmp-table">
-            <tr>
-                <th>umask</th>
-                <th>Arquivos resultantes</th>
-                <th>Diret&oacute;rios resultantes</th>
-            </tr>
-            <tr><td><code>022</code></td><td>644 (rw-r--r--)</td><td>755 (rwxr-xr-x)</td></tr>
-            <tr><td><code>027</code></td><td>640 (rw-r-----)</td><td>750 (rwxr-x---)</td></tr>
-            <tr><td><code>077</code></td><td>600 (rw-------)</td><td>700 (rwx------)</td></tr>
-        </table>
-        <div class="terminal">
-            <div class="terminal-bar">
-                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">usando umask</span>
-            </div>
-            <div class="terminal-body">
-                <span class="t-comment"># Ver umask atual</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">umask</span><br>
-                <span class="t-out">0022</span><br><br>
-                <span class="t-comment"># Ver em formato simb&oacute;lico</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">umask -S</span><br>
-                <span class="t-out">u=rwx,g=rx,o=rx</span><br><br>
-                <span class="t-comment"># Mudar umask temporariamente</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">umask 077</span><br>
-                <span class="t-comment"># Arquivos: 600, Diret&oacute;rios: 700</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- Card 11: Permissoes Especiais SUID -->
-    <div class="content-card">
-        <h2>⚡ Permiss&otilde;es Especiais: SUID</h2>
-        <div class="alert-box">
-            <p>⚠️ <strong>SUID</strong> = Set User ID &mdash; Executar como dono</p>
-        </div>
-        <p>Quando um arquivo tem SUID, ele executa com as permiss&otilde;es do <strong>dono</strong>, n&atilde;o do usu&aacute;rio que o executou.</p>
-        <p><strong>Exemplo cl&aacute;ssico:</strong> o comando <code>passwd</code> &mdash; usu&aacute;rios comuns podem mudar sua pr&oacute;pria senha, mas o arquivo /etc/shadow s&oacute; root pode editar!</p>
-        <p>Aparece um <strong>s</strong> no lugar do <strong>x</strong> do dono: <code>-rwsr-xr-x</code> &mdash; Valor octal: <strong>4</strong>xxx</p>
-        <div class="terminal">
-            <div class="terminal-bar">
-                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">SUID na pr&aacute;tica</span>
-            </div>
-            <div class="terminal-body">
-                <span class="t-comment"># Ver arquivos SUID no sistema</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">ls -l /usr/bin/passwd</span><br>
-                <span class="t-out">-rwsr-xr-x 1 root root 68208 Jan 15 /usr/bin/passwd</span><br><br>
-                <span class="t-comment"># Adicionar SUID</span><br>
-                <span class="t-prompt">root@linux:~#</span> <span class="t-cmd">chmod u+s programa</span><br>
-                <span class="t-prompt">root@linux:~#</span> <span class="t-cmd">chmod 4755 programa</span>
-            </div>
-        </div>
-        <div class="alert-box">
-            <p>⚠️ SUID &eacute; um risco de seguran&ccedil;a se mal usado. Nunca coloque em scripts!</p>
-        </div>
-    </div>
-
-    <!-- Card 12: SGID e Sticky Bit -->
-    <div class="content-card">
-        <h2>⚡ Permiss&otilde;es Especiais: SGID e Sticky Bit</h2>
-        <p><strong>SGID</strong> = Set Group ID &mdash; Valor octal: <strong>2</strong>xxx</p>
-        <p>Em diret&oacute;rios: arquivos criados dentro herdam o <strong>grupo do diret&oacute;rio</strong>, n&atilde;o do usu&aacute;rio. &Uacute;til para pastas compartilhadas entre equipes!</p>
-        <div class="terminal">
-            <div class="terminal-bar">
-                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">SGID em diret&oacute;rio compartilhado</span>
-            </div>
-            <div class="terminal-body">
-                <span class="t-prompt">root@linux:~#</span> <span class="t-cmd">mkdir /projetos/devs</span><br>
-                <span class="t-prompt">root@linux:~#</span> <span class="t-cmd">chgrp desenvolvedores /projetos/devs</span><br>
-                <span class="t-prompt">root@linux:~#</span> <span class="t-cmd">chmod 2775 /projetos/devs</span><br><br>
-                <span class="t-comment"># Agora qualquer arquivo criado ter&aacute; grupo "desenvolvedores"!</span><br>
-                <span class="t-prompt">maria@linux:/projetos/devs$</span> <span class="t-cmd">touch codigo.py</span><br>
-                <span class="t-prompt">maria@linux:/projetos/devs$</span> <span class="t-cmd">ls -l codigo.py</span><br>
-                <span class="t-out">-rw-rw-r-- 1 maria desenvolvedores 0 Jan 15 codigo.py</span>
-            </div>
-        </div>
-        <p style="margin-top: 1em;"><strong>Sticky Bit</strong> = Prote&ccedil;&atilde;o contra dele&ccedil;&atilde;o &mdash; Valor octal: <strong>1</strong>xxx</p>
-        <p>Em diret&oacute;rios com Sticky Bit, usu&aacute;rios s&oacute; podem <strong>deletar seus pr&oacute;prios arquivos</strong>, mesmo tendo permiss&atilde;o de escrita no diret&oacute;rio. Exemplo cl&aacute;ssico: o diret&oacute;rio <code>/tmp</code></p>
-        <div class="terminal">
-            <div class="terminal-bar">
-                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">sticky bit</span>
-            </div>
-            <div class="terminal-body">
-                <span class="t-comment"># Ver sticky bit no /tmp</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">ls -ld /tmp</span><br>
-                <span class="t-out">drwxrwxrwt 15 root root 4096 Jan 15 /tmp</span><br>
-                <span class="t-comment"># O "t" no final indica sticky bit!</span><br><br>
-                <span class="t-comment"># Adicionar sticky bit</span><br>
-                <span class="t-prompt">root@linux:~#</span> <span class="t-cmd">chmod +t /pasta_compartilhada</span><br>
-                <span class="t-prompt">root@linux:~#</span> <span class="t-cmd">chmod 1777 /pasta_compartilhada</span>
-            </div>
-        </div>
-        <table class="cmp-table">
-            <tr>
-                <th>Octal</th>
-                <th>Nome</th>
-                <th>Efeito</th>
-            </tr>
-            <tr><td><code>4xxx</code></td><td>SUID</td><td>Executa como dono</td></tr>
-            <tr><td><code>2xxx</code></td><td>SGID</td><td>Herda grupo do diret&oacute;rio</td></tr>
-            <tr><td><code>1xxx</code></td><td>Sticky Bit</td><td>Prote&ccedil;&atilde;o de dele&ccedil;&atilde;o</td></tr>
-        </table>
-    </div>
-
-    <!-- Card 13: Caso Pratico - Servidor Web -->
-    <div class="content-card">
-        <h2>🌐 Caso Pr&aacute;tico: Servidor Web</h2>
-        <p>Configurando permiss&otilde;es corretas para /var/www/html:</p>
-        <div class="terminal">
-            <div class="terminal-bar">
-                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">configura&ccedil;&atilde;o do servidor web</span>
-            </div>
-            <div class="terminal-body">
-                <span class="t-comment"># 1. Definir dono como www-data (usu&aacute;rio do Apache/Nginx)</span><br>
-                <span class="t-prompt">root@linux:~#</span> <span class="t-cmd">chown -R www-data:www-data /var/www/html</span><br><br>
-                <span class="t-comment"># 2. Permiss&otilde;es para diret&oacute;rios (755)</span><br>
-                <span class="t-prompt">root@linux:~#</span> <span class="t-cmd">find /var/www/html -type d -exec chmod 755 {} \;</span><br><br>
-                <span class="t-comment"># 3. Permiss&otilde;es para arquivos (644)</span><br>
-                <span class="t-prompt">root@linux:~#</span> <span class="t-cmd">find /var/www/html -type f -exec chmod 644 {} \;</span><br><br>
-                <span class="t-comment"># 4. Adicionar seu usu&aacute;rio ao grupo www-data</span><br>
-                <span class="t-prompt">root@linux:~#</span> <span class="t-cmd">usermod -aG www-data seu_usuario</span><br><br>
-                <span class="t-comment"># 5. Permitir que o grupo escreva</span><br>
-                <span class="t-prompt">root@linux:~#</span> <span class="t-cmd">chmod -R g+w /var/www/html</span>
-            </div>
-        </div>
-        <div class="tip-box">
-            <p>💡 <strong>Por que essas permiss&otilde;es?</strong><br>
-            <strong>755 dirs:</strong> Web server pode entrar e ler<br>
-            <strong>644 files:</strong> Web server pode ler, mas n&atilde;o modificar<br>
-            <strong>www-data:</strong> Usu&aacute;rio padr&atilde;o do Apache/Nginx</p>
-        </div>
-    </div>
-
-    <!-- Card 14: Caso Pratico - SSH Keys -->
-    <div class="content-card">
-        <h2>🔑 Caso Pr&aacute;tico: Chaves SSH</h2>
-        <div class="alert-box">
-            <p>⚠️ SSH &eacute; MUITO exigente com permiss&otilde;es!</p>
-        </div>
-        <div class="terminal">
-            <div class="terminal-bar">
-                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">permiss&otilde;es obrigat&oacute;rias para SSH</span>
-            </div>
-            <div class="terminal-body">
-                <span class="t-comment"># Diret&oacute;rio ~/.ssh (700 - s&oacute; o dono)</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">chmod 700 ~/.ssh</span><br><br>
-                <span class="t-comment"># Chave privada (600 - s&oacute; o dono l&ecirc;/escreve)</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">chmod 600 ~/.ssh/id_rsa</span><br><br>
-                <span class="t-comment"># Chave p&uacute;blica (644 - todos podem ler)</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">chmod 644 ~/.ssh/id_rsa.pub</span><br><br>
-                <span class="t-comment"># Arquivo authorized_keys (600)</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">chmod 600 ~/.ssh/authorized_keys</span><br><br>
-                <span class="t-comment"># Arquivo config (600)</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">chmod 600 ~/.ssh/config</span>
-            </div>
-        </div>
-        <div class="alert-box">
-            <p>⚠️ <strong>Se as permiss&otilde;es estiverem erradas:</strong><br>
-            <code>Permissions 0644 for '/home/user/.ssh/id_rsa' are too open.<br>
-            It is required that your private key files are NOT accessible by others.</code></p>
-        </div>
-    </div>
-
-    <!-- Card 15: Verificando Permissoes -->
-    <div class="content-card">
-        <h2>🔍 Comandos de Verifica&ccedil;&atilde;o</h2>
-        <div class="terminal">
-            <div class="terminal-bar">
-                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">inspecionando permiss&otilde;es</span>
-            </div>
-            <div class="terminal-body">
-                <span class="t-comment"># Ver permiss&otilde;es detalhadas</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">ls -la</span><br>
-                <span class="t-out">drwxr-xr-x 5 usuario usuario 4096 Jan 15 .</span><br>
-                <span class="t-out">-rw------- 1 usuario usuario&nbsp;&nbsp;220 Jan 10 .bash_history</span><br><br>
-                <span class="t-comment"># Ver permiss&otilde;es em formato octal</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">stat -c "%a %n" arquivo.txt</span><br>
-                <span class="t-out">644 arquivo.txt</span><br><br>
-                <span class="t-comment"># Ver todos os detalhes com stat</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">stat arquivo.txt</span><br>
-                <span class="t-out">&nbsp;&nbsp;File: arquivo.txt</span><br>
-                <span class="t-out">&nbsp;&nbsp;Size: 1234&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Blocks: 8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;IO Block: 4096</span><br>
-                <span class="t-out">Access: (0644/-rw-r--r--)&nbsp;&nbsp;Uid: (1000/usuario)&nbsp;&nbsp;Gid: (1000/usuario)</span><br><br>
-                <span class="t-comment"># Encontrar arquivos SUID no sistema</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">find / -perm -4000 2&gt;/dev/null</span><br><br>
-                <span class="t-comment"># namei: debug de caminhos</span><br>
-                <span class="t-prompt">usuario@linux:~$</span> <span class="t-cmd">namei -l /var/www/html/index.html</span><br>
-                <span class="t-out">drwxr-xr-x root root /</span><br>
-                <span class="t-out">drwxr-xr-x root root var</span><br>
-                <span class="t-out">drwxr-xr-x www-data www-data html</span><br>
-                <span class="t-out">-rw-r--r-- www-data www-data index.html</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- Card 16: Resumo Final -->
-    <div class="content-card">
-        <h2>📋 Resumo: Comandos de Permiss&otilde;es</h2>
-        <table class="cmp-table">
-            <tr>
-                <th>Comando</th>
-                <th>Fun&ccedil;&atilde;o</th>
-                <th>Exemplo</th>
-            </tr>
-            <tr><td><code>chmod</code></td><td>Mudar Permiss&otilde;es</td><td><code>chmod 755 arquivo</code></td></tr>
-            <tr><td><code>chown</code></td><td>Mudar Dono</td><td><code>chown user:grupo arquivo</code></td></tr>
-            <tr><td><code>chgrp</code></td><td>Mudar Grupo</td><td><code>chgrp grupo arquivo</code></td></tr>
-            <tr><td><code>ls -l</code></td><td>Ver Permiss&otilde;es</td><td>Formato simb&oacute;lico</td></tr>
-            <tr><td><code>stat</code></td><td>Detalhes</td><td>Formato octal</td></tr>
-            <tr><td><code>umask</code></td><td>Padr&atilde;o</td><td>Novos arquivos</td></tr>
-        </table>
+        <h2>📋 Resumo</h2>
         <table class="cmp-table">
             <tr>
                 <th>Octal</th>
                 <th>Simb&oacute;lico</th>
-                <th>Uso T&iacute;pico</th>
+                <th>Significado</th>
             </tr>
-            <tr><td><code>755</code></td><td>rwxr-xr-x</td><td>Diret&oacute;rios, scripts execut&aacute;veis</td></tr>
-            <tr><td><code>644</code></td><td>rw-r--r--</td><td>Arquivos comuns, configura&ccedil;&otilde;es</td></tr>
-            <tr><td><code>700</code></td><td>rwx------</td><td>Diret&oacute;rios privados</td></tr>
-            <tr><td><code>600</code></td><td>rw-------</td><td>Chaves SSH, senhas</td></tr>
-            <tr><td><code>777</code></td><td>rwxrwxrwx</td><td>⚠️ EVITAR! Inseguro</td></tr>
+            <tr><td><code>7</code></td><td>rwx</td><td>Leitura + escrita + execu&ccedil;&atilde;o</td></tr>
+            <tr><td><code>6</code></td><td>rw-</td><td>Leitura + escrita</td></tr>
+            <tr><td><code>5</code></td><td>r-x</td><td>Leitura + execu&ccedil;&atilde;o</td></tr>
+            <tr><td><code>4</code></td><td>r--</td><td>S&oacute; leitura</td></tr>
+            <tr><td><code>2</code></td><td>-w-</td><td>S&oacute; escrita</td></tr>
+            <tr><td><code>1</code></td><td>--x</td><td>S&oacute; execu&ccedil;&atilde;o</td></tr>
+            <tr><td><code>0</code></td><td>---</td><td>Nenhuma permiss&atilde;o</td></tr>
+        </table>
+        <table class="cmp-table" style="margin-top:1em;">
+            <tr>
+                <th>Modo Simb&oacute;lico</th>
+                <th>Modo Octal</th>
+                <th>Efeito</th>
+            </tr>
+            <tr><td><code>chmod o=r arquivo</code></td><td><code>chmod 664 arquivo</code></td><td>Outros s&oacute; leem</td></tr>
+            <tr><td><code>chmod ugo=rwx arquivo</code></td><td><code>chmod 777 arquivo</code></td><td>Todos t&ecirc;m tudo</td></tr>
+            <tr><td><code>chmod u+x arquivo</code></td><td>&mdash;</td><td>Adiciona execu&ccedil;&atilde;o ao dono</td></tr>
+            <tr><td><code>chmod u-x arquivo</code></td><td>&mdash;</td><td>Remove execu&ccedil;&atilde;o do dono</td></tr>
         </table>
         <div class="tip-box">
-            <p>💡 <strong>Lembrete Final:</strong> <strong>755</strong> para diret&oacute;rios e execut&aacute;veis, <strong>644</strong> para arquivos! E nunca use <code>chmod 777</code> em produ&ccedil;&atilde;o! 😉</p>
+            <p>💡 <strong>Dica:</strong> No modo octal, some os valores &mdash; <strong>r=4, w=2, x=1</strong> &mdash; para cada grupo (dono, grupo, outros) e junte os tr&ecirc;s d&iacute;gitos.</p>
         </div>
     </div>
 
@@ -671,51 +262,53 @@
     <div class="content-card exercise-card">
         <h2>&#x2753; Verifique seu Conhecimento</h2>
 
-        <div class="mc-question" data-correct="b">
-            <p class="mc-q-text">O que representa a sa&iacute;da <code>-rwxr-xr--</code> nas permiss&otilde;es de um arquivo?</p>
+        <div class="mc-question" data-correct="a">
+            <p class="mc-q-text">Um administrador Linux precisou utilizar o comando <code>chmod</code> em um servidor de arquivos. A fun&ccedil;&atilde;o desse comando &eacute;:</p>
             <div class="mc-options">
-                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>Diret&oacute;rio com permiss&atilde;o total para todos</span></div>
-                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>Arquivo: dono=rwx, grupo=r-x, outros=r--</span></div>
-                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>Link simb&oacute;lico com permiss&atilde;o de leitura</span></div>
-                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>Arquivo especial com permiss&otilde;es restritas</span></div>
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>Modificar as permiss&otilde;es de um arquivo.</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>Configurar o arquivo inittab do sistema.</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>Entrar em um diret&oacute;rio do sistema.</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>Inicializar o sistema operacional.</span></div>
             </div>
-            <div class="mc-explanation">&#x2713; O primeiro caractere indica o tipo (<code>-</code>=arquivo, <code>d</code>=diret&oacute;rio, <code>l</code>=link). Os 9 seguintes s&atilde;o 3 grupos de rwx: dono, grupo, outros.</div>
+            <div class="mc-explanation">&#x2713; <code>chmod</code> = <em>change mode</em> &mdash; &eacute; o comando para alterar as permiss&otilde;es de arquivos e diret&oacute;rios no Linux. (INSTITUTO AOCP &mdash; EBSERH, 2016)</div>
+        </div>
+        <hr class="mc-sep">
+
+        <div class="mc-question" data-correct="e">
+            <p class="mc-q-text">O comando <code>chmod 754 teste.txt</code> altera as permiss&otilde;es deste arquivo para:</p>
+            <div class="mc-options">
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>-rwxr-xrw-</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>-rwxrwxrwx</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>-rwx--xr--</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>-rwxr--r-x</span></div>
+                <div class="mc-option" data-option="e"><span class="mc-letter">E</span><span>-rwxr-xr--</span></div>
+            </div>
+            <div class="mc-explanation">&#x2713; 7=rwx (dono), 5=r-x (grupo), 4=r-- (outros) &rarr; <code>-rwxr-xr--</code>. Lembre: r=4, w=2, x=1. (IF-SP &mdash; Professor Inform&aacute;tica, 2011)</div>
         </div>
         <hr class="mc-sep">
 
         <div class="mc-question" data-correct="c">
-            <p class="mc-q-text">Qual comando define permiss&atilde;o 755 para o arquivo script.sh?</p>
+            <p class="mc-q-text">No Sistema Operacional Linux, o comando <code>chmod u+w ProvaFinal.odt</code> realiza a opera&ccedil;&atilde;o de:</p>
             <div class="mc-options">
-                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>chown 755 script.sh</span></div>
-                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>setperm 755 script.sh</span></div>
-                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>chmod 755 script.sh</span></div>
-                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>chgrp 755 script.sh</span></div>
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>Adicionar uma permiss&atilde;o de leitura para um grupo.</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>Adicionar uma permiss&atilde;o de execu&ccedil;&atilde;o para o dono do arquivo.</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>Adicionar uma permiss&atilde;o de grava&ccedil;&atilde;o para um usu&aacute;rio.</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>Remover uma permiss&atilde;o de leitura de um usu&aacute;rio.</span></div>
+                <div class="mc-option" data-option="e"><span class="mc-letter">E</span><span>Remover uma permiss&atilde;o de grava&ccedil;&atilde;o e execu&ccedil;&atilde;o.</span></div>
             </div>
-            <div class="mc-explanation">&#x2713; <code>chmod</code> altera permiss&otilde;es. 755 = dono(rwx=7) grupo(r-x=5) outros(r-x=5). Use nota&ccedil;&atilde;o simb&oacute;lica: <code>chmod u+x,go-w arquivo</code>.</div>
+            <div class="mc-explanation">&#x2713; <code>u</code> = usu&aacute;rio dono | <code>+</code> = adicionar | <code>w</code> = escrita (grava&ccedil;&atilde;o). O comando adiciona permiss&atilde;o de grava&ccedil;&atilde;o para o usu&aacute;rio dono. (CONSULPLAN &mdash; TRT 13&ordf; Regi&atilde;o, 2012)</div>
         </div>
         <hr class="mc-sep">
 
-        <div class="mc-question" data-correct="a">
-            <p class="mc-q-text">Qual comando muda o dono e o grupo de um arquivo para &lsquo;www-data&rsquo;?</p>
+        <div class="mc-question" data-correct="b">
+            <p class="mc-q-text">Analisando a sa&iacute;da <code>-rw-rw-r--</code> do comando <code>ls -l</code>, qual &eacute; a permiss&atilde;o dos <strong>outros usu&aacute;rios</strong>?</p>
             <div class="mc-options">
-                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>chown www-data:www-data arquivo</span></div>
-                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>chmod www-data arquivo</span></div>
-                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>chgrp -u www-data arquivo</span></div>
-                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>usermod --file www-data arquivo</span></div>
+                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>rw- (leitura e escrita)</span></div>
+                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>r-- (somente leitura)</span></div>
+                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>rwx (acesso total)</span></div>
+                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>--- (nenhuma permiss&atilde;o)</span></div>
             </div>
-            <div class="mc-explanation">&#x2713; <code>chown dono:grupo arquivo</code> altera ambos. <code>chown dono arquivo</code> altera s&oacute; o dono. <code>chgrp grupo arquivo</code> altera s&oacute; o grupo.</div>
-        </div>
-        <hr class="mc-sep">
-
-        <div class="mc-question" data-correct="d">
-            <p class="mc-q-text">O que representa o valor octal 4 em permiss&otilde;es de arquivo?</p>
-            <div class="mc-options">
-                <div class="mc-option" data-option="a"><span class="mc-letter">A</span><span>Permiss&atilde;o de execu&ccedil;&atilde;o (x)</span></div>
-                <div class="mc-option" data-option="b"><span class="mc-letter">B</span><span>Permiss&atilde;o de escrita (w)</span></div>
-                <div class="mc-option" data-option="c"><span class="mc-letter">C</span><span>Sem permiss&atilde;o (---)</span></div>
-                <div class="mc-option" data-option="d"><span class="mc-letter">D</span><span>Permiss&atilde;o de leitura (r)</span></div>
-            </div>
-            <div class="mc-explanation">&#x2713; r=4, w=2, x=1. Some para combinar: rwx=7, rw-=6, r-x=5, r--=4, -wx=3, -w-=2, --x=1, ---=0.</div>
+            <div class="mc-explanation">&#x2713; Os 10 caracteres: tipo + dono(rw-) + grupo(rw-) + outros(r--). Os &uacute;ltimos 3 caracteres (<code>r--</code>) indicam que outros usu&aacute;rios t&ecirc;m apenas leitura.</div>
         </div>
     </div>
 
