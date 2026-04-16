@@ -312,6 +312,162 @@
         </div>
     </div>
 
+    <!-- ATIVIDADE PRÁTICA -->
+    <div class="content-card practical-card" id="prat-01">
+        <h2>🛠️ Atividade Pr&aacute;tica &mdash; Gerenciamento de Permiss&otilde;es</h2>
+        <div class="prat-meta">
+            <span class="prat-tag">⏱️ ~25 min</span>
+            <span class="prat-tag">💻 Ubuntu Server / Terminal</span>
+            <span class="prat-tag">📸 Tirar screenshot da sa&iacute;da</span>
+        </div>
+
+        <div class="prat-steps">
+            <div class="prat-step">
+                <div class="step-num">1</div>
+                <div class="step-body">
+                    <div class="step-label">Criar um arquivo e observar as permiss&otilde;es padr&atilde;o</div>
+                    <div class="step-desc">Crie um arquivo com <code>touch</code> e veja quais permiss&otilde;es ele recebe automaticamente:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash &mdash; passo 1</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">touch</span> <span class="t-arg">teste.txt</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-l</span> <span class="t-arg">teste.txt</span>
+<span class="t-out">-rw-rw-r-- 1 usuario usuario 0 Jan 15 teste.txt</span>
+<span class="t-comment"># Qual &eacute; a permiss&atilde;o do dono? E dos outros?</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="prat-step">
+                <div class="step-num">2</div>
+                <div class="step-body">
+                    <div class="step-label">Adicionar e remover permiss&atilde;o com modo simb&oacute;lico</div>
+                    <div class="step-desc">Use <code>chmod</code> simb&oacute;lico para adicionar execu&ccedil;&atilde;o ao dono e remover escrita do grupo:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash &mdash; passo 2</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-comment"># Adiciona execu&ccedil;&atilde;o ao usu&aacute;rio dono</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">chmod</span> <span class="t-arg">u+x teste.txt</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-l</span> <span class="t-arg">teste.txt</span>
+<span class="t-out">-rwxrw-r-- 1 usuario usuario 0 Jan 15 teste.txt</span>
+<span class="t-comment"># Remove escrita do grupo</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">chmod</span> <span class="t-arg">g-w teste.txt</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-l</span> <span class="t-arg">teste.txt</span>
+<span class="t-out">-rwxr--r-- 1 usuario usuario 0 Jan 15 teste.txt</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="prat-step">
+                <div class="step-num">3</div>
+                <div class="step-body">
+                    <div class="step-label">Definir permiss&otilde;es com modo octal</div>
+                    <div class="step-desc">Use o modo octal para definir permiss&otilde;es de uma vez. Lembre: r=4, w=2, x=1:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash &mdash; passo 3</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-comment"># 644: dono=rw-(6), grupo=r--(4), outros=r--(4)</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">chmod</span> <span class="t-arg">644 teste.txt</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-l</span> <span class="t-arg">teste.txt</span>
+<span class="t-out">-rw-r--r-- 1 usuario usuario 0 Jan 15 teste.txt</span>
+<span class="t-comment"># 754: dono=rwx(7), grupo=r-x(5), outros=r--(4)</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">chmod</span> <span class="t-arg">754 teste.txt</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-l</span> <span class="t-arg">teste.txt</span>
+<span class="t-out">-rwxr-xr-- 1 usuario usuario 0 Jan 15 teste.txt</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="prat-step">
+                <div class="step-num">4</div>
+                <div class="step-body">
+                    <div class="step-label">Criar um diret&oacute;rio e comparar permiss&otilde;es</div>
+                    <div class="step-desc">Diret&oacute;rios recebem permiss&otilde;es diferentes de arquivos. Observe o <code>d</code> no in&iacute;cio:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash &mdash; passo 4</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">mkdir</span> <span class="t-arg">minha_pasta</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-l</span>
+<span class="t-out">drwxrwxr-x 2 usuario usuario 4096 Jan 15 minha_pasta</span>
+<span class="t-out">-rwxr-xr-- 1 usuario usuario&nbsp;&nbsp;&nbsp;&nbsp;0 Jan 15 teste.txt</span>
+<span class="t-comment"># Aplique 755 no diret&oacute;rio e confirme</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">chmod</span> <span class="t-arg">755 minha_pasta</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-l</span>
+<span class="t-out">drwxr-xr-x 2 usuario usuario 4096 Jan 15 minha_pasta</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="prat-step">
+                <div class="step-num">5</div>
+                <div class="step-body">
+                    <div class="step-label">Definir permiss&otilde;es iguais para todos com <code>=</code></div>
+                    <div class="step-desc">Use o operador <code>=</code> para definir exatamente o que cada grupo pode fazer:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash &mdash; passo 5</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-comment"># D&aacute; leitura a todos (ugo=r)</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">chmod</span> <span class="t-arg">o=r teste.txt</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-l</span> <span class="t-arg">teste.txt</span>
+<span class="t-comment"># Concede todas as permiss&otilde;es a todos</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">chmod</span> <span class="t-arg">ugo=rwx teste.txt</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-l</span> <span class="t-arg">teste.txt</span>
+<span class="t-out">-rwxrwxrwx 1 usuario usuario 0 Jan 15 teste.txt</span>
+<span class="t-comment"># Qual &eacute; o valor octal equivalente a rwxrwxrwx?</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="prat-step">
+                <div class="step-num">6</div>
+                <div class="step-body">
+                    <div class="step-label">Limpar: remover os arquivos criados</div>
+                    <div class="step-desc">Remova o arquivo e o diret&oacute;rio de teste e confirme que foram apagados:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash &mdash; passo 6</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">rm</span> <span class="t-arg">teste.txt</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">rmdir</span> <span class="t-arg">minha_pasta</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-l</span>
+<span class="t-comment"># Os arquivos n&atilde;o devem mais aparecer na listagem</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="prat-observe">
+            <strong>📌 Para refletir:</strong> Cada arquivo no Linux nasce com permiss&otilde;es autom&aacute;ticas. Saber ler e ajustar essas permiss&otilde;es &eacute; essencial para garantir a seguran&ccedil;a do sistema &mdash; nem mais acesso do que o necess&aacute;rio, nem menos do que o suficiente para o trabalho. Esse princ&iacute;pio se chama <em>m&iacute;nimo privil&eacute;gio</em>.
+        </div>
+
+        <div class="ex-actions">
+            <button class="btn-print" onclick="printPractical('prat-01', 'Aula 07 &mdash; Permiss&otilde;es de Arquivos')">🖨️ Imprimir roteiro</button>
+        </div>
+    </div>
+
     <div class="nav-footer">
         <a href="aula06-gerenciamento-usuarios.html" class="nav-link">&#x2B05; Gerenciamento de Usu&aacute;rios</a>
         <a href="aula08-pacotes.html" class="nav-link">Pacotes e Reposit&oacute;rios &#x27A1;</a>
