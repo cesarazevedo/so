@@ -314,30 +314,49 @@
 
     <!-- ATIVIDADE PRÁTICA -->
     <div class="content-card practical-card" id="prat-01">
-        <h2>🛠️ Atividade Pr&aacute;tica &mdash; Gerenciamento de Permiss&otilde;es</h2>
+        <h2>🛠️ Atividade Pr&aacute;tica &mdash; Servidor de Arquivos da Empresa TechBR</h2>
         <div class="prat-meta">
-            <span class="prat-tag">⏱️ ~25 min</span>
+            <span class="prat-tag">⏱️ ~40 min</span>
             <span class="prat-tag">💻 Ubuntu Server / Terminal</span>
-            <span class="prat-tag">📸 Tirar screenshot da sa&iacute;da</span>
+            <span class="prat-tag">📸 Screenshot de cada etapa</span>
+            <span class="prat-tag">👤 Individual</span>
+        </div>
+
+        <div class="highlight-box" style="margin-bottom:1.5em;">
+            <p><strong>🏢 Cen&aacute;rio:</strong> Voc&ecirc; &eacute; o administrador Linux da empresa <strong>TechBR</strong>. A equipe de TI criou uma pasta de projetos no servidor e precisa que voc&ecirc; configure as permiss&otilde;es de acordo com a pol&iacute;tica de seguran&ccedil;a da empresa. Cada arquivo tem um requisito diferente — leia com aten&ccedil;&atilde;o antes de executar os comandos.</p>
+        </div>
+
+        <div class="alert-box" style="margin-bottom:1.5em;">
+            <p>⚠️ <strong>Pol&iacute;tica de seguran&ccedil;a da TechBR:</strong><br>
+            &bull; <code>relatorio.txt</code> &mdash; o dono l&ecirc; e escreve; grupo e outros s&oacute; leem<br>
+            &bull; <code>backup.sh</code> &mdash; o dono tem tudo; grupo pode ler e executar; outros n&atilde;o acessam<br>
+            &bull; <code>projetos/</code> &mdash; o dono tem tudo; grupo pode entrar e listar; outros n&atilde;o acessam<br>
+            &bull; <code>confidencial.cfg</code> &mdash; somente o dono l&ecirc; e escreve; ningu&eacute;m mais acessa</p>
         </div>
 
         <div class="prat-steps">
+
             <div class="prat-step">
                 <div class="step-num">1</div>
                 <div class="step-body">
-                    <div class="step-label">Criar um arquivo e observar as permiss&otilde;es padr&atilde;o</div>
-                    <div class="step-desc">Crie um arquivo com <code>touch</code> e veja quais permiss&otilde;es ele recebe automaticamente:</div>
+                    <div class="step-label">Criar a estrutura de arquivos do projeto</div>
+                    <div class="step-desc">Crie o diret&oacute;rio e os arquivos que ser&atilde;o usados no exerc&iacute;cio:</div>
                     <div class="terminal">
                         <div class="terminal-bar">
                             <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
                             <span class="term-title">bash &mdash; passo 1</span>
                         </div>
                         <div class="terminal-body">
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">touch</span> <span class="t-arg">teste.txt</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-l</span> <span class="t-arg">teste.txt</span>
-<span class="t-out">-rw-rw-r-- 1 usuario usuario 0 Jan 15 teste.txt</span>
-<span class="t-comment"># Qual &eacute; a permiss&atilde;o do dono? E dos outros?</span>
+<span class="t-comment"># Cria o diret&oacute;rio de projetos e entra nele</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">mkdir</span> <span class="t-arg">projetos</span>
+<span class="t-comment"># Cria os arquivos dentro da pasta home</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">touch</span> <span class="t-arg">relatorio.txt backup.sh confidencial.cfg</span>
+<span class="t-comment"># Lista tudo para ver as permiss&otilde;es padr&atilde;o criadas pelo sistema</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-l</span>
                         </div>
+                    </div>
+                    <div class="tip-box" style="margin-top:.75em;">
+                        <p>💡 Observe as permiss&otilde;es padr&atilde;o que o sistema atribuiu. Elas at&ecirc;ndem &agrave; pol&iacute;tica da TechBR? Anote o que precisa ser ajustado em cada arquivo.</p>
                     </div>
                 </div>
             </div>
@@ -345,23 +364,22 @@
             <div class="prat-step">
                 <div class="step-num">2</div>
                 <div class="step-body">
-                    <div class="step-label">Adicionar e remover permiss&atilde;o com modo simb&oacute;lico</div>
-                    <div class="step-desc">Use <code>chmod</code> simb&oacute;lico para adicionar execu&ccedil;&atilde;o ao dono e remover escrita do grupo:</div>
+                    <div class="step-label">Configurar permiss&otilde;es do <code>relatorio.txt</code></div>
+                    <div class="step-desc">Pol&iacute;tica: dono l&ecirc; e escreve (<code>rw-</code>); grupo e outros s&oacute; leem (<code>r--</code>). Use o <strong>modo octal</strong>:</div>
                     <div class="terminal">
                         <div class="terminal-bar">
                             <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
                             <span class="term-title">bash &mdash; passo 2</span>
                         </div>
                         <div class="terminal-body">
-<span class="t-comment"># Adiciona execu&ccedil;&atilde;o ao usu&aacute;rio dono</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">chmod</span> <span class="t-arg">u+x teste.txt</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-l</span> <span class="t-arg">teste.txt</span>
-<span class="t-out">-rwxrw-r-- 1 usuario usuario 0 Jan 15 teste.txt</span>
-<span class="t-comment"># Remove escrita do grupo</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">chmod</span> <span class="t-arg">g-w teste.txt</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-l</span> <span class="t-arg">teste.txt</span>
-<span class="t-out">-rwxr--r-- 1 usuario usuario 0 Jan 15 teste.txt</span>
+<span class="t-comment"># Calcule: dono=rw-(6), grupo=r--(4), outros=r--(4) &rarr; octal 644</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">chmod</span> <span class="t-arg">644 relatorio.txt</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-l</span> <span class="t-arg">relatorio.txt</span>
+<span class="t-out">-rw-r--r-- 1 usuario usuario 0 Jan 15 relatorio.txt</span>
                         </div>
+                    </div>
+                    <div class="highlight-box" style="margin-top:.75em;">
+                        <p><strong>Verifique:</strong> A sa&iacute;da deve mostrar exatamente <code>-rw-r--r--</code>. O primeiro grupo (dono) tem <code>rw-</code>, os demais t&ecirc;m <code>r--</code>.</p>
                     </div>
                 </div>
             </div>
@@ -369,23 +387,22 @@
             <div class="prat-step">
                 <div class="step-num">3</div>
                 <div class="step-body">
-                    <div class="step-label">Definir permiss&otilde;es com modo octal</div>
-                    <div class="step-desc">Use o modo octal para definir permiss&otilde;es de uma vez. Lembre: r=4, w=2, x=1:</div>
+                    <div class="step-label">Configurar permiss&otilde;es do <code>backup.sh</code></div>
+                    <div class="step-desc">Pol&iacute;tica: dono tem tudo (<code>rwx</code>); grupo l&ecirc; e executa (<code>r-x</code>); outros sem acesso (<code>---</code>). Use o <strong>modo octal</strong>:</div>
                     <div class="terminal">
                         <div class="terminal-bar">
                             <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
                             <span class="term-title">bash &mdash; passo 3</span>
                         </div>
                         <div class="terminal-body">
-<span class="t-comment"># 644: dono=rw-(6), grupo=r--(4), outros=r--(4)</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">chmod</span> <span class="t-arg">644 teste.txt</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-l</span> <span class="t-arg">teste.txt</span>
-<span class="t-out">-rw-r--r-- 1 usuario usuario 0 Jan 15 teste.txt</span>
-<span class="t-comment"># 754: dono=rwx(7), grupo=r-x(5), outros=r--(4)</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">chmod</span> <span class="t-arg">754 teste.txt</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-l</span> <span class="t-arg">teste.txt</span>
-<span class="t-out">-rwxr-xr-- 1 usuario usuario 0 Jan 15 teste.txt</span>
+<span class="t-comment"># Calcule: dono=rwx(7), grupo=r-x(5), outros=---(0) &rarr; octal 750</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">chmod</span> <span class="t-arg">750 backup.sh</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-l</span> <span class="t-arg">backup.sh</span>
+<span class="t-out">-rwxr-x--- 1 usuario usuario 0 Jan 15 backup.sh</span>
                         </div>
+                    </div>
+                    <div class="highlight-box" style="margin-top:.75em;">
+                        <p><strong>Verifique:</strong> A sa&iacute;da deve mostrar <code>-rwxr-x---</code>. Note os tr&ecirc;s tra&ccedil;os no final &mdash; outros usu&aacute;rios n&atilde;o t&ecirc;m nenhuma permiss&atilde;o.</p>
                     </div>
                 </div>
             </div>
@@ -393,23 +410,23 @@
             <div class="prat-step">
                 <div class="step-num">4</div>
                 <div class="step-body">
-                    <div class="step-label">Criar um diret&oacute;rio e comparar permiss&otilde;es</div>
-                    <div class="step-desc">Diret&oacute;rios recebem permiss&otilde;es diferentes de arquivos. Observe o <code>d</code> no in&iacute;cio:</div>
+                    <div class="step-label">Configurar permiss&otilde;es do diret&oacute;rio <code>projetos/</code></div>
+                    <div class="step-desc">Pol&iacute;tica: dono tem tudo (<code>rwx</code>); grupo entra e lista (<code>r-x</code>); outros sem acesso (<code>---</code>). Use o <strong>modo simb&oacute;lico</strong> desta vez:</div>
                     <div class="terminal">
                         <div class="terminal-bar">
                             <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
                             <span class="term-title">bash &mdash; passo 4</span>
                         </div>
                         <div class="terminal-body">
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">mkdir</span> <span class="t-arg">minha_pasta</span>
+<span class="t-comment"># Define exatamente: dono=rwx, grupo=r-x, outros=nada</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">chmod</span> <span class="t-arg">u=rwx,g=rx,o=</span> <span class="t-arg">projetos</span>
 <span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-l</span>
-<span class="t-out">drwxrwxr-x 2 usuario usuario 4096 Jan 15 minha_pasta</span>
-<span class="t-out">-rwxr-xr-- 1 usuario usuario&nbsp;&nbsp;&nbsp;&nbsp;0 Jan 15 teste.txt</span>
-<span class="t-comment"># Aplique 755 no diret&oacute;rio e confirme</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">chmod</span> <span class="t-arg">755 minha_pasta</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-l</span>
-<span class="t-out">drwxr-xr-x 2 usuario usuario 4096 Jan 15 minha_pasta</span>
+<span class="t-out">drwxr-x--- 2 usuario usuario 4096 Jan 15 projetos</span>
+<span class="t-comment"># O 'd' no in&iacute;cio indica que &eacute; um diret&oacute;rio</span>
                         </div>
+                    </div>
+                    <div class="tip-box" style="margin-top:.75em;">
+                        <p>💡 Para diret&oacute;rios, a permiss&atilde;o <code>x</code> significa poder <strong>entrar</strong> (cd) no diret&oacute;rio, e <code>r</code> significa poder <strong>listar</strong> (ls) o conte&uacute;do.</p>
                     </div>
                 </div>
             </div>
@@ -417,23 +434,22 @@
             <div class="prat-step">
                 <div class="step-num">5</div>
                 <div class="step-body">
-                    <div class="step-label">Definir permiss&otilde;es iguais para todos com <code>=</code></div>
-                    <div class="step-desc">Use o operador <code>=</code> para definir exatamente o que cada grupo pode fazer:</div>
+                    <div class="step-label">Configurar permiss&otilde;es do <code>confidencial.cfg</code></div>
+                    <div class="step-desc">Pol&iacute;tica: somente o dono l&ecirc; e escreve (<code>rw-</code>); grupo e outros sem acesso (<code>---</code>). Use o <strong>modo octal</strong>:</div>
                     <div class="terminal">
                         <div class="terminal-bar">
                             <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
                             <span class="term-title">bash &mdash; passo 5</span>
                         </div>
                         <div class="terminal-body">
-<span class="t-comment"># D&aacute; leitura a todos (ugo=r)</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">chmod</span> <span class="t-arg">o=r teste.txt</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-l</span> <span class="t-arg">teste.txt</span>
-<span class="t-comment"># Concede todas as permiss&otilde;es a todos</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">chmod</span> <span class="t-arg">ugo=rwx teste.txt</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-l</span> <span class="t-arg">teste.txt</span>
-<span class="t-out">-rwxrwxrwx 1 usuario usuario 0 Jan 15 teste.txt</span>
-<span class="t-comment"># Qual &eacute; o valor octal equivalente a rwxrwxrwx?</span>
+<span class="t-comment"># Calcule: dono=rw-(6), grupo=---(0), outros=---(0) &rarr; octal 600</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">chmod</span> <span class="t-arg">600 confidencial.cfg</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-l</span> <span class="t-arg">confidencial.cfg</span>
+<span class="t-out">-rw------- 1 usuario usuario 0 Jan 15 confidencial.cfg</span>
                         </div>
+                    </div>
+                    <div class="alert-box" style="margin-top:.75em;">
+                        <p>⚠️ <strong>Aten&ccedil;&atilde;o:</strong> O octal <code>600</code> &eacute; cl&aacute;ssico para chaves SSH, tokens e arquivos de configura&ccedil;&atilde;o sens&iacute;veis. Decore esse valor!</p>
                     </div>
                 </div>
             </div>
@@ -441,26 +457,112 @@
             <div class="prat-step">
                 <div class="step-num">6</div>
                 <div class="step-body">
-                    <div class="step-label">Limpar: remover os arquivos criados</div>
-                    <div class="step-desc">Remova o arquivo e o diret&oacute;rio de teste e confirme que foram apagados:</div>
+                    <div class="step-label">Auditoria final: verificar todas as permiss&otilde;es de uma vez</div>
+                    <div class="step-desc">Liste todos os arquivos e o diret&oacute;rio juntos e confirme se cada um atende &agrave; pol&iacute;tica da TechBR:</div>
                     <div class="terminal">
                         <div class="terminal-bar">
                             <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                            <span class="term-title">bash &mdash; passo 6</span>
+                            <span class="term-title">bash &mdash; passo 6 (resultado esperado)</span>
                         </div>
                         <div class="terminal-body">
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">rm</span> <span class="t-arg">teste.txt</span>
-<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">rmdir</span> <span class="t-arg">minha_pasta</span>
 <span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-l</span>
-<span class="t-comment"># Os arquivos n&atilde;o devem mais aparecer na listagem</span>
+<span class="t-out">total 4</span>
+<span class="t-out">-rw------- 1 usuario usuario    0 Jan 15 confidencial.cfg</span>
+<span class="t-out">drwxr-x--- 2 usuario usuario 4096 Jan 15 projetos</span>
+<span class="t-out">-rw-r--r-- 1 usuario usuario    0 Jan 15 relatorio.txt</span>
+<span class="t-out">-rwxr-x--- 1 usuario usuario    0 Jan 15 backup.sh</span>
+<span class="t-comment"># Compare linha a linha com a pol&iacute;tica da TechBR.</span>
+<span class="t-comment"># Sua sa&iacute;da bate com o esperado acima?</span>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <div class="prat-step">
+                <div class="step-num">7</div>
+                <div class="step-body">
+                    <div class="step-label">Desafio extra: alterar permiss&atilde;o com modo simb&oacute;lico</div>
+                    <div class="step-desc">O gerente pediu para adicionar permiss&atilde;o de escrita do grupo no <code>relatorio.txt</code> <strong>sem alterar</strong> as outras permiss&otilde;es. Qual comando usar?</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash &mdash; desafio</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-comment"># Adiciona (+) escrita (w) ao grupo (g) sem mudar nada mais</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">chmod</span> <span class="t-arg">g+w relatorio.txt</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-l</span> <span class="t-arg">relatorio.txt</span>
+<span class="t-out">-rw-rw-r-- 1 usuario usuario 0 Jan 15 relatorio.txt</span>
+<span class="t-comment"># Agora desfazendo: remove escrita do grupo</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">chmod</span> <span class="t-arg">g-w relatorio.txt</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-l</span> <span class="t-arg">relatorio.txt</span>
+<span class="t-out">-rw-r--r-- 1 usuario usuario 0 Jan 15 relatorio.txt</span>
+<span class="t-comment"># De volta ao estado original da pol&iacute;tica.</span>
+                        </div>
+                    </div>
+                    <div class="tip-box" style="margin-top:.75em;">
+                        <p>💡 O modo simb&oacute;lico com <code>+</code> e <code>-</code> &eacute; ideal para ajustes pontuais: voc&ecirc; n&atilde;o precisa recalcular todo o octal &mdash; s&oacute; muda o que precisa.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="prat-step">
+                <div class="step-num">8</div>
+                <div class="step-body">
+                    <div class="step-label">Limpeza: remover os arquivos criados</div>
+                    <div class="step-desc">Ap&oacute;s tirar os screenshots, remova o diret&oacute;rio e os arquivos de teste:</div>
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                            <span class="term-title">bash &mdash; passo 8</span>
+                        </div>
+                        <div class="terminal-body">
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">rm</span> <span class="t-arg">relatorio.txt backup.sh confidencial.cfg</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">rmdir</span> <span class="t-arg">projetos</span>
+<span class="t-prompt">usuario@servidor:~$</span> <span class="t-cmd">ls</span> <span class="t-flag">-l</span>
+<span class="t-comment"># Nenhum dos arquivos criados deve aparecer na listagem</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
         <div class="prat-observe">
-            <strong>📌 Para refletir:</strong> Cada arquivo no Linux nasce com permiss&otilde;es autom&aacute;ticas. Saber ler e ajustar essas permiss&otilde;es &eacute; essencial para garantir a seguran&ccedil;a do sistema &mdash; nem mais acesso do que o necess&aacute;rio, nem menos do que o suficiente para o trabalho. Esse princ&iacute;pio se chama <em>m&iacute;nimo privil&eacute;gio</em>.
+            <strong>📌 Tabela de refer&ecirc;ncia &mdash; Pol&iacute;tica TechBR</strong>
+            <table class="cmp-table" style="margin-top:.75em;">
+                <tr>
+                    <th>Arquivo / Diret&oacute;rio</th>
+                    <th>Octal</th>
+                    <th>Simb&oacute;lico</th>
+                    <th>Regra aplicada</th>
+                </tr>
+                <tr>
+                    <td><code>relatorio.txt</code></td>
+                    <td><strong>644</strong></td>
+                    <td>-rw-r--r--</td>
+                    <td>Dono edita; todos leem</td>
+                </tr>
+                <tr>
+                    <td><code>backup.sh</code></td>
+                    <td><strong>750</strong></td>
+                    <td>-rwxr-x---</td>
+                    <td>Dono tudo; grupo executa; outros nada</td>
+                </tr>
+                <tr>
+                    <td><code>projetos/</code></td>
+                    <td><strong>750</strong></td>
+                    <td>drwxr-x---</td>
+                    <td>Dono tudo; grupo entra/lista; outros nada</td>
+                </tr>
+                <tr>
+                    <td><code>confidencial.cfg</code></td>
+                    <td><strong>600</strong></td>
+                    <td>-rw-------</td>
+                    <td>Somente o dono acessa</td>
+                </tr>
+            </table>
+            <p style="margin-top:.75em;">Esse cen&aacute;rio reflete a realidade de servidores de produ&ccedil;&atilde;o: cada arquivo recebe exatamente o acesso que precisa &mdash; nem mais, nem menos. Esse princ&iacute;pio chama-se <em>m&iacute;nimo privil&eacute;gio</em>.</p>
         </div>
 
         <div class="ex-actions">
