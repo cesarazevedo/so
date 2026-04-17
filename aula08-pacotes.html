@@ -355,6 +355,165 @@
             .clean-pipeline{ grid-template-columns: 1fr; }
             .apt-grid      { grid-template-columns: 1fr 1fr; }
         }
+
+        /* ── ANIMAÇÕES DE SCROLL ─────────────────────────────── */
+
+        /* Hero: entra ao carregar a página */
+        @keyframes heroFadeDown {
+            from { opacity: 0; transform: translateY(-18px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes heroBounceIn {
+            0%   { opacity: 0; transform: scale(.78) translateY(10px); }
+            65%  { transform: scale(1.07) translateY(-3px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .lesson-hero .hero-badge { animation: heroFadeDown .45s ease .05s both; }
+        .lesson-hero .hero-title { animation: heroFadeDown .50s ease .18s both; }
+        .lesson-hero .hero-sub   { animation: heroFadeDown .45s ease .32s both; }
+        .lesson-hero .stat-item:nth-child(1) { animation: heroBounceIn .42s ease .46s both; }
+        .lesson-hero .stat-item:nth-child(2) { animation: heroBounceIn .42s ease .56s both; }
+        .lesson-hero .stat-item:nth-child(3) { animation: heroBounceIn .42s ease .66s both; }
+        .lesson-hero .stat-item:nth-child(4) { animation: heroBounceIn .42s ease .76s both; }
+
+        /* Cards: invisíveis até JS adicionar .is-visible */
+        .content-card {
+            opacity: 0;
+            transform: translateY(36px);
+            transition: opacity .6s ease,
+                        transform .6s cubic-bezier(.22, 1, .36, 1),
+                        box-shadow .28s ease;
+        }
+        .content-card.is-visible       { opacity: 1; transform: translateY(0); }
+        .content-card.is-visible:hover {
+            box-shadow: 0 14px 44px rgba(0, 0, 0, .10);
+            transform: translateY(-3px);
+        }
+
+        /* Itens internos: invisíveis até JS adicionar .stagger-children ao card pai */
+        .content-card .pkg-part,
+        .content-card .repo-type,
+        .content-card .rf-box,
+        .content-card .rf-arrow,
+        .content-card .tool-box,
+        .content-card .uc-box,
+        .content-card .rl-item,
+        .content-card .dpkg-flag,
+        .content-card .clean-step,
+        .content-card .apt-card,
+        .content-card .prat-step { opacity: 0; transform: translateY(14px); }
+
+        .content-card.stagger-children .pkg-part,
+        .content-card.stagger-children .repo-type,
+        .content-card.stagger-children .rf-box,
+        .content-card.stagger-children .rf-arrow,
+        .content-card.stagger-children .tool-box,
+        .content-card.stagger-children .uc-box,
+        .content-card.stagger-children .rl-item,
+        .content-card.stagger-children .dpkg-flag,
+        .content-card.stagger-children .clean-step,
+        .content-card.stagger-children .apt-card,
+        .content-card.stagger-children .prat-step {
+            opacity: 1; transform: none;
+            transition: opacity .36s ease, transform .36s cubic-bezier(.22, 1, .36, 1);
+        }
+
+        /* Delays de stagger por grupo de elemento */
+        .content-card.stagger-children .pkg-part:nth-child(1)   { transition-delay: .00s; }
+        .content-card.stagger-children .pkg-part:nth-child(2)   { transition-delay: .07s; }
+        .content-card.stagger-children .pkg-part:nth-child(3)   { transition-delay: .14s; }
+        .content-card.stagger-children .pkg-part:nth-child(4)   { transition-delay: .21s; }
+        .content-card.stagger-children .pkg-part:nth-child(5)   { transition-delay: .28s; }
+        .content-card.stagger-children .pkg-part:nth-child(6)   { transition-delay: .35s; }
+
+        .content-card.stagger-children .repo-type:nth-child(1)  { transition-delay: .00s; }
+        .content-card.stagger-children .repo-type:nth-child(2)  { transition-delay: .08s; }
+        .content-card.stagger-children .repo-type:nth-child(3)  { transition-delay: .16s; }
+        .content-card.stagger-children .repo-type:nth-child(4)  { transition-delay: .24s; }
+
+        /* repo-flow: rf-box nas posições 1,3,5 — rf-arrow nas 2,4 */
+        .content-card.stagger-children .rf-box:nth-child(1)     { transition-delay: .00s; }
+        .content-card.stagger-children .rf-arrow:nth-child(2)   { transition-delay: .10s; }
+        .content-card.stagger-children .rf-box:nth-child(3)     { transition-delay: .20s; }
+        .content-card.stagger-children .rf-arrow:nth-child(4)   { transition-delay: .30s; }
+        .content-card.stagger-children .rf-box:nth-child(5)     { transition-delay: .40s; }
+
+        .content-card.stagger-children .tool-box:nth-child(1)   { transition-delay: .00s; }
+        .content-card.stagger-children .tool-box:nth-child(2)   { transition-delay: .10s; }
+
+        .content-card.stagger-children .uc-box:nth-child(1)     { transition-delay: .00s; }
+        .content-card.stagger-children .uc-box:nth-child(2)     { transition-delay: .10s; }
+
+        .content-card.stagger-children .rl-item:nth-child(1)    { transition-delay: .00s; }
+        .content-card.stagger-children .rl-item:nth-child(2)    { transition-delay: .09s; }
+        .content-card.stagger-children .rl-item:nth-child(3)    { transition-delay: .18s; }
+
+        .content-card.stagger-children .dpkg-flag:nth-child(1)  { transition-delay: .00s; }
+        .content-card.stagger-children .dpkg-flag:nth-child(2)  { transition-delay: .06s; }
+        .content-card.stagger-children .dpkg-flag:nth-child(3)  { transition-delay: .12s; }
+        .content-card.stagger-children .dpkg-flag:nth-child(4)  { transition-delay: .18s; }
+        .content-card.stagger-children .dpkg-flag:nth-child(5)  { transition-delay: .24s; }
+        .content-card.stagger-children .dpkg-flag:nth-child(6)  { transition-delay: .30s; }
+
+        .content-card.stagger-children .clean-step:nth-child(1) { transition-delay: .00s; }
+        .content-card.stagger-children .clean-step:nth-child(2) { transition-delay: .10s; }
+        .content-card.stagger-children .clean-step:nth-child(3) { transition-delay: .20s; }
+
+        .content-card.stagger-children .apt-card:nth-child(1)   { transition-delay: .00s; }
+        .content-card.stagger-children .apt-card:nth-child(2)   { transition-delay: .05s; }
+        .content-card.stagger-children .apt-card:nth-child(3)   { transition-delay: .10s; }
+        .content-card.stagger-children .apt-card:nth-child(4)   { transition-delay: .15s; }
+        .content-card.stagger-children .apt-card:nth-child(5)   { transition-delay: .20s; }
+        .content-card.stagger-children .apt-card:nth-child(6)   { transition-delay: .25s; }
+        .content-card.stagger-children .apt-card:nth-child(7)   { transition-delay: .30s; }
+        .content-card.stagger-children .apt-card:nth-child(8)   { transition-delay: .35s; }
+        .content-card.stagger-children .apt-card:nth-child(9)   { transition-delay: .40s; }
+
+        .content-card.stagger-children .prat-step:nth-child(1)  { transition-delay: .00s; }
+        .content-card.stagger-children .prat-step:nth-child(2)  { transition-delay: .08s; }
+        .content-card.stagger-children .prat-step:nth-child(3)  { transition-delay: .16s; }
+        .content-card.stagger-children .prat-step:nth-child(4)  { transition-delay: .24s; }
+        .content-card.stagger-children .prat-step:nth-child(5)  { transition-delay: .32s; }
+
+        /* Mobile: restaura rotação da seta após animação */
+        @media (max-width: 768px) {
+            .content-card.stagger-children .rf-arrow { transform: rotate(90deg); }
+        }
+
+        /* Modo slide: desativa transições e força visibilidade */
+        body.slide-active .content-card { transition: none; }
+        body.slide-active .content-card.slide-visible,
+        body.slide-active .content-card.is-visible     { opacity: 1; }
+        body.slide-active .content-card.slide-visible .pkg-part,
+        body.slide-active .content-card.slide-visible .repo-type,
+        body.slide-active .content-card.slide-visible .rf-box,
+        body.slide-active .content-card.slide-visible .rf-arrow,
+        body.slide-active .content-card.slide-visible .tool-box,
+        body.slide-active .content-card.slide-visible .uc-box,
+        body.slide-active .content-card.slide-visible .rl-item,
+        body.slide-active .content-card.slide-visible .dpkg-flag,
+        body.slide-active .content-card.slide-visible .clean-step,
+        body.slide-active .content-card.slide-visible .apt-card,
+        body.slide-active .content-card.slide-visible .prat-step {
+            opacity: 1; transform: none; transition: none;
+        }
+
+        /* Impressão / prefers-reduced-motion: sem animações */
+        @media print, (prefers-reduced-motion: reduce) {
+            .content-card,
+            .content-card .pkg-part,   .content-card .repo-type,
+            .content-card .rf-box,     .content-card .rf-arrow,
+            .content-card .tool-box,   .content-card .uc-box,
+            .content-card .rl-item,    .content-card .dpkg-flag,
+            .content-card .clean-step, .content-card .apt-card,
+            .content-card .prat-step,
+            .lesson-hero .hero-badge,  .lesson-hero .hero-title,
+            .lesson-hero .hero-sub,    .lesson-hero .stat-item {
+                opacity: 1 !important; transform: none !important;
+                animation: none !important; transition: none !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1148,5 +1307,31 @@
 <script src="exercise-drag.js"></script>
 <script src="exercise-print.js"></script>
 <script src="exercise-mc.js"></script>
+<script>
+(function () {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    var cards = Array.from(document.querySelectorAll('.content-card'));
+
+    function revealAll() {
+        cards.forEach(function (c) { c.classList.add('is-visible', 'stagger-children'); });
+    }
+
+    var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+            if (!e.isIntersecting) return;
+            var card = e.target;
+            card.classList.add('is-visible');
+            setTimeout(function () { card.classList.add('stagger-children'); }, 320);
+            io.unobserve(card);
+        });
+    }, { threshold: 0.07, rootMargin: '0px 0px -30px 0px' });
+
+    cards.forEach(function (c) { io.observe(c); });
+
+    var slideBtn = document.getElementById('slideToggleBtn');
+    if (slideBtn) slideBtn.addEventListener('click', revealAll);
+}());
+</script>
 </body>
 </html>
