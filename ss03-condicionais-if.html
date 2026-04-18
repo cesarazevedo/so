@@ -180,23 +180,6 @@ body.slide-active .content-card.is-visible:hover {
             </div>
         </div>
 
-        <h3>Diagrama de fluxo</h3>
-        <div class="flow-if">
-            <div class="flow-diamond">&#x2753; Condição</div>
-            <div class="flow-branch">
-                <div class="flow-branch-item">
-                    <span class="flow-label">Verdadeiro</span>
-                    <div class="flow-arrow">&#x2198;</div>
-                    <div class="flow-action-true">&#x2705; Executa bloco then</div>
-                </div>
-                <div class="flow-branch-item">
-                    <span class="flow-label">Falso</span>
-                    <div class="flow-arrow">&#x2199;</div>
-                    <div class="flow-action-false">&#x23ED;&#xFE0F; Pula ou executa else</div>
-                </div>
-            </div>
-        </div>
-
         <div class="viz-wrap">
             <div class="viz-title">Visualização animada — fluxo de decisão if / elif / else</div>
             <svg viewBox="0 0 460 258" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">
@@ -336,36 +319,13 @@ body.slide-active .content-card.is-visible:hover {
             </div>
         </div>
 
-        <h3>if/elif/else &mdash; sistema de notas</h3>
-        <div class="terminal">
-            <div class="terminal-bar">
-                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">notas.sh</span>
-            </div>
-            <div class="terminal-body">
-<span class="t-shebang">#!/bin/bash</span>
-
-<span class="t-var">NOTA</span>=<span class="t-str">65</span>
-
-<span class="t-kw">if</span> [ <span class="t-var">$NOTA</span> <span class="t-flag">-ge</span> <span class="t-str">70</span> ]
-<span class="t-kw">then</span>
-    <span class="t-cmd">echo</span> <span class="t-str">"Aprovado! 🎉"</span>
-<span class="t-kw">elif</span> [ <span class="t-var">$NOTA</span> <span class="t-flag">-ge</span> <span class="t-str">50</span> ]
-<span class="t-kw">then</span>
-    <span class="t-cmd">echo</span> <span class="t-str">"Recuperação 📚"</span>
-<span class="t-kw">else</span>
-    <span class="t-cmd">echo</span> <span class="t-str">"Reprovado 😞"</span>
-<span class="t-kw">fi</span>
-<span class="t-out">Recuperação 📚</span>
-            </div>
-        </div>
     </div>
 
-    <!-- CARD 3 — Operadores Numéricos -->
+    <!-- CARD 3 — Operadores (Numérico + String + Arquivo) -->
     <div class="content-card">
-        <h2>&#x1F522; Operadores Num&eacute;ricos</h2>
-        <p>Use estes operadores para comparar <strong>n&uacute;meros inteiros</strong> dentro dos colchetes <code>[ ]</code>.</p>
+        <h2>&#x1F4CA; Operadores de Compara&ccedil;&atilde;o</h2>
 
+        <h3>&#x1F522; Num&eacute;ricos — para comparar inteiros</h3>
         <table class="cmp-table">
             <thead>
                 <tr><th>Operador</th><th>Significado</th><th>Exemplo</th></tr>
@@ -379,107 +339,85 @@ body.slide-active .content-card.is-visible:hover {
                 <tr><td><code>-le</code></td><td>Menor ou igual (&le;)</td><td><code>[ 3 -le 5 ]</code></td></tr>
             </tbody>
         </table>
-
-        <div class="tip-box">
-            <p>&#x1F4A1; <strong>Dica de memoriza&ccedil;&atilde;o:</strong> <code>eq</code> = equal &bull; <code>ne</code> = not equal &bull; <code>gt</code> = greater than &bull; <code>lt</code> = lower than &bull; <code>ge</code>/<code>le</code> = or equal</p>
+        <div class="tip-box" style="margin-bottom:1rem">
+            <p>&#x1F4A1; <strong>Dica:</strong> <code>eq</code> = equal &bull; <code>ne</code> = not equal &bull; <code>gt</code> = greater than &bull; <code>lt</code> = lower than &bull; <code>ge</code>/<code>le</code> = or equal</p>
         </div>
-    </div>
 
-    <!-- CARD 4 — Operadores de String -->
-    <div class="content-card">
-        <h2>&#x1F524; Operadores de String (Texto)</h2>
-        <p>Para comparar <strong>textos</strong>, use estes operadores. Sempre coloque vari&aacute;veis entre aspas para evitar erros com strings vazias ou com espa&ccedil;os.</p>
-
-        <table class="cmp-table">
-            <thead>
-                <tr><th>Operador</th><th>Significado</th></tr>
-            </thead>
-            <tbody>
-                <tr><td><code>=</code></td><td>Strings iguais</td></tr>
-                <tr><td><code>!=</code></td><td>Strings diferentes</td></tr>
-                <tr><td><code>-z</code></td><td>String vazia (zero length)</td></tr>
-                <tr><td><code>-n</code></td><td>String n&atilde;o vazia (non-zero)</td></tr>
-            </tbody>
-        </table>
-
-        <div class="terminal">
-            <div class="terminal-bar">
-                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">strings.sh</span>
-            </div>
-            <div class="terminal-body">
-<span class="t-comment"># Verificar senha</span>
-<span class="t-var">SENHA</span>=<span class="t-str">"abc123"</span>
-
+        <h3>&#x1F524; String (Texto) — sempre use aspas nas vari&aacute;veis</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start">
+            <table class="cmp-table">
+                <thead>
+                    <tr><th>Operador</th><th>Significado</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>=</code></td><td>Strings iguais</td></tr>
+                    <tr><td><code>!=</code></td><td>Strings diferentes</td></tr>
+                    <tr><td><code>-z</code></td><td>String vazia (zero length)</td></tr>
+                    <tr><td><code>-n</code></td><td>String n&atilde;o vazia (non-zero)</td></tr>
+                </tbody>
+            </table>
+            <div class="terminal">
+                <div class="terminal-bar">
+                    <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                    <span class="term-title">strings.sh</span>
+                </div>
+                <div class="terminal-body" style="font-size:.88em">
 <span class="t-kw">if</span> [ <span class="t-str">"$SENHA"</span> = <span class="t-str">"abc123"</span> ]
 <span class="t-kw">then</span>
     <span class="t-cmd">echo</span> <span class="t-str">"Acesso liberado! 🔓"</span>
-<span class="t-kw">else</span>
-    <span class="t-cmd">echo</span> <span class="t-str">"Senha incorreta! 🔒"</span>
 <span class="t-kw">fi</span>
 
-<span class="t-comment"># Verificar se campo está vazio</span>
 <span class="t-kw">if</span> [ <span class="t-flag">-z</span> <span class="t-str">"$NOME"</span> ]
 <span class="t-kw">then</span>
-    <span class="t-cmd">echo</span> <span class="t-str">"Nome é obrigatório!"</span>
+    <span class="t-cmd">echo</span> <span class="t-str">"Nome obrigatório!"</span>
 <span class="t-kw">fi</span>
+                </div>
             </div>
         </div>
-
-        <div class="alert-box">
-            <p>&#x26A0;&#xFE0F; <strong>Sempre use aspas em vari&aacute;veis de texto!</strong><br>
-            &#x2705; <code>[ "$VAR" = "valor" ]</code> &nbsp;&nbsp; &#x274C; <code>[ $VAR = valor ]</code><br>
-            Sem aspas, uma vari&aacute;vel vazia quebra a sintaxe do teste.</p>
+        <div class="alert-box" style="margin-top:.75rem">
+            <p>&#x26A0;&#xFE0F; <strong>Sempre use aspas em vari&aacute;veis de texto!</strong> &nbsp; &#x2705; <code>[ "$VAR" = "valor" ]</code> &nbsp; &#x274C; <code>[ $VAR = valor ]</code></p>
         </div>
-    </div>
 
-    <!-- CARD 5 — Operadores de Arquivo -->
-    <div class="content-card">
-        <h2>&#x1F4C1; Operadores de Arquivo</h2>
-        <p>Esses operadores testam <strong>propriedades de arquivos e diret&oacute;rios</strong> &mdash; essenciais para scripts que manipulam o sistema de arquivos com seguran&ccedil;a.</p>
-
-        <table class="cmp-table">
-            <thead>
-                <tr><th>Operador</th><th>Verdadeiro se&hellip;</th></tr>
-            </thead>
-            <tbody>
-                <tr><td><code>-f</code></td><td>For um arquivo regular</td></tr>
-                <tr><td><code>-d</code></td><td>For um diret&oacute;rio</td></tr>
-                <tr><td><code>-e</code></td><td>Existir (arquivo ou pasta)</td></tr>
-                <tr><td><code>-r</code></td><td>Tiver permiss&atilde;o de leitura</td></tr>
-                <tr><td><code>-w</code></td><td>Tiver permiss&atilde;o de escrita</td></tr>
-                <tr><td><code>-x</code></td><td>Tiver permiss&atilde;o de execu&ccedil;&atilde;o</td></tr>
-                <tr><td><code>-s</code></td><td>N&atilde;o estiver vazio (size &gt; 0)</td></tr>
-            </tbody>
-        </table>
-
-        <div class="terminal">
-            <div class="terminal-bar">
-                <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
-                <span class="term-title">backup.sh</span>
-            </div>
-            <div class="terminal-body">
+        <h3>&#x1F4C1; Arquivo — testa propriedades de arquivos e diret&oacute;rios</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start">
+            <table class="cmp-table">
+                <thead>
+                    <tr><th>Operador</th><th>Verdadeiro se&hellip;</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>-f</code></td><td>For um arquivo regular</td></tr>
+                    <tr><td><code>-d</code></td><td>For um diret&oacute;rio</td></tr>
+                    <tr><td><code>-e</code></td><td>Existir (arquivo ou pasta)</td></tr>
+                    <tr><td><code>-r</code></td><td>Tiver permiss&atilde;o de leitura</td></tr>
+                    <tr><td><code>-w</code></td><td>Tiver permiss&atilde;o de escrita</td></tr>
+                    <tr><td><code>-x</code></td><td>Tiver permiss&atilde;o de execu&ccedil;&atilde;o</td></tr>
+                    <tr><td><code>-s</code></td><td>N&atilde;o estiver vazio (size &gt; 0)</td></tr>
+                </tbody>
+            </table>
+            <div class="terminal">
+                <div class="terminal-bar">
+                    <div class="term-dot red"></div><div class="term-dot yellow"></div><div class="term-dot green"></div>
+                    <span class="term-title">backup.sh</span>
+                </div>
+                <div class="terminal-body" style="font-size:.88em">
 <span class="t-shebang">#!/bin/bash</span>
-
 <span class="t-var">ARQUIVO</span>=<span class="t-str">"dados.txt"</span>
 
 <span class="t-kw">if</span> [ <span class="t-flag">-f</span> <span class="t-str">"$ARQUIVO"</span> ]
 <span class="t-kw">then</span>
-    <span class="t-cmd">echo</span> <span class="t-str">"Arquivo existe! Fazendo backup..."</span>
     <span class="t-cmd">cp</span> <span class="t-str">"$ARQUIVO"</span> <span class="t-arg">backup/</span>
 <span class="t-kw">else</span>
-    <span class="t-cmd">echo</span> <span class="t-str">"Arquivo não encontrado! ❌"</span>
+    <span class="t-cmd">echo</span> <span class="t-str">"Não encontrado! ❌"</span>
 <span class="t-kw">fi</span>
 
-<span class="t-comment"># Criar pasta se não existir</span>
 <span class="t-kw">if</span> [ ! <span class="t-flag">-d</span> <span class="t-str">"backup"</span> ]
 <span class="t-kw">then</span>
     <span class="t-cmd">mkdir</span> <span class="t-arg">backup</span>
 <span class="t-kw">fi</span>
+                </div>
             </div>
         </div>
-
-        <div class="tip-box">
+        <div class="tip-box" style="margin-top:.75rem">
             <p>&#x1F4A1; Sempre verifique se arquivo ou pasta <strong>existe antes de usar</strong>. Tentar ler um arquivo inexistente gera erro e interrompe o script.</p>
         </div>
     </div>
