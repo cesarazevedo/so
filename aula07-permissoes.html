@@ -7,6 +7,83 @@
     <link rel="stylesheet" href="slide-mode.css">
     <link rel="stylesheet" href="exercise.css">
     <link rel="stylesheet" href="lesson.css">
+<style>
+    /* ── ENTRADA DOS CARDS ── */
+    @keyframes card-in { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:none; } }
+    .in-view { animation: card-in .48s ease both; }
+
+    /* ── HOVER NAS TABELAS ── */
+    .cmp-table tr:not(:first-child) { transition: background .15s; cursor: default; }
+    .cmp-table tr:not(:first-child):hover { background: rgba(99,102,241,.07); }
+    .cmp-table td code { transition: background .15s, color .15s; }
+    .cmp-table tr:not(:first-child):hover td code { background: #ede9fe; color: #4f46e5; }
+
+    /* ── VISUALIZADOR DE STRING DE PERMISSÃO ── */
+    .perm-viz { background: #f8f7ff; border-radius: 14px; padding: 20px 24px; margin: 18px 0; text-align: center; border: 1px solid #ede9fe; }
+    .perm-string { display: inline-flex; align-items: center; gap: 3px; margin-bottom: 10px; }
+    @keyframes ps-pop { from { opacity:0; transform:scale(.55); } to { opacity:1; transform:scale(1); } }
+    .ps-char {
+        width: 42px; height: 42px; border-radius: 9px;
+        display: flex; align-items: center; justify-content: center;
+        font-family: 'Consolas', monospace; font-size: 1.25em; font-weight: 900;
+        cursor: default; position: relative;
+        animation: ps-pop .3s ease backwards;
+        transition: transform .15s, box-shadow .15s;
+    }
+    .ps-char:hover { transform: scale(1.18); box-shadow: 0 4px 14px rgba(0,0,0,.14); z-index: 1; }
+    .ps-type  { background: #e2e8f0; color: #64748b; }
+    .ps-r     { background: #dbeafe; color: #1d4ed8; }
+    .ps-w     { background: #dcfce7; color: #15803d; }
+    .ps-x     { background: #fef9c3; color: #92400e; }
+    .ps-none  { background: #f1f5f9; color: #94a3b8; }
+    .ps-sep   { width: 2px; height: 42px; background: #cbd5e1; border-radius: 2px; margin: 0 5px; }
+    .perm-labels { display: inline-flex; align-items: flex-start; gap: 3px; margin-top: 7px; }
+    .pl-item { font-size: .72em; font-weight: 700; padding: 3px 0; border-radius: 20px; text-align: center; }
+    .pl-type   { width: 42px; color: #64748b; }
+    .pl-owner  { width: 133px; background: #dbeafe; color: #1d4ed8; border-radius: 8px; padding: 3px 8px; }
+    .pl-group  { width: 133px; background: #dcfce7; color: #15803d; border-radius: 8px; padding: 3px 8px; }
+    .pl-others { width: 133px; background: #ffedd5; color: #9a3412; border-radius: 8px; padding: 3px 8px; }
+    .perm-viz-note { font-size: .75em; color: #94a3b8; margin: 8px 0 0; }
+
+    /* ── CALCULADORA OCTAL ── */
+    .octal-calc { background: #f8f7ff; border-radius: 14px; padding: 20px 24px; margin: 18px 0; border: 1px solid #ede9fe; }
+    .octal-calc-title { font-size: .85em; font-weight: 700; color: #4f46e5; text-align: center; margin: 0 0 16px; }
+    .oc-row { display: flex; align-items: center; gap: 12px; margin: 9px 0; flex-wrap: wrap; }
+    .oc-label { font-size: .84em; font-weight: 700; min-width: 90px; color: #334155; }
+    .oc-bits { display: flex; gap: 6px; }
+    .oc-bit {
+        width: 42px; height: 42px; border-radius: 9px;
+        border: 2px solid #e2e8f0; background: #fff;
+        cursor: pointer; font-family: 'Consolas', monospace;
+        font-size: .95em; font-weight: 900; color: #94a3b8;
+        display: flex; align-items: center; justify-content: center;
+        transition: all .15s; user-select: none;
+    }
+    .oc-bit:hover { transform: scale(1.1); border-color: #a5b4fc; }
+    .oc-bit.on-r { background: #dbeafe; border-color: #3b82f6; color: #1d4ed8; }
+    .oc-bit.on-w { background: #dcfce7; border-color: #22c55e; color: #15803d; }
+    .oc-bit.on-x { background: #fef9c3; border-color: #f59e0b; color: #92400e; }
+    .oc-eq   { font-family: 'Consolas', monospace; color: #94a3b8; font-size: 1em; }
+    .oc-digit { font-family: 'Consolas', monospace; font-size: 1.5em; font-weight: 900; color: #6366f1; min-width: 24px; text-align: center; transition: all .2s; }
+    .oc-result { margin-top: 16px; background: #1e293b; border-radius: 12px; padding: 16px 20px; text-align: center; }
+    .oc-result-label { font-size: .75em; color: #64748b; font-family: monospace; display: block; margin-bottom: 4px; }
+    .oc-result-num { font-family: 'Consolas', monospace; font-size: 2.4em; font-weight: 900; color: #38ef7d; letter-spacing: .15em; transition: color .2s; display: block; }
+    .oc-result-sym { font-family: 'Consolas', monospace; font-size: .95em; color: #475569; display: block; margin-top: 4px; letter-spacing: .05em; }
+
+    /* ── HIGHLIGHT-BOX PULSE NA PRIMEIRA VEZ ── */
+    @keyframes hb-glow { 0%,100%{box-shadow:none} 50%{box-shadow:0 0 0 4px rgba(99,102,241,.18)} }
+    .highlight-box.glowed { animation: hb-glow 1.2s ease 1; }
+
+    /* ── SIGNAL-CARD HOVER (quiz cards) ── */
+    .signal-card { transition: transform .18s, box-shadow .18s; cursor: default; }
+    .signal-card:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 10px 28px rgba(0,0,0,.18); }
+    .state-card  { transition: transform .18s, box-shadow .18s; cursor: default; }
+    .state-card:hover  { transform: translateY(-4px); box-shadow: 0 10px 28px rgba(0,0,0,.18); }
+    .jctl-card   { transition: transform .15s; cursor: default; }
+    .jctl-card:hover   { transform: translateX(4px); }
+    .sctl-item   { transition: background .15s, border-color .15s; cursor: default; }
+    .sctl-item:hover   { background: #1e293b; }
+</style>
 </head>
 <body>
 
@@ -127,6 +204,32 @@
                 <td>--- (nenhuma)</td>
             </tr>
         </table>
+        <div class="perm-viz">
+            <div class="perm-string">
+                <div class="ps-char ps-type" title="Tipo: arquivo comum" style="animation-delay:.05s">-</div>
+                <div class="ps-char ps-r"    title="Dono: leitura"       style="animation-delay:.10s">r</div>
+                <div class="ps-char ps-w"    title="Dono: escrita"       style="animation-delay:.15s">w</div>
+                <div class="ps-char ps-none" title="Dono: sem execução"  style="animation-delay:.20s">-</div>
+                <div class="ps-sep"></div>
+                <div class="ps-char ps-r"    title="Grupo: leitura"      style="animation-delay:.25s">r</div>
+                <div class="ps-char ps-w"    title="Grupo: escrita"      style="animation-delay:.30s">w</div>
+                <div class="ps-char ps-none" title="Grupo: sem execução" style="animation-delay:.35s">-</div>
+                <div class="ps-sep"></div>
+                <div class="ps-char ps-r"    title="Outros: leitura"     style="animation-delay:.40s">r</div>
+                <div class="ps-char ps-none" title="Outros: sem escrita" style="animation-delay:.45s">-</div>
+                <div class="ps-char ps-none" title="Outros: sem execução"style="animation-delay:.50s">-</div>
+            </div>
+            <div class="perm-labels">
+                <div class="pl-item pl-type">tipo</div>
+                <div style="width:10px"></div>
+                <div class="pl-item pl-owner">👤 usuário dono</div>
+                <div style="width:12px"></div>
+                <div class="pl-item pl-group">👥 grupo dono</div>
+                <div style="width:12px"></div>
+                <div class="pl-item pl-others">🌍 outros</div>
+            </div>
+            <p class="perm-viz-note">Passe o mouse sobre cada bloco para ver o significado</p>
+        </div>
         <div class="tip-box">
             <p>💡 O tra&ccedil;o (<code>-</code>) no lugar de <code>r</code>, <code>w</code> ou <code>x</code> significa &ldquo;sem essa permiss&atilde;o&rdquo;.</p>
         </div>
@@ -204,6 +307,44 @@
             <tr><td><strong>5</strong></td><td>Leitura + execu&ccedil;&atilde;o (r-x)</td><td>4+0+1</td></tr>
             <tr><td><strong>0</strong></td><td>Nenhuma (---)</td><td>0+0+0</td></tr>
         </table>
+        <div class="octal-calc" id="octal-calc">
+            <p class="octal-calc-title">🖩 Calculadora Octal Interativa — clique nos bits para calcular</p>
+            <div class="oc-row">
+                <span class="oc-label">👤 Dono</span>
+                <div class="oc-bits">
+                    <div class="oc-bit on-r" data-group="0" data-val="4" data-perm="r">r</div>
+                    <div class="oc-bit on-w" data-group="0" data-val="2" data-perm="w">w</div>
+                    <div class="oc-bit on-x" data-group="0" data-val="1" data-perm="x">x</div>
+                </div>
+                <span class="oc-eq">=</span>
+                <span class="oc-digit" id="oc-d0">7</span>
+            </div>
+            <div class="oc-row">
+                <span class="oc-label">👥 Grupo</span>
+                <div class="oc-bits">
+                    <div class="oc-bit on-r" data-group="1" data-val="4" data-perm="r">r</div>
+                    <div class="oc-bit" data-group="1" data-val="2" data-perm="w">w</div>
+                    <div class="oc-bit on-x" data-group="1" data-val="1" data-perm="x">x</div>
+                </div>
+                <span class="oc-eq">=</span>
+                <span class="oc-digit" id="oc-d1">5</span>
+            </div>
+            <div class="oc-row">
+                <span class="oc-label">🌍 Outros</span>
+                <div class="oc-bits">
+                    <div class="oc-bit on-r" data-group="2" data-val="4" data-perm="r">r</div>
+                    <div class="oc-bit" data-group="2" data-val="2" data-perm="w">w</div>
+                    <div class="oc-bit" data-group="2" data-val="1" data-perm="x">x</div>
+                </div>
+                <span class="oc-eq">=</span>
+                <span class="oc-digit" id="oc-d2">4</span>
+            </div>
+            <div class="oc-result">
+                <span class="oc-result-label">chmod</span>
+                <span class="oc-result-num" id="oc-result-num">754</span>
+                <span class="oc-result-sym" id="oc-result-sym">arquivo</span>
+            </div>
+        </div>
         <p style="margin-top:1em;">A ordem &eacute; sempre: <strong>usu&aacute;rio dono &mdash; grupo dono &mdash; outros usu&aacute;rios</strong>.</p>
         <div class="terminal">
             <div class="terminal-bar">
@@ -577,6 +718,46 @@
 
 </div>
 
+<script>
+// Scroll reveal
+const _io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in-view'); _io.unobserve(e.target); } });
+}, { threshold: 0.08 });
+document.querySelectorAll('.content-card').forEach(c => _io.observe(c));
+
+// Octal calculator
+(function(){
+    const vals = [4, 5, 4]; // initial state for 754
+    const initOff = [[false,false,false],[false,true,false],[false,true,true]]; // bits off
+    // Build initial active state from DOM
+    function recalc(g) {
+        let sum = 0;
+        document.querySelectorAll(`.oc-bit[data-group="${g}"]`).forEach(b => {
+            if (b.classList.contains('on-r') || b.classList.contains('on-w') || b.classList.contains('on-x')) sum += +b.dataset.val;
+        });
+        document.getElementById(`oc-d${g}`).textContent = sum;
+        vals[g] = sum;
+        const num = vals.join('');
+        document.getElementById('oc-result-num').textContent = num;
+        // build symbolic
+        const sym = vals.map(v => {
+            const r = v&4?'r':'-', w = v&2?'w':'-', x = v&1?'x':'-';
+            return r+w+x;
+        }).join('');
+        document.getElementById('oc-result-sym').textContent = '-' + sym + ' arquivo';
+    }
+    document.querySelectorAll('.oc-bit').forEach(bit => {
+        bit.addEventListener('click', () => {
+            const p = bit.dataset.perm, g = bit.dataset.group;
+            const cls = 'on-'+p;
+            bit.classList.toggle(cls);
+            recalc(g);
+        });
+    });
+    // init display
+    [0,1,2].forEach(recalc);
+})();
+</script>
 <script src="slide-mode.js"></script>
 <script src="exercise-drag.js"></script>
 <script src="exercise-print.js"></script>
