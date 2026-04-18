@@ -7,6 +7,156 @@
     <link rel="stylesheet" href="slide-mode.css">
     <link rel="stylesheet" href="exercise.css">
     <link rel="stylesheet" href="lesson.css">
+<style>
+/* ══ SCROLL REVEAL (estado inicial via JS .anim-hidden) ══ */
+.content-card.anim-hidden {
+    opacity: 0; transform: translateY(28px);
+    transition: opacity .55s ease, transform .55s cubic-bezier(.22,1,.36,1), box-shadow .25s ease;
+}
+.content-card.anim-hidden.is-visible { opacity: 1; transform: none; }
+.content-card.is-visible { transition: box-shadow .25s ease; }
+.content-card.is-visible:hover { box-shadow: 0 14px 42px rgba(0,0,0,.09); transform: translateY(-2px); }
+
+/* stagger filhos */
+.content-card.anim-hidden .compare-wrong,
+.content-card.anim-hidden .compare-right,
+.content-card.anim-hidden .prat-step,
+.content-card.anim-hidden .read-flag-block { opacity:0; transform:translateY(14px); }
+
+.content-card.stagger .compare-wrong,
+.content-card.stagger .compare-right,
+.content-card.stagger .prat-step,
+.content-card.stagger .read-flag-block {
+    opacity:1; transform:none;
+    transition: opacity .36s ease, transform .36s cubic-bezier(.22,1,.36,1);
+}
+.content-card.stagger .compare-wrong      { transition-delay:.00s; }
+.content-card.stagger .compare-right      { transition-delay:.14s; }
+.content-card.stagger .prat-step:nth-child(1) { transition-delay:.00s; }
+.content-card.stagger .prat-step:nth-child(2) { transition-delay:.08s; }
+.content-card.stagger .prat-step:nth-child(3) { transition-delay:.16s; }
+.content-card.stagger .prat-step:nth-child(4) { transition-delay:.24s; }
+.content-card.stagger .prat-step:nth-child(5) { transition-delay:.32s; }
+.content-card.stagger .prat-step:nth-child(6) { transition-delay:.40s; }
+.content-card.stagger .read-flag-block:nth-child(1) { transition-delay:.00s; }
+.content-card.stagger .read-flag-block:nth-child(2) { transition-delay:.12s; }
+.content-card.stagger .read-flag-block:nth-child(3) { transition-delay:.24s; }
+
+/* ══ SLIDE MODE — preserva translate(-50%,-50%) ══ */
+body.slide-active .content-card:hover,
+body.slide-active .content-card.is-visible:hover {
+    transform: translate(-50%, -50%); box-shadow: 0 10px 40px rgba(0,0,0,.1);
+}
+
+/* ══ HOVER: compare-row ══ */
+.compare-wrong, .compare-right { transition: transform .2s, box-shadow .2s; cursor: default; }
+.compare-wrong:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 8px 22px rgba(220,38,38,.18); }
+.compare-right:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 8px 22px rgba(22,163,74,.18); }
+
+/* ══ HOVER: tabelas de referência ══ */
+.ref-table tr:not(:first-child) { transition: background .15s; cursor: default; }
+.ref-table tr:not(:first-child):hover { background: rgba(99,102,241,.07); }
+.ref-table tr:not(:first-child):hover td code { color: #4f46e5; transition: color .14s; }
+
+/* ══ EXIT CODE — cor da linha 0 (sucesso) ══ */
+.card-exit .ref-table tr:nth-child(2) td:first-child code { color: #16a34a; font-weight: 700; }
+.card-exit .ref-table tr:nth-child(3) td:first-child code,
+.card-exit .ref-table tr:nth-child(4) td:first-child code,
+.card-exit .ref-table tr:nth-child(5) td:first-child code,
+.card-exit .ref-table tr:nth-child(6) td:first-child code,
+.card-exit .ref-table tr:nth-child(7) td:first-child code { color: #dc2626; font-weight: 700; }
+.card-exit .ref-table tr:nth-child(2):hover { background: rgba(22,163,74,.08) !important; }
+.card-exit .ref-table tr:nth-child(3):hover,
+.card-exit .ref-table tr:nth-child(4):hover,
+.card-exit .ref-table tr:nth-child(5):hover,
+.card-exit .ref-table tr:nth-child(6):hover,
+.card-exit .ref-table tr:nth-child(7):hover { background: rgba(220,38,38,.06) !important; }
+
+/* ══ EXIT CODE BADGES no terminal ══ */
+.t-ok {
+    display: inline-block; background: rgba(34,197,94,.18);
+    color: #15803d; border-radius: 5px; padding: 0 7px; font-weight: 700;
+    border: 1px solid rgba(34,197,94,.3);
+}
+.t-err {
+    display: inline-block; background: rgba(239,68,68,.13);
+    color: #dc2626; border-radius: 5px; padding: 0 7px;
+    border: 1px solid rgba(239,68,68,.25);
+}
+
+/* ══ SHEBANG GLOW ══ */
+@keyframes shebang-glow {
+    0%,100% { text-shadow: none; }
+    50%      { text-shadow: 0 0 12px rgba(99,102,241,.6); }
+}
+.t-shebang { animation: shebang-glow 2.8s ease-in-out infinite; }
+
+/* ══ READ FLAG BLOCKS — agrupamento visual ══ */
+.read-flag-block {
+    border: 1px solid #e2e8f0; border-radius: 12px;
+    padding: 14px 18px 10px; margin: 10px 0;
+    background: #f8fafc;
+    transition: border-color .2s, box-shadow .2s;
+}
+.read-flag-block:hover { border-color: #c7d2fe; box-shadow: 0 4px 16px rgba(99,102,241,.09); }
+.read-flag-block > h3 {
+    margin: 0 0 8px !important; padding: 0 !important;
+    font-size: .97em !important; display: flex; align-items: center; gap: 6px;
+}
+.read-flag-block.rfb-basic  { border-left: 4px solid #6366f1; }
+.read-flag-block.rfb-p      { border-left: 4px solid #0ea5e9; }
+.read-flag-block.rfb-s      { border-left: 4px solid #8b5cf6; }
+
+/* ══ SCOPE PILLS nas tabelas de variáveis especiais ══ */
+.var-scope-env, .var-scope-script {
+    display: inline-block; font-size: .7em; font-weight: 700;
+    padding: 1px 7px; border-radius: 20px; margin-left: 6px; vertical-align: middle;
+}
+.var-scope-env    { background: #dbeafe; color: #1d4ed8; }
+.var-scope-script { background: #fef3c7; color: #92400e; }
+
+/* ══ TERMINAL COPY ══ */
+.terminal { position: relative; }
+.term-copy {
+    position: absolute; top: 10px; right: 10px;
+    font-size: .68em; color: #475569; background: #1e293b;
+    border: 1px solid #334155; border-radius: 6px;
+    padding: 2px 8px; cursor: pointer; opacity: 0;
+    transition: opacity .2s;
+}
+.terminal:hover .term-copy { opacity: 1; }
+.term-copy.copied { color: #34d399; border-color: #34d399; }
+
+/* ══ KBD VISUAL ══ */
+kbd {
+    display: inline-block;
+    background: #1e293b; color: #e2e8f0;
+    border: 1px solid #475569; border-bottom: 3px solid #334155;
+    border-radius: 5px; padding: 1px 7px;
+    font-family: 'Consolas', monospace; font-size: .85em;
+    font-weight: 700; line-height: 1.6;
+    transition: transform .1s, border-bottom-width .1s; cursor: default;
+}
+kbd:hover { transform: translateY(2px); border-bottom-width: 1px; }
+
+/* ══ HIGHLIGHT BOX PULSE NA ENTRADA ══ */
+@keyframes hb-glow {
+    0%,100% { box-shadow: none; }
+    45%      { box-shadow: 0 0 0 4px rgba(99,102,241,.18); }
+}
+.highlight-box.glowed { animation: hb-glow 1.3s ease 1; }
+
+/* ══ SUBST MODERN vs BACKTICK — visual diff ══ */
+.t-var.backtick-old { color: #94a3b8 !important; text-decoration: line-through rgba(148,163,184,.5); }
+
+/* ══ PRINT / REDUCED MOTION ══ */
+@media print, (prefers-reduced-motion: reduce) {
+    .content-card, .content-card .compare-wrong, .content-card .compare-right,
+    .content-card .prat-step, .content-card .read-flag-block,
+    .t-shebang { opacity:1 !important; transform:none !important;
+        animation:none !important; transition:none !important; }
+}
+</style>
 </head>
 <body>
 
@@ -173,6 +323,7 @@
         <h2>&#x1F3A4; Leitura de Input com <code>read</code></h2>
         <p>O comando <code>read</code> pausa o script e aguarda que o usu&aacute;rio digite algo, armazenando o valor em uma vari&aacute;vel. &Eacute; a principal forma de criar scripts interativos.</p>
 
+        <div class="read-flag-block rfb-basic">
         <h3>&#x1F4E5; Uso b&aacute;sico</h3>
         <div class="terminal">
             <div class="terminal-bar">
@@ -191,7 +342,9 @@
 <span class="t-out">Olá, João!</span>
             </div>
         </div>
+        </div>
 
+        <div class="read-flag-block rfb-p">
         <h3>&#x26A1; <code>read -p</code> — prompt na mesma linha</h3>
         <div class="terminal">
             <div class="terminal-bar">
@@ -206,7 +359,9 @@
 <span class="t-cmd">echo</span> <span class="t-string">"Bem-vindo, <span class="t-var">$NOME</span> do curso <span class="t-var">$CURSO</span>!"</span>
             </div>
         </div>
+        </div>
 
+        <div class="read-flag-block rfb-s">
         <h3>&#x1F512; <code>read -s</code> — entrada silenciosa (senha)</h3>
         <div class="terminal">
             <div class="terminal-bar">
@@ -221,6 +376,7 @@
 <span class="t-cmd">echo</span>   <span class="t-comment"># pula linha após senha oculta</span>
 <span class="t-cmd">echo</span> <span class="t-string">"Autenticando <span class="t-var">$USUARIO</span>..."</span>
             </div>
+        </div>
         </div>
 
         <div class="tip-box">
@@ -290,7 +446,7 @@
     </div>
 
     <!-- CARD 6 — Exit codes -->
-    <div class="content-card">
+    <div class="content-card card-exit">
         <h2>&#x1F6A6; Exit Codes &mdash; C&oacute;digos de Sa&iacute;da</h2>
         <p>Todo comando Linux retorna um <strong>exit code</strong> (c&oacute;digo de sa&iacute;da) ao terminar: <code>0</code> indica <strong>sucesso</strong>; qualquer valor entre <code>1</code> e <code>255</code> indica algum tipo de <strong>erro ou condi&ccedil;&atilde;o especial</strong>. A vari&aacute;vel especial <code>$?</code> sempre guarda o exit code do &uacute;ltimo comando executado.</p>
 
@@ -686,5 +842,62 @@
 <script src="exercise-drag.js"></script>
 <script src="exercise-print.js"></script>
 <script src="exercise-mc.js"></script>
+<script>
+(function () {
+    // ── Copy buttons ──
+    document.querySelectorAll('.terminal').forEach(function(term) {
+        var btn = document.createElement('button');
+        btn.className = 'term-copy';
+        btn.textContent = '⎘ copiar';
+        btn.addEventListener('click', function() {
+            var text = term.querySelector('.terminal-body').innerText;
+            navigator.clipboard.writeText(text).then(function() {
+                btn.textContent = '✓ copiado';
+                btn.classList.add('copied');
+                setTimeout(function() { btn.textContent = '⎘ copiar'; btn.classList.remove('copied'); }, 1800);
+            });
+        });
+        term.appendChild(btn);
+    });
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.querySelectorAll('.content-card').forEach(function(c) {
+            c.classList.add('is-visible', 'stagger');
+        });
+        return;
+    }
+
+    var cards = Array.from(document.querySelectorAll('.content-card'));
+
+    if (!document.body.classList.contains('slide-active')) {
+        cards.forEach(function(c) { c.classList.add('anim-hidden'); });
+    }
+
+    function revealAll() {
+        cards.forEach(function(c) {
+            c.classList.remove('anim-hidden');
+            c.classList.add('is-visible', 'stagger');
+        });
+    }
+
+    var io = new IntersectionObserver(function(entries) {
+        entries.forEach(function(e) {
+            if (!e.isIntersecting) return;
+            var card = e.target;
+            card.classList.add('is-visible');
+            setTimeout(function() { card.classList.add('stagger'); }, 280);
+            card.querySelectorAll('.highlight-box').forEach(function(hb) {
+                setTimeout(function() { hb.classList.add('glowed'); }, 500);
+            });
+            io.unobserve(card);
+        });
+    }, { threshold: 0.07, rootMargin: '0px 0px -30px 0px' });
+
+    cards.forEach(function(c) { io.observe(c); });
+
+    var slideBtn = document.getElementById('slideToggleBtn');
+    if (slideBtn) slideBtn.addEventListener('click', revealAll);
+}());
+</script>
 </body>
 </html>
