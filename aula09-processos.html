@@ -300,6 +300,64 @@
         .step-desc code { background: #1e293b; color: #a78bfa; padding: 1px 6px; border-radius: 4px; font-family: 'Consolas', monospace; font-size: .88em; }
         .prat-observe { background: #fafafa; border-left: 4px solid var(--primary); border-radius: 0 12px 12px 0; padding: 16px 20px; margin-top: 20px; font-size: .88em; color: #475569; line-height: 1.6; }
 
+        /* ── VIZ WRAPPERS (estilo rc) ── */
+        .viz-wrap{background:#0f172a;border-radius:10px;padding:1.25rem;margin:1rem 0;overflow:hidden}
+        .viz-title{color:#64748b;font-size:.71rem;text-transform:uppercase;letter-spacing:.09em;margin-bottom:.75rem;font-family:'Courier New',monospace}
+
+        /* ── CORE ANIMATIONS ── */
+        @keyframes data-travel{0%{stroke-dashoffset:200;opacity:0}20%{opacity:1}80%{opacity:1}100%{stroke-dashoffset:0;opacity:0}}
+        .data-link{stroke-dasharray:200;animation:data-travel 2.5s linear infinite}
+        @keyframes node-ping{0%,100%{r:7;opacity:.8}50%{r:13;opacity:.25}}
+        .net-node{animation:node-ping 2s ease-in-out infinite}
+        @keyframes dash-flow{from{stroke-dashoffset:18}to{stroke-dashoffset:0}}
+        .flow-line{stroke-dasharray:9 5;animation:dash-flow .7s linear infinite}
+        @keyframes globe-spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+        .globe-ring{animation:globe-spin 6s linear infinite;transform-origin:center;transform-box:fill-box}
+
+        /* ── LIVE CPU BARS ── */
+        @keyframes bw1{0%,100%{width:28%}25%{width:72%}50%{width:41%}75%{width:88%}}
+        @keyframes bw2{0%,100%{width:18%}25%{width:38%}50%{width:77%}75%{width:32%}}
+        @keyframes bw3{0%,100%{width:58%}25%{width:22%}50%{width:51%}75%{width:14%}}
+        @keyframes bw4{0%,100%{width:10%}25%{width:45%}50%{width:25%}75%{width:60%}}
+        @keyframes bw5{0%,100%{width:35%}25%{width:15%}50%{width:65%}75%{width:30%}}
+        .lv1{animation:bw1 4s ease-in-out infinite}
+        .lv2{animation:bw2 3.5s ease-in-out infinite}
+        .lv3{animation:bw3 5s ease-in-out infinite}
+        .lv4{animation:bw4 3s ease-in-out infinite .5s}
+        .lv5{animation:bw5 4.5s ease-in-out infinite 1s}
+
+        /* ── STATIC BARS (intersection observer) ── */
+        .bar-section{margin:1.5rem 0}
+        .bar-section h4{font-size:.78rem;color:#64748b;text-transform:uppercase;letter-spacing:.07em;margin:1rem 0 .45rem;font-weight:600}
+        .bar-row{display:flex;align-items:center;gap:.6rem;margin:.35rem 0}
+        .bar-lbl{font-size:11px;font-family:monospace;color:#2d3748;min-width:110px}
+        .bar-track{flex:1;background:#e2e8f0;border-radius:4px;height:11px;overflow:hidden}
+        .bar-fill{height:100%;border-radius:4px;width:0;transition:width 1.4s cubic-bezier(.4,0,.2,1)}
+        .bar-val{font-size:10px;font-family:monospace;color:#64748b;min-width:45px;text-align:right}
+
+        /* ── SIGNAL BEAM ── */
+        @keyframes sig-travel{0%{stroke-dashoffset:320;opacity:0}10%{opacity:1}85%{opacity:1}100%{stroke-dashoffset:0;opacity:0}}
+        .signal-beam{stroke-dasharray:320;animation:sig-travel 1.8s linear infinite}
+        @keyframes proc-die{0%,70%{opacity:1}85%,100%{opacity:.15}}
+        .proc-dying{animation:proc-die 1.8s linear infinite}
+
+        /* ── SERVICE STATES ── */
+        @keyframes svc-pulse{0%,100%{stroke-opacity:.4}50%{stroke-opacity:1}}
+        .svc-run{animation:svc-pulse 1.2s ease-in-out infinite}
+        @keyframes svc-spin{from{stroke-dashoffset:150}to{stroke-dashoffset:0}}
+        .svc-starting{stroke-dasharray:150;animation:svc-spin 1.5s linear infinite}
+
+        /* ── LOG STREAM ── */
+        @keyframes log-in{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:translateX(0)}}
+        .log-ln{opacity:0;animation:log-in .35s ease forwards}
+        .log-ln:nth-child(1){animation-delay:.1s}
+        .log-ln:nth-child(2){animation-delay:.55s}
+        .log-ln:nth-child(3){animation-delay:1s}
+        .log-ln:nth-child(4){animation-delay:1.45s}
+        .log-ln:nth-child(5){animation-delay:1.9s}
+        .log-ln:nth-child(6){animation-delay:2.35s}
+        .log-ln:nth-child(7){animation-delay:2.8s;animation-iteration-count:infinite}
+
         @media (max-width: 768px) {
             .state-grid  { grid-template-columns: 1fr 1fr; }
             .ps-cols     { grid-template-columns: 1fr 1fr; }
@@ -424,6 +482,59 @@
             </div>
         </div>
 
+        <div class="viz-wrap">
+            <div class="viz-title">Árvore de processos — systemd como pai de todos (animado)</div>
+            <svg viewBox="0 0 560 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">
+                <!-- Trunk lines -->
+                <line x1="280" y1="42" x2="100" y2="110" stroke="#1e3a5f" stroke-width="1.5"/>
+                <line x1="280" y1="42" x2="200" y2="110" stroke="#1e3a5f" stroke-width="1.5"/>
+                <line x1="280" y1="42" x2="360" y2="110" stroke="#1e3a5f" stroke-width="1.5"/>
+                <line x1="280" y1="42" x2="460" y2="110" stroke="#1e3a5f" stroke-width="1.5"/>
+                <!-- apache2 workers -->
+                <line x1="100" y1="128" x2="55"  y2="178" stroke="#1e3a5f" stroke-width="1"/>
+                <line x1="100" y1="128" x2="100" y2="178" stroke="#1e3a5f" stroke-width="1"/>
+                <line x1="100" y1="128" x2="145" y2="178" stroke="#1e3a5f" stroke-width="1"/>
+                <!-- Animated data links (children → parent) -->
+                <line x1="100" y1="110" x2="280" y2="42" stroke="#3b82f6" stroke-width="2" class="data-link" style="animation-delay:0s"/>
+                <line x1="200" y1="110" x2="280" y2="42" stroke="#22c55e" stroke-width="2" class="data-link" style="animation-delay:.6s"/>
+                <line x1="360" y1="110" x2="280" y2="42" stroke="#a855f7" stroke-width="2" class="data-link" style="animation-delay:1.2s"/>
+                <line x1="460" y1="110" x2="280" y2="42" stroke="#f97316" stroke-width="2" class="data-link" style="animation-delay:1.8s"/>
+                <!-- systemd -->
+                <rect x="238" y="10" width="84" height="32" rx="8" fill="#1e293b" stroke="#6366f1" stroke-width="2"/>
+                <text x="280" y="21" text-anchor="middle" fill="#818cf8" font-size="8" font-family="monospace" font-weight="bold">systemd</text>
+                <text x="280" y="33" text-anchor="middle" fill="#64748b" font-size="7" font-family="monospace">PID 1</text>
+                <circle cx="280" cy="26" r="26" fill="none" stroke="#6366f1" stroke-width="1" class="svc-run" opacity=".4"/>
+                <!-- apache2 -->
+                <rect x="62" y="110" width="76" height="30" rx="7" fill="#1e3a5f" stroke="#3b82f6" stroke-width="1.5"/>
+                <text x="100" y="121" text-anchor="middle" fill="#93c5fd" font-size="8" font-family="monospace">apache2</text>
+                <text x="100" y="132" text-anchor="middle" fill="#64748b" font-size="7" font-family="monospace">PID 423</text>
+                <!-- workers -->
+                <circle cx="55"  cy="178" r="10" fill="#0f172a" stroke="#60a5fa" stroke-width="1.2"/>
+                <text x="55"  y="181" text-anchor="middle" fill="#93c5fd" font-size="6" font-family="monospace">w1</text>
+                <circle cx="100" cy="178" r="10" fill="#0f172a" stroke="#60a5fa" stroke-width="1.2"/>
+                <text x="100" y="181" text-anchor="middle" fill="#93c5fd" font-size="6" font-family="monospace">w2</text>
+                <circle cx="145" cy="178" r="10" fill="#0f172a" stroke="#60a5fa" stroke-width="1.2"/>
+                <text x="145" y="181" text-anchor="middle" fill="#93c5fd" font-size="6" font-family="monospace">w3</text>
+                <!-- sshd -->
+                <rect x="162" y="110" width="76" height="30" rx="7" fill="#1e3a5f" stroke="#22c55e" stroke-width="1.5"/>
+                <text x="200" y="121" text-anchor="middle" fill="#86efac" font-size="8" font-family="monospace">sshd</text>
+                <text x="200" y="132" text-anchor="middle" fill="#64748b" font-size="7" font-family="monospace">PID 892</text>
+                <!-- mysqld -->
+                <rect x="322" y="110" width="76" height="30" rx="7" fill="#1e3a5f" stroke="#a855f7" stroke-width="1.5"/>
+                <text x="360" y="121" text-anchor="middle" fill="#d8b4fe" font-size="8" font-family="monospace">mysqld</text>
+                <text x="360" y="132" text-anchor="middle" fill="#64748b" font-size="7" font-family="monospace">PID 2156</text>
+                <!-- cron -->
+                <rect x="422" y="110" width="76" height="30" rx="7" fill="#1e3a5f" stroke="#f97316" stroke-width="1.5"/>
+                <text x="460" y="121" text-anchor="middle" fill="#fdba74" font-size="8" font-family="monospace">cron</text>
+                <text x="460" y="132" text-anchor="middle" fill="#64748b" font-size="7" font-family="monospace">PID 301</text>
+                <!-- ping circles -->
+                <circle cx="100" cy="125" r="5" fill="#3b82f6" class="net-node" style="animation-delay:0s"/>
+                <circle cx="200" cy="125" r="5" fill="#22c55e" class="net-node" style="animation-delay:.5s"/>
+                <circle cx="360" cy="125" r="5" fill="#a855f7" class="net-node" style="animation-delay:1s"/>
+                <circle cx="460" cy="125" r="5" fill="#f97316" class="net-node" style="animation-delay:1.5s"/>
+            </svg>
+        </div>
+
         <div class="tip-box">
             <p>&#x1F4A1; Processos <strong>Zombie</strong> n&atilde;o devem preocupar em condi&ccedil;&otilde;es normais. S&atilde;o apenas registros de processos que terminaram aguardando o pai coletar o c&oacute;digo de sa&iacute;da. O sistema os limpa automaticamente.</p>
         </div>
@@ -460,6 +571,47 @@
 <span class="t-comment"># Obter PID direto pelo nome</span>
 <span class="t-prompt">user@srv:~$</span> <span class="t-cmd">pgrep</span> <span class="t-str">apache2</span>
 <span class="t-out">1423</span>
+            </div>
+        </div>
+
+        <div class="viz-wrap">
+            <div class="viz-title">ps aux — uso de CPU e memória por processo (animado ao vivo)</div>
+            <div style="display:flex;flex-direction:column;gap:9px;padding:4px 0">
+                <div style="display:grid;grid-template-columns:90px 1fr 42px 1fr 42px;gap:6px;align-items:center">
+                    <span style="font-family:monospace;font-size:10px;color:#4ade80">mysqld</span>
+                    <div style="background:#1e293b;border-radius:3px;height:10px;overflow:hidden"><div class="lv1" style="height:100%;background:linear-gradient(90deg,#22c55e,#16a34a);border-radius:3px"></div></div>
+                    <span style="font-family:monospace;font-size:10px;color:#64748b;text-align:right">%CPU</span>
+                    <div style="background:#1e293b;border-radius:3px;height:10px;overflow:hidden"><div class="lv3" style="height:100%;background:linear-gradient(90deg,#a855f7,#7c3aed);border-radius:3px"></div></div>
+                    <span style="font-family:monospace;font-size:10px;color:#64748b;text-align:right">%MEM</span>
+                </div>
+                <div style="display:grid;grid-template-columns:90px 1fr 42px 1fr 42px;gap:6px;align-items:center">
+                    <span style="font-family:monospace;font-size:10px;color:#60a5fa">apache2</span>
+                    <div style="background:#1e293b;border-radius:3px;height:10px;overflow:hidden"><div class="lv2" style="height:100%;background:linear-gradient(90deg,#3b82f6,#1d4ed8);border-radius:3px"></div></div>
+                    <span style="font-family:monospace;font-size:10px;color:#64748b;text-align:right">%CPU</span>
+                    <div style="background:#1e293b;border-radius:3px;height:10px;overflow:hidden"><div class="lv4" style="height:100%;background:linear-gradient(90deg,#a855f7,#7c3aed);border-radius:3px"></div></div>
+                    <span style="font-family:monospace;font-size:10px;color:#64748b;text-align:right">%MEM</span>
+                </div>
+                <div style="display:grid;grid-template-columns:90px 1fr 42px 1fr 42px;gap:6px;align-items:center">
+                    <span style="font-family:monospace;font-size:10px;color:#fbbf24">node</span>
+                    <div style="background:#1e293b;border-radius:3px;height:10px;overflow:hidden"><div class="lv3" style="height:100%;background:linear-gradient(90deg,#f59e0b,#d97706);border-radius:3px"></div></div>
+                    <span style="font-family:monospace;font-size:10px;color:#64748b;text-align:right">%CPU</span>
+                    <div style="background:#1e293b;border-radius:3px;height:10px;overflow:hidden"><div class="lv2" style="height:100%;background:linear-gradient(90deg,#a855f7,#7c3aed);border-radius:3px"></div></div>
+                    <span style="font-family:monospace;font-size:10px;color:#64748b;text-align:right">%MEM</span>
+                </div>
+                <div style="display:grid;grid-template-columns:90px 1fr 42px 1fr 42px;gap:6px;align-items:center">
+                    <span style="font-family:monospace;font-size:10px;color:#f87171">sshd</span>
+                    <div style="background:#1e293b;border-radius:3px;height:10px;overflow:hidden"><div class="lv4" style="height:100%;background:linear-gradient(90deg,#ef4444,#dc2626);border-radius:3px"></div></div>
+                    <span style="font-family:monospace;font-size:10px;color:#64748b;text-align:right">%CPU</span>
+                    <div style="background:#1e293b;border-radius:3px;height:10px;overflow:hidden"><div class="lv5" style="height:100%;background:linear-gradient(90deg,#a855f7,#7c3aed);border-radius:3px"></div></div>
+                    <span style="font-family:monospace;font-size:10px;color:#64748b;text-align:right">%MEM</span>
+                </div>
+                <div style="display:grid;grid-template-columns:90px 1fr 42px 1fr 42px;gap:6px;align-items:center">
+                    <span style="font-family:monospace;font-size:10px;color:#94a3b8">init</span>
+                    <div style="background:#1e293b;border-radius:3px;height:10px;overflow:hidden"><div class="lv5" style="height:100%;background:linear-gradient(90deg,#64748b,#475569);border-radius:3px"></div></div>
+                    <span style="font-family:monospace;font-size:10px;color:#64748b;text-align:right">%CPU</span>
+                    <div style="background:#1e293b;border-radius:3px;height:10px;overflow:hidden"><div class="lv1" style="height:100%;background:linear-gradient(90deg,#a855f7,#7c3aed);border-radius:3px"></div></div>
+                    <span style="font-family:monospace;font-size:10px;color:#64748b;text-align:right">%MEM</span>
+                </div>
             </div>
         </div>
 
@@ -562,6 +714,45 @@
                 <span class="sig-name">SIGHUP</span>
                 <small>"Recarregue configura&ccedil;&atilde;o" &mdash; &uacute;til para n&atilde;o matar o servi&ccedil;o</small>
             </div>
+        </div>
+
+        <div class="viz-wrap">
+            <div class="viz-title">Fluxo de sinal — SIGTERM (15) depois SIGKILL (9) se necessário (animado)</div>
+            <svg viewBox="0 0 560 130" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">
+                <!-- Terminal node -->
+                <rect x="20" y="45" width="90" height="40" rx="8" fill="#1e293b" stroke="#64748b" stroke-width="1.5"/>
+                <text x="65" y="62" text-anchor="middle" fill="#94a3b8" font-size="8" font-family="monospace">terminal</text>
+                <text x="65" y="76" text-anchor="middle" fill="#64748b" font-size="7" font-family="monospace">$ kill PID</text>
+
+                <!-- SIGTERM arrow -->
+                <line x1="112" y1="60" x2="238" y2="60" stroke="#334155" stroke-width="1.5"/>
+                <line x1="112" y1="60" x2="238" y2="60" stroke="#22c55e" stroke-width="2.5" class="signal-beam" style="animation-delay:0s"/>
+                <polygon points="238,55 250,60 238,65" fill="#22c55e" opacity=".8"/>
+                <text x="175" y="52" text-anchor="middle" fill="#4ade80" font-size="8" font-family="monospace">SIGTERM (15)</text>
+
+                <!-- Process node (alive) -->
+                <circle cx="290" cy="60" r="28" fill="#14532d" stroke="#22c55e" stroke-width="2" class="proc-dying" style="animation-delay:0s"/>
+                <text x="290" y="57" text-anchor="middle" fill="#86efac" font-size="8" font-family="monospace">processo</text>
+                <text x="290" y="69" text-anchor="middle" fill="#4ade80" font-size="7" font-family="monospace">PID 1234</text>
+                <circle cx="290" cy="60" r="32" fill="none" stroke="#22c55e" stroke-width="1" class="svc-run"/>
+
+                <!-- SIGKILL arrow -->
+                <line x1="320" y1="60" x2="430" y2="60" stroke="#334155" stroke-width="1.5"/>
+                <line x1="320" y1="60" x2="430" y2="60" stroke="#ef4444" stroke-width="2.5" class="signal-beam" style="animation-delay:.9s"/>
+                <polygon points="430,55 442,60 430,65" fill="#ef4444" opacity=".8"/>
+                <text x="380" y="52" text-anchor="middle" fill="#f87171" font-size="8" font-family="monospace">SIGKILL (9)</text>
+                <text x="380" y="88" text-anchor="middle" fill="#475569" font-size="7" font-family="monospace">último recurso</text>
+
+                <!-- Dead process -->
+                <circle cx="470" cy="60" r="24" fill="#1e293b" stroke="#475569" stroke-width="1.5" class="proc-dying" style="animation-delay:.9s"/>
+                <text x="470" y="57" text-anchor="middle" fill="#64748b" font-size="8" font-family="monospace">processo</text>
+                <text x="470" y="69" text-anchor="middle" fill="#475569" font-size="7" font-family="monospace">encerrado</text>
+
+                <!-- Labels -->
+                <text x="65"  y="105" text-anchor="middle" fill="#475569" font-size="7" font-family="monospace">usuário/admin</text>
+                <text x="290" y="105" text-anchor="middle" fill="#4ade80" font-size="7" font-family="monospace">salva dados</text>
+                <text x="470" y="100" text-anchor="middle" fill="#64748b" font-size="7" font-family="monospace">sem salvar</text>
+            </svg>
         </div>
 
         <div class="terminal">
@@ -668,6 +859,68 @@
             </div>
         </div>
 
+        <div class="viz-wrap">
+            <div class="viz-title">Ciclo de vida de um serviço — estados e transições (animado)</div>
+            <svg viewBox="0 0 560 140" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block">
+                <!-- Arrows between states -->
+                <defs>
+                    <marker id="arr" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                        <path d="M0,0 L0,6 L6,3 z" fill="#475569"/>
+                    </marker>
+                    <marker id="arr-g" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                        <path d="M0,0 L0,6 L6,3 z" fill="#22c55e"/>
+                    </marker>
+                    <marker id="arr-r" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                        <path d="M0,0 L0,6 L6,3 z" fill="#ef4444"/>
+                    </marker>
+                    <marker id="arr-y" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                        <path d="M0,0 L0,6 L6,3 z" fill="#f59e0b"/>
+                    </marker>
+                </defs>
+                <!-- stopped → starting -->
+                <line x1="92" y1="65" x2="150" y2="65" stroke="#475569" stroke-width="1.5" marker-end="url(#arr)"/>
+                <text x="121" y="58" text-anchor="middle" fill="#64748b" font-size="7" font-family="monospace">start</text>
+                <!-- starting → running -->
+                <line x1="222" y1="65" x2="282" y2="65" stroke="#22c55e" stroke-width="1.5" marker-end="url(#arr-g)"/>
+                <text x="252" y="58" text-anchor="middle" fill="#4ade80" font-size="7" font-family="monospace">OK</text>
+                <!-- running → reloading -->
+                <line x1="354" y1="65" x2="414" y2="65" stroke="#f59e0b" stroke-width="1.5" marker-end="url(#arr-y)"/>
+                <text x="384" y="58" text-anchor="middle" fill="#fbbf24" font-size="7" font-family="monospace">reload</text>
+                <!-- running → stopping (arc below) -->
+                <path d="M 318 80 Q 318 120 190 120 Q 62 120 62 80" fill="none" stroke="#ef4444" stroke-width="1.5" marker-end="url(#arr-r)" stroke-dasharray="5 3"/>
+                <text x="190" y="133" text-anchor="middle" fill="#f87171" font-size="7" font-family="monospace">stop / disable</text>
+                <!-- failed indicator -->
+                <path d="M 186 80 Q 186 105 260 105 Q 318 105 318 80" fill="none" stroke="#ef4444" stroke-width="1" stroke-dasharray="3 3" opacity=".5"/>
+                <text x="252" y="118" text-anchor="middle" fill="#f87171" font-size="6" font-family="monospace">erro → failed</text>
+
+                <!-- STOPPED node -->
+                <circle cx="62" cy="65" r="28" fill="#1e293b" stroke="#64748b" stroke-width="2"/>
+                <text x="62" y="62" text-anchor="middle" fill="#94a3b8" font-size="8" font-family="monospace">stopped</text>
+                <text x="62" y="74" text-anchor="middle" fill="#64748b" font-size="6" font-family="monospace">inativo</text>
+
+                <!-- STARTING node -->
+                <circle cx="186" cy="65" r="28" fill="#1c1917" stroke="#f59e0b" stroke-width="2"/>
+                <circle cx="186" cy="65" r="24" fill="none" stroke="#fbbf24" stroke-width="2" class="svc-starting" opacity=".8"/>
+                <text x="186" y="62" text-anchor="middle" fill="#fbbf24" font-size="8" font-family="monospace">starting</text>
+                <text x="186" y="74" text-anchor="middle" fill="#92400e" font-size="6" font-family="monospace">iniciando</text>
+
+                <!-- RUNNING node -->
+                <circle cx="318" cy="65" r="30" fill="#14532d" stroke="#22c55e" stroke-width="2.5"/>
+                <circle cx="318" cy="65" r="34" fill="none" stroke="#4ade80" stroke-width="1.5" class="svc-run"/>
+                <text x="318" y="62" text-anchor="middle" fill="#86efac" font-size="8" font-family="monospace">running</text>
+                <text x="318" y="74" text-anchor="middle" fill="#4ade80" font-size="6" font-family="monospace">● ativo</text>
+
+                <!-- RELOADING node -->
+                <circle cx="442" cy="65" r="28" fill="#172554" stroke="#3b82f6" stroke-width="2"/>
+                <circle cx="442" cy="65" r="22" fill="none" stroke="#60a5fa" stroke-width="1.5" class="svc-starting" opacity=".7"/>
+                <text x="442" y="62" text-anchor="middle" fill="#93c5fd" font-size="7" font-family="monospace">reloading</text>
+                <text x="442" y="74" text-anchor="middle" fill="#3b82f6" font-size="6" font-family="monospace">recarrega</text>
+
+                <!-- reloading → running -->
+                <path d="M 442 37 Q 442 10 318 10 Q 318 10 318 35" fill="none" stroke="#3b82f6" stroke-width="1.5" marker-end="url(#arr-g)" stroke-dasharray="5 3"/>
+            </svg>
+        </div>
+
         <div class="sctl-grid">
             <div class="sctl-item si-start">
                 <span class="sctl-cmd">systemctl start nginx</span>
@@ -754,6 +1007,19 @@
             <div class="jctl-card jc-b">
                 <span class="jctl-flag">-b</span>
                 <span class="jctl-desc">Logs do boot atual</span>
+            </div>
+        </div>
+
+        <div class="viz-wrap">
+            <div class="viz-title">journalctl -f — log em tempo real aparecendo (animado)</div>
+            <div style="font-family:'Courier New',monospace;font-size:11px;line-height:1.9;padding:4px 0">
+                <div class="log-ln"><span style="color:#64748b">Mar 22 14:10:01</span> <span style="color:#60a5fa">servidor</span> <span style="color:#94a3b8">sshd[683]:</span> <span style="color:#4ade80">Server listening on 0.0.0.0 port 22.</span></div>
+                <div class="log-ln"><span style="color:#64748b">Mar 22 14:23:17</span> <span style="color:#60a5fa">servidor</span> <span style="color:#94a3b8">sshd[683]:</span> <span style="color:#fbbf24">Accepted publickey for admin from 192.168.1.5</span></div>
+                <div class="log-ln"><span style="color:#64748b">Mar 22 14:31:04</span> <span style="color:#60a5fa">servidor</span> <span style="color:#94a3b8">nginx[1423]:</span> <span style="color:#4ade80">192.168.1.10 GET /index.html 200</span></div>
+                <div class="log-ln"><span style="color:#64748b">Mar 22 14:33:44</span> <span style="color:#60a5fa">servidor</span> <span style="color:#94a3b8">systemd[1]:</span> <span style="color:#fbbf24">Stopping OpenBSD Secure Shell server...</span></div>
+                <div class="log-ln"><span style="color:#64748b">Mar 22 14:33:45</span> <span style="color:#60a5fa">servidor</span> <span style="color:#94a3b8">systemd[1]:</span> <span style="color:#4ade80">Started OpenBSD Secure Shell server.</span></div>
+                <div class="log-ln"><span style="color:#64748b">Mar 22 14:33:45</span> <span style="color:#60a5fa">servidor</span> <span style="color:#94a3b8">sshd[5103]:</span> <span style="color:#4ade80">Server listening on 0.0.0.0 port 22.</span></div>
+                <div class="log-ln"><span style="color:#f87171">Mar 22 14:41:02</span> <span style="color:#60a5fa">servidor</span> <span style="color:#f87171">mysql[2156]: [ERROR] Can't open file: './db/table.MYI'</span></div>
             </div>
         </div>
 
@@ -1111,5 +1377,17 @@
 <script src="exercise-drag.js"></script>
 <script src="exercise-print.js"></script>
 <script src="exercise-mc.js"></script>
+<script>
+(function(){
+    var bars = document.querySelectorAll('.bar-fill');
+    if(!bars.length) return;
+    var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){
+            if(e.isIntersecting){ e.target.style.width = e.target.dataset.w; io.unobserve(e.target); }
+        });
+    },{threshold:.3});
+    bars.forEach(function(b){ io.observe(b); });
+})();
+</script>
 </body>
 </html>
