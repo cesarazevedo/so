@@ -469,27 +469,27 @@
         .prat-observe { background:#f0fdf4; border-left:4px solid #16a34a; border-radius:0 10px 10px 0; padding:14px 16px; margin-top:16px; font-size:.88em; color:#166534; line-height:1.6; }
         .prat-observe strong { color:#15803d; }
 
-        /* ══ SCROLL REVEAL ══ */
-        @keyframes card-in {
-            from { opacity:0; transform:translateY(32px); }
-            to   { opacity:1; transform:none; }
-        }
-        .content-card {
-            opacity:0; transform:translateY(32px);
+        /* ══ SCROLL REVEAL — estado inicial aplicado via JS (.anim-hidden) ══ */
+        /* Não colocamos opacity/transform no .content-card puro para não              */
+        /* conflitar com o slide-mode.js que usa transforms para posicionar os cards.  */
+        .content-card.anim-hidden {
+            opacity:0;
+            transform:translateY(32px);
             transition: opacity .55s ease, transform .55s cubic-bezier(.22,1,.36,1), box-shadow .25s ease;
         }
-        .content-card.is-visible { opacity:1; transform:none; }
+        .content-card.anim-hidden.is-visible { opacity:1; transform:none; }
+        .content-card.is-visible { transition: box-shadow .25s ease; }
         .content-card.is-visible:hover { box-shadow:0 14px 40px rgba(0,0,0,.10); transform:translateY(-2px); }
 
-        /* ── stagger children ── */
-        .content-card .fs-type-card,
-        .content-card .lib-item,
-        .content-card .fsf-item,
-        .content-card .mopt-card,
-        .content-card .mkfs-card,
-        .content-card .cmd-card,
-        .content-card .fstab-col-card,
-        .content-card .prat-step { opacity:0; transform:translateY(14px); }
+        /* ── stagger children: estado inicial via JS (.anim-hidden pai) ── */
+        .content-card.anim-hidden .fs-type-card,
+        .content-card.anim-hidden .lib-item,
+        .content-card.anim-hidden .fsf-item,
+        .content-card.anim-hidden .mopt-card,
+        .content-card.anim-hidden .mkfs-card,
+        .content-card.anim-hidden .cmd-card,
+        .content-card.anim-hidden .fstab-col-card,
+        .content-card.anim-hidden .prat-step { opacity:0; transform:translateY(14px); }
 
         .content-card.stagger .fs-type-card,
         .content-card.stagger .lib-item,
@@ -638,26 +638,9 @@
             }
         }
 
-        /* ══ SLIDE MODE ══ */
-        body.slide-active .content-card,
-        body.slide-active .content-card.is-visible,
-        body.slide-active .content-card.slide-visible {
-            opacity:1 !important;
-            transform:none !important;
-            transition:none !important;
-            box-shadow:none !important;
-        }
-        body.slide-active .content-card.is-visible:hover { transform:none !important; box-shadow:none !important; }
-        body.slide-active .content-card .fs-type-card,
-        body.slide-active .content-card .lib-item,
-        body.slide-active .content-card .fsf-item,
-        body.slide-active .content-card .mopt-card,
-        body.slide-active .content-card .mkfs-card,
-        body.slide-active .content-card .cmd-card,
-        body.slide-active .content-card .fstab-col-card,
-        body.slide-active .content-card .prat-step {
-            opacity:1 !important; transform:none !important; transition:none !important;
-        }
+        /* ══ SLIDE MODE — anim-hidden nunca é adicionado nesse modo ══ */
+        /* Apenas garantimos que hover não interfere */
+        body.slide-active .content-card.is-visible:hover { transform:none; box-shadow:none; }
 
         @media(max-width:768px){
             .fs-type-grid   { grid-template-columns: repeat(2,1fr); }
@@ -1509,10 +1492,17 @@ UUID=1A2B-3C4D                             /mnt/usb vfat  defaults,nofail 0 0
         term.appendChild(btn);
     });
 
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        document.querySelectorAll('.content-card').forEach(function(c) {
-            c.classList.add('is-visible','stagger');
-        });
+    var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var cards = Array.from(document.querySelectorAll('.content-card'));
+
+    // Só esconde via JS se NÃO estiver em slide mode e NÃO for reduced-motion
+    // Isso evita conflitar com os transforms do slide-mode.js
+    if (!reduced && !document.body.classList.contains('slide-active')) {
+        cards.forEach(function(c) { c.classList.add('anim-hidden'); });
+    }
+
+    if (reduced) {
+        cards.forEach(function(c) { c.classList.add('is-visible','stagger'); });
         document.querySelectorAll('.df-bar').forEach(function(b) {
             b.style.width = b.dataset.pct + '%';
         });
@@ -1520,10 +1510,11 @@ UUID=1A2B-3C4D                             /mnt/usb vfat  defaults,nofail 0 0
     }
 
     // ── Scroll reveal ──
-    var cards = Array.from(document.querySelectorAll('.content-card'));
-
     function revealAll() {
-        cards.forEach(function(c) { c.classList.add('is-visible','stagger'); });
+        cards.forEach(function(c) {
+            c.classList.remove('anim-hidden');
+            c.classList.add('is-visible','stagger');
+        });
         animateBars();
     }
 
@@ -1533,7 +1524,6 @@ UUID=1A2B-3C4D                             /mnt/usb vfat  defaults,nofail 0 0
             var card = e.target;
             card.classList.add('is-visible');
             setTimeout(function() { card.classList.add('stagger'); }, 280);
-            // danger-box pulse on mkfs card
             var db = card.querySelector('.danger-box');
             if (db) setTimeout(function() { db.classList.add('pulsed'); }, 500);
             io.unobserve(card);
