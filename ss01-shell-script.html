@@ -190,25 +190,15 @@
             </div>
         </div>
 
-        <h3>&#x1F373; Analogia: Receita de Bolo</h3>
-        <ul>
-            <li><strong>Ingredientes</strong> &rarr; Comandos Linux (<code>ls</code>, <code>cp</code>, <code>mkdir</code>&hellip;)</li>
-            <li><strong>Receita escrita</strong> &rarr; O arquivo de script (<code>.sh</code>)</li>
-            <li><strong>Cozinheiro</strong> &rarr; O Shell (interpreta e executa)</li>
-            <li><strong>Bolo pronto</strong> &rarr; Tarefa automatizada!</li>
-        </ul>
-
         <div class="highlight-box">
             <p>&#x23F1; <strong>10 minutos por dia &times; 365 dias = 60 horas por ano economizadas!</strong> Um sysadmin que sabe Shell Script faz em segundos o que um iniciante faz em horas.</p>
         </div>
 
-        <h3>&#x1F4CB; Situa&ccedil;&otilde;es pr&aacute;ticas onde Shell Script &eacute; usado</h3>
+        <h3>&#x1F4CB; Situa&ccedil;&otilde;es pr&aacute;ticas</h3>
         <ul>
             <li>Backup di&aacute;rio autom&aacute;tico de arquivos e bancos de dados</li>
-            <li>Limpeza de arquivos tempor&aacute;rios e logs antigos</li>
             <li>Instala&ccedil;&atilde;o e configura&ccedil;&atilde;o de programas em lote em novos servidores</li>
             <li>Monitoramento de servi&ccedil;os (reiniciar automaticamente se cair)</li>
-            <li>Gera&ccedil;&atilde;o autom&aacute;tica de relat&oacute;rios e alertas por e-mail</li>
         </ul>
     </div>
 
@@ -334,32 +324,12 @@
         </div>
     </div>
 
-    <!-- CARD 4 — Fluxo + Vim -->
+    <!-- CARD 4 — Vim Essencial -->
     <div class="content-card">
-        <h2>&#x1F504; Fluxo de Trabalho e Vim Essencial</h2>
-        <p>Memorize o fluxo de tr&ecirc;s etapas que se repete em <em>todos</em> os scripts que voc&ecirc; criar:</p>
+        <h2>&#x2328;&#xFE0F; Vim Essencial</h2>
+        <p>O Vim &eacute; o editor padr&atilde;o em servidores Linux. Voc&ecirc; precisa conhecer apenas estes comandos para criar e editar scripts:</p>
 
-        <div class="flow-steps">
-            <div class="flow-step" style="background:#dbeafe;">
-                <div class="f-icon">&#x1F4DD;</div>
-                <strong>1. Criar</strong>
-                <code>vim script.sh</code>
-            </div>
-            <div class="flow-arrow">&#x27A1;</div>
-            <div class="flow-step" style="background:#fef3c7;">
-                <div class="f-icon">&#x1F513;</div>
-                <strong>2. Permitir</strong>
-                <code>chmod +x script.sh</code>
-            </div>
-            <div class="flow-arrow">&#x27A1;</div>
-            <div class="flow-step" style="background:#dcfce7;">
-                <div class="f-icon">&#x25B6;&#xFE0F;</div>
-                <strong>3. Executar</strong>
-                <code>./script.sh</code>
-            </div>
-        </div>
-
-        <h3>&#x2328;&#xFE0F; Vim Essencial &mdash; Comandos que voc&ecirc; precisa saber</h3>
+        <h3>&#x2328;&#xFE0F; Comandos que voc&ecirc; precisa saber</h3>
 
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px;">
             <div>
@@ -417,15 +387,6 @@
 <span class="t-cmd">echo</span> <span class="t-string">"Data e hora: $(date)"</span>
 <span class="t-cmd">echo</span> <span class="t-string">"Arquivos aqui: $(ls | wc -l) arquivos"</span>
 
-<span class="t-comment"># echo -n: sem quebra de linha ao final</span>
-<span class="t-cmd">echo</span> <span class="t-flag">-n</span> <span class="t-string">"Digite seu nome: "</span>
-<span class="t-comment"># (cursor fica na mesma linha, aguardando input)</span>
-
-<span class="t-comment"># echo -e: interpreta sequências especiais</span>
-<span class="t-cmd">echo</span> <span class="t-flag">-e</span> <span class="t-string">"Linha 1\nLinha 2\nLinha 3"</span>
-<span class="t-out">Linha 1</span>
-<span class="t-out">Linha 2</span>
-<span class="t-out">Linha 3</span>
             </div>
         </div>
 
@@ -483,13 +444,6 @@
                 </div>
             </div>
             <div class="boa-item">
-                <div class="boa-icon">&#x1F4AC;</div>
-                <div class="boa-text">
-                    <strong>Comente com propósito</strong>
-                    <span>Comente o "por qu&ecirc;", n&atilde;o o "o qu&ecirc;". <code># incrementa x</code> &eacute; &oacute;bvio; <code># necessário para evitar race condition</code> &eacute; &uacute;til.</span>
-                </div>
-            </div>
-            <div class="boa-item">
                 <div class="boa-icon">&#x1F524;</div>
                 <div class="boa-text">
                     <strong>Nomes em mai&uacute;sculas para vari&aacute;veis</strong>
@@ -500,21 +454,7 @@
                 <div class="boa-icon">&#x1F9EA;</div>
                 <div class="boa-text">
                     <strong>Teste antes de automatizar</strong>
-                    <span>Execute o script manualmente com dados reais antes de agendar com cron. Um erro em produção pode ser catastr&oacute;fico.</span>
-                </div>
-            </div>
-            <div class="boa-item">
-                <div class="boa-icon">&#x1F4BE;</div>
-                <div class="boa-text">
-                    <strong>Use controle de vers&atilde;o</strong>
-                    <span>Scripts s&atilde;o c&oacute;digo. Use Git para rastrear mudan&ccedil;as, especialmente em scripts de produ&ccedil;&atilde;o.</span>
-                </div>
-            </div>
-            <div class="boa-item">
-                <div class="boa-icon">&#x1F512;</div>
-                <div class="boa-text">
-                    <strong>Permiss&atilde;o m&iacute;nima</strong>
-                    <span>Use <code>chmod 750</code> (ou <code>700</code>) em vez de <code>777</code>. D&ecirc; execu&ccedil;&atilde;o apenas a quem realmente precisa.</span>
+                    <span>Execute o script manualmente com dados reais antes de agendar com cron. Um erro em produ&ccedil;&atilde;o pode ser catastr&oacute;fico.</span>
                 </div>
             </div>
         </div>
