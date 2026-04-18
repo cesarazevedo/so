@@ -638,11 +638,14 @@
             }
         }
 
-        /* ══ SLIDE MODE — desativa qualquer transform/hover nos cards ══ */
-        body.slide-active .content-card,
+        /* ══ SLIDE MODE — preserva o translate(-50%,-50%) do slide-mode.css no hover ══ */
+        /* O hover translateY(-2px) tem especificidade 0,3,0 e sobrescreve o         */
+        /* translate(-50%,-50%) do slide-mode.css (0,2,1). Corrigimos com 0,3,1.    */
         body.slide-active .content-card:hover,
-        body.slide-active .content-card.is-visible,
-        body.slide-active .content-card.is-visible:hover { transform:none !important; box-shadow:none !important; transition:none !important; }
+        body.slide-active .content-card.is-visible:hover {
+            transform: translate(-50%, -50%);
+            box-shadow: 0 10px 40px rgba(0,0,0,.1);
+        }
 
         @media(max-width:768px){
             .fs-type-grid   { grid-template-columns: repeat(2,1fr); }
