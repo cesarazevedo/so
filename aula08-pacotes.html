@@ -499,6 +499,113 @@
             opacity: 1; transform: none; transition: none;
         }
 
+        /* ── HOVER NOS CARDS INTERNOS ── */
+        .pkg-part {
+            transition: transform .18s, box-shadow .18s, background .15s;
+            cursor: default;
+        }
+        .pkg-part:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 8px 22px rgba(99,102,241,.13);
+            background: #ede9fe;
+        }
+        .repo-type {
+            transition: transform .18s, box-shadow .18s;
+            cursor: default;
+        }
+        .repo-type:hover { transform: translateY(-5px); box-shadow: 0 10px 26px rgba(0,0,0,.10); }
+
+        .apt-card {
+            transition: transform .18s, box-shadow .18s;
+            cursor: default;
+        }
+        .apt-card:hover { transform: translateY(-4px); box-shadow: 0 10px 22px rgba(0,0,0,.10); }
+
+        .clean-step {
+            transition: transform .18s, box-shadow .18s;
+            cursor: default;
+        }
+        .clean-step:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,.10); }
+
+        .tool-box {
+            transition: transform .18s, box-shadow .18s;
+            cursor: default;
+        }
+        .tool-box:hover { transform: translateY(-4px); box-shadow: 0 10px 28px rgba(0,0,0,.12); }
+
+        .rl-item {
+            transition: transform .15s, box-shadow .15s;
+            cursor: default;
+        }
+        .rl-item:hover { transform: translateX(6px); box-shadow: 4px 0 18px rgba(0,0,0,.08); }
+
+        .tool-row { transition: background .14s; border-radius: 6px; padding-left: 6px; }
+        .tool-row:hover { background: rgba(99,102,241,.06); }
+
+        /* ── DPKG FLAGS: GLOW NO HOVER ── */
+        .dpkg-flag {
+            transition: transform .18s, box-shadow .18s;
+            cursor: default;
+        }
+        .dpkg-flag.df-i:hover { transform: translateY(-4px); box-shadow: 0 0 0 2px #10b981, 0 8px 20px rgba(16,185,129,.22); }
+        .dpkg-flag.df-r:hover { transform: translateY(-4px); box-shadow: 0 0 0 2px #f59e0b, 0 8px 20px rgba(245,158,11,.22); }
+        .dpkg-flag.df-P:hover { transform: translateY(-4px); box-shadow: 0 0 0 2px #ef4444, 0 8px 20px rgba(239,68,68,.22); }
+        .dpkg-flag.df-l:hover { transform: translateY(-4px); box-shadow: 0 0 0 2px #3b82f6, 0 8px 20px rgba(59,130,246,.22); }
+        .dpkg-flag.df-S:hover { transform: translateY(-4px); box-shadow: 0 0 0 2px #a855f7, 0 8px 20px rgba(168,85,247,.22); }
+        .dpkg-flag.df-f:hover { transform: translateY(-4px); box-shadow: 0 0 0 2px #06b6d4, 0 8px 20px rgba(6,182,212,.22); }
+
+        /* ── REPO-FLOW: SETA ANIMADA ── */
+        @keyframes arrow-pulse {
+            0%, 100% { opacity: .5; transform: translateX(0); }
+            50%       { opacity: 1;  transform: translateX(5px); }
+        }
+        .rf-arrow { animation: arrow-pulse 1.4s ease-in-out infinite; }
+        .rf-box   { transition: transform .18s, box-shadow .18s; cursor: default; }
+        .rf-box:hover { transform: translateY(-4px); box-shadow: 0 10px 26px rgba(0,0,0,.12); }
+
+        /* ── UPDATE/UPGRADE: BADGE DE ORDEM ── */
+        .uc-box { position: relative; }
+        .uc-order {
+            position: absolute; top: -10px; right: 12px;
+            background: var(--primary); color: #fff;
+            font-size: .65em; font-weight: 700;
+            padding: 2px 8px; border-radius: 20px;
+            letter-spacing: .04em;
+        }
+        .uc-update  .uc-order { background: #3b82f6; }
+        .uc-upgrade .uc-order { background: #10b981; }
+
+        /* ── SVG FLUXO INSTALL ── */
+        .install-flow-svg { display: block; margin: 18px auto 6px; }
+        @keyframes pkt-travel {
+            0%   { transform: translateX(0);    opacity: 0; }
+            10%  { opacity: 1; }
+            45%  { transform: translateX(108px); opacity: 1; }
+            55%  { transform: translateX(108px); opacity: 0; }
+            56%  { transform: translateX(0);    opacity: 0; }
+        }
+        @keyframes pkt-travel2 {
+            0%   { transform: translateX(0);    opacity: 0; }
+            55%  { transform: translateX(0);    opacity: 0; }
+            65%  { opacity: 1; }
+            90%  { transform: translateX(108px); opacity: 1; }
+            100% { transform: translateX(108px); opacity: 0; }
+        }
+        .pkt-dot1 { animation: pkt-travel  2.8s ease-in-out infinite; }
+        .pkt-dot2 { animation: pkt-travel2 2.8s ease-in-out infinite; }
+
+        /* ── TERMINAL COPY HINT ── */
+        .terminal { position: relative; }
+        .term-copy {
+            position: absolute; top: 10px; right: 10px;
+            font-size: .68em; color: #475569; background: #1e293b;
+            border: 1px solid #334155; border-radius: 6px;
+            padding: 2px 8px; cursor: pointer; opacity: 0;
+            transition: opacity .2s;
+        }
+        .terminal:hover .term-copy { opacity: 1; }
+        .term-copy.copied { color: #34d399; border-color: #34d399; }
+
         /* Impressão / prefers-reduced-motion: sem animações */
         @media print, (prefers-reduced-motion: reduce) {
             .content-card,
@@ -713,6 +820,7 @@
 
         <div class="update-compare">
             <div class="uc-box uc-update">
+                <span class="uc-order">1º passo</span>
                 <span class="uc-cmd">apt update</span>
                 <strong>Atualiza o CAT&Aacute;LOGO</strong>
                 <ul>
@@ -723,6 +831,7 @@
                 </ul>
             </div>
             <div class="uc-box uc-upgrade">
+                <span class="uc-order">2º passo</span>
                 <span class="uc-cmd">apt upgrade</span>
                 <strong>Atualiza os PACOTES</strong>
                 <ul>
@@ -765,6 +874,32 @@
     <div class="content-card">
         <h2>&#x1F4E5; Instalando Pacotes</h2>
         <p>O comando <code>apt install</code> busca o pacote nos reposit&oacute;rios, resolve as depend&ecirc;ncias automaticamente e instala tudo de uma vez.</p>
+
+        <!-- SVG: fluxo animado repo → apt → sistema -->
+        <svg class="install-flow-svg" width="340" height="64" viewBox="0 0 340 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <!-- nó 1: Repositório -->
+            <rect x="2" y="12" width="96" height="40" rx="10" fill="#ede9fe" stroke="#8b5cf6" stroke-width="2"/>
+            <text x="50" y="29" text-anchor="middle" font-size="10" fill="#5b21b6" font-weight="700">🌐 Repositório</text>
+            <text x="50" y="44" text-anchor="middle" font-size="9" fill="#7c3aed">pacotes.deb</text>
+            <!-- seta 1 -->
+            <line x1="100" y1="32" x2="120" y2="32" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4 3"/>
+            <polygon points="120,28 128,32 120,36" fill="#94a3b8"/>
+            <!-- ponto animado 1 -->
+            <circle class="pkt-dot1" cx="108" cy="32" r="5" fill="#8b5cf6"/>
+            <!-- nó 2: apt -->
+            <rect x="124" y="12" width="92" height="40" rx="10" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>
+            <text x="170" y="29" text-anchor="middle" font-size="10" fill="#1e40af" font-weight="700">📥 apt</text>
+            <text x="170" y="44" text-anchor="middle" font-size="9" fill="#1d4ed8">resolve deps</text>
+            <!-- seta 2 -->
+            <line x1="218" y1="32" x2="238" y2="32" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4 3"/>
+            <polygon points="238,28 246,32 238,36" fill="#94a3b8"/>
+            <!-- ponto animado 2 -->
+            <circle class="pkt-dot2" cx="226" cy="32" r="5" fill="#3b82f6"/>
+            <!-- nó 3: Sistema -->
+            <rect x="242" y="12" width="96" height="40" rx="10" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+            <text x="290" y="29" text-anchor="middle" font-size="10" fill="#065f46" font-weight="700">💻 Sistema</text>
+            <text x="290" y="44" text-anchor="middle" font-size="9" fill="#15803d">instalado ✓</text>
+        </svg>
 
         <div class="terminal">
             <div class="terminal-bar">
@@ -1308,6 +1443,22 @@
 <script src="exercise-print.js"></script>
 <script src="exercise-mc.js"></script>
 <script>
+// Botões de copiar nos terminais
+document.querySelectorAll('.terminal').forEach(function(term) {
+    var btn = document.createElement('button');
+    btn.className = 'term-copy';
+    btn.textContent = '⎘ copiar';
+    btn.addEventListener('click', function() {
+        var text = term.querySelector('.terminal-body').innerText;
+        navigator.clipboard.writeText(text).then(function() {
+            btn.textContent = '✓ copiado';
+            btn.classList.add('copied');
+            setTimeout(function() { btn.textContent = '⎘ copiar'; btn.classList.remove('copied'); }, 1800);
+        });
+    });
+    term.appendChild(btn);
+});
+
 (function () {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
