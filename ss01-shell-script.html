@@ -7,6 +7,154 @@
     <link rel="stylesheet" href="slide-mode.css">
     <link rel="stylesheet" href="exercise.css">
     <link rel="stylesheet" href="lesson.css">
+<style>
+    /* ══ SCROLL REVEAL (estado inicial via JS .anim-hidden) ══ */
+    .content-card.anim-hidden {
+        opacity: 0; transform: translateY(28px);
+        transition: opacity .55s ease, transform .55s cubic-bezier(.22,1,.36,1), box-shadow .25s ease;
+    }
+    .content-card.anim-hidden.is-visible { opacity: 1; transform: none; }
+    .content-card.is-visible { transition: box-shadow .25s ease; }
+    .content-card.is-visible:hover { box-shadow: 0 14px 42px rgba(0,0,0,.09); transform: translateY(-2px); }
+
+    /* stagger children */
+    .content-card.anim-hidden .analogy-box,
+    .content-card.anim-hidden .flow-step,
+    .content-card.anim-hidden .boa-item,
+    .content-card.anim-hidden .step-row,
+    .content-card.anim-hidden .prat-step { opacity:0; transform:translateY(14px); }
+
+    .content-card.stagger .analogy-box,
+    .content-card.stagger .flow-step,
+    .content-card.stagger .boa-item,
+    .content-card.stagger .step-row,
+    .content-card.stagger .prat-step {
+        opacity:1; transform:none;
+        transition: opacity .36s ease, transform .36s cubic-bezier(.22,1,.36,1);
+    }
+    .content-card.stagger .analogy-box:nth-child(1)  { transition-delay:.00s; }
+    .content-card.stagger .analogy-box:nth-child(3)  { transition-delay:.12s; } /* pula arrow */
+    .content-card.stagger .flow-step:nth-child(1)    { transition-delay:.00s; }
+    .content-card.stagger .flow-step:nth-child(3)    { transition-delay:.10s; }
+    .content-card.stagger .flow-step:nth-child(5)    { transition-delay:.20s; }
+    .content-card.stagger .boa-item:nth-child(1)     { transition-delay:.00s; }
+    .content-card.stagger .boa-item:nth-child(2)     { transition-delay:.07s; }
+    .content-card.stagger .boa-item:nth-child(3)     { transition-delay:.14s; }
+    .content-card.stagger .boa-item:nth-child(4)     { transition-delay:.21s; }
+    .content-card.stagger .boa-item:nth-child(5)     { transition-delay:.28s; }
+    .content-card.stagger .boa-item:nth-child(6)     { transition-delay:.35s; }
+    .content-card.stagger .step-row:nth-child(1)     { transition-delay:.00s; }
+    .content-card.stagger .step-row:nth-child(2)     { transition-delay:.08s; }
+    .content-card.stagger .step-row:nth-child(3)     { transition-delay:.16s; }
+    .content-card.stagger .step-row:nth-child(4)     { transition-delay:.24s; }
+    .content-card.stagger .step-row:nth-child(5)     { transition-delay:.32s; }
+    .content-card.stagger .step-row:nth-child(6)     { transition-delay:.40s; }
+    .content-card.stagger .prat-step:nth-child(1)    { transition-delay:.00s; }
+    .content-card.stagger .prat-step:nth-child(2)    { transition-delay:.08s; }
+    .content-card.stagger .prat-step:nth-child(3)    { transition-delay:.16s; }
+    .content-card.stagger .prat-step:nth-child(4)    { transition-delay:.24s; }
+    .content-card.stagger .prat-step:nth-child(5)    { transition-delay:.32s; }
+
+    /* ══ SLIDE MODE — preserva translate(-50%,-50%) do slide-mode.css ══ */
+    body.slide-active .content-card:hover,
+    body.slide-active .content-card.is-visible:hover {
+        transform: translate(-50%, -50%); box-shadow: 0 10px 40px rgba(0,0,0,.1);
+    }
+
+    /* ══ HOVER NOS CARDS INTERNOS ══ */
+    .analogy-box { transition: transform .2s, box-shadow .2s; cursor: default; }
+    .analogy-box:hover { transform: translateY(-6px) scale(1.03); box-shadow: 0 10px 26px rgba(0,0,0,.12); }
+
+    .flow-step { transition: transform .2s, box-shadow .2s; cursor: default; }
+    .flow-step:hover { transform: translateY(-5px); box-shadow: 0 10px 24px rgba(0,0,0,.12); }
+
+    .boa-item { transition: background .15s, transform .15s, box-shadow .15s; border-radius: 10px; cursor: default; }
+    .boa-item:hover { background: #f0f9ff; transform: translateX(5px); box-shadow: 3px 0 14px rgba(99,102,241,.10); }
+
+    .step-row { transition: background .15s, transform .15s; border-radius: 10px; cursor: default; }
+    .step-row:hover { background: rgba(99,102,241,.05); transform: translateX(4px); }
+
+    /* ══ SETAS ANIMADAS ══ */
+    @keyframes arrow-right {
+        0%,100% { transform:translateX(0); opacity:.5; }
+        50%      { transform:translateX(6px); opacity:1; }
+    }
+    .analogy-arrow { animation: arrow-right 1.4s ease-in-out infinite; font-size: 1.8em; color: #6366f1; }
+    .flow-arrow    { animation: arrow-right 1.6s ease-in-out infinite; }
+
+    /* ══ SHEBANG GLOW — destaque visual na linha de shebang ══ */
+    @keyframes shebang-glow {
+        0%,100% { text-shadow: none; }
+        50%      { text-shadow: 0 0 12px rgba(99,102,241,.6); }
+    }
+    .t-shebang { animation: shebang-glow 2.8s ease-in-out infinite; }
+
+    /* ══ VIM TABLE HOVER ══ */
+    .vim-table tr:not(:first-child) { transition: background .14s; cursor: default; }
+    .vim-table tr:not(:first-child):hover { background: rgba(99,102,241,.08); }
+    .vim-table td code { transition: color .14s; }
+    .vim-table tr:not(:first-child):hover td code { color: #4f46e5; }
+
+    /* ══ CMP-TABLE HOVER ══ */
+    .cmp-table tr:not(:first-child) { transition: background .14s; cursor: default; }
+    .cmp-table tr:not(:first-child):hover { background: rgba(99,102,241,.06); }
+
+    /* ══ KBD VISUAL ══ */
+    .kbd-sm {
+        display: inline-block;
+        background: #1e293b; color: #e2e8f0;
+        border: 1px solid #475569; border-bottom: 3px solid #334155;
+        border-radius: 5px; padding: 1px 7px;
+        font-family: 'Consolas', monospace; font-size: .85em;
+        font-weight: 700; line-height: 1.6;
+        transition: transform .1s, border-bottom-width .1s;
+        cursor: default;
+    }
+    .kbd-sm:hover { transform: translateY(2px); border-bottom-width: 1px; }
+
+    /* ══ TERMINAL COPY ══ */
+    .terminal { position: relative; }
+    .term-copy {
+        position: absolute; top: 10px; right: 10px;
+        font-size: .68em; color: #475569; background: #1e293b;
+        border: 1px solid #334155; border-radius: 6px;
+        padding: 2px 8px; cursor: pointer; opacity: 0;
+        transition: opacity .2s;
+    }
+    .terminal:hover .term-copy { opacity: 1; }
+    .term-copy.copied { color: #34d399; border-color: #34d399; }
+
+    /* ══ STEP NUM BADGE PULSE ══ */
+    @keyframes badge-pop {
+        0%  { transform:scale(0.5); opacity:0; }
+        70% { transform:scale(1.15); }
+        100%{ transform:scale(1); opacity:1; }
+    }
+    .content-card.stagger .step-num-badge { animation: badge-pop .35s ease both; }
+    .content-card.stagger .step-row:nth-child(1) .step-num-badge { animation-delay:.00s; }
+    .content-card.stagger .step-row:nth-child(2) .step-num-badge { animation-delay:.08s; }
+    .content-card.stagger .step-row:nth-child(3) .step-num-badge { animation-delay:.16s; }
+    .content-card.stagger .step-row:nth-child(4) .step-num-badge { animation-delay:.24s; }
+    .content-card.stagger .step-row:nth-child(5) .step-num-badge { animation-delay:.32s; }
+    .content-card.stagger .step-row:nth-child(6) .step-num-badge { animation-delay:.40s; }
+
+    /* ══ HIGHLIGHT BOX PULSE NA ENTRADA ══ */
+    @keyframes hb-glow {
+        0%,100% { box-shadow: none; }
+        45%      { box-shadow: 0 0 0 4px rgba(99,102,241,.18); }
+    }
+    .highlight-box.glowed { animation: hb-glow 1.3s ease 1; }
+
+    /* ══ PRINT / REDUCED MOTION ══ */
+    @media print, (prefers-reduced-motion: reduce) {
+        .content-card, .content-card .analogy-box, .content-card .flow-step,
+        .content-card .boa-item, .content-card .step-row, .content-card .prat-step,
+        .analogy-arrow, .flow-arrow, .t-shebang {
+            opacity:1 !important; transform:none !important;
+            animation:none !important; transition:none !important;
+        }
+    }
+</style>
 </head>
 <body>
 
@@ -636,5 +784,64 @@
 <script src="exercise-drag.js"></script>
 <script src="exercise-print.js"></script>
 <script src="exercise-mc.js"></script>
+<script>
+(function () {
+    // ── Copy buttons ──
+    document.querySelectorAll('.terminal').forEach(function(term) {
+        var btn = document.createElement('button');
+        btn.className = 'term-copy';
+        btn.textContent = '⎘ copiar';
+        btn.addEventListener('click', function() {
+            var text = term.querySelector('.terminal-body').innerText;
+            navigator.clipboard.writeText(text).then(function() {
+                btn.textContent = '✓ copiado';
+                btn.classList.add('copied');
+                setTimeout(function() { btn.textContent = '⎘ copiar'; btn.classList.remove('copied'); }, 1800);
+            });
+        });
+        term.appendChild(btn);
+    });
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.querySelectorAll('.content-card').forEach(function(c) {
+            c.classList.add('is-visible', 'stagger');
+        });
+        return;
+    }
+
+    var cards = Array.from(document.querySelectorAll('.content-card'));
+
+    // Aplica estado inicial só se NÃO estiver em slide mode
+    if (!document.body.classList.contains('slide-active')) {
+        cards.forEach(function(c) { c.classList.add('anim-hidden'); });
+    }
+
+    function revealAll() {
+        cards.forEach(function(c) {
+            c.classList.remove('anim-hidden');
+            c.classList.add('is-visible', 'stagger');
+        });
+    }
+
+    var io = new IntersectionObserver(function(entries) {
+        entries.forEach(function(e) {
+            if (!e.isIntersecting) return;
+            var card = e.target;
+            card.classList.add('is-visible');
+            setTimeout(function() { card.classList.add('stagger'); }, 280);
+            // Pulsa highlight-box na entrada
+            card.querySelectorAll('.highlight-box').forEach(function(hb) {
+                setTimeout(function() { hb.classList.add('glowed'); }, 500);
+            });
+            io.unobserve(card);
+        });
+    }, { threshold: 0.07, rootMargin: '0px 0px -30px 0px' });
+
+    cards.forEach(function(c) { io.observe(c); });
+
+    var slideBtn = document.getElementById('slideToggleBtn');
+    if (slideBtn) slideBtn.addEventListener('click', revealAll);
+}());
+</script>
 </body>
 </html>
