@@ -638,9 +638,11 @@
             }
         }
 
-        /* ══ SLIDE MODE — anim-hidden nunca é adicionado nesse modo ══ */
-        /* Apenas garantimos que hover não interfere */
-        body.slide-active .content-card.is-visible:hover { transform:none; box-shadow:none; }
+        /* ══ SLIDE MODE — desativa qualquer transform/hover nos cards ══ */
+        body.slide-active .content-card,
+        body.slide-active .content-card:hover,
+        body.slide-active .content-card.is-visible,
+        body.slide-active .content-card.is-visible:hover { transform:none !important; box-shadow:none !important; transition:none !important; }
 
         @media(max-width:768px){
             .fs-type-grid   { grid-template-columns: repeat(2,1fr); }
