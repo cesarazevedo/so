@@ -469,6 +469,190 @@
         .prat-observe { background:#f0fdf4; border-left:4px solid #16a34a; border-radius:0 10px 10px 0; padding:14px 16px; margin-top:16px; font-size:.88em; color:#166534; line-height:1.6; }
         .prat-observe strong { color:#15803d; }
 
+        /* ══ SCROLL REVEAL ══ */
+        @keyframes card-in {
+            from { opacity:0; transform:translateY(32px); }
+            to   { opacity:1; transform:none; }
+        }
+        .content-card {
+            opacity:0; transform:translateY(32px);
+            transition: opacity .55s ease, transform .55s cubic-bezier(.22,1,.36,1), box-shadow .25s ease;
+        }
+        .content-card.is-visible { opacity:1; transform:none; }
+        .content-card.is-visible:hover { box-shadow:0 14px 40px rgba(0,0,0,.10); transform:translateY(-2px); }
+
+        /* ── stagger children ── */
+        .content-card .fs-type-card,
+        .content-card .lib-item,
+        .content-card .fsf-item,
+        .content-card .mopt-card,
+        .content-card .mkfs-card,
+        .content-card .cmd-card,
+        .content-card .fstab-col-card,
+        .content-card .prat-step { opacity:0; transform:translateY(14px); }
+
+        .content-card.stagger .fs-type-card,
+        .content-card.stagger .lib-item,
+        .content-card.stagger .fsf-item,
+        .content-card.stagger .mopt-card,
+        .content-card.stagger .mkfs-card,
+        .content-card.stagger .cmd-card,
+        .content-card.stagger .fstab-col-card,
+        .content-card.stagger .prat-step {
+            opacity:1; transform:none;
+            transition: opacity .35s ease, transform .35s cubic-bezier(.22,1,.36,1);
+        }
+        .content-card.stagger .fs-type-card:nth-child(1)   { transition-delay:.00s; }
+        .content-card.stagger .fs-type-card:nth-child(2)   { transition-delay:.07s; }
+        .content-card.stagger .fs-type-card:nth-child(3)   { transition-delay:.14s; }
+        .content-card.stagger .fs-type-card:nth-child(4)   { transition-delay:.21s; }
+        .content-card.stagger .fs-type-card:nth-child(5)   { transition-delay:.28s; }
+        .content-card.stagger .fs-type-card:nth-child(6)   { transition-delay:.35s; }
+        .content-card.stagger .lib-item:nth-child(1)       { transition-delay:.00s; }
+        .content-card.stagger .lib-item:nth-child(2)       { transition-delay:.08s; }
+        .content-card.stagger .lib-item:nth-child(3)       { transition-delay:.16s; }
+        .content-card.stagger .lib-item:nth-child(4)       { transition-delay:.24s; }
+        .content-card.stagger .fsf-item:nth-child(1)       { transition-delay:.00s; }
+        .content-card.stagger .fsf-item:nth-child(2)       { transition-delay:.08s; }
+        .content-card.stagger .fsf-item:nth-child(3)       { transition-delay:.16s; }
+        .content-card.stagger .fsf-item:nth-child(4)       { transition-delay:.24s; }
+        .content-card.stagger .mopt-card:nth-child(1)      { transition-delay:.00s; }
+        .content-card.stagger .mopt-card:nth-child(2)      { transition-delay:.07s; }
+        .content-card.stagger .mopt-card:nth-child(3)      { transition-delay:.14s; }
+        .content-card.stagger .mopt-card:nth-child(4)      { transition-delay:.21s; }
+        .content-card.stagger .mopt-card:nth-child(5)      { transition-delay:.28s; }
+        .content-card.stagger .mkfs-card:nth-child(1)      { transition-delay:.00s; }
+        .content-card.stagger .mkfs-card:nth-child(2)      { transition-delay:.08s; }
+        .content-card.stagger .mkfs-card:nth-child(3)      { transition-delay:.16s; }
+        .content-card.stagger .mkfs-card:nth-child(4)      { transition-delay:.24s; }
+        .content-card.stagger .cmd-card:nth-child(1)       { transition-delay:.00s; }
+        .content-card.stagger .cmd-card:nth-child(2)       { transition-delay:.05s; }
+        .content-card.stagger .cmd-card:nth-child(3)       { transition-delay:.10s; }
+        .content-card.stagger .cmd-card:nth-child(4)       { transition-delay:.15s; }
+        .content-card.stagger .cmd-card:nth-child(5)       { transition-delay:.20s; }
+        .content-card.stagger .cmd-card:nth-child(6)       { transition-delay:.25s; }
+        .content-card.stagger .cmd-card:nth-child(7)       { transition-delay:.30s; }
+        .content-card.stagger .cmd-card:nth-child(8)       { transition-delay:.35s; }
+        .content-card.stagger .fstab-col-card:nth-child(1) { transition-delay:.00s; }
+        .content-card.stagger .fstab-col-card:nth-child(2) { transition-delay:.07s; }
+        .content-card.stagger .fstab-col-card:nth-child(3) { transition-delay:.14s; }
+        .content-card.stagger .fstab-col-card:nth-child(4) { transition-delay:.21s; }
+        .content-card.stagger .fstab-col-card:nth-child(5) { transition-delay:.28s; }
+        .content-card.stagger .fstab-col-card:nth-child(6) { transition-delay:.35s; }
+        .content-card.stagger .prat-step:nth-child(1)      { transition-delay:.00s; }
+        .content-card.stagger .prat-step:nth-child(2)      { transition-delay:.08s; }
+        .content-card.stagger .prat-step:nth-child(3)      { transition-delay:.16s; }
+        .content-card.stagger .prat-step:nth-child(4)      { transition-delay:.24s; }
+        .content-card.stagger .prat-step:nth-child(5)      { transition-delay:.32s; }
+
+        /* ══ HOVER NOS CARDS INTERNOS ══ */
+        .fs-type-card { transition: transform .18s, box-shadow .18s; cursor:default; }
+        .fs-type-card:hover { transform:translateY(-5px) scale(1.02); }
+        .fc-ext4:hover  { box-shadow:0 8px 24px rgba(59,130,246,.30); }
+        .fc-xfs:hover   { box-shadow:0 8px 24px rgba(245,158,11,.30); }
+        .fc-btrfs:hover { box-shadow:0 8px 24px rgba(16,185,129,.30); }
+        .fc-ntfs:hover  { box-shadow:0 8px 24px rgba(139,92,246,.30); }
+        .fc-fat32:hover { box-shadow:0 8px 24px rgba(239,68,68,.30); }
+        .fc-exfat:hover { box-shadow:0 8px 24px rgba(236,72,153,.30); }
+
+        .lib-item  { transition: transform .18s, box-shadow .18s; cursor:default; }
+        .lib-item:hover  { transform:translateY(-5px); box-shadow:0 10px 24px rgba(0,0,0,.15); }
+
+        .fsf-item  { transition: background .15s, transform .15s; cursor:default; }
+        .fsf-item:hover  { background:#1e293b; transform:translateX(6px); }
+
+        .mopt-card { transition: transform .18s, box-shadow .18s; cursor:default; }
+        .mopt-card:hover { transform:translateY(-5px); }
+        .mo-ro:hover     { box-shadow:0 8px 22px rgba(239,68,68,.30); }
+        .mo-rw:hover     { box-shadow:0 8px 22px rgba(16,185,129,.30); }
+        .mo-noexec:hover { box-shadow:0 8px 22px rgba(245,158,11,.30); }
+        .mo-nosuid:hover { box-shadow:0 8px 22px rgba(139,92,246,.30); }
+        .mo-nofail:hover { box-shadow:0 8px 22px rgba(59,130,246,.30); }
+
+        .mkfs-card { transition: transform .18s, box-shadow .18s; cursor:default; }
+        .mkfs-card:hover { transform:translateY(-4px); box-shadow:0 10px 24px rgba(0,0,0,.18); }
+
+        .cmd-card  { transition: transform .18s, box-shadow .18s; cursor:default; }
+        .cmd-card:hover  { transform:translateY(-4px); box-shadow:0 10px 22px rgba(0,0,0,.10); }
+
+        .fstab-col-card { transition: background .15s; cursor:default; }
+        .fstab-col-card:hover { background:#1e293b; }
+
+        .uuid-box  { transition: transform .18s, box-shadow .18s; cursor:default; }
+        .uuid-box:hover  { transform:translateY(-4px); box-shadow:0 10px 24px rgba(0,0,0,.18); }
+
+        /* ══ SETAS DO MOUNT-FLOW ANIMADAS ══ */
+        @keyframes mf-bounce {
+            0%,100% { transform:translateX(0); opacity:.6; }
+            50%      { transform:translateX(6px); opacity:1; }
+        }
+        .mf-arrow { animation: mf-bounce 1.5s ease-in-out infinite; }
+        .mf-step  { transition: transform .18s, box-shadow .18s; cursor:default; }
+        .mf-step:hover { transform:translateY(-4px); box-shadow:0 8px 22px rgba(0,0,0,.20); }
+
+        /* ══ DANGER-BOX PULSE NA ENTRADA ══ */
+        @keyframes danger-pulse {
+            0%,100% { box-shadow:none; }
+            40%      { box-shadow:0 0 0 4px rgba(239,68,68,.25); }
+        }
+        .danger-box.pulsed { animation: danger-pulse 1.4s ease 1; }
+
+        /* ══ TABLE ROW HOVER ══ */
+        .cmp-table tr:not(:first-child) { transition: background .14s; cursor:default; }
+        .cmp-table tr:not(:first-child):hover { background:rgba(99,102,241,.06); }
+
+        /* ══ DF BARS (disco visual) ══ */
+        .df-visual { background:#0f172a; border-radius:12px; padding:18px 20px; margin:18px 0; }
+        .df-visual-title { font-size:.78em; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:.06em; margin-bottom:14px; }
+        .df-row { display:flex; align-items:center; gap:10px; margin:8px 0; }
+        .df-fs   { font-family:'Cascadia Code',monospace; font-size:.78em; color:#94a3b8; min-width:110px; }
+        .df-bar-wrap { flex:1; background:#1e293b; border-radius:20px; height:12px; overflow:hidden; }
+        .df-bar  { height:100%; border-radius:20px; transition: width 1.2s cubic-bezier(.22,1,.36,1); width:0; }
+        .df-pct  { font-size:.75em; color:#64748b; min-width:32px; text-align:right; }
+        .df-bar.db-root   { background:linear-gradient(90deg,#3b82f6,#6366f1); }
+        .df-bar.db-home   { background:linear-gradient(90deg,#10b981,#06b6d4); }
+        .df-bar.db-swap   { background:linear-gradient(90deg,#f59e0b,#f97316); }
+        .df-bar.db-boot   { background:linear-gradient(90deg,#8b5cf6,#ec4899); }
+
+        /* ══ TERMINAL COPY BUTTON ══ */
+        .terminal { position:relative; }
+        .term-copy {
+            position:absolute; top:10px; right:10px;
+            font-size:.68em; color:#475569; background:#1e293b;
+            border:1px solid #334155; border-radius:6px;
+            padding:2px 8px; cursor:pointer; opacity:0;
+            transition: opacity .2s;
+        }
+        .terminal:hover .term-copy { opacity:1; }
+        .term-copy.copied { color:#34d399; border-color:#34d399; }
+
+        /* ══ PRINT / REDUCED MOTION ══ */
+        @media print, (prefers-reduced-motion: reduce) {
+            .content-card, .content-card .fs-type-card,
+            .content-card .lib-item, .content-card .fsf-item,
+            .content-card .mopt-card, .content-card .mkfs-card,
+            .content-card .cmd-card, .content-card .fstab-col-card,
+            .content-card .prat-step {
+                opacity:1 !important; transform:none !important;
+                animation:none !important; transition:none !important;
+            }
+        }
+
+        /* ══ SLIDE MODE ══ */
+        body.slide-active .content-card { transition:none; }
+        body.slide-active .content-card.slide-visible,
+        body.slide-active .content-card.is-visible { opacity:1; transform:none; }
+        body.slide-active .content-card.slide-visible .fs-type-card,
+        body.slide-active .content-card.slide-visible .lib-item,
+        body.slide-active .content-card.slide-visible .fsf-item,
+        body.slide-active .content-card.slide-visible .mopt-card,
+        body.slide-active .content-card.slide-visible .mkfs-card,
+        body.slide-active .content-card.slide-visible .cmd-card,
+        body.slide-active .content-card.slide-visible .fstab-col-card,
+        body.slide-active .content-card.slide-visible .prat-step {
+            opacity:1; transform:none; transition:none;
+        }
+
         @media(max-width:768px){
             .fs-type-grid   { grid-template-columns: repeat(2,1fr); }
             .mopt-grid      { grid-template-columns: repeat(2,1fr); }
@@ -1065,6 +1249,30 @@ UUID=1A2B-3C4D                             /mnt/usb vfat  defaults,nofail 0 0
             </div>
         </div>
 
+        <div class="df-visual" id="df-visual">
+            <div class="df-visual-title">📊 df -h — uso típico em servidor Linux</div>
+            <div class="df-row">
+                <span class="df-fs">/dev/sda1 /</span>
+                <div class="df-bar-wrap"><div class="df-bar db-root" data-pct="24"></div></div>
+                <span class="df-pct">24%</span>
+            </div>
+            <div class="df-row">
+                <span class="df-fs">/dev/sda3 /home</span>
+                <div class="df-bar-wrap"><div class="df-bar db-home" data-pct="61"></div></div>
+                <span class="df-pct">61%</span>
+            </div>
+            <div class="df-row">
+                <span class="df-fs">/dev/sda2 swap</span>
+                <div class="df-bar-wrap"><div class="df-bar db-swap" data-pct="12"></div></div>
+                <span class="df-pct">12%</span>
+            </div>
+            <div class="df-row">
+                <span class="df-fs">/dev/sda4 /boot</span>
+                <div class="df-bar-wrap"><div class="df-bar db-boot" data-pct="38"></div></div>
+                <span class="df-pct">38%</span>
+            </div>
+        </div>
+
         <div class="highlight-box">
             <p>&#x1F4CC; <strong>Fluxo completo &mdash; montar um pendrive:</strong><br>
             <code>lsblk</code> &rarr; <code>mkdir /mnt/pendrive</code> &rarr; <code>mount /dev/sdb1 /mnt/pendrive</code> &rarr; usar &rarr; <code>umount /mnt/pendrive</code> &rarr; remover com seguran&ccedil;a.</p>
@@ -1277,5 +1485,76 @@ UUID=1A2B-3C4D                             /mnt/usb vfat  defaults,nofail 0 0
 <script src="slide-mode.js"></script>
 <script src="exercise-drag.js"></script>
 <script src="exercise-print.js"></script>
+<script>
+(function () {
+    // ── Copy buttons ──
+    document.querySelectorAll('.terminal').forEach(function(term) {
+        var btn = document.createElement('button');
+        btn.className = 'term-copy';
+        btn.textContent = '⎘ copiar';
+        btn.addEventListener('click', function() {
+            var text = term.querySelector('.terminal-body').innerText;
+            navigator.clipboard.writeText(text).then(function() {
+                btn.textContent = '✓ copiado';
+                btn.classList.add('copied');
+                setTimeout(function() { btn.textContent = '⎘ copiar'; btn.classList.remove('copied'); }, 1800);
+            });
+        });
+        term.appendChild(btn);
+    });
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.querySelectorAll('.content-card').forEach(function(c) {
+            c.classList.add('is-visible','stagger');
+        });
+        document.querySelectorAll('.df-bar').forEach(function(b) {
+            b.style.width = b.dataset.pct + '%';
+        });
+        return;
+    }
+
+    // ── Scroll reveal ──
+    var cards = Array.from(document.querySelectorAll('.content-card'));
+
+    function revealAll() {
+        cards.forEach(function(c) { c.classList.add('is-visible','stagger'); });
+        animateBars();
+    }
+
+    var io = new IntersectionObserver(function(entries) {
+        entries.forEach(function(e) {
+            if (!e.isIntersecting) return;
+            var card = e.target;
+            card.classList.add('is-visible');
+            setTimeout(function() { card.classList.add('stagger'); }, 280);
+            // danger-box pulse on mkfs card
+            var db = card.querySelector('.danger-box');
+            if (db) setTimeout(function() { db.classList.add('pulsed'); }, 500);
+            io.unobserve(card);
+        });
+    }, { threshold: 0.07, rootMargin: '0px 0px -30px 0px' });
+
+    cards.forEach(function(c) { io.observe(c); });
+
+    // ── Bars animate when resumo card visible ──
+    var barsAnimated = false;
+    function animateBars() {
+        if (barsAnimated) return;
+        barsAnimated = true;
+        document.querySelectorAll('.df-bar').forEach(function(b) {
+            b.style.width = b.dataset.pct + '%';
+        });
+    }
+    var barObs = new IntersectionObserver(function(entries) {
+        if (entries[0].isIntersecting) { animateBars(); barObs.disconnect(); }
+    }, { threshold: 0.3 });
+    var dfVis = document.getElementById('df-visual');
+    if (dfVis) barObs.observe(dfVis);
+
+    // ── Slide mode: reveal all ──
+    var slideBtn = document.getElementById('slideToggleBtn');
+    if (slideBtn) slideBtn.addEventListener('click', revealAll);
+}());
+</script>
 </body>
 </html>
