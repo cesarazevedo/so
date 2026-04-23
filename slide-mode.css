@@ -65,6 +65,12 @@ body.slide-active .content-card.slide-visible {
     display: block;
 }
 
+/* Neutraliza hover das aulas que sobrescreve translate(-50%,-50%) do slide */
+body.slide-active .content-card.is-visible:hover {
+    transform: translate(-50%, -50%);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+}
+
 body.slide-active .content-card h2 {
     font-size: 2.6em;
     margin-bottom: 28px;
