@@ -148,12 +148,14 @@
         .tab-btn[data-target="bim2"].active { border-left-color: #11998e; color: #11998e; background: rgba(17,153,142,.08); }
         .tab-btn[data-target="bim3"].active { border-left-color: #f7971e; color: #f7971e; background: rgba(247,151,30,.08); }
         .tab-btn[data-target="bim4"].active { border-left-color: #ff758c; color: #ff758c; background: rgba(255,117,140,.08); }
+        .tab-btn[data-target="dicas"].active { border-left-color: #8b5cf6; color: #8b5cf6; background: rgba(139,92,246,.08); }
 
         /* Badges */
         .badge-bim1 { background: rgba(102,126,234,.15); color: #667eea; }
         .badge-bim2 { background: rgba(17,153,142,.15);  color: #11998e; }
         .badge-bim3 { background: rgba(247,151,30,.15);  color: #f7971e; }
         .badge-bim4 { background: rgba(255,117,140,.15); color: #ff758c; }
+        .badge-dicas { background: rgba(139,92,246,.15); color: #8b5cf6; }
 
         /* --- CONTEÚDO DAS ABAS --- */
         .tab-content {
@@ -416,7 +418,8 @@
             .tab-btn[data-target="bim1"].active,
             .tab-btn[data-target="bim2"].active,
             .tab-btn[data-target="bim3"].active,
-            .tab-btn[data-target="bim4"].active {
+            .tab-btn[data-target="bim4"].active,
+            .tab-btn[data-target="dicas"].active {
                 border-left-color: transparent;
                 border-bottom-color: currentColor;
                 background: rgba(102,126,234,0.06);
@@ -466,6 +469,9 @@
             <button class="tab-btn" data-target="bim2">&#x1F916; 2&ordm; Bim &mdash; Shell Script</button>
             <button class="tab-btn" data-target="bim3">&#x1F310; 3&ordm; Bim &mdash; Servi&ccedil;os</button>
             <button class="tab-btn" data-target="bim4">&#x1FA9F; 4&ordm; Bim &mdash; Windows</button>
+            <div class="sidebar-sep"></div>
+            <div class="sidebar-label">Extra</div>
+            <button class="tab-btn" data-target="dicas">&#x1F4DA; Dicas de Estudo</button>
         </div>
 
         <!-- ═══════════════════════════════════════════════════ -->
@@ -1068,6 +1074,35 @@
                         <span class="mini-tag">GPO</span>
                         <span class="mini-tag">Pol&iacute;ticas</span>
                         <span class="mini-tag">Dom&iacute;nio</span>
+                    </div>
+                </a>
+
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════ -->
+        <!-- DICAS DE ESTUDO                                      -->
+        <!-- ═══════════════════════════════════════════════════ -->
+        <div id="dicas" class="tab-content">
+            <div class="bimestre-title">
+                Dicas de Estudo
+                <span class="bimestre-badge badge-dicas">Extra</span>
+            </div>
+            <p class="bimestre-subtitle">Estrat&eacute;gias, t&eacute;cnicas e h&aacute;bitos para aprender melhor: organiza&ccedil;&atilde;o, revis&atilde;o ativa, foco e produtividade nos estudos.</p>
+
+            <div class="lessons-grid">
+
+                <a href="dicas01-como-estudar.html" class="lesson-card">
+                    <div class="lesson-header">
+                        <span class="lesson-id">#01 &#x1F9E0;</span>
+                        <span class="lesson-status"></span>
+                    </div>
+                    <h4 class="lesson-title">Como Estudar de Verdade</h4>
+                    <p class="lesson-desc">T&eacute;cnicas baseadas em ci&ecirc;ncia: revis&atilde;o espa&ccedil;ada, recupera&ccedil;&atilde;o ativa, intercala&ccedil;&atilde;o e como criar um plano de estudos eficiente.</p>
+                    <div class="lesson-tags">
+                        <span class="mini-tag">Foco</span>
+                        <span class="mini-tag">Revis&atilde;o</span>
+                        <span class="mini-tag">Produtividade</span>
                     </div>
                 </a>
 
