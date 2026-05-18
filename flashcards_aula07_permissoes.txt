@@ -1,0 +1,46 @@
+O que são permissões de arquivo no Linux? | Regras que definem quem pode ler, escrever ou executar cada arquivo ou diretório — aplicadas para o dono, o grupo e os outros.
+Quais são os 3 grupos de permissão no Linux? | u (user/dono do arquivo), g (group/grupo dono) e o (others/todos os demais usuários).
+Quais são os 3 tipos de permissão no Linux? | r (read/leitura), w (write/escrita) e x (execute/execução).
+Qual o valor octal de r? | 4
+Qual o valor octal de w? | 2
+Qual o valor octal de x? | 1
+O que significa uma permissão octal 7? | rwx — leitura (4) + escrita (2) + execução (1) = 7.
+O que significa uma permissão octal 6? | rw- — leitura (4) + escrita (2) = 6.
+O que significa uma permissão octal 5? | r-x — leitura (4) + execução (1) = 5.
+O que significa uma permissão octal 4? | r-- — somente leitura.
+O que significa uma permissão octal 0? | --- — sem nenhuma permissão.
+Como ler a string de 10 caracteres do ls -l? | 1º char = tipo (d=diretório, -=arquivo, l=link). Chars 2-4 = permissões do dono. Chars 5-7 = permissões do grupo. Chars 8-10 = permissões dos outros.
+O que significa o "d" no início da string do ls -l? | Que o item é um diretório.
+O que significa "-" no início da string do ls -l? | Que o item é um arquivo regular.
+O que significa "l" no início da string do ls -l? | Que o item é um link simbólico.
+Como interpretar a permissão -rw-r--r-- ? | Arquivo regular: dono tem rw- (leitura+escrita), grupo tem r-- (só leitura), outros têm r-- (só leitura) — típico de um arquivo de texto (644).
+Como interpretar a permissão drwxr-xr-x ? | Diretório: dono tem rwx (tudo), grupo tem r-x (listar+entrar), outros têm r-x (listar+entrar) — típico de diretório público (755).
+Qual a sintaxe do chmod simbólico? | chmod [quem][operador][permissão] arquivo — ex: chmod u+x script.sh
+O que significa "u", "g", "o" e "a" no chmod simbólico? | u = dono, g = grupo, o = outros, a = all (todos os três ao mesmo tempo).
+O que significa "+", "-" e "=" no chmod simbólico? | + adiciona permissão, - remove permissão, = define exatamente aquelas permissões (sobrescreve as existentes).
+Como dar permissão de execução ao dono com chmod? | chmod u+x arquivo
+Como remover permissão de escrita do grupo com chmod? | chmod g-w arquivo
+Como definir permissões rw para dono e r para grupo e outros com chmod? | chmod u=rw,go=r arquivo — ou chmod 644 arquivo
+Qual a sintaxe do chmod octal? | chmod NNN arquivo — onde cada N é a soma dos valores de permissão (r=4, w=2, x=1) para dono, grupo e outros.
+O que faz chmod 644 arquivo? | Dono: rw- (6), grupo: r-- (4), outros: r-- (4) — permissão padrão para arquivos de texto e configuração.
+O que faz chmod 755 arquivo? | Dono: rwx (7), grupo: r-x (5), outros: r-x (5) — permissão padrão para diretórios e executáveis públicos.
+O que faz chmod 750 arquivo? | Dono: rwx (7), grupo: r-x (5), outros: --- (0) — boa prática para scripts: dono executa, grupo lê, outros não acessam.
+O que faz chmod 600 arquivo? | Dono: rw- (6), grupo: --- (0), outros: --- (0) — para arquivos confidenciais como chaves SSH e senhas.
+O que faz chmod 700 diretório? | Dono: rwx (7), grupo: --- (0), outros: --- (0) — diretório totalmente privado.
+Por que chmod 777 é perigoso? | Dá todas as permissões (rwx) a dono, grupo E outros — qualquer usuário do sistema pode ler, modificar e executar o arquivo.
+O que significa x (execução) em um diretório? | Permissão para entrar no diretório com cd — sem x, mesmo com r, não é possível acessar o conteúdo.
+O que significa r (leitura) em um diretório? | Permissão para listar o conteúdo com ls — sem r, não se vê quais arquivos existem no diretório.
+O que significa w (escrita) em um diretório? | Permissão para criar, renomear e deletar arquivos dentro do diretório.
+Qual a diferença de x entre arquivo e diretório? | Em arquivo: permite executar o programa/script. Em diretório: permite entrar nele com cd.
+O que faz chmod -R 755 diretório/? | Aplica a permissão 755 recursivamente a todos os arquivos e subdiretórios dentro do diretório.
+O que faz o comando chown? | Muda o dono de um arquivo — ex: chown joao arquivo.txt
+O que faz chown usuario:grupo arquivo? | Muda o dono E o grupo de um arquivo ao mesmo tempo — ex: chown www-data:www-data index.html
+O que faz chown -R usuario:grupo diretório/? | Muda dono e grupo recursivamente em todos os arquivos e subdiretórios.
+O que é umask? | Máscara de criação de arquivos — define as permissões padrão que são REMOVIDAS na criação de novos arquivos e diretórios.
+Qual a umask padrão no Linux e o que ela significa? | 022 — remove w do grupo e w dos outros. Arquivos novos ficam com 644, diretórios com 755.
+Como verificar as permissões de um arquivo com ls? | ls -l arquivo — exibe a string de 10 chars, dono, grupo, tamanho e data.
+Como ver permissões de um diretório (não seu conteúdo)? | ls -ld diretório/ — o -d mostra info do próprio diretório, não do que está dentro.
+Por que um arquivo .sh precisa de chmod +x? | Por padrão arquivos criados não têm permissão de execução — é necessário adicioná-la explicitamente para poder rodar o script.
+Qual permissão mínima para um servidor web servir arquivos? | Arquivos precisam de r-- (4) para www-data, diretórios precisam de r-x (5) — senão o servidor retorna erro 403 Forbidden.
+O que é o bit setuid (SUID)? | Permissão especial que faz um executável rodar com os privilégios do dono, não do usuário que o executa — usado em /usr/bin/passwd.
+Como verificar se um arquivo tem SUID ativado? | ls -l mostra 's' no lugar do 'x' do dono — ex: -rwsr-xr-x

@@ -1,0 +1,40 @@
+O que é um pacote .deb? | Arquivo comprimido que contém binários, configurações, documentação, metadados e scripts de instalação — unidade de distribuição de software no Debian/Ubuntu.
+Quais são os componentes de um pacote .deb? | Binários (executáveis), arquivos de configuração (/etc), documentação (man pages), lista de dependências, scripts pre/post instalação e metadados (nome, versão, mantenedor).
+O que são repositórios no Linux? | Servidores com coleções organizadas de pacotes testados e seguros — o sistema baixa e instala software a partir deles.
+Quais são os 4 tipos de repositório no Ubuntu? | main (oficiais Canonical, suporte total), universe (comunidade, sem garantia), restricted (drivers proprietários), multiverse (software não-livre, ex: codecs).
+Onde ficam as configurações de repositórios no Ubuntu? | /etc/apt/sources.list (arquivo principal) e /etc/apt/sources.list.d/ (arquivos extras, um por repositório adicionado).
+Qual a diferença entre apt e dpkg? | apt é alto nível: resolve dependências, baixa da internet, gerencia tudo automaticamente. dpkg é baixo nível: instala .deb local, não resolve dependências.
+O que faz apt update? | Atualiza o catálogo de pacotes disponíveis nos repositórios — NÃO instala nada, apenas sincroniza a lista local com os servidores.
+O que faz apt upgrade? | Instala as versões mais novas de todos os pacotes já instalados no sistema.
+Por que rodar apt update antes de apt install? | Para garantir que a lista de pacotes está atualizada — sem isso, o apt pode tentar instalar uma versão antiga ou não encontrar pacotes novos.
+Como instalar um pacote com apt? | apt install nome-do-pacote (como root ou com sudo).
+O que faz a flag -y no apt install? | Responde "sim" automaticamente para todas as confirmações — útil em scripts e automação: apt install -y nome-do-pacote
+Como reinstalar um pacote corrompido? | apt install --reinstall nome-do-pacote
+Qual a diferença entre apt remove e apt purge? | apt remove remove o software mas mantém os arquivos de configuração. apt purge remove tudo, incluindo as configurações — sem rastros.
+O que faz apt autoremove? | Remove pacotes que foram instalados automaticamente como dependências e não são mais necessários (dependências órfãs).
+O que faz apt search termo? | Busca pacotes disponíveis nos repositórios que contenham o termo no nome ou descrição.
+O que faz apt show nome-do-pacote? | Exibe informações detalhadas sobre um pacote: descrição, versão, tamanho, dependências, mantenedor.
+O que faz apt list --installed? | Lista todos os pacotes atualmente instalados no sistema.
+O que faz apt list --upgradable? | Lista todos os pacotes instalados que têm uma versão mais nova disponível nos repositórios.
+O que faz dpkg -i arquivo.deb? | Instala um pacote .deb local — não resolve dependências automaticamente.
+O que faz dpkg -r nome-do-pacote? | Remove o pacote mantendo os arquivos de configuração.
+O que faz dpkg -P nome-do-pacote? | Purge — remove o pacote e todos os seus arquivos de configuração.
+O que faz dpkg -l? | Lista todos os pacotes instalados via dpkg com status e versão.
+O que faz dpkg -S /caminho/para/arquivo? | Descobre qual pacote instalou aquele arquivo — ex: dpkg -S /usr/bin/vim
+O que fazer após dpkg -i falhar por dependências? | Executar apt install -f — o -f (fix broken) resolve as dependências quebradas automaticamente.
+O que é um PPA? | Personal Package Archive — repositório pessoal no Launchpad (Ubuntu) para distribuir software mais atualizado do que o repositório oficial.
+Como adicionar um PPA? | add-apt-repository ppa:nome/ppa — sempre seguido de apt update para atualizar o catálogo.
+Por que sempre rodar apt update após adicionar um PPA? | Para que o apt reconheça os novos pacotes disponíveis no repositório recém-adicionado.
+O que faz apt autoclean? | Remove do cache local apenas os pacotes .deb baixados de versões antigas — mantém a versão atual em cache.
+O que faz apt clean? | Remove TODOS os arquivos .deb do cache local (/var/cache/apt/archives/) — libera espaço em disco completamente.
+Qual a diferença entre apt autoclean e apt clean? | autoclean remove só pacotes obsoletos do cache. clean remove todo o cache de pacotes baixados.
+Onde o apt armazena os pacotes .deb baixados? | /var/cache/apt/archives/ — diretório de cache do apt.
+Como listar apenas os pacotes instalados que podem ser atualizados? | apt list --upgradable
+Como saber a versão instalada de um pacote? | dpkg -l nome-do-pacote ou apt show nome-do-pacote
+Qual o fluxo correto para instalar um .deb com dependências? | 1) dpkg -i arquivo.deb (instala, possivelmente com erro de dependências) 2) apt install -f (resolve as dependências) — ou usar apt install ./arquivo.deb diretamente.
+Como instalar um .deb local com apt (resolvendo deps automaticamente)? | apt install ./arquivo.deb — o ./ é obrigatório para indicar arquivo local.
+O que é dist-upgrade? | apt dist-upgrade — atualiza os pacotes e também remove/instala pacotes novos quando necessário para resolver conflitos de dependências.
+Como ver o histórico de instalações do apt? | cat /var/log/apt/history.log — registra todas as operações de instalação, remoção e atualização.
+O que são dependências de pacote? | Outros pacotes que precisam estar instalados para que o software funcione — o apt resolve e instala automaticamente, o dpkg não.
+Por que não usar repositórios não confiáveis? | Pacotes de fontes desconhecidas podem conter malware, software sem suporte de segurança ou versões incompatíveis — sempre verifique a origem.
+Qual comando verifica a integridade dos pacotes instalados? | dpkg --verify nome-do-pacote — verifica se os arquivos instalados correspondem ao que foi distribuído no pacote.
