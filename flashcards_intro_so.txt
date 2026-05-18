@@ -1,0 +1,35 @@
+O que é Linux? | Sistema operacional de código aberto. Em sentido estrito, "Linux" é apenas o kernel — o núcleo do sistema. O conjunto completo é chamado de GNU/Linux.
+O que é um kernel? | Componente central que faz a ponte entre o hardware e os programas. Gerencia memória RAM, CPU, dispositivos, sistema de arquivos e segurança/permissões.
+Qual a analogia do kernel com um garçom? | O usuário (você) faz um pedido (abre um programa), o garçom (kernel) leva à cozinha (hardware) e traz o resultado — sem que você entre na cozinha diretamente.
+Qual comando mostra a versão do kernel no Linux? | uname -r (apenas a versão) ou uname -a (todas as informações do sistema).
+O que o kernel gerencia? | Memória RAM, CPU (escalonamento de processos), dispositivos (teclado, mouse, disco, rede), sistema de arquivos e segurança/permissões.
+Quando e onde o UNIX foi criado? | Em 1969, nos Bell Labs (AT&T), por Ken Thompson e Dennis Ritchie.
+O que foi o Projeto GNU e quem o fundou? | Projeto fundado por Richard Stallman em 1983 para criar um sistema operacional completamente livre. Criou a GPL e ferramentas como GCC, Bash e Emacs.
+Quando Linus Torvalds criou o kernel Linux? | Em 1991. Torvalds era um estudante finlandês de 21 anos insatisfeito com o MINIX.
+Quantas linhas de código tinha o Linux original? | Cerca de 10.000 linhas de código.
+Quando ocorreu a união GNU + Linux? | Em 1992, formando o primeiro sistema operacional livre e completo: GNU/Linux.
+Quem criou o mascote Tux e quando? | Larry Ewing criou o pinguim Tux em 1996, que se tornou o mascote oficial do Linux.
+Por que o Linux não foi chamado de "Freax"? | Linus queria o nome "Freax", mas o administrador do servidor FTP onde o código foi publicado renomeou a pasta para "Linux" (Linus + Unix).
+Qual a diferença entre software livre e software gratuito? | "Free software" significa livre (como em "free speech" — liberdade de expressão), não necessariamente gratuito (como "free beer" — cerveja grátis).
+Quais são as 4 Liberdades do Software Livre (Stallman)? | Liberdade 0: Usar; Liberdade 1: Estudar e adaptar; Liberdade 2: Redistribuir cópias; Liberdade 3: Melhorar e distribuir as melhorias.
+O que é a licença GPL? | GNU General Public License — garante que qualquer software derivado de um software GPL também deve ser distribuído sob GPL, mantendo o ciclo de liberdade.
+O que é uma distribuição Linux (distro)? | Conjunto completo: kernel + ferramentas GNU + gerenciador de pacotes + interface gráfica + aplicativos. É o "carro montado" usando o "motor" Linux.
+Cite 3 distros Linux para iniciantes/desktop. | Ubuntu (mais popular), Linux Mint (visual parecido com Windows), Zorin OS (design moderno para ex-usuários Windows/Mac).
+Cite 3 distros Linux para servidores e empresas. | Red Hat/RHEL (padrão corporativo), Debian (super estável, base do Ubuntu), Rocky Linux / AlmaLinux (substituto gratuito do RHEL).
+Qual distro é usada neste curso e por quê? | Ubuntu Server — mais popular para aprendizado de administração de servidores, com enorme comunidade e documentação.
+Qual a porcentagem de supercomputadores que rodam Linux? | 100% dos supercomputadores do mundo rodam Linux.
+Qual a porcentagem de servidores web que rodam Linux? | Aproximadamente 96% dos servidores web rodam Linux.
+Qual a relação entre Android e Linux? | O Android usa o kernel Linux, representando cerca de 85% dos smartphones do mundo.
+Quanto da nuvem pública roda Linux? | Aproximadamente 90% da nuvem pública é baseada em Linux.
+Por que o Linux domina os servidores? | Gratuito (sem custos de licença), Estável (anos sem reiniciar), Seguro (permissões robustas, menos malwares), Personalizável, Terminal poderoso, Comunidade enorme.
+O que é CLI? | Command Line Interface — interface de linha de comando, principal forma de interação em servidores Linux.
+Por que aprender a linha de comando no Linux? | Servidores remotos não têm interface gráfica (acesso via SSH), permite automação com shell scripts, é mais rápido e universal em todas as distros.
+O que faz o comando whoami? | Mostra o nome do usuário atual logado no sistema.
+O que faz o comando pwd? | Print Working Directory — mostra o caminho do diretório atual.
+O que faz o comando ls -la? | Lista todos os arquivos e pastas do diretório atual, incluindo ocultos (-a), com detalhes de permissões, dono e tamanho (-l).
+O que faz o comando date? | Exibe a data e hora atual do sistema.
+O Linux diferencia maiúsculas de minúsculas? | Sim. No Linux, ls, LS e Ls são comandos diferentes. Relatorio.txt e relatorio.txt são arquivos distintos.
+Como obter o manual completo de um comando no terminal? | Usando o comando man seguido do nome do comando — ex: man ls.
+Como obter ajuda rápida sobre um comando? | Usando o flag --help — ex: ls --help.
+Cite empresas que usam Linux em sua infraestrutura. | Google, Amazon AWS, Netflix, NASA, SpaceX, Android (3 bilhões de celulares) e bolsas de valores ao redor do mundo.
+Cite fontes de ajuda para Linux em português. | Viva o Linux (maior comunidade brasileira) e Reddit r/linuxbrasil.
