@@ -1,0 +1,30 @@
+O que são metacaracteres do shell? | Símbolos com significado especial para o shell — interpretados antes de qualquer programa executar. Controlam como comandos se conectam e executam, não buscam texto em arquivos.
+Qual a analogia dos metacaracteres com a linguagem? | São a pontuação do shell: | e ; não são comandos, mas ditam como eles se encadeiam.
+O que faz o metacaracter | (pipe)? | Passa a saída de um comando para a entrada do próximo — ex: ls | grep ".conf".
+O que faz o metacaracter > ? | Redireciona a saída para um arquivo, criando-o ou sobrescrevendo o conteúdo anterior — ex: ls > lista.txt.
+O que faz o metacaracter >> ? | Adiciona a saída ao final de um arquivo sem apagar o conteúdo existente — ex: echo "ok" >> log.txt.
+O que faz o metacaracter < ? | Faz o comando ler de um arquivo em vez do teclado (entrada padrão) — ex: sort < nomes.txt.
+O que faz o metacaracter ; (ponto e vírgula)? | Executa comandos em sequência, um após o outro, independentemente de sucesso ou falha — ex: cd /tmp ; ls ; pwd.
+O que faz o metacaracter && (AND lógico)? | Executa o próximo comando somente se o anterior teve sucesso (código de saída 0) — ex: mkdir pasta && cd pasta.
+O que faz o metacaracter || (OR lógico)? | Executa o próximo comando somente se o anterior falhou — ex: ping host || echo "fora do ar".
+O que faz o metacaracter & (background)? | Executa o comando em segundo plano, devolvendo o controle do terminal imediatamente — ex: sleep 60 &.
+Qual a diferença entre ; e && ? | ; executa sempre o próximo, independente do resultado. && executa o próximo somente se o anterior teve sucesso.
+Qual a diferença entre && e || ? | && é o "plano principal" — continua se deu certo. || é o "plano B" — executa se deu errado.
+Qual a analogia do pipe com uma fábrica? | É como uma esteira: cada máquina (comando) processa e passa adiante para a próxima.
+Por que o > é perigoso? | Ele apaga o arquivo antes de escrever. Se errar o nome, pode perder dados. O >> é mais seguro pois só acrescenta.
+O que significa 2> no shell? | Redireciona a saída de erro (stderr). Ex: find / -name "*.conf" 2>/dev/null descarta todos os erros.
+O que significa 2>&1 ? | Redireciona o stderr para onde o stdout está indo — ex: make > build.log 2>&1 salva saída normal e erros no mesmo arquivo.
+O que faz o comando jobs? | Lista os processos em execução em background na sessão atual do terminal.
+O que faz o comando fg %1? | Traz o job de número 1 do background para o primeiro plano (foreground).
+O que faz o comando bg %1? | Retoma em background um job que estava pausado (suspenso com Ctrl+Z).
+O que faz kill %1? | Encerra o job de número 1 sem precisar esperar ele terminar.
+O que acontece ao pressionar Ctrl+Z durante um comando? | Suspende (pausa) o processo atual e o envia para segundo plano com status "Stopped".
+Como iniciar um processo em background e ignorar a saída? | comando > saida.log 2>&1 & — redireciona tudo para um arquivo e executa em background.
+O que o shell retorna ao iniciar um processo em background? | O número do job entre colchetes e o PID do processo — ex: [1] 4532.
+Como contar quantos usuários existem no sistema? | cat /etc/passwd | wc -l
+Como ver os 5 processos que mais usam memória? | ps aux | sort -k4 -rn | head -5
+Como listar só as pastas do diretório atual? | ls -la | grep "^d"
+Como ver os top 5 arquivos maiores de uma pasta? | du -sh * | sort -rh | head -5
+Quando usar ; em vez de && ? | Usar ; quando quiser executar todos os comandos independente do resultado. Usar && quando o próximo passo só faz sentido se o anterior funcionou.
+Qual a tabela comparativa dos operadores de fluxo? | ; = executa sempre / && = executa se anterior teve sucesso / || = executa se anterior falhou.
+Como criar uma pasta e entrar nela em um único comando com garantia? | mkdir ~/pasta && cd ~/pasta && pwd — se mkdir falhar, os demais não executam.

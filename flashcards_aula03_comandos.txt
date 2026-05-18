@@ -1,0 +1,61 @@
+O que faz o comando pwd? | Print Working Directory — mostra o caminho completo do diretório atual.
+O que faz o comando ls? | Lista os arquivos e pastas do diretório atual (ou de um caminho especificado).
+O que faz o comando cd? | Change Directory — navega entre diretórios.
+O que significa ls -l? | Lista detalhada com permissões, dono, tamanho e data de modificação.
+O que significa ls -a? | Mostra todos os arquivos, incluindo os ocultos (que começam com ponto).
+O que significa ls -la? | Combinação de -l e -a: lista detalhada incluindo arquivos ocultos — a combinação mais usada.
+O que significa ls -lh? | Lista detalhada com tamanhos em formato legível (KB, MB, GB).
+O que significa ls -lS? | Lista detalhada ordenada por tamanho, do maior para o menor.
+O que faz cd ~? | Vai para o diretório home do usuário atual.
+O que faz cd ..? | Sobe um nível na hierarquia de diretórios (vai para a pasta pai).
+O que faz cd -? | Volta para o diretório anterior (alterna entre os dois últimos diretórios).
+O que faz cd /? | Vai para a raiz do sistema de arquivos.
+O que faz o comando mkdir? | Cria um novo diretório.
+O que faz mkdir -p? | Cria toda a estrutura de diretórios de uma vez, incluindo os intermediários que ainda não existem — ex: mkdir -p a/b/c.
+O que faz o comando touch? | Cria um arquivo vazio ou atualiza a data/hora de modificação de um arquivo existente.
+O que faz o comando cp? | Copia arquivos de um local para outro.
+O que faz cp -r? | Copia um diretório inteiro com todo o seu conteúdo de forma recursiva.
+O que faz o comando mv? | Move ou renomeia arquivos e diretórios.
+O que faz o comando rm? | Remove arquivos permanentemente — sem lixeira!
+O que faz rm -i? | Remove com pedido de confirmação antes de cada arquivo — opção mais segura.
+O que faz rm -r? | Remove um diretório e todo o seu conteúdo de forma recursiva — usar com cuidado.
+Por que nunca executar rm -rf /? | Apagaria todos os arquivos do sistema recursivamente e à força, destruindo o sistema operacional.
+O que faz o comando cat? | Exibe o conteúdo completo de um arquivo de uma vez — ideal para arquivos pequenos.
+O que faz o comando less? | Visualiza arquivos página por página. Use q para sair e / para buscar.
+O que faz o comando head? | Mostra as primeiras N linhas de um arquivo (padrão: 10). Ex: head -5 arquivo.txt.
+O que faz o comando tail? | Mostra as últimas N linhas de um arquivo (padrão: 10). Ex: tail -5 arquivo.txt.
+O que faz tail -f? | Monitora um arquivo em tempo real, exibindo novas linhas conforme são gravadas — essencial para acompanhar logs. Sair com Ctrl+C.
+O que faz o comando grep? | Busca padrões de texto dentro de arquivos e exibe as linhas que correspondem.
+O que faz grep -r? | Realiza busca recursiva em todos os arquivos de um diretório e seus subdiretórios.
+O que faz grep -i? | Ignora a diferença entre maiúsculas e minúsculas na busca.
+O que faz grep -n? | Mostra o número da linha junto com cada resultado encontrado.
+O que faz grep -v? | Inverte a busca — exibe as linhas que NÃO contêm o padrão.
+O que faz grep -c? | Conta quantas linhas correspondem ao padrão, sem exibi-las.
+O que faz grep -l? | Lista apenas os nomes dos arquivos que contêm o padrão, sem mostrar as linhas.
+O que faz o comando find? | Localiza arquivos e diretórios no sistema com filtros como nome, tipo, tamanho e data.
+Como buscar arquivos .txt com find? | find /caminho -name "*.txt"
+Como buscar arquivos modificados nos últimos 7 dias? | find /var/log -mtime -7
+Como buscar arquivos maiores que 1 MB? | find /tmp -type f -size +1M
+Qual a diferença entre find e locate? | find varre o disco em tempo real com filtros avançados. locate usa um banco de dados pré-indexado (mais rápido, mas pode estar desatualizado). Para atualizar: sudo updatedb.
+O que faz o pipe (|)? | Conecta comandos em série: a saída de um comando vira a entrada do próximo — ex: ls -la | grep ".txt".
+O que faz o redirecionamento >? | Salva a saída de um comando em um arquivo, sobrescrevendo o conteúdo anterior.
+O que faz o redirecionamento >>? | Acrescenta a saída ao final de um arquivo sem apagar o que já existe.
+O que faz o redirecionamento <? | Usa um arquivo como entrada de um comando em vez do teclado.
+O que faz o redirecionamento 2>? | Redireciona somente as mensagens de erro (stderr) para um arquivo ou /dev/null.
+O que faz 2>/dev/null? | Descarta todas as mensagens de erro, fazendo-as desaparecer silenciosamente.
+O que faz >> /dev/null 2>&1? | Descarta tanto a saída normal quanto os erros — tudo é enviado para o buraco negro do /dev/null.
+O que faz a tecla Tab no terminal? | Autocompletar nomes de comandos, arquivos e diretórios — pressionar Tab duas vezes mostra todas as opções.
+O que faz o comando history? | Exibe o histórico de comandos digitados na sessão.
+Como re-executar um comando do histórico pelo número? | Usando !número — ex: !502 re-executa o comando de número 502 do histórico.
+O que faz !! no terminal? | Re-executa o último comando digitado.
+O que faz Ctrl+C no terminal? | Cancela/interrompe o comando em execução — o "botão de emergência".
+O que faz Ctrl+Z no terminal? | Suspende o processo atual e o envia para segundo plano (pausa a execução).
+O que faz Ctrl+D no terminal? | Encerra o terminal (sinaliza EOF — End of File).
+O que faz Ctrl+L no terminal? | Limpa a tela do terminal — equivalente ao comando clear.
+O que faz Ctrl+A no terminal? | Move o cursor para o início da linha de comando.
+O que faz Ctrl+E no terminal? | Move o cursor para o fim da linha de comando.
+O que faz Ctrl+U no terminal? | Apaga todo o texto da posição atual do cursor até o início da linha.
+O que faz Ctrl+R no terminal? | Busca reversa no histórico — pesquisa enquanto você digita parte do comando desejado.
+Como listar os 5 maiores arquivos de uma pasta? | ls -lhS | head -6
+Como ver as 10 últimas linhas de erro do syslog? | grep -i "error" /var/log/syslog | tail -10
+Como contar quantos arquivos existem num diretório? | ls | wc -l
