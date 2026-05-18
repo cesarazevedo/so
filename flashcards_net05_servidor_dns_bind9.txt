@@ -1,0 +1,39 @@
+O que é DNS? | Domain Name System — sistema que traduz nomes de domínio em endereços IP. Sem DNS, seria preciso memorizar IPs para acessar sites.
+Qual a analogia do DNS com uma agenda telefônica? | A agenda é o DNS, o nome do contato é o domínio e o número é o IP. Você lembra do nome (www.google.com), não do número (142.250.185.46).
+Qual a porta padrão do DNS? | Porta 53 (UDP e TCP).
+Por que usar DNS? | Nomes são fáceis de lembrar, o IP pode mudar mas o nome permanece, permite balanceamento de carga e facilita a administração de redes.
+Quais os 5 passos de uma consulta DNS? | 1) Digita www.google.com; 2) Sistema consulta o DNS configurado; 3) DNS retorna o IP; 4) Navegador conecta ao IP; 5) Página carrega.
+O que é BIND9? | Berkeley Internet Name Domain — servidor DNS mais usado do mundo, mantido pelo ISC, padrão em servidores Unix/Linux.
+Qual o processo do BIND9? | named — o serviço principal que responde às consultas DNS.
+Quais os arquivos principais do BIND9? | /etc/bind/named.conf (principal), named.conf.options (opções gerais), named.conf.my-zones (zonas personalizadas) e /var/cache/bind/*.zone (registros DNS).
+O que é um registro A no DNS? | Mapeia um nome de domínio para um endereço IPv4 — ex: www IN A 192.168.0.1.
+O que é um registro AAAA no DNS? | Mapeia um nome de domínio para um endereço IPv6.
+O que é um registro CNAME no DNS? | Alias — apelido para outro nome. Ex: curso IN CNAME www (curso aponta para www que aponta para o IP).
+O que é um registro MX no DNS? | Define o servidor de e-mail do domínio.
+O que é um registro NS no DNS? | Define os servidores DNS autoritativos da zona.
+O que é um registro TXT no DNS? | Armazena texto livre — usado para SPF, verificações de domínio etc.
+Como instalar o BIND9? | sudo apt-get update && sudo apt-get install bind9
+Como verificar o status do BIND9? | systemctl status bind9
+O que é instalado junto com o bind9? | Servidor BIND9 (processo named) e utilitários dig e nslookup.
+O que fazer no named.conf para usar zonas personalizadas? | Comentar a linha include "named.conf.default-zones" e adicionar include "/etc/bind/named.conf.my-zones".
+O que faz a diretiva listen-on port 53 no named.conf.options? | Define as interfaces e porta em que o servidor DNS escuta requisições.
+O que faz a diretiva allow-query no named.conf.options? | Define quais redes estão autorizadas a fazer consultas DNS — ex: localhost e 192.168.0.0/24.
+O que faz recursion no no named.conf.options? | Impede que o servidor faça consultas recursivas para resolver domínios externos — mais seguro para DNS interno.
+O que é named.conf.my-zones? | Arquivo que declara as zonas gerenciadas pelo servidor: nome do domínio, type master e caminho do arquivo .zone.
+O que significa type master na declaração de zona? | Este servidor é o DNS principal (autoritativo) da zona — guarda os registros originais.
+Onde ficam os arquivos .zone do BIND9? | Em /var/cache/bind/ — caminho definido pela diretiva directory nas options.
+O que é $TTL no arquivo .zone? | Time To Live — tempo em segundos que clientes guardam o registro em cache. Ex: $TTL 86400 = 24 horas.
+O que é o registro SOA no arquivo .zone? | Start of Authority — define o servidor autoritativo, e-mail do admin e parâmetros de sincronização (serial, refresh, retry, expire).
+Para que serve o campo serial no SOA? | Versão do arquivo de zona — deve ser incrementado a cada modificação para que servidores slave saibam sincronizar.
+Qual o formato recomendado do serial? | YYYYMMDDNN — ex: 2024010101 (ano+mês+dia+número sequencial).
+O que é refresh no SOA? | Intervalo em que servidores slave verificam se há atualizações no master — ex: 3600 = 1 hora.
+O que é retry no SOA? | Tempo de espera antes de tentar novamente após falha — ex: 900 = 15 minutos.
+O que é expire no SOA? | Tempo máximo sem sincronizar com o master antes de descartar os dados — ex: 604800 = 7 dias.
+Como validar a configuração geral do BIND9? | named-checkconf — sem saída significa que está correto.
+Como validar o arquivo .zone? | named-checkzone informatica.joaocamara /var/cache/bind/informatica.joaocamara.zone — deve retornar OK.
+Como reiniciar o BIND9 após mudanças? | sudo systemctl restart bind9
+Como configurar um cliente Linux para usar o servidor DNS? | Editar /etc/resolv.conf e adicionar: nameserver 192.168.0.1
+Como testar a resolução DNS com nslookup? | nslookup www.informatica.joaocamara — deve retornar o IP configurado.
+Como forçar consulta em servidor DNS específico? | nslookup www.dominio.com 192.168.0.1 — consulta diretamente no IP informado.
+Qual o fluxo seguro antes de reiniciar o BIND9? | named-checkconf (sem erros) → named-checkzone (OK) → systemctl restart bind9.
+Quais os 6 passos para configurar o BIND9? | 1) Instalar bind9; 2) Editar named.conf (comentar default-zones, adicionar my-zones); 3) Configurar named.conf.options (listen-on, allow-query); 4) Criar named.conf.my-zones; 5) Criar arquivo .zone com SOA, NS, A e CNAME; 6) Validar e reiniciar.

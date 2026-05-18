@@ -1,0 +1,30 @@
+O que é Webmin? | Interface gráfica web para administrar servidores Linux — em vez de comandos no terminal, você usa cliques no navegador.
+Qual a analogia do Webmin com um carro? | O carro é o servidor Linux, o painel de controle é o Webmin, os botões e indicadores são os módulos e você é o motorista.
+Qual a porta padrão do Webmin? | Porta 10000 (HTTPS).
+Como acessar o Webmin pelo navegador? | https://192.168.0.1:10000 — usando HTTPS com o IP do servidor.
+Quais as credenciais padrão de login do Webmin? | Usuário: root / Senha: senha root do servidor Linux.
+Por que o navegador mostra aviso de segurança no Webmin? | O Webmin usa um certificado autoassinado — clicar em "Avançado" → "Continuar assim mesmo" para acessar.
+Quais as vantagens do Webmin? | Interface gráfica amigável, acesso remoto pelo navegador, sem decorar comandos, muitos módulos e terminal integrado.
+O que são módulos no Webmin? | Componentes que gerenciam aspectos específicos do servidor — cada serviço tem seu próprio módulo (Apache, DNS, Squid, Samba...).
+Quais os principais módulos do Webmin? | Usuários/grupos, Apache, Firewall (iptables/ufw), Samba, BIND DNS, Squid, monitoramento de sistema, pacotes e logs.
+Quais os menus principais do painel Webmin? | Webmin (configurações do próprio Webmin), System (usuários/processos/pacotes), Servers (Apache/DNS/Squid/Samba), Networking (rede/firewall) e Hardware (discos/partições).
+Como gerenciar o Apache pelo Webmin? | Servers → Apache → criar Virtual Hosts, ver logs e reiniciar o serviço.
+Como gerenciar o BIND DNS pelo Webmin? | Servers → BIND → criar zonas e adicionar registros A e CNAME.
+Como gerenciar o Squid pelo Webmin? | Servers → Squid → gerenciar ACLs, bloquear sites e ver estatísticas.
+Como gerenciar o Samba pelo Webmin? | Servers → Samba → criar compartilhamentos e gerenciar usuários SMB.
+O que é o terminal web integrado do Webmin? | Recurso que permite executar comandos Linux diretamente pelo navegador, sem precisar de SSH.
+Como acessar o terminal web do Webmin? | Webmin → Webmin Terminal ou acessar https://192.168.0.1:10000/shell/
+O que é wget? | "Web Get" — comando que baixa arquivos da internet direto pelo terminal, como um navegador que só salva arquivos.
+O que é um arquivo .deb? | Pacote de instalação do Debian/Ubuntu — equivalente ao .exe do Windows.
+O que é dpkg? | Debian Package Manager — instalador de pacotes .deb. Flag -i significa install: sudo dpkg -i webmin_2.000_all.deb.
+Quais as dependências necessárias para instalar o Webmin? | perl, libnet-ssleay-perl, openssl, libauthen-pam-perl, libpam-runtime, libio-pty-perl, apt-show-versions e python3.
+Para que serve o perl como dependência do Webmin? | O Webmin é desenvolvido em Perl — a linguagem de programação principal do sistema.
+Para que serve o openssl como dependência do Webmin? | Fornece criptografia para o HTTPS da porta 10000.
+Para que servem os pacotes libpam como dependências? | Autenticação de usuários no login do Webmin.
+Como baixar o Webmin pelo terminal? | wget https://prdownloads.sourceforge.net/webadmin/webmin_2.000_all.deb
+Como instalar o pacote .deb do Webmin? | sudo dpkg -i webmin_2.000_all.deb
+O que ocorre automaticamente após instalar o Webmin? | Inicia automaticamente, fica escutando na porta 10000 e usa HTTPS por padrão.
+Como verificar o status do Webmin? | sudo systemctl status webmin — deve mostrar "active (running)".
+Como iniciar o Webmin manualmente se não estiver rodando? | sudo systemctl start webmin
+Quais os arquivos de configuração do Webmin? | /etc/webmin/miniserv.conf (configuração do servidor web interno) e /etc/webmin/config (configuração geral).
+Quais os 4 passos para instalar e acessar o Webmin? | 1) Instalar dependências (perl, openssl, libpam...); 2) Baixar o .deb com wget; 3) Instalar com sudo dpkg -i; 4) Acessar https://IP:10000 no navegador e fazer login como root.

@@ -1,0 +1,35 @@
+O que é um servidor web? | Software que recebe requisições HTTP de navegadores e responde com páginas HTML, imagens e outros arquivos.
+Qual a analogia do Apache com uma biblioteca? | A biblioteca é o servidor web, os livros são as páginas HTML, o leitor é o navegador e o pedido é a requisição HTTP.
+Por que o Apache é popular? | Usado por mais de 30% da internet — gratuito, open source, estável e fácil de configurar com Virtual Hosts.
+Quais as portas padrão do Apache? | Porta 80 (HTTP) e porta 443 (HTTPS).
+Quais os 5 passos de uma requisição web? | 1) Usuário digita a URL; 2) Navegador faz requisição HTTP; 3) Apache localiza os arquivos; 4) Retorna HTML/CSS/JS; 5) Navegador renderiza a página.
+O que são Virtual Hosts? | Recurso do Apache que permite hospedar vários sites em um único servidor — cada site tem sua própria configuração, pasta e domínio.
+Qual a analogia de Virtual Hosts com um prédio? | O servidor é o prédio e cada Virtual Host é um apartamento — todos compartilham o mesmo IP, mas cada um tem seu próprio domínio e arquivos.
+Onde ficam os arquivos de configuração do Apache? | /etc/apache2/ — contém apache2.conf, ports.conf, sites-available/ e sites-enabled/.
+Onde ficam os arquivos dos sites por padrão? | /var/www/ — raiz dos sites (DocumentRoot).
+Onde ficam os logs do Apache? | /var/log/apache2/ — logs de acesso e erros.
+Qual a diferença entre sites-available e sites-enabled? | sites-available/ contém os arquivos .conf de todos os sites cadastrados. sites-enabled/ contém links simbólicos apenas dos sites ativos.
+Qual o fluxo para ativar um site no Apache? | 1) Criar .conf em sites-available/; 2) Ativar com a2ensite; 3) Reiniciar com systemctl restart apache2.
+O que faz o comando a2ensite? | Ativa um Virtual Host criando um link simbólico em sites-enabled/ — a2ensite meusite.conf.
+O que faz o comando a2dissite? | Desativa um Virtual Host removendo o link simbólico de sites-enabled/.
+O que faz o comando a2enmod? | Ativa um módulo do Apache (ex: PHP, SSL, rewrite).
+Como instalar o Apache? | sudo apt-get update && sudo apt-get install apache2
+Como verificar a versão do Apache instalada? | apache2 -v
+O que acontece após instalar o Apache? | O serviço inicia automaticamente com uma página padrão "Apache2 Ubuntu Default Page" — confirma que o servidor funciona.
+Como criar a pasta do site com subpastas de uma vez? | sudo mkdir -p /var/www/meusite/public_html
+O que faz chown -R $USER:$USER sobre a pasta do site? | Torna o usuário atual o dono recursivamente de todos os arquivos e subpastas.
+O que significa chmod 755 na pasta /var/www? | Dono: ler+escrever+executar; outros: apenas ler+executar — padrão para pastas de sites.
+Onde deve ficar o arquivo index.html do site? | Dentro de /var/www/meusite/public_html/index.html
+Qual a estrutura mínima de um arquivo Virtual Host (.conf)? | <VirtualHost *:80> com ServerName, DocumentRoot, ErrorLog e CustomLog.
+O que faz a diretiva ServerName no Virtual Host? | Define o domínio principal do site.
+O que faz a diretiva ServerAlias no Virtual Host? | Define domínios alternativos (ex: versão com www).
+O que faz a diretiva DocumentRoot no Virtual Host? | Define a pasta onde ficam os arquivos HTML do site.
+O que faz a diretiva ErrorLog no Virtual Host? | Define o arquivo onde os erros do site são registrados.
+O que faz a diretiva CustomLog no Virtual Host? | Define o arquivo de log de acessos ao site.
+Como verificar a sintaxe do Apache antes de reiniciar? | sudo apache2ctl -t — deve retornar "Syntax OK".
+Como listar todos os Virtual Hosts ativos? | apache2ctl -S
+Como hospedar um segundo site sem DNS usando porta alternativa? | Adicionar Listen 700 no .conf e criar o VirtualHost *:700 — acessado via http://IP:700.
+Qual diretiva no .conf define uma porta alternativa? | Listen 700 (antes do bloco VirtualHost) — informa ao Apache para escutar nessa porta também.
+Como monitorar erros do Apache em tempo real? | sudo tail -f /var/log/apache2/error.log
+Quais os 5 comandos systemctl para o Apache? | start (iniciar), stop (parar), restart (reiniciar aplicando mudanças), reload (recarregar config sem parar) e status (ver estado).
+Quais os 5 passos para configurar o Apache com Virtual Host? | 1) Instalar apache2; 2) Criar pasta em /var/www/meusite/public_html; 3) Criar index.html; 4) Criar arquivo .conf em sites-available; 5) Ativar com a2ensite e reiniciar.

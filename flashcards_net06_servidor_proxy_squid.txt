@@ -1,0 +1,30 @@
+O que é um servidor proxy? | Intermediário entre os clientes e a internet — decide quem pode acessar o quê na web.
+Qual a analogia do proxy com um porteiro? | O prédio é a rede local, o porteiro é o Squid, as entregas são as requisições web e a lista de regras são as ACLs — o porteiro verifica cada requisição antes de deixar passar.
+Quais os 5 passos do fluxo de uma requisição no Squid? | 1) Cliente pede acesso a um site; 2) Squid verifica as ACLs; 3) Se permitido: busca na internet e retorna; 4) Se bloqueado: nega o acesso; 5) Porta padrão: 3128.
+Qual a porta padrão do Squid? | 3128.
+Quais as vantagens de usar um proxy Squid? | Bloquear sites indesejados, cache para economia de banda, monitorar e registrar todos os acessos e anonimato parcial dos clientes.
+O que é ACL no Squid? | Access Control List — lista de controle de acesso que define quem pode acessar o quê e quando.
+Quais os tipos de ACL disponíveis no Squid? | src (IP de origem), dst (IP de destino), dstdomain (domínio de destino), port (porta) e time (horário de acesso).
+Como é a estrutura de uma ACL no squid.conf? | Primeiro define: acl nome tipo valor. Depois aplica: http_access deny/allow nome.
+Por que a ordem das regras importa no Squid? | As regras são lidas de cima para baixo — a primeira que "casar" com a requisição é aplicada. Coloque deny antes do allow!
+Qual o arquivo de configuração principal do Squid? | /etc/squid/squid.conf — arquivo muito grande (mais de 8000 linhas, maioria comentários).
+Onde fica a lista de domínios bloqueados? | /etc/squid/block.txt — arquivo criado manualmente com um domínio por linha.
+Onde ficam os logs do Squid? | /var/log/squid/access.log (todos os acessos) e /var/log/squid/cache.log (erros e eventos internos).
+Como instalar o Squid? | sudo apt-get update && sudo apt-get install squid
+Como encontrar a seção correta para inserir ACLs no squid.conf? | No VIM, buscar com /INSERT YOUR + Enter para ir direto à linha "# INSERT YOUR OWN RULE(S) HERE".
+Como criar a lista de sites bloqueados? | sudo vim /etc/squid/block.txt — adicionar um domínio por linha com ponto inicial: .facebook.com
+Por que usar ponto inicial no domínio (.facebook.com)? | O ponto bloqueia todos os subdomínios: facebook.com, www.facebook.com, m.facebook.com etc.
+Como criar a ACL de bloqueio no squid.conf? | acl block dstdomain "/etc/squid/block.txt" — e depois: http_access deny block
+O que faz http_access deny block? | Bloqueia o acesso a todos os domínios definidos na ACL block.
+O que faz http_access allow localnet? | Permite acesso à internet para toda a rede local — deve vir após as regras de deny.
+Por que o Squid precisa de dns_nameservers configurado? | O Squid não usa o DNS do sistema operacional — precisa de configuração própria, senão os sites permitidos não funcionam.
+Como configurar DNS no Squid? | Adicionar no squid.conf: dns_nameservers 8.8.8.8 8.8.4.4
+O que acontece sem dns_nameservers no squid.conf? | Sites bloqueados continuam bloqueados, mas sites permitidos retornam erro de DNS.
+Qual a topologia de rede do servidor Squid? | Duas interfaces: enp0s3 (NAT, acesso à internet, ex: 10.0.2.x) e enp0s8 (rede interna, ex: 192.168.0.1).
+Como remover e adicionar a rota padrão no Squid? | sudo ip route del default && sudo ip route add default via 10.0.2.2 (via interface NAT).
+Como reiniciar o Squid após alterar a configuração? | sudo systemctl restart squid
+Como verificar o status do Squid? | systemctl status squid — deve mostrar "active (running)".
+Como configurar o proxy no Windows? | Menu Iniciar → "proxy" → Configurações de proxy → Usar servidor proxy → Endereço: 192.168.0.1, Porta: 3128.
+Como monitorar os logs do Squid em tempo real? | sudo tail -f /var/log/squid/access.log
+Como validar a configuração do Squid antes de reiniciar? | squid -k parse — lista erros de sintaxe sem reiniciar o serviço.
+Quais os 7 passos para configurar o Squid? | 1) Instalar squid; 2) Configurar rotas de rede; 3) Criar block.txt com domínios; 4) Configurar ACLs no squid.conf (deny block, allow localnet); 5) Adicionar dns_nameservers; 6) Reiniciar Squid; 7) Configurar proxy no cliente Windows.
