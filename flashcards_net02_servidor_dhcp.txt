@@ -1,0 +1,46 @@
+O que significa a sigla DHCP? | Dynamic Host Configuration Protocol — protocolo que distribui configurações de rede automaticamente para os dispositivos.
+O que o DHCP distribui automaticamente para os clientes? | Endereço IP, máscara de rede, gateway padrão e servidores DNS.
+Qual a analogia do DHCP com um hotel? | O servidor DHCP é o recepcionista que atribui quartos (IPs) aos hóspedes (dispositivos) com uma diária (lease time). Quando o hóspede vai embora, o quarto fica livre.
+Quais as vantagens do DHCP? | Configuração automática sem intervenção manual, gerenciamento centralizado de IPs, evita conflitos de IP e facilita administração em redes grandes.
+O que é o processo DORA? | As 4 etapas da negociação DHCP: Discover, Offer, Request e ACK — todo o processo ocorre em milissegundos.
+O que é a etapa DISCOVER do DORA? | O cliente grita na rede em broadcast: "Tem algum servidor DHCP aí?"
+O que é a etapa OFFER do DORA? | O servidor responde: "Tenho! Posso te dar o IP 192.168.0.15."
+O que é a etapa REQUEST do DORA? | O cliente confirma: "Aceito! Quero esse IP!"
+O que é a etapa ACK do DORA? | O servidor finaliza: "Pronto! IP 192.168.0.15 é seu por 2 horas!"
+O que é o ISC-DHCP-SERVER? | O servidor DHCP mais usado no Linux — robusto, maduro e altamente configurável, desenvolvido pelo Internet Systems Consortium.
+Qual o arquivo de configuração principal do ISC-DHCP-SERVER? | /etc/dhcp/dhcpd.conf — define subnet, range, DNS, gateway e reservas de IP.
+Qual arquivo define a interface de rede do servidor DHCP? | /etc/default/isc-dhcp-server — define o valor de INTERFACESv4.
+Onde ficam registradas as concessões de IP ativas? | /var/lib/dhcp/dhcpd.leases — banco de dados com MAC, IP concedido e prazo de validade.
+Quais funcionalidades o ISC-DHCP-SERVER oferece? | Reserva de IP fixo por MAC, suporte a múltiplas sub-redes, controle de lease time e log detalhado para auditoria.
+Por que não pode ter dois servidores DHCP na mesma rede? | Os dispositivos receberiam ofertas conflitantes e teriam problemas de conectividade — apenas um servidor DHCP por rede!
+Por que o servidor DHCP deve ter IP estático? | Os clientes precisam saber onde encontrar o servidor — não faz sentido o "recepcionista" mudar de endereço toda hora.
+Quais as informações de rede necessárias antes de configurar o DHCP? | Endereço de rede (ex: 192.168.0.0/24), range de IPs (ex: .2 a .100), gateway (ex: 192.168.0.254), DNS primário e secundário.
+Como instalar o ISC-DHCP-SERVER? | sudo apt-get update && sudo apt-get install isc-dhcp-server
+Por que o serviço falha ao iniciar logo após a instalação? | É normal e esperado — o dhcpd.conf ainda não foi configurado com os dados da rede.
+Como fazer backup do dhcpd.conf original? | sudo mv /etc/dhcp/dhcpd.conf /etc/dhcp/dhcpd.conf.bkp — move o original como backup e deixa o caminho livre para criar um arquivo limpo.
+Por que usar mv e não cp para o backup do dhcpd.conf? | mv move o original como backup, deixando o caminho vazio para criar um arquivo limpo do zero. cp manteria dois arquivos com o mesmo conteúdo.
+Como abrir o dhcpd.conf para edição? | sudo vim /etc/dhcp/dhcpd.conf
+O que é default-lease-time no dhcpd.conf? | Tempo padrão de concessão em segundos se o cliente não pedir um tempo específico — ex: 600 = 10 minutos.
+O que é max-lease-time no dhcpd.conf? | Tempo máximo de concessão que o servidor pode conceder em segundos — ex: 7200 = 2 horas.
+O que define a diretiva subnet no dhcpd.conf? | O bloco de rede e a máscara onde o DHCP vai atuar — ex: subnet 192.168.0.0 netmask 255.255.255.0 { ... }
+O que define a diretiva range no dhcpd.conf? | A faixa de IPs disponíveis para distribuição — ex: range 192.168.0.2 192.168.0.100 (99 endereços).
+O que define option routers no dhcpd.conf? | O gateway padrão que será enviado a todos os clientes — ex: option routers 192.168.0.254;
+O que define option domain-name-servers no dhcpd.conf? | Os servidores DNS enviados aos clientes — ex: option domain-name-servers 192.168.0.1, 8.8.8.8;
+O que define option domain-name no dhcpd.conf? | O nome do domínio local da rede — ex: option domain-name "meudominio.local";
+O que faz a diretiva authoritative no dhcpd.conf? | Declara este servidor como o DHCP oficial da rede — importante para que o servidor responda corretamente quando clientes tentam renovar IPs inválidos.
+Qual o range 192.168.0.2 192.168.0.100 disponibiliza quantos IPs? | 99 endereços — do .2 ao .100. Os fora do range (.101 a .254) ficam reservados para servidores e equipamentos com IP estático.
+Como configurar a interface no /etc/default/isc-dhcp-server? | Definir INTERFACESv4="enp0s8" — a interface da rede interna (LAN) onde o DHCP vai escutar requisições.
+Por que a interface do DHCP deve coincidir com a subnet do dhcpd.conf? | Usar a interface errada faz o serviço falhar — a interface deve estar na mesma rede definida no subnet.
+Como validar a sintaxe do dhcpd.conf antes de iniciar? | sudo dhcpd -t — verifica erros sem aplicar a configuração.
+Como iniciar o serviço ISC-DHCP-SERVER? | sudo systemctl start isc-dhcp-server
+Como habilitar o DHCP para iniciar automaticamente no boot? | sudo systemctl enable isc-dhcp-server
+Como verificar o status do serviço DHCP? | sudo systemctl status isc-dhcp-server — deve mostrar "active (running)".
+Como reiniciar o serviço após alterar a configuração? | sudo systemctl restart isc-dhcp-server
+Quais os 5 comandos systemctl para gerenciar o DHCP? | start (iniciar), stop (parar), restart (reiniciar após config), status (ver estado e logs) e enable (habilitar no boot).
+Como ver as concessões de IP ativas no servidor? | cat /var/lib/dhcp/dhcpd.leases — exibe IP concedido, MAC, hostname e prazo de validade de cada lease.
+Como forçar um cliente Linux a solicitar IP via DHCP? | sudo dhclient -v enp0s3 — solicita IP e exibe o processo DORA em tempo real.
+Como renovar IP num cliente Windows via CMD? | ipconfig /release (libera IP atual) e depois ipconfig /renew (solicita novo IP via DHCP).
+Como ver configuração completa de rede no Windows? | ipconfig /all — exibe IP, máscara, gateway, DNS e MAC de todas as interfaces.
+Como monitorar os logs do DHCP em tempo real? | sudo journalctl -u isc-dhcp-server -f — exibe mensagens DISCOVER, OFFER, REQUEST e ACK conforme chegam.
+Quais os 5 passos para configurar o servidor DHCP? | 1) Instalar isc-dhcp-server; 2) Backup do dhcpd.conf; 3) Criar a configuração (subnet, range, DNS...); 4) Configurar a interface em /etc/default/isc-dhcp-server; 5) Validar com dhcpd -t e iniciar com systemctl.
+Como reservar IP fixo para um dispositivo pelo MAC? | No dhcpd.conf: host nome { hardware ethernet AA:BB:CC:DD:EE:FF; fixed-address 192.168.0.50; }
