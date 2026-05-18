@@ -1,0 +1,50 @@
+Por que o Linux é chamado de sistema multiusuário? | Porque cada pessoa ou serviço que acessa o sistema possui uma conta com permissões específicas e independentes entre si.
+Quais são os 3 tipos de usuário no Linux? | Root (UID=0, superusuário), Usuários Comuns (UID ≥ 1000, pessoas reais) e Usuários de Sistema (UID 1-999, contas para serviços como apache e mysql).
+O que é o root no Linux? | O superusuário com UID=0 — pode fazer tudo no sistema. Equivale à chave mestra de um prédio. Deve ser usado com extremo cuidado.
+O que são usuários de sistema? | Contas com UID entre 1 e 999 criadas para serviços (apache, mysql, nginx…). Não são pessoas — são programas rodando com identidade própria.
+O que é um grupo no Linux? | Um conjunto de usuários que compartilham permissões. Permite gerenciar acesso em massa: cria-se o grupo com as permissões e adiciona-se os membros.
+Qual a diferença entre grupo primário e grupos secundários? | Todo usuário tem um grupo primário (criado junto com ele). Pode pertencer também a múltiplos grupos secundários para ter acesso a recursos extras.
+O que mostra o comando id? | O UID, o GID primário e todos os grupos secundários do usuário — ex: uid=1000(usuario) gid=1000(usuario) grupos=1000(usuario),27(sudo).
+O que mostra o comando groups? | Lista todos os grupos dos quais o usuário atual faz parte.
+O que mostra o comando whoami? | O nome do usuário atualmente logado no terminal.
+Qual a diferença entre useradd e adduser? | useradd é de baixo nível, não interativo, ideal para scripts e disponível em todas as distros. adduser é interativo, amigável, configura tudo automaticamente — disponível no Debian/Ubuntu.
+O que faz a opção -m no useradd? | Cria a pasta home do usuário — sem ela, a pasta NÃO é criada e o usuário fica sem diretório pessoal.
+O que faz a opção -s no useradd? | Define o shell padrão do usuário — ex: useradd -s /bin/bash joao.
+O que faz a opção -c no useradd? | Define um comentário com o nome real do usuário — ex: useradd -c "João Silva" joao.
+O que faz a opção -g no useradd? | Define o grupo primário na criação do usuário.
+O que faz a opção -G no useradd? | Define grupos secundários na criação do usuário.
+Como criar um usuário com pasta home e shell bash completo? | useradd -m -s /bin/bash -c "Nome Completo" nomedousuario
+Por que é mais seguro usar adduser que useradd no dia a dia? | adduser é interativo e configura tudo automaticamente (pasta home, shell, senha, comentário), reduzindo erros de omissão de parâmetros.
+O que é o arquivo /etc/passwd? | Arquivo legível por todos os usuários que contém as informações básicas de cada conta: nome, UID, GID, comentário, diretório home e shell.
+Quais são os 7 campos do /etc/passwd? | Login : x (senha em shadow) : UID : GID : comentário/nome : diretório home : shell padrão.
+O que significa o "x" no segundo campo do /etc/passwd? | Indica que a senha está armazenada no arquivo /etc/shadow, mais seguro.
+O que é o arquivo /etc/shadow? | Arquivo acessível apenas pelo root que contém as senhas dos usuários armazenadas como hash irreversível, com políticas de expiração.
+O que significa $6$ no hash do /etc/shadow? | Indica que o algoritmo de hash usado é SHA-512 — considerado muito seguro.
+O que faz o comando groupadd? | Cria um novo grupo no sistema — ex: groupadd desenvolvedores.
+O que faz usermod -aG? | Adiciona o usuário a um grupo secundário SEM remover os grupos existentes (-a = append, -G = grupos).
+Por que nunca usar usermod -G sem o -a? | usermod -G grupo usuario sem o -a SUBSTITUI todos os grupos secundários existentes pelo novo — pode remover o usuário do sudo acidentalmente!
+O que faz o comando getent group nome? | Exibe as informações de um grupo, incluindo seus membros — ex: getent group desenvolvedores.
+O que faz o comando groupdel? | Remove um grupo do sistema — só funciona se o grupo não for o grupo primário de nenhum usuário.
+Para que serve o grupo sudo no Ubuntu/Debian? | Membros desse grupo podem usar o comando sudo para executar comandos com privilégios de root.
+Para que serve o grupo wheel no CentOS/RHEL? | Equivalente ao grupo sudo — membros têm acesso administrativo via sudo.
+Para que serve o grupo www-data? | Conta do servidor web Apache/Nginx — dono dos arquivos dos sites hospedados.
+Para que serve o grupo docker? | Permite usar containers Docker sem precisar de sudo a cada comando.
+O que é sudo? | Super User DO — permite que um usuário comum execute um comando com privilégios de root sem precisar logar como root, usando sua própria senha.
+Qual a diferença entre sudo e su? | sudo executa um único comando como root e volta ao usuário normal, registrando no log. su abre um shell completo como root usando a senha do root, sem registro granular.
+Como liberar sudo para um usuário? | usermod -aG sudo nomedousuario (Ubuntu/Debian) ou usermod -aG wheel nomedousuario (CentOS/RHEL).
+Como verificar o que um usuário pode fazer com sudo? | sudo -l
+Por que sempre editar /etc/sudoers com visudo? | visudo valida a sintaxe antes de salvar — um erro direto no arquivo pode bloquear completamente o acesso administrativo ao sistema.
+O que faz passwd sem argumentos? | Altera a senha do usuário atualmente logado.
+O que faz passwd -e usuario? | Expira a senha — força o usuário a criar uma nova senha no próximo login. Boa prática ao criar contas novas.
+O que faz passwd -l usuario? | Bloqueia a conta do usuário, impedindo login.
+O que faz passwd -u usuario? | Desbloqueia uma conta previamente bloqueada.
+O que faz usermod -L usuario? | Bloqueia a conta do usuário (equivalente a passwd -l).
+O que faz usermod -U usuario? | Desbloqueia a conta do usuário (equivalente a passwd -u).
+O que faz usermod -s /bin/zsh usuario? | Altera o shell padrão do usuário para zsh.
+O que faz userdel usuario (sem flags)? | Remove a conta do sistema, mas MANTÉM a pasta home — útil para fazer backup antes de excluir definitivamente.
+O que faz userdel -r usuario? | Remove a conta E a pasta home com todos os arquivos pessoais — operação irreversível!
+O que faz userdel -f usuario? | Força a remoção mesmo que o usuário esteja logado no momento.
+O que mostra o comando who? | Lista os usuários atualmente logados no sistema com terminal e horário de login.
+O que mostra o comando w? | Lista os usuários logados e o que cada um está fazendo no momento.
+O que mostra o comando last -5? | Histórico dos 5 últimos logins e logouts do sistema.
+O que é o princípio do mínimo privilégio? | Cada conta deve ter exatamente os privilégios necessários para sua função — nem mais, nem menos. Base da segurança em servidores Linux.

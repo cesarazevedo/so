@@ -1,0 +1,32 @@
+O que são metacaracteres do shell (wildcards)? | Símbolos especiais interpretados pelo shell antes de executar o comando — usados como padrões de busca para nomes de arquivos, não para buscar texto dentro de arquivos.
+Como o shell processa um wildcard? | O shell expande o padrão para todos os arquivos que combinam e passa a lista pronta para o comando — o comando nunca vê o metacaractere, já recebe os nomes.
+O que faz o wildcard ? (interrogação)? | Substitui exatamente 1 (um) caractere qualquer — letra, número ou símbolo. Não substitui "nada" (zero caracteres).
+O que faz o wildcard * (asterisco)? | Substitui zero ou mais caracteres quaisquer — o curinga mais flexível e mais usado no dia a dia.
+Qual a diferença prática entre ? e * no exemplo file?.txt vs file*.txt? | file?.txt encontra file1.txt e filea.txt mas NÃO file.txt nem file12.txt. file*.txt encontra todos: file.txt, file1.txt, file12.txt, fileABC.txt.
+Quando usar ? em vez de *? | Usar ? quando se sabe exatamente quantos caracteres podem variar. Usar * quando a quantidade é indefinida.
+O que faz o wildcard [ ] (colchetes)? | Escolhe exatamente 1 caractere de um conjunto definido. Pode ser lista ([abc]), intervalo ([a-z]) ou negação ([^abc]).
+O que significa [a-z] como wildcard? | Aceita qualquer letra minúscula de a até z — exatamente 1 caractere.
+O que significa [A-Z] como wildcard? | Aceita qualquer letra maiúscula de A até Z.
+O que significa [0-9] como wildcard? | Aceita qualquer dígito de 0 a 9.
+O que significa [^0-9] como wildcard? | Negação — aceita qualquer caractere que NÃO seja um dígito.
+O que significa [a-zA-Z] como wildcard? | Aceita qualquer letra, maiúscula ou minúscula.
+Como filtrar arquivos file1.txt, file2.txt e file3.txt sem incluir file4.txt? | ls file[123].txt — lista explícita; ou ls file[1-3].txt — intervalo.
+Como filtrar arquivos que NÃO começam com 'a' ou 'b'? | ls [^ab]* — o ^ dentro dos colchetes nega o conjunto.
+O que faz o wildcard { } (chaves)? | Expande em várias opções de uma só vez — gera os nomes, não filtra arquivos existentes.
+Qual a diferença crucial entre [ ] e { }? | [ ] FILTRA — só mostra arquivos que já existem no disco. { } EXPANDE — gera todos os nomes, existam ou não.
+Como criar arquivos arquivo1.txt, arquivo2.txt e arquivo3.txt de uma vez? | touch arquivo{1,2,3}.txt
+Como criar arquivos test1.txt até test5.txt usando intervalo? | touch test{1..5}.txt
+Como criar uma estrutura de pastas projeto/src, projeto/docs e projeto/tests de uma vez? | mkdir -p projeto/{src,docs,tests}
+Como fazer backup rápido de config.txt para config.txt.bak? | cp config.txt{,.bak} — a vírgula antes do .bak expande para o nome original e o nome com sufixo.
+Como gerar números pares de 0 a 10 com chaves? | echo {0..10..2} → 0 2 4 6 8 10 (terceiro valor é o passo)
+Como criar estrutura empresa1 e empresa2 cada uma com vendas, ti e rh? | mkdir -p empresa{1,2}/{vendas,ti,rh}
+Como copiar arquivos .conf do apache2, nginx e mysql de /etc para /backup de uma vez? | cp /etc/{apache2,nginx,mysql}/*.conf /backup/
+Como renomear foto.jpg para foto.jpeg? | mv foto{.jpg,.jpeg}
+Como listar arquivos .conf OU .allow em /etc? | ls /etc/*{conf,allow}
+Qual a regra de ouro antes de usar rm com wildcards? | Sempre teste com ls ou echo primeiro para ver o que será afetado — ex: ls *.txt antes de rm *.txt. Deleções são irreversíveis!
+Quais são os 3 erros comuns com wildcards? | 1) Confundir ? com * (? não casa zero chars). 2) Intervalo invertido como [z-a] — use sempre ordem crescente [a-z]. 3) Usar [1,2,3] esperando lista de opções — para lista use {1,2,3}.
+Como listar logs de uma servidor só do primeiro semestre (meses 01 a 06)? | ls log_2024-0[1-6].txt
+Como listar todos os arquivos .conf no diretório /etc? | ls /etc/*.conf
+Como listar arquivos com exatamente 2 dígitos após "log" e extensão .txt? | ls log[0-9][0-9].txt — dois colchetes, cada um aceita 1 dígito.
+Como listar runlevels rc0.d até rc6.d em /etc? | ls /etc/rc?.d — o ? casa exatamente 1 dígito.
+Como listar todos os arquivos de configuração do bash no diretório home? | ls ~/.bash* — o * pega .bashrc, .bash_logout, .bash_history, etc.
