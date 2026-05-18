@@ -1,0 +1,47 @@
+O que é o Samba? | Software open source que implementa o protocolo SMB/CIFS no Linux, permitindo compartilhar arquivos e impressoras com máquinas Windows.
+Qual a analogia do Samba com uma ponte? | Windows fala SMB/CIFS e Linux fala NFS. O Samba é o tradutor que permite comunicação entre os dois mundos, tornando o servidor Linux invisivamente compatível com a rede Windows.
+O que o Samba faz? | Compartilha pastas e arquivos, compartilha impressoras, autentica usuários e controla permissões de acesso.
+Qual o cenário típico de uso do Samba em empresas? | 50 PCs Windows + 1 servidor Linux = todos acessam os mesmos arquivos de qualquer máquina, sem instalar nada nos clientes.
+O que é o protocolo SMB? | Server Message Block — protocolo de rede usado pelo Windows para compartilhar recursos. O Samba implementa esse protocolo no Linux.
+Qual a porta principal do SMB? | Porta 445 — SMB direto, usado pelo Windows moderno.
+Para que servem as portas 139, 137 e 138 no Samba? | Porta 139: NetBIOS Session (compatibilidade legada). Portas 137–138: NetBIOS Name e Datagram.
+Quais os 4 tipos de compartilhamento Samba? | Público/guest (sem autenticação), privado (requer usuário e senha SMB), somente leitura e leitura/escrita.
+Qual o arquivo de configuração principal do Samba? | /etc/samba/smb.conf — define a seção [global] e todos os compartilhamentos.
+Onde ficam os logs do Samba? | /var/log/samba/ — arquivos de log para diagnóstico e auditoria.
+Onde ficam os dados internos do Samba? | /var/lib/samba/ — banco de usuários e outros dados internos.
+Quais os 3 serviços do Samba e suas funções? | smbd: compartilhamento de arquivos e impressoras. nmbd: resolução de nomes NetBIOS. winbindd: integração com Active Directory.
+Como instalar o Samba? | sudo apt-get update && sudo apt-get install samba
+Como verificar a versão do Samba instalada? | samba --version
+O que é instalado junto com o pacote samba? | Serviços smbd e nmbd, ferramentas (testparm, smbpasswd, pdbedit) e o arquivo /etc/samba/smb.conf padrão com exemplos.
+Como fazer backup do smb.conf original? | sudo mv /etc/samba/smb.conf /etc/samba/smb.conf.bkp — move o original como backup e deixa o caminho livre para um arquivo limpo.
+Como é estruturado o smb.conf? | Seções entre colchetes: [global] define o servidor, cada [nome] define um compartilhamento.
+O que configura a seção [global] do smb.conf? | O comportamento geral do servidor: nome NetBIOS, descrição, tipo de segurança, tratamento de convidados e localização dos logs.
+O que faz o parâmetro netbios name no smb.conf? | Define o nome do servidor como aparece na rede Windows (no Explorador de Arquivos).
+O que faz o parâmetro server string no smb.conf? | Define a descrição exibida ao navegar na rede Windows.
+O que faz o parâmetro security = user no smb.conf? | Define autenticação por usuário e senha — cada acesso exige credenciais válidas.
+O que faz o parâmetro map to guest = Bad User? | Trata usuários com credenciais inválidas como convidados (guest), em vez de recusar o acesso.
+O que faz o parâmetro path no smb.conf? | Define o caminho da pasta no servidor Linux que será compartilhada.
+O que faz o parâmetro read only no smb.conf? | read only = no → leitura e escrita. read only = yes → somente leitura.
+O que faz o parâmetro browseable = yes no smb.conf? | Torna o compartilhamento visível ao navegar na rede Windows (aparece no Explorador).
+O que faz o parâmetro guest ok no smb.conf? | guest ok = yes → acesso livre sem senha. guest ok = no → exige autenticação com usuário e senha SMB.
+Qual a diferença entre o compartilhamento [public] e [guest] da aula? | [public]: guest ok = no (exige senha) e read only = no (permite escrita). [guest]: guest ok = yes (acesso livre) e read only = yes (somente leitura).
+Como criar as pastas dos compartilhamentos? | mkdir ~/public ~/guest — cria as pastas referenciadas no smb.conf.
+Como ajustar permissões das pastas para testes? | chmod 777 ~/public ~/guest — permite acesso total (apenas para testes, não para produção).
+Por que não usar permissão 777 em produção? | É insegura — em produção use permissões mais restritivas (ex: 750 ou 755) e defina o proprietário correto com chown.
+Como criar um usuário Linux para o Samba? | sudo useradd samba — cria o usuário no sistema Linux.
+Como criar a senha SMB de um usuário? | sudo smbpasswd -a samba — adiciona o usuário ao banco de senhas SMB (diferente da senha Linux).
+Por que o usuário Linux e a senha SMB são independentes? | O Linux e o Samba mantêm bancos de senhas separados — useradd cria no sistema e smbpasswd -a cria no Samba.
+Como validar o smb.conf antes de iniciar o serviço? | testparm -s — verifica erros de sintaxe sem precisar reiniciar o serviço.
+Como reiniciar os serviços do Samba após alterar a configuração? | sudo systemctl restart smbd nmbd — reinicia ambos os serviços.
+Como habilitar o Samba para iniciar automaticamente no boot? | sudo systemctl enable smbd nmbd
+Como verificar o status do serviço Samba? | sudo systemctl status smbd — deve mostrar "active (running)".
+Como acessar o servidor Samba pelo Windows? | No Explorador de Arquivos, digitar \\192.168.0.1 na barra de endereço e informar as credenciais SMB.
+Como mapear um compartilhamento como drive no Windows? | Clicar direito na pasta → "Mapear unidade de rede" → escolher letra (ex: Z:) → caminho: \\IP\public.
+O que faz o comando smbstatus? | Exibe conexões ativas no servidor Samba e arquivos atualmente abertos pelos clientes.
+O que faz o comando pdbedit -L? | Lista todos os usuários Samba cadastrados no banco de senhas SMB.
+Como remover um usuário do Samba? | smbpasswd -x usuario — remove o usuário do banco de senhas SMB.
+Como alterar a senha SMB de um usuário existente? | smbpasswd usuario — solicita a nova senha sem o -a (que é para adicionar).
+O que faz o parâmetro valid users no smb.conf? | Define quais usuários podem acessar o compartilhamento — use @grupo para grupos inteiros.
+Como monitorar os logs do Samba em tempo real? | sudo tail -f /var/log/samba/log.smbd
+Como limpar credenciais salvas do Samba no Windows (CMD)? | net use * /d /y — desconecta e remove todas as credenciais de rede salvas.
+Quais os 5 passos para configurar o servidor Samba? | 1) Instalar o samba; 2) Backup do smb.conf; 3) Criar a configuração (global + compartilhamentos); 4) Criar pastas, permissões e usuário SMB; 5) Validar com testparm e reiniciar smbd e nmbd.
