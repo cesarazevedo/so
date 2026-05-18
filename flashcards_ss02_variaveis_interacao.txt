@@ -1,0 +1,35 @@
+Como declarar corretamente uma variável em Bash? | NOME="Maria" — sem espaços ao redor do =. Para usar o valor, prefixe com $: echo "$NOME"
+Por que NOME = "Maria" (com espaços) causa erro? | O Bash interpreta NOME como um comando, não como um nome de variável. Sempre use NOME="Maria" sem espaços.
+Qual a diferença entre aspas duplas e simples em variáveis? | Duplas interpretam: echo "$NOME" → Maria. Simples são literais: echo '$NOME' → $NOME (sem expansão).
+Como fazer aritmética com variáveis inteiras no Bash? | Use $(( )) — ex: TOTAL=$(( 10 + 5 )) → 15. Sem isso, o Bash trata tudo como string.
+Quais são os 4 tipos de variável no Bash? | String (NOME="Alice"), número inteiro (PORTA=22 com $(())), booleano por convenção (ATIVO="true"), captura de comando (DATA=$(date)).
+O que é a variável especial $HOME? | Contém o caminho da pasta home do usuário logado — ex: /home/alice
+O que é a variável especial $USER? | Contém o nome do usuário atualmente logado no sistema.
+O que é a variável especial $PWD? | Contém o caminho do diretório atual (equivalente ao comando pwd).
+O que é a variável especial $SHELL? | Contém o caminho do shell em uso — ex: /bin/bash
+O que é a variável especial $PATH? | Contém os caminhos onde o Shell busca comandos, separados por : — ex: /usr/bin:/bin:/usr/local/bin
+O que é a variável especial $0? | Contém o nome do próprio script que está sendo executado — ex: ./meu_script.sh
+O que representam $1, $2, $3...? | Os argumentos posicionais passados ao script na linha de comando — $1 é o primeiro, $2 o segundo, e assim por diante.
+O que é a variável especial $#? | Contém o número total de argumentos passados ao script na linha de comando.
+O que é a variável especial $@? | Contém todos os argumentos passados ao script como uma lista — útil em loops para processar cada argumento.
+O que é a variável especial $?? | Contém o exit code (código de saída) do último comando executado — 0 = sucesso, qualquer outro valor = algum erro.
+O que é a variável especial $$? | Contém o PID (Process ID) do próprio script em execução — útil para criar arquivos temporários únicos.
+O que faz o comando read? | Pausa o script e aguarda o usuário digitar algo, armazenando o valor em uma variável — a principal forma de criar scripts interativos.
+Como usar read com um prompt na mesma linha? | read -p "Mensagem: " VARIAVEL — o -p exibe o texto antes de aguardar o input, na mesma linha.
+O que faz read -s? | Oculta os caracteres digitados — usado para leitura de senhas. Sempre adicione um echo vazio após para pular a linha.
+Como pedir usuário e senha de forma segura com read? | read -p "Usuário: " USUARIO && read -s -p "Senha: " SENHA && echo — o -s oculta a senha e o echo pula a linha.
+O que é substituição de comando com $()? | Captura a saída de um comando e insere no lugar — ex: HOJE=$(date +%d/%m/%Y) armazena a data atual.
+Qual a diferença entre $() e backtick para substituição de comando? | $() é a forma moderna e recomendada (legível, aninhável). Backtick `comando` é a forma antiga, ainda válida mas menos legível.
+O que faz o comando export? | Torna uma variável visível para processos filhos (subshells e programas iniciados pelo script) — sem export, variáveis são locais ao script.
+Quando usar export? | Quando um programa externo ou script filho precisar ler a variável. Ex: export PATH=$PATH:/opt/bin adiciona ao PATH do sistema.
+O que é um exit code? | O código de retorno de um comando ao terminar: 0 = sucesso; 1-255 = algum tipo de erro ou condição especial.
+O que significa exit code 0? | Sucesso — o comando executou sem erros.
+O que significa exit code 1? | Erro genérico — algo deu errado, mas sem causa específica.
+O que significa exit code 2? | Uso incorreto do comando — sintaxe inválida ou argumento errado.
+O que significa exit code 126? | Permissão negada — o arquivo existe mas não tem permissão de execução.
+O que significa exit code 127? | Comando não encontrado — o nome digitado não existe no PATH do sistema.
+O que significa exit code 130? | Processo interrompido pelo usuário via Ctrl+C.
+Por que salvar $? imediatamente após o comando? | $? é sobrescrito a cada comando executado. Se não salvar na hora, o próximo echo já sobrescreve o valor: CODIGO=$?
+Como sinalizar sucesso ou erro ao final de um script? | exit 0 para sucesso, exit 1 (ou outro valor) para erro — outros scripts e sistemas de monitoramento usam esse valor.
+O que faz [ -z "$NOME" ] && echo "Erro" && exit 1? | Verifica se a variável NOME está vazia (-z = zero length): se estiver, exibe erro e encerra o script com código 1.
+Como verificar o exit code após executar um script? | Execute o script e logo em seguida: echo $? — mostrará 0 para sucesso ou outro valor para erro.

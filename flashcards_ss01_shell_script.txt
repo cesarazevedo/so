@@ -1,0 +1,30 @@
+O que é um Shell Script? | Um arquivo de texto com comandos Linux que o sistema executa em sequência — como uma receita automática que faz tarefas repetitivas sem intervenção humana.
+Por que aprender Shell Script? | Economiza tempo: 10 min/dia × 365 dias = 60 horas/ano. O sysadmin que sabe script faz em segundos o que um iniciante faz em horas.
+Quais são os 3 elementos básicos de um shell script? | Shebang (#!/bin/bash na 1ª linha), comentários (linhas com #) e comandos Linux (um por linha, executados de cima para baixo).
+O que é o shebang? | A primeira linha do script (#!/bin/bash) que declara qual interpretador deve executar o arquivo. #! é o prefixo obrigatório, /bin/bash é o caminho do interpretador.
+Quais são as regras do shebang? | Deve estar exatamente na 1ª linha, sem nenhum espaço antes do # e sem espaço entre # e !. #!/bin/bash com espaço antes invalida o shebang.
+O que são comentários em shell script? | Linhas que começam com # (após o shebang) são ignoradas pelo Shell. Servem para documentar o script, explicar o que cada parte faz.
+Qual o fluxo para criar e executar um script? | 1) Criar o arquivo .sh com vim, 2) Inserir o conteúdo, 3) Salvar com :wq, 4) Dar permissão com chmod +x, 5) Executar com ./script.sh
+Por que usar ./script.sh e não só script.sh? | O ./ diz "procure o arquivo nesta pasta". Sem ele, o Shell procura apenas nas pastas do sistema ($PATH) e não encontra o script.
+O que faz chmod +x script.sh? | Adiciona permissão de execução ao script — sem isso, o sistema recusa executar o arquivo mesmo que tenha shebang válido.
+Como abrir um arquivo no Vim? | vim nome_do_arquivo.sh — se o arquivo não existir, o Vim cria um novo.
+Qual tecla ativa o modo INSERT no Vim? | i — pressione i para começar a digitar. Também: a (INSERT após cursor), o (nova linha abaixo).
+Como sair do modo INSERT no Vim? | Pressione Esc — retorna ao modo NORMAL, de onde você pode navegar e digitar comandos.
+Como salvar e sair do Vim? | Pressione Esc para sair do INSERT, depois :wq e Enter (:w = write/salvar, :q = quit/sair).
+Como sair do Vim sem salvar? | Pressione Esc, depois :q! e Enter — o ! força a saída descartando todas as alterações.
+O que fazer se travar no Vim? | Pressione Esc várias vezes → digite :q! → Enter. O ! descarta as mudanças e força a saída.
+Quais os principais comandos do Vim para edição? | dd (deletar linha), yy (copiar linha), p (colar), u (undo/desfazer), i (INSERT), Esc (sair do INSERT).
+O que faz o comando echo? | Exibe texto na tela — o principal meio de comunicar o script com o usuário: echo "Mensagem aqui"
+O que é substituição de comando com $()? | Executa um comando dentro de outro e insere a saída no lugar — ex: echo "Usuário: $(whoami)" → Usuário: alice
+Qual a diferença entre aspas duplas e aspas simples no Bash? | Aspas duplas interpretam variáveis e $() — ex: "$USER" → alice. Aspas simples tratam tudo como literal — ex: '$USER' → $USER
+Como declarar uma variável em Shell Script? | NOME="Alice" — sem espaços ao redor do =. Para usar o valor, prefixe com $: echo "$NOME"
+Qual o erro mais comum ao declarar variáveis? | Usar espaços ao redor do =: NOME = "Alice" causa erro porque o Bash interpreta NOME como um comando.
+Por que usar nomes em MAIÚSCULAS para variáveis? | Convenção: variáveis em MAIÚSCULO são fáceis de distinguir de comandos (minúsculos) e indicam que são variáveis globais do script.
+Como capturar a saída de um comando em uma variável? | HOJE=$(date +%d/%m/%Y) — armazena o resultado do comando na variável para usar depois.
+Quais são as boas práticas de um shell script? | 1) Sempre use shebang, 2) Nomes de variáveis em MAIÚSCULAS, 3) Teste manualmente antes de automatizar com cron.
+Por que testar o script manualmente antes de agendar? | Um erro em produção pode ser catastrófico. Execute com dados reais para garantir que funciona antes de agendar execução automática.
+Qual a extensão padrão de um shell script? | .sh — ex: backup.sh, relatorio.sh. Não é obrigatória, mas é convenção que facilita identificar arquivos de script.
+O que faz o comando date +%d/%m/%Y dentro de um script? | Retorna a data atual no formato dia/mês/ano — ex: 22/03/2026. Útil para nomear logs e relatórios com data automática.
+Como incluir a saída de múltiplos comandos em um relatório? | Usando echo com substituição de comando: echo "Usuário: $(whoami), Data: $(date), Pasta: $(pwd)"
+O que faz o script: echo "Arquivos: $(ls | wc -l)"? | Conta e exibe o número de arquivos no diretório atual — ls lista os arquivos, | wc -l conta as linhas.
+Como redirecionar a saída do script para um arquivo de log? | ./script.sh > arquivo.log — ou dentro do script usando redirecionamento: echo "msg" >> $HOME/log.txt
