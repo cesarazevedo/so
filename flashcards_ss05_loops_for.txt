@@ -1,0 +1,30 @@
+O que é um loop for? | Estrutura que executa um bloco de comandos repetidamente para cada elemento de uma lista — "Para cada item da lista, faça isso."
+Qual a estrutura básica do for em Bash? | for VARIAVEL in lista; do comandos; done
+O que faz o do no loop for? | Inicia o bloco de comandos que será executado a cada iteração.
+O que faz o done no loop for? | Encerra o bloco de comandos — obrigatório, equivale ao } em outras linguagens.
+Como iterar sobre uma lista manual com for? | for FRUTA in maçã banana laranja; do echo "$FRUTA"; done — itens separados por espaço.
+Como iterar sobre arquivos .txt com for? | for ARQ in *.txt; do cp "$ARQ" backup/; done — o shell expande o wildcard antes de executar.
+Por que sempre usar aspas em "$ARQ" dentro do for? | Sem aspas, um arquivo chamado "meu texto.txt" seria tratado como dois itens separados (meu e texto.txt).
+Como gerar a sequência 1 a 10 com chaves? | for N in {1..10}; do echo "$N"; done — as chaves são expandidas pelo próprio Bash.
+Como gerar números pares de 2 a 10 com chaves? | for N in {2..10..2}; do echo "$N"; done — o terceiro valor é o passo.
+Como gerar sequências alfabéticas com chaves? | for L in {a..z}; do echo "$L"; done — funciona com letras também.
+O que faz seq 5? | Gera a sequência 1 2 3 4 5 (um número por linha) — seq N produz de 1 até N.
+O que faz seq 3 7? | Gera 3 4 5 6 7 — seq INÍCIO FIM.
+O que faz seq 2 2 10? | Gera 2 4 6 8 10 — seq INÍCIO PASSO FIM.
+O que faz seq 10 -1 1? | Gera contagem regressiva: 10 9 8 7 6 5 4 3 2 1 — passo negativo.
+Por que usar seq em vez de chaves quando há variáveis? | Chaves não expandem variáveis: {1..$N} não funciona. Para valores dinâmicos use: for i in $(seq 1 $N).
+Como é o for estilo C em Bash? | for (( i=1; i<=10; i++ )); do echo "$i"; done — inicialização; condição; incremento dentro de (( )).
+Quais os operadores de incremento no for estilo C? | i++ (incrementa 1), i-- (decrementa 1), i+=2 (incrementa 2), i*=2 (multiplica por 2).
+Como processar palavras de um arquivo com for? | for NOME in $(cat nomes.txt); do echo "$NOME"; done — usa a saída do cat como lista.
+Qual o problema de usar for com $(cat arquivo) para nomes compostos? | for separa por espaço — "Ana Silva" vira dois itens. Para processar linha a linha, use while read.
+Como usar for com a saída de qualquer comando? | for i in $(comando); do ...; done — o $() executa o comando e usa sua saída como lista.
+Como fazer loops aninhados com for? | for ANO in {2022..2025}; do for MES in jan fev mar; do mkdir "$ANO/$MES"; done; done
+O que faz break dentro de um loop for? | Encerra o loop imediatamente, sem processar os itens restantes.
+O que faz continue dentro de um loop for? | Pula a iteração atual e vai direto para a próxima, sem executar os comandos restantes da volta atual.
+Como usar break 2 em loops aninhados? | Sai de dois níveis de loop de uma vez — break N sai de N loops aninhados.
+Como verificar se um arquivo existe antes de operá-lo no for? | for ARQ in *.txt; do if [ -f "$ARQ" ]; then cp "$ARQ" backup/; fi; done
+Como extrair a extensão de um arquivo dentro do for? | EXT="${FOTO##*.}" — remove tudo até o último ponto, deixando só a extensão.
+Como formatar um número com zeros à esquerda usando printf? | printf "%03d" $CONTADOR — produz 001, 002, 003...
+Qual a diferença entre {1..10} e $(seq 1 10)? | {1..10} é expandido internamente pelo Bash (mais rápido, sem processo externo); $(seq 1 10) executa um comando externo — use chaves sempre que possível.
+Como listar todos os tipos de for disponíveis no Bash? | Lista manual (in a b c), wildcards (in *.txt), chaves (in {1..10}), seq (in $(seq)), estilo C ((( ))) e saída de comando (in $(cmd)).
+Qual a boas práticas ao usar for com arquivos? | Use nomes descritivos (ARQUIVO_TEXTO, não i), sempre aspas ("$VAR"), verifique com -f antes de operar e teste com echo antes de ações destrutivas.

@@ -1,0 +1,30 @@
+O que é uma função em Shell Script? | Um bloco de código reutilizável que executa uma tarefa específica — define-se uma vez e chama-se quantas vezes precisar com diferentes valores.
+Quais as vantagens de usar funções? | Evita código duplicado, scripts menores e fáceis de manter, cada função tem uma responsabilidade clara e facilita testes.
+Como declarar uma função (forma 1 — mais comum)? | nome_funcao() { comando1; comando2; }
+Como declarar uma função (forma 2 — palavra-chave)? | function nome_funcao() { comando1; comando2; }
+Como chamar uma função após defini-la? | Basta escrever o nome da função: nome_funcao — igual a chamar um comando.
+Por que a função deve ser definida antes de ser chamada? | O Shell lê o script de cima para baixo — chamar uma função antes de defini-la causa erro.
+Como a função recebe parâmetros? | Pelos mesmos $1, $2... usados em scripts — passados na chamada: nome_funcao "valor1" "valor2"
+O que é $1 dentro de uma função? | O primeiro parâmetro passado na chamada da função — ex: saudar "Maria" → $1 = "Maria"
+O que é $@ dentro de uma função? | Todos os parâmetros recebidos pela função como lista.
+O que é $# dentro de uma função? | A quantidade de parâmetros recebidos na chamada da função.
+Como capturar o valor retornado por uma função via echo? | RESULTADO=$(nome_funcao arg1 arg2) — a substituição de comando captura o que a função imprime.
+Como uma função "retorna" um valor calculado? | Usando echo dentro da função e capturando com $(): dobrar() { echo $(($1 * 2)); } ; RESULT=$(dobrar 5)
+O que faz return dentro de uma função? | Retorna um código de saída (0–255) — 0 = sucesso, 1 ou mais = erro. Usado com if funcao; then ...
+Qual a diferença entre return e echo para retornar valores? | return só aceita números 0–255 (códigos de status). echo devolve qualquer texto/número — capture com VAR=$(funcao).
+Como usar uma função diretamente em um if? | if verificar_arquivo "dados.txt"; then echo "Existe!"; fi — o if usa o return da função como condição.
+O que é uma variável local em Bash? | Variável cujo escopo é restrito à função onde foi declarada — criada com local NOME="valor".
+Por que usar local para variáveis internas? | Sem local, a variável é global e pode sobrescrever variáveis de mesmo nome fora da função, causando efeitos colaterais imprevisíveis.
+O que acontece sem local quando a função usa uma variável global? | A função modifica a variável global — após a chamada, o valor global foi alterado.
+Como declarar uma variável local? | local NOME="valor" — só funciona dentro de funções.
+Como importar funções de outro arquivo? | source funcoes.sh — ou . funcoes.sh (ponto) — os dois são equivalentes.
+Qual a diferença entre source e . (ponto)? | Nenhuma — são exatamente iguais. source é mais legível, . é mais curto.
+O que é uma biblioteca de funções? | Um arquivo .sh com apenas definições de funções, sem execução direta — importado por outros scripts com source.
+Como criar uma calculadora com funções? | somar() { echo $(($1 + $2)); } ; subtrair() { echo $(($1 - $2)); } — cada operação em uma função separada.
+Como organizar um menu com funções? | Cada opção chama uma função dedicada: case "$OPC" in 1) ver_data;; 2) ver_usuario;; esac — mantém o código organizado.
+Como combinar while true + case + funções? | while true; do mostrar_menu; read -p "Opção: " OPC; case "$OPC" in 1) funcao1;; 0) break;; esac; done
+Quais as boas práticas para nomes de funções? | Nomes descritivos com underline: calcular_media, verificar_arquivo — evite func1 ou fazcoisa.
+Como documentar parâmetros de uma função? | Com comentários antes da definição: # Função: calcula média / # Parâmetros: $1=nota1, $2=nota2 / calcular_media() { ... }
+O que faz read -sp dentro de uma função? | Combina -s (silencioso, sem eco) e -p "prompt" em uma opção — ideal para funções de validação de senha.
+Como fazer uma função validar um número e retornar status? | verificar_numero() { local N="$1"; [ "$N" -gt 0 ] && return 0; return 1; } — usada com if verificar_numero "$VAL"; then ...
+Qual o checklist de boas práticas para funções? | Nomes descritivos, use local para variáveis internas, defina sempre antes de chamar, uma tarefa por função e documente os parâmetros.

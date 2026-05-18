@@ -1,0 +1,29 @@
+O que é um loop while? | Estrutura que repete um bloco de comandos enquanto uma condição for verdadeira — testa a condição antes de cada iteração.
+Qual a estrutura básica do while? | while [ condição ]; do comandos; done
+Como funciona o ciclo do while? | 1) Testa a condição. 2) Se verdadeira → executa e volta ao passo 1. 3) Se falsa → sai do loop.
+Qual a regra de ouro do while? | Sempre modifique a variável de controle dentro do loop — se a condição nunca mudar, o loop será infinito e o script trava.
+Como incrementar um contador dentro do while? | CONTADOR=$(($CONTADOR + 1)) — ou ((CONTADOR++)) no Bash moderno.
+Como criar um contador crescente de 1 a 5 com while? | CONTADOR=1; while [ $CONTADOR -le 5 ]; do echo "$CONTADOR"; CONTADOR=$(($CONTADOR + 1)); done
+Como criar uma contagem regressiva com while? | N=5; while [ $N -gt 0 ]; do echo "$N..."; N=$(($N - 1)); done; echo "Lançar!"
+O que é while true? | Loop infinito — a condição nunca se torna falsa por si só. Requer break interno para encerrar.
+Como sair de um while true? | Com o comando break — geralmente dentro de um if que verifica a condição de saída.
+Qual o padrão clássico de menu interativo com while? | while true; do exibir_menu; read -p "Opção: " OPC; case "$OPC" in ... q) break;; esac; done
+O que faz break no while? | Encerra o loop imediatamente, pulando para o comando seguinte ao done.
+O que faz continue no while? | Pula o restante da iteração atual e volta ao teste da condição — sem executar os comandos abaixo do continue.
+Qual a diferença entre break e continue? | break sai do loop completamente; continue pula só a volta atual e continua o loop.
+Como realizar aritmética dentro do while? | Com $(( )) — ex: SOMA=$(($SOMA + $N)), RESULTADO=$(($A * $B)).
+Quais as operações aritméticas disponíveis com $(( ))? | Soma $(($A + $B)), subtração $(($A - $B)), multiplicação $(($A * $B)), divisão $(($A / $B)), resto $(($A % $B)).
+Como ler um arquivo linha por linha com while? | while read LINHA; do echo "$LINHA"; done < arquivo.txt
+Por que while read é melhor que for para ler arquivos com nomes compostos? | for separa por espaços — "Ana Silva" vira dois itens. while read preserva a linha inteira como um só item.
+O que faz a sintaxe done < arquivo.txt? | Redireciona o arquivo como entrada para o loop while read — cada linha do arquivo é lida em uma iteração.
+O que faz read -r dentro do while read? | O -r (raw) impede que \ seja interpretado como caractere de escape — recomendado ao ler arquivos.
+Como obter o comprimento de uma string em Bash? | ${#VARIAVEL} — ex: ${#NOME} retorna o número de caracteres.
+Qual a diferença entre while e until? | while executa enquanto a condição é verdadeira; until executa enquanto é falsa (para quando a condição se torna verdadeira).
+Quando usar for em vez de while? | Use for quando sabe quantas vezes repetir ou tem uma lista de itens. Use while quando depende de uma condição variável.
+Quando usar while em vez de for? | Quando não sabe quantas vezes repetir, quando depende de input do usuário, ou ao ler arquivos linha por linha.
+Como monitorar algo continuamente com while? | while true; do df -h; sleep 5; done — executa o comando, aguarda 5 segundos e repete indefinidamente.
+O que faz read -t 5 em um script? | Define timeout de 5 segundos — se o usuário não digitar nada em 5 segundos, read retorna com exit code de erro.
+Como combinar while com case para um menu persistente? | while true; do echo "menu"; read -p "Op: " OP; case "$OP" in 1) ação;; 0) break;; *) echo "inválido";; esac; done
+Como parar um loop infinito no terminal? | Pressione Ctrl+C — envia sinal SIGINT ao processo, encerrando o loop imediatamente.
+Como usar while read para numerar linhas de um arquivo? | NUM=1; while read NOME; do echo "$NUM: $NOME"; NUM=$(($NUM + 1)); done < arquivo.txt
+Como combinar while com if e break para um jogo? | while true; do read -p "Palpite: " P; if [ $P -eq $SECRETO ]; then echo "Acertou!"; break; fi; done
