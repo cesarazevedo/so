@@ -1,0 +1,27 @@
+O que é a estrutura case no Bash? | Alternativa ao if/elif/else para comparar uma variável com muitos valores diferentes — mais legível e fácil de manter que longas cadeias de elif.
+Qual a estrutura básica do case? | case "$VAR" in padrão1) comandos ;; padrão2) comandos ;; *) padrão_default ;; esac
+O que significa a palavra-chave in no case? | Introduz a lista de padrões: "em qual desses padrões a variável se encaixa?"
+O que faz o ) no case? | Finaliza a declaração do padrão — ex: 1) significa "quando o valor for 1".
+O que faz o ;; no case? | Encerra o bloco de comandos daquele caso — equivalente ao break de outras linguagens. Obrigatório após cada bloco.
+O que é o esac? | A palavra-chave que fecha a estrutura case — "case" ao contrário. Todo case precisa de um esac correspondente.
+O que faz o padrão *) no case? | Captura qualquer valor que não combinou com nenhum dos padrões anteriores — a "rede de segurança", equivalente ao else.
+Por que *) deve sempre ser o último padrão? | Se vier antes, impede que os outros casos executem — *) captura tudo, nenhum padrão seguinte seria alcançado.
+Quando usar case em vez de if/elif? | Com 4 ou mais opções, menus interativos, comparação de padrões/wildcards ou interpretação de exit codes. Para 2-3 condições simples, use if.
+O que faz o padrão * no case? | Combina com qualquer coisa — zero ou mais caracteres. Usado como padrão default.
+O que faz o padrão ? no case? | Combina com exatamente um caractere qualquer — ex: ?) combina com "a", "1", "@".
+O que faz o padrão [0-9] no case? | Combina com exatamente um dígito de 0 a 9.
+O que faz o padrão [A-Z] no case? | Combina com exatamente uma letra maiúscula.
+O que faz o padrão [a-z] no case? | Combina com exatamente uma letra minúscula.
+O que faz o padrão *.txt no case? | Combina com qualquer string terminando em .txt — ex: relatorio.txt, dados.txt.
+O que faz o padrão a|b|c no case? | OR lógico — o caso executa se a variável for "a" OU "b" OU "c". Evita criar um caso separado para cada alternativa.
+Como aceitar sim/não em múltiplos formatos com case? | sim|SIM|s|S|yes|y) ... ;; — todas as variações caem no mesmo bloco.
+Como o case lida com exit codes? | Salve $? imediatamente após o comando em uma variável e use no case: CODIGO=$? ; case $CODIGO in 0) sucesso;; 1) falha;; *) erro;; esac
+Por que salvar $? em variável antes do case? | $? é sobrescrito a cada comando — se executar qualquer coisa entre o comando e o case, o exit code original é perdido.
+Como combinar case e if? | Use case para o menu principal (escolha da ação) e if para validações dentro de cada caso — ex: if [ -z "$NOME" ]; then echo "Erro"; fi dentro de um caso.
+Como é um menu interativo com case? | echo opções; read -p "Escolha: " OPC; case "$OPC" in 1) ação1;; 2) ação2;; q) exit 0;; *) echo "Inválido";; esac
+Como criar um menu que repete até o usuário sair? | while true; do read opcao; case $opcao in 1) ação;; q) break;; esac; done — o break sai do loop while.
+Qual a diferença entre [0-9] e [0-9]* no case? | [0-9] captura apenas um único dígito. [0-9]* captura um dígito seguido de qualquer coisa — útil para números com múltiplos algarismos.
+Como o case detecta extensões de arquivo? | Usando padrões com *: *.jpg|*.png) echo "Imagem";; *.sh) echo "Script";; *) echo "Desconhecido";; esac
+Qual a vantagem do | no case em relação ao if? | Sem |, cada variação de resposta precisaria de um elif. Com |: sim|SIM|s|S) trata todas num único bloco.
+Como estruturar um case completo com todos os tipos de padrão? | case "$VAR" in exato) ;; a|b|c) ;; [0-9]) ;; *.txt) ;; *) ;; esac — do mais específico para o mais geral.
+O que acontece se esquecer o ;; em um caso? | Bash pode "cair" no próximo caso (fall-through), executando comandos do bloco seguinte de forma inesperada.

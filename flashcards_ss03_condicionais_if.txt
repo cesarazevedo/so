@@ -1,0 +1,35 @@
+O que é uma instrução condicional? | Permite que o script tome decisões: executa um bloco de comandos se uma condição for verdadeira, e outro (ou nenhum) se for falsa.
+Qual a estrutura básica do if em Bash? | if [ condição ]; then comandos; fi — os colchetes testam a condição, then inicia o bloco, fi (if ao contrário) fecha.
+Como usar if com else? | if [ condição ]; then comando_a; else comando_b; fi — o else executa quando a condição é falsa.
+Como testar múltiplos caminhos com elif? | if [ cond1 ]; then cmd_a; elif [ cond2 ]; then cmd_b; else cmd_c; fi — elif adiciona uma nova condição intermediária.
+Por que os espaços dentro de [ ] são obrigatórios? | O Bash interpreta [ como um comando. Sem espaços — [$VAR -ge 18] — causa erro de sintaxe. Correto: [ $VAR -ge 18 ]
+O que é fi? | A palavra-chave que fecha um bloco if — "if" ao contrário. Todo if precisa ter um fi correspondente.
+O que faz o operador -eq? | Testa se dois números são iguais — ex: [ $A -eq $B ] — equal.
+O que faz o operador -ne? | Testa se dois números são diferentes — ex: [ $A -ne $B ] — not equal.
+O que faz o operador -gt? | Testa se um número é maior que outro — ex: [ $A -gt $B ] — greater than.
+O que faz o operador -ge? | Testa se um número é maior ou igual a outro — ex: [ $A -ge $B ] — greater or equal.
+O que faz o operador -lt? | Testa se um número é menor que outro — ex: [ $A -lt $B ] — lower than.
+O que faz o operador -le? | Testa se um número é menor ou igual a outro — ex: [ $A -le $B ] — lower or equal.
+Como comparar igualdade de strings em Bash? | [ "$VAR" = "valor" ] — use sempre aspas em variáveis de string para evitar erro quando a variável está vazia.
+Como comparar strings diferentes em Bash? | [ "$VAR" != "valor" ] — != testa se as strings são diferentes.
+O que faz o operador -z em strings? | Testa se a string está vazia (zero length) — ex: [ -z "$NOME" ] é verdadeiro se NOME não contém nada.
+O que faz o operador -n em strings? | Testa se a string não está vazia (non-zero) — ex: [ -n "$NOME" ] é verdadeiro se NOME tem algum conteúdo.
+Por que usar aspas em variáveis de string no if? | Sem aspas, se a variável estiver vazia, [ $VAR = "valor" ] vira [ = "valor" ] e causa erro de sintaxe.
+O que faz o operador -f? | Testa se o caminho é um arquivo regular — ex: [ -f "$ARQUIVO" ]
+O que faz o operador -d? | Testa se o caminho é um diretório — ex: [ -d "/backup" ]
+O que faz o operador -e? | Testa se o caminho existe (arquivo, diretório ou qualquer tipo) — ex: [ -e "$CAMINHO" ]
+O que faz o operador -r? | Testa se o arquivo tem permissão de leitura — ex: [ -r "$ARQUIVO" ]
+O que faz o operador -w? | Testa se o arquivo tem permissão de escrita — ex: [ -w "$ARQUIVO" ]
+O que faz o operador -x? | Testa se o arquivo tem permissão de execução — ex: [ -x "$SCRIPT" ]
+O que faz o operador -s? | Testa se o arquivo não está vazio (size > 0) — ex: [ -s "$LOG" ]
+O que faz o operador -a dentro de [ ]? | AND lógico — ambas as condições devem ser verdadeiras — ex: [ $IDADE -ge 18 -a "$CNH" = "sim" ]
+O que faz o operador -o dentro de [ ]? | OR lógico — pelo menos uma condição deve ser verdadeira — ex: [ "$VIP" = "sim" -o $VALOR -ge 100 ]
+O que faz o operador ! no if? | NOT — inverte o resultado da condição — ex: [ ! -d "backup" ] é verdadeiro se "backup" NÃO é um diretório.
+Como o if pode testar exit codes diretamente? | Sem colchetes: if grep -q "root" /etc/passwd; then ... fi — exit code 0 = verdadeiro, qualquer outro = falso.
+Para que serve o -q no grep dentro de um if? | Deixa o grep silencioso (quiet) — não exibe saída, apenas retorna o exit code. Ideal quando só interessa saber se encontrou ou não.
+Para que serve 2>/dev/null em uma condição if? | Suprime mensagens de erro do comando testado — ex: if ls /pasta >dev/null 2>&1; then ... fi
+Como criar um if em linha única (uma linha)? | if [ condição ]; then comando; fi — os ponto-e-vírgulas substituem as quebras de linha.
+Quais os 3 grupos de operadores de comparação no Bash? | Numéricos (-eq -ne -gt -ge -lt -le), strings (= != -z -n) e arquivo (-f -d -e -r -w -x -s).
+Qual a diferença entre = e -eq no Bash? | = compara strings (texto), -eq compara números inteiros. Usar -eq com strings ou = com números pode dar resultado errado.
+Por que verificar se um arquivo existe antes de usá-lo? | Tentar ler ou copiar um arquivo inexistente gera erro e pode interromper o script inteiro.
+Como classificar um valor em 3 faixas com if/elif/else? | if [ $N -ge 70 ]; then "Aprovado"; elif [ $N -ge 50 ]; then "Recuperação"; else "Reprovado"; fi
