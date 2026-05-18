@@ -1,0 +1,44 @@
+O que é Docker? | Plataforma para criar e executar containers — garante que a aplicação funciona em qualquer ambiente, eliminando o problema "funciona na minha máquina".
+Qual a analogia do Docker com um porto de containers? | O navio é o servidor, o container é a aplicação empacotada, o porto é o Docker Engine (gerencia os containers) e o manifesto é o Dockerfile.
+O que é uma imagem Docker? | Template somente-leitura usado como base para criar containers — analogia: receita de bolo.
+O que é um container Docker? | Uma imagem em execução — instância ativa criada a partir de uma imagem. Analogia: bolo já pronto.
+O que é um Dockerfile? | Arquivo de instruções para construir uma imagem Docker — define como empacotar a aplicação. Analogia: lista de ingredientes.
+O que é um Registry no Docker? | Repositório de imagens Docker — o Docker Hub é o registry público oficial com mais de 100.000 imagens.
+O que é o Docker Hub? | Repositório público de imagens em hub.docker.com — maior coleção de imagens prontas para usar.
+Por que usar Docker? | Ambiente consistente entre desenvolvimento e produção, isolamento sem conflitos, deploy rápido e economia de recursos comparado a VMs.
+Qual a principal diferença entre container e VM? | Containers compartilham o kernel do host (mais leves, iniciam em segundos). VMs têm kernel próprio por instância (pesadas, iniciam em minutos).
+Qual a arquitetura de uma VM? | Hardware → Host OS → Hypervisor → Guest OS → App — cada VM precisa de um sistema operacional completo.
+Qual a arquitetura de um container Docker? | Hardware → Host OS → Docker Engine → App — todos os containers compartilham o mesmo kernel do host.
+Como containers se comparam a VMs em uso de disco? | Containers: megabytes. VMs: gigabytes.
+Como instalar o Docker no Ubuntu? | Adicionar chave GPG e repositório oficial, depois: sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+Como usar Docker sem precisar de sudo? | sudo usermod -aG docker $USER — fazer logout e login para ter efeito.
+Como verificar a versão do Docker instalada? | docker --version
+Como testar se o Docker está funcionando? | docker run hello-world — baixa a imagem e executa, exibindo "Hello from Docker!".
+O que acontece ao executar docker run hello-world? | Docker baixa a imagem hello-world do Docker Hub, cria um container, executa e exibe a mensagem de sucesso — tudo automaticamente.
+Como baixar uma imagem do Docker Hub? | docker pull nginx — baixa a imagem sem criar um container.
+Como listar imagens baixadas localmente? | docker images — exibe repositório, tag, ID e tamanho de cada imagem.
+Como remover uma imagem local? | docker rmi nome-da-imagem
+Quais imagens populares estão no Docker Hub? | nginx (servidor web), mysql (banco de dados), python (ambiente Python), node (Node.js) e ubuntu (sistema mínimo).
+Como criar e executar um container? | docker run nginx — baixa a imagem se necessário e inicia o container.
+Como executar um container em background? | docker run -d nginx — a flag -d (detached) libera o terminal.
+Como dar um nome ao container ao criá-lo? | docker run -d --name meu-nginx nginx — facilita o gerenciamento posterior.
+Como listar containers em execução? | docker ps
+Como listar todos os containers, inclusive parados? | docker ps -a
+Como parar um container em execução? | docker stop meu-nginx
+Como iniciar um container que estava parado? | docker start meu-nginx
+Como remover um container? | docker rm meu-nginx — o container deve estar parado.
+Para que serve o mapeamento de portas no Docker? | Para acessar serviços dentro do container — sem mapeamento, a porta do container não é acessível do host.
+Qual a sintaxe do mapeamento de portas? | docker run -p PORTA_HOST:PORTA_CONTAINER — ex: -p 8080:80 mapeia a porta 80 do container para a 8080 do host.
+O que significa -p 8080:80? | Todo tráfego na porta 8080 do host é encaminhado para a porta 80 dentro do container.
+Por que containers são chamados de efêmeros? | Quando um container é removido, todos os dados dentro dele são perdidos — volumes resolvem esse problema.
+O que é um Bind Mount no Docker? | Monta uma pasta do host dentro do container — ex: -v /home/user/site:/usr/share/nginx/html. Alterações no host aparecem imediatamente no container.
+O que é um Volume Nomeado no Docker? | Armazenamento gerenciado pelo Docker — ex: docker volume create meus-dados e -v meus-dados:/var/lib/mysql. Ideal para bancos de dados.
+Quando usar Bind Mount vs Volume Nomeado? | Bind Mount: desenvolvimento (edite e veja na hora). Volume Nomeado: bancos de dados e dados persistentes em produção.
+Como criar um volume nomeado? | docker volume create meus-dados
+Como listar os volumes existentes? | docker volume ls
+Como ver os logs de um container? | docker logs meu-nginx
+Como entrar no terminal de um container em execução? | docker exec -it meu-container bash — -it = modo interativo com terminal.
+Como subir um site com Nginx usando bind mount? | docker run -d --name meu-site -p 8080:80 -v ~/meu-site:/usr/share/nginx/html nginx
+Como remover containers parados de uma vez? | docker container prune
+Como remover imagens não usadas? | docker image prune
+Como limpar tudo não utilizado (containers, imagens, volumes, redes)? | docker system prune -a
