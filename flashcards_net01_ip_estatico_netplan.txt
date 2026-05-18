@@ -1,0 +1,41 @@
+Qual a diferença entre IP dinâmico e IP estático? | IP dinâmico (DHCP) é atribuído automaticamente pelo roteador e pode mudar a cada reinicialização. IP estático é configurado manualmente e nunca muda.
+Qual a analogia para IP dinâmico vs IP estático? | DHCP é como hotel — quarto diferente a cada visita. IP estático é como casa própria — endereço fixo e confiável.
+Quais dispositivos devem ter IP estático? | Qualquer máquina que oferece serviços: servidores web (Apache/Nginx), SSH, NFS/Samba, DNS, DHCP e impressoras de rede.
+Qual a regra geral para decidir entre DHCP e IP estático? | Máquinas que oferecem serviços usam IP estático. Máquinas que apenas consomem serviços podem usar DHCP.
+O que é o Netplan? | Sistema de configuração de rede padrão do Ubuntu desde a versão 18.04 — usa arquivos YAML em /etc/netplan/ para descrever como as interfaces devem ser configuradas.
+Onde ficam os arquivos de configuração do Netplan? | Em /etc/netplan/ com extensão .yaml ou .yml.
+Qual o backend do Netplan no Ubuntu Server? | systemd-networkd.
+O que o Netplan substituiu no Ubuntu? | O antigo /etc/network/interfaces.
+Por que YAML exige atenção especial? | É sensível à indentação — use sempre espaços (nunca tabulações). Um erro de indentação pode deixar o servidor sem rede.
+O que faz o comando netplan try? | Testa a configuração temporariamente e reverte automaticamente em 120 segundos se não for confirmada — rede de segurança antes de aplicar.
+O que faz o comando netplan apply? | Aplica a configuração de rede permanentemente, sem rollback automático.
+O que faz o comando netplan get? | Exibe a configuração de rede atual em formato YAML.
+O que faz o comando netplan status? | Mostra o status detalhado de todas as interfaces de rede — usado para diagnóstico.
+Qual a dica de segurança ao usar o Netplan? | Use sempre netplan try antes de netplan apply. Se a configuração quebrar o SSH, o servidor reverterá automaticamente após 120 segundos.
+Quais as 4 informações necessárias antes de configurar IP estático? | Endereço IP (ex: 192.168.1.100), máscara CIDR (ex: /24), gateway (ex: 192.168.1.1) e servidores DNS (ex: 8.8.8.8, 1.1.1.1).
+Como descobrir o gateway atual no terminal? | ip route show default
+Como descobrir os servidores DNS atuais? | cat /etc/resolv.conf
+Como ver o nome das interfaces de rede? | ip link show
+Como ver todos os IPs e interfaces? | ip address show
+Por que fazer backup antes de editar o Netplan? | Se a configuração errada for aplicada e o servidor perder rede, o backup permite recuperação rápida sem acesso físico.
+Como fazer backup do arquivo Netplan? | sudo cp /etc/netplan/00-installer-config.yaml /etc/netplan/00-installer-config.yaml.backup
+Como abrir o arquivo Netplan para edição? | sudo nano /etc/netplan/00-installer-config.yaml
+Como é a configuração YAML com DHCP (dinâmico)? | network: / version: 2 / ethernets: / enp0s3: / dhcp4: true
+Como é a configuração YAML com IP estático? | network: / version: 2 / ethernets: / enp0s3: / dhcp4: false / addresses: [192.168.1.100/24] / routes: [{to: default, via: 192.168.1.1}] / nameservers: / addresses: [8.8.8.8, 1.1.1.1]
+O que significa dhcp4: false no YAML? | Desabilita o DHCP na interface — necessário para configurar IP estático manualmente.
+O que define o campo addresses no YAML do Netplan? | O IP estático com sua máscara CIDR — ex: 192.168.1.100/24.
+O que define o campo routes (to: default, via:) no YAML? | O gateway padrão — o roteador pelo qual o tráfego sai para outras redes.
+O que define o campo nameservers > addresses no YAML? | Os servidores DNS usados para resolução de nomes de domínio.
+O que significa CIDR /24? | Os primeiros 24 bits são o endereço de rede — equivale à máscara 255.255.255.0.
+Em uma rede /24, qual costuma ser o gateway? | O endereço .1 do mesmo bloco IP — ex: para 192.168.1.100/24, o gateway é 192.168.1.1.
+O que faz netplan try na prática? | Aplica a nova configuração temporariamente, exibe contagem regressiva de 120s e aguarda ENTER para confirmar — se não confirmar, reverte automaticamente.
+O que fazer se netplan try conectar corretamente? | Teste o ping (ping 8.8.8.8), verifique o IP (ip address show) e pressione ENTER para confirmar antes dos 120 segundos.
+O que fazer se netplan try não conectar? | Não pressione ENTER — aguarde os 120 segundos e a configuração reverte automaticamente.
+Como verificar o IP após aplicar o Netplan? | ip address show enp0s3 — deve mostrar o IP estático com o CIDR configurado.
+Como testar conectividade após configurar IP estático? | ping -c 4 8.8.8.8 — deve responder com 4 pacotes.
+Como verificar a rota padrão após configurar o Netplan? | ip route show — deve mostrar: default via 192.168.1.1 dev enp0s3.
+Como restaurar o backup se o acesso SSH for perdido? | Pelo console físico ou da VM: sudo cp /etc/netplan/00-installer-config.yaml.backup /etc/netplan/00-installer-config.yaml && sudo netplan apply
+Como detectar erro de sintaxe no YAML antes de aplicar? | sudo netplan generate — exibe erros de indentação ou sintaxe sem aplicar a configuração.
+Quais os 4 problemas mais comuns após configurar Netplan? | Sem conectividade (gateway/IP errado), erro de sintaxe YAML (indentação), interface não encontrada (nome errado) e DNS sem resolução de nomes (falta seção nameservers).
+Como saber o nome correto da interface de rede para o YAML? | ip link show — lista todas as interfaces com seus nomes reais (ex: enp0s3, eth0, ens33).
+Quais os 4 passos para configurar IP estático com Netplan? | 1) Backup do arquivo YAML original; 2) Editar o arquivo com IP estático; 3) Testar com netplan try; 4) Aplicar com netplan apply e verificar.
