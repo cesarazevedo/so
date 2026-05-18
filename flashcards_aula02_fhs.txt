@@ -1,0 +1,36 @@
+O que é o FHS? | Filesystem Hierarchy Standard — padrão que define onde cada tipo de arquivo deve estar localizado no Linux, seguido por todas as distribuições.
+Por que o FHS é importante? | Garante consistência entre distros, facilita manutenção e diagnóstico, permite scripts portáveis e torna óbvio onde estão configurações, logs e binários.
+Qual comando lista os diretórios da raiz do Linux? | ls /
+Como o Linux organiza os discos, diferente do Windows? | No Windows cada disco tem uma letra (C:\, D:\). No Linux existe uma única árvore que começa em / e tudo é ramificado a partir daí.
+Qual o separador de diretórios no Linux? | A barra normal ( / ), ao contrário do Windows que usa barra invertida ( \ ).
+O que é um caminho absoluto no Linux? | Caminho que começa sempre com / — ex: /home/usuario/Downloads. Independe do diretório atual.
+O que é um caminho relativo no Linux? | Caminho relativo ao diretório atual — ex: Downloads (sem a barra inicial).
+O que significa o til (~) no Linux? | Atalho para o diretório home do usuário logado — equivalente a /home/seuusuario.
+Para que serve o diretório /bin? | Contém comandos essenciais disponíveis para todos os usuários: ls, cp, mv, rm, cat, bash, echo.
+Para que serve o diretório /sbin? | Comandos de administração do sistema que geralmente requerem root: fdisk, mkfs, iptables, reboot, shutdown.
+Para que serve o diretório /usr? | Contém programas instalados pelo usuário via apt/dnf — subdivisões: /usr/bin, /usr/lib, /usr/share.
+Para que serve o diretório /etc? | Cofre de configurações — contém todos os arquivos de configuração do sistema e dos serviços: passwd, hosts, fstab, ssh/, netplan/.
+Para que serve o diretório /home? | Diretórios pessoais dos usuários comuns — cada usuário tem seu subdiretório, ex: /home/joao, /home/maria.
+Para que serve o diretório /root? | Diretório home exclusivo do superusuário root — separado do /home dos usuários comuns.
+Para que serve o diretório /var? | Dados variáveis que crescem durante o uso: logs (/var/log), sites (/var/www), cache (/var/cache), e-mails (/var/mail).
+Para que serve o diretório /tmp? | Arquivos temporários apagados automaticamente a cada reinicialização — nunca guarde dados permanentes aqui.
+Para que serve o diretório /dev? | Representa dispositivos de hardware como arquivos especiais: discos (sda), terminais (tty), /dev/null, /dev/zero.
+Para que serve o diretório /proc? | Sistema de arquivos virtual gerado dinamicamente pelo kernel — não existe no disco; fornece informações em tempo real de processos e hardware.
+Para que serve o diretório /boot? | Arquivos de inicialização do sistema: kernel Linux (vmlinuz), initrd e configuração do GRUB.
+Para que serve o diretório /media? | Ponto de montagem para mídias removíveis montadas automaticamente: pendrive, DVD, HD externo.
+Para que serve o diretório /mnt? | Ponto de montagem para montagens temporárias manuais feitas pelo administrador.
+Para que serve o diretório /opt? | Softwares opcionais de terceiros que não vêm nos repositórios padrão: Google Chrome, Zoom.
+Para que serve o diretório /lib? | Bibliotecas compartilhadas essenciais usadas pelos programas em /bin e /sbin.
+Quais são os 3 diretórios mais importantes do dia a dia (Regra de Ouro)? | /home (arquivos pessoais dos usuários), /etc (configurações do sistema) e /var (logs e dados variáveis).
+Cite arquivos importantes dentro de /etc. | /etc/hostname (nome do servidor), /etc/hosts (mapeamento IP/nomes), /etc/fstab (montagem de discos), /etc/sudoers (permissões sudo), /etc/passwd (usuários do sistema).
+Onde ficam os logs do sistema no Linux? | Em /var/log — principais: syslog (log geral), auth.log (autenticações), kern.log (kernel), apache2/ (web), mysql/ (banco de dados).
+Qual comando vê as últimas linhas de um log? | tail -N /var/log/syslog — onde N é o número de linhas. Ex: tail -5 /var/log/syslog.
+Qual comando verifica o tamanho de um diretório? | du -sh /caminho — ex: du -sh /var/log/
+O que é /dev/null? | Dispositivo especial que descarta qualquer dado enviado a ele — usado para suprimir saídas e erros: comando 2>/dev/null.
+O que é /dev/sda e /dev/sda1? | /dev/sda é o primeiro disco rígido/SSD do sistema. /dev/sda1 é a primeira partição desse disco.
+O que é /dev/zero? | Dispositivo especial que gera bytes nulos infinitamente — usado para criar arquivos de tamanho específico.
+O que /proc/meminfo fornece? | Informações em tempo real sobre a memória do sistema: total, livre e disponível.
+Como descobrir onde um comando está instalado? | Usando which seguido do comando — ex: which ls retorna /usr/bin/ls.
+O que ocorreu com /bin em distros modernas (Ubuntu 20.04+)? | /bin, /sbin, /lib e /lib64 viraram links simbólicos para dentro de /usr — ex: /bin -> usr/bin. Simplifica a estrutura e facilita atualizações atômicas.
+Qual a filosofia "tudo é arquivo" no Unix/Linux? | Dispositivos de hardware, processos e interfaces do kernel são representados como arquivos no sistema — facilitando manipulação e automação via terminal.
+Qual comando cria uma estrutura de diretórios aninhados de uma vez? | mkdir -p — ex: mkdir -p ~/projeto/{scripts,logs,configs,docs} cria todos os subdiretórios de uma vez.
